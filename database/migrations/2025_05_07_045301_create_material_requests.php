@@ -15,17 +15,13 @@ return new class extends Migration
     {
         Schema::create('material_requests', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('inventory_id')->constrained()->onDelete('cascade');
+            $table->foreignId('project_id')->constrained()->onDelete('cascade');
+            $table->decimal('qty', 10, 2);
+            $table->string('requested_by');
+            $table->string('department');
+            $table->enum('status', ['pending', 'approved', 'delivered'])->default('pending');
             $table->timestamps();
         });
-    }
-
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
-    {
-        Schema::dropIfExists('material_requests');
     }
 };

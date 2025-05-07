@@ -15,7 +15,14 @@ class InventoryController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('role:admin_logistic'); // Hanya bisa diakses admin_logistic
+        $this->middleware('auth');
+        $this->middleware(function ($request, $next) {
+            $rolesAllowed = ['super_admin', 'admin_logistic'];
+            if (!in_array(auth()->user()->role, $rolesAllowed)) {
+                abort(403, 'Unauthorized');
+            }
+            return $next($request);
+        });
     }
 
     public function index()
@@ -101,6 +108,24 @@ class InventoryController extends Controller
         $inventory->save();
 
         return redirect()->route('inventory.index')->with('success', 'Inventory added successfully!');
+    }
+
+    public function storeQuick(Request $request)
+    {
+        Inventory::create([
+            'name'     => $request->name,
+            'quantity' => $request->quantity,
+            'unit'     => $request->unit,
+            'price'    => $request->price ?? 0, // kasih default 0 kalau tidak diisi
+            'status'   => 'pending', // jika kamu ingin tandai status awal
+        ]);
+
+        return back()->with('success', 'Material added');
+    }
+
+    public function json()
+    {
+        return Inventory::select('id', 'name')->get(); // bisa juga pakai paginate/dataTables untuk ribuan data
     }
 
     public function edit($id)

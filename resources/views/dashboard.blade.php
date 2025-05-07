@@ -13,7 +13,11 @@
                 @endif
 
                 @if(in_array($user->role, ['super_admin', 'admin_mascot', 'admin_costume']))
-                    <a href="#" class="btn btn-warning mb-2">Go to Material Requests</a>
+                    <a href="{{ route('projects.index') }}" class="btn btn-warning mb-2">Go to Projects</a>
+                @endif
+
+                @if(in_array($user->role, ['super_admin', 'admin_mascot', 'admin_costume', 'admin_logistic']))
+                    <a href="{{ route('material_requests.index') }}" class="btn btn-danger mb-2">Go to Material Requests</a>
                 @endif
 
                 @if(in_array($user->role, ['super_admin', 'admin_finance']))

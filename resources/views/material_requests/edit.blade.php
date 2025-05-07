@@ -1,0 +1,172 @@
+@extends('layouts.app')
+
+@section('content')
+<div class="container">
+    <h3>Edit Material Request</h3>
+    <form action="{{ route('material_requests.update', $request->id) }}" method="POST">
+        @csrf
+        @method('PUT')
+
+        <div class="mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <label>Material</label>
+                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addMaterialModal">
+                    + Quick Add Material
+                </button>
+            </div>
+            <select name="inventory_id" class="form-select select2" required>
+                @foreach($inventories as $inv)
+                    <option value="{{ $inv->id }}" {{ $inv->id == $request->inventory_id ? 'selected' : '' }}>
+                        {{ $inv->name }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <label>Project</label>
+                <button type="button" class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#addProjectModal">
+                    + Quick Add Project
+                </button>
+            </div>
+            <select name="project_id" class="form-select select2" required>
+                @foreach($projects as $proj)
+                    <option value="{{ $proj->id }}" {{ $proj->id == $request->project_id ? 'selected' : '' }}>
+                        {{ $proj->name }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label>Quantity</label>
+            <input type="number" step="0.01" name="qty" class="form-control" value="{{ $request->qty }}" required>
+        </div>
+
+        @if(auth()->user()->role === 'admin_logistic')
+        <div class="mb-3">
+            <label>Status</label>
+            <select name="status" class="form-select">
+                <option value="pending" {{ $request->status === 'pending' ? 'selected' : '' }}>Pending</option>
+                <option value="approved" {{ $request->status === 'approved' ? 'selected' : '' }}>Approved</option>
+            </select>
+        </div>
+        @endif
+
+        <div class="mb-3">
+            <label>Requested By</label>
+            <input type="text" class="form-control" value="{{ $request->requested_by }}" disabled>
+        </div>
+
+        <div class="mb-3">
+            <label>Department</label>
+            <input type="text" class="form-control" value="{{ ucfirst($request->department) }}" disabled>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Update Request</button>
+        <a href="{{ route('material_requests.index') }}" class="btn btn-secondary">Back</a>
+    </form>
+
+    <!-- Add Material Modal -->
+    <div class="modal fade" id="addMaterialModal" tabindex="-1" aria-labelledby="addMaterialModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form method="POST" action="{{ route('inventories.store.quick') }}">
+                @csrf
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Quick Add Material</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <label>Name</label>
+                        <input type="text" name="name" class="form-control" required>
+                        <label class="mt-2">Quantity</label>
+                        <input type="number" step="0.01" name="quantity" class="form-control">
+                        <label class="mt-2">Unit</label>
+                        <input type="text" name="unit" class="form-control" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Add Material</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Add Project Modal -->
+    <div class="modal fade" id="addProjectModal" tabindex="-1" aria-labelledby="addProjectModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form method="POST" action="{{ route('projects.store.quick') }}">
+                @csrf
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Quick Add Project</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <label>Project Name</label>
+                        <input type="text" name="name" class="form-control" required>
+                        <label class="mt-2">Qty</label>
+                        <input type="number" step="1" name="qty" class="form-control">
+                        <label class="mt-2">Department</label>
+                        <select name="department" class="form-select" required>
+                            <option value="mascot">Mascot</option>
+                            <option value="costume">Costume</option>
+                            <option value="mascot&costume">Mascot & Costume</option>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">Add Project</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+</div>
+@endsection
+@push('scripts')
+<script>
+$(document).ready(function() {
+    $('.select2').select2({
+        width: '100%',
+        placeholder: 'Select an option',
+        allowClear: true
+    });
+
+    $('#addMaterialModal').on('hidden.bs.modal', function () {
+        refreshMaterialSelect();
+    });
+
+    $('#addProjectModal').on('hidden.bs.modal', function () {
+        refreshProjectSelect();
+    });
+
+    function refreshSelect(selector, url) {
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function(data) {
+                let $select = $(selector);
+                $select.empty();
+                data.forEach(function(item) {
+                    $select.append('<option value="' + item.id + '">' + item.name + '</option>');
+                });
+                $select.trigger('change');
+            },
+            error: function() {
+                alert('Failed to load updated data.');
+            }
+        });
+    }
+
+    function refreshMaterialSelect() {
+        refreshSelect('#inventory_id', "{{ route('inventories.json') }}");
+    }
+
+    function refreshProjectSelect() {
+        refreshSelect('#project_id', "{{ route('projects.json') }}");
+    }
+});
+</script>
+@endpush

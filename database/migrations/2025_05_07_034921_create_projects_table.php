@@ -15,6 +15,11 @@ return new class extends Migration
     {
         Schema::create('projects', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->integer('qty');
+            $table->string('img')->nullable();
+            $table->date('deadline')->nullable();
+            $table->enum('department', ['mascot', 'costume', 'mascot&costume']);
             $table->timestamps();
         });
     }
