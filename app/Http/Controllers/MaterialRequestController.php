@@ -43,7 +43,15 @@ class MaterialRequestController extends Controller
         ]);
 
         $user = auth()->user();
-        $department = str_contains($user->role, 'mascot') ? 'mascot' : 'costume';
+
+        // Ambil department berdasarkan role dari database
+        $department = match ($user->role) {
+            'admin_mascot' => 'mascot',
+            'admin_costume' => 'costume',
+            'admin_logistic' => 'logistic',
+            'super_admin' => 'management',
+            default => 'general', // Default jika role tidak cocok
+        };
 
         MaterialRequest::create([
             'inventory_id' => $request->inventory_id,
@@ -51,6 +59,7 @@ class MaterialRequestController extends Controller
             'qty' => $request->qty,
             'requested_by' => $user->username,
             'department' => $department,
+            'remark' => $request->remark,
         ]);
 
         return redirect()->route('material_requests.index')->with('success', 'Material Request Created');
@@ -72,7 +81,15 @@ class MaterialRequestController extends Controller
         ]);
 
         $user = auth()->user();
-        $department = str_contains($user->role, 'mascot') ? 'mascot' : 'costume';
+
+        // Ambil department berdasarkan role dari database
+        $department = match ($user->role) {
+            'admin_mascot' => 'mascot',
+            'admin_costume' => 'costume',
+            'admin_logistic' => 'logistic',
+            'super_admin' => 'management',
+            default => 'general', // Default jika role tidak cocok
+        };
 
         foreach ($request->requests as $req) {
             MaterialRequest::create([
@@ -81,6 +98,7 @@ class MaterialRequestController extends Controller
                 'qty' => $req['qty'],
                 'requested_by' => $user->username,
                 'department' => $department,
+                'remark' => $req['remark'] ?? null,
             ]);
         }
 
@@ -98,7 +116,7 @@ class MaterialRequestController extends Controller
     public function update(Request $request, $id)
     {
         $req = MaterialRequest::findOrFail($id);
-        $req->update($request->only('inventory_id', 'project_id', 'qty', 'status'));
+        $req->update($request->only('inventory_id', 'project_id', 'qty', 'status', 'remark'));
 
         return redirect()->route('material_requests.index')->with('success', 'Updated');
     }

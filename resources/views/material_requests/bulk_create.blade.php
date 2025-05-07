@@ -15,10 +15,11 @@
             <table class="table table-bordered align-middle" id="bulk-material-table" style="min-width: 1000px;">
                 <thead class="table-light">
                     <tr>
-                        <th style="width: 35%;">Material</th>
-                        <th style="width: 35%;">Project</th>
+                        <th style="width: 25%;">Material</th>
+                        <th style="width: 25%;">Project</th>
                         <th style="width: 15%;">Qty</th>
-                        <th style="width: 15%;">Action</th>
+                        <th style="width: 25%;">Remark (ops)</th>
+                        <th style="width: 10%;">Action</th>
                     </tr>
                 </thead>
                 <tbody id="bulk-rows">
@@ -45,6 +46,9 @@
                                     <input type="number" name="requests[{{ $index }}][qty]" class="form-control" step="0.01" required>
                                     <span class="input-group-text unit-label">unit</span>
                                 </div>
+                            </td>
+                            <td>
+                                <textarea name="requests[{{ $index }}][remark]" class="form-control" rows="1"></textarea>
                             </td>
                             <td>
                                 <button type="button" class="btn btn-danger btn-sm remove-row">Remove</button>

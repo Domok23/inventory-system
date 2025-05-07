@@ -55,6 +55,11 @@
         @endif
 
         <div class="mb-3">
+            <label>Remark</label>
+            <textarea name="remark" class="form-control" rows="1">{{ $request->remark }}</textarea>
+        </div>
+
+        <div class="mb-3">
             <label>Requested By</label>
             <input type="text" class="form-control" value="{{ $request->requested_by }}" disabled>
         </div>
@@ -122,9 +127,30 @@
             </form>
         </div>
     </div>
-    
+
 </div>
 @endsection
+@push('styles')
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.2.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+<style>
+.select2-container .select2-selection--single {
+    height: calc(2.375rem + 2px); /* Tinggi elemen form Bootstrap */
+    padding: 0.375rem 0.75rem; /* Padding elemen form Bootstrap */
+    font-size: 1rem; /* Ukuran font Bootstrap */
+    line-height: 1.5; /* Line height Bootstrap */
+    border: 1px solid #ced4da; /* Border Bootstrap */
+    border-radius: 0.375rem; /* Border radius Bootstrap */
+}
+
+.select2-selection__rendered {
+    line-height: 1.5; /* Line height Bootstrap */
+}
+
+.select2-container .select2-selection--single .select2-selection__arrow {
+    height: calc(2.375rem + 2px); /* Tinggi elemen form Bootstrap */
+}
+</style>
+@endpush
 @push('scripts')
 <script>
 $(document).ready(function() {
@@ -167,6 +193,12 @@ $(document).ready(function() {
     function refreshProjectSelect() {
         refreshSelect('#project_id', "{{ route('projects.json') }}");
     }
+});
+$('.select2').select2({
+    theme: 'bootstrap-5', // Gunakan tema bootstrap-5
+    width: '100%',
+    placeholder: 'Select an option',
+    allowClear: true
 });
 </script>
 @endpush

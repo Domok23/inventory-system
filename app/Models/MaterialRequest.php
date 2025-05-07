@@ -13,7 +13,8 @@ class MaterialRequest extends Model
         'qty',
         'requested_by',
         'department',
-        'status', // kalau ada
+        'status',
+        'remark',
     ];
 
     public function inventory()
