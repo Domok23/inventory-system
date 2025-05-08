@@ -15,7 +15,6 @@
                 <th>ID</th>
                 <th>Username</th>
                 <th>Role</th>
-                <th>Created At</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -25,7 +24,6 @@
                 <td>{{ $user->id }}</td>
                 <td>{{ $user->username }}</td>
                 <td>{{ ucwords(str_replace('_', ' ', $user->role)) }}</td>
-                <td>{{ $user->created_at->format('d-m-Y') }}</td>
                 <td>
                     <a href="{{ route('users.edit', $user->id) }}" class="btn btn-sm btn-warning">Edit</a>
                     <form action="{{ route('users.destroy', $user->id) }}" method="POST" style="display:inline;">

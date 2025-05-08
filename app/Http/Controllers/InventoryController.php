@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Inventory;
+use App\Models\Currency;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use PDF;
@@ -33,7 +34,8 @@ class InventoryController extends Controller
 
     public function create()
     {
-        return view('inventory.create');
+        $currencies = Currency::all(); // Ambil semua currency dari database
+        return view('inventory.create', compact('currencies'));
     }
 
     public function import(Request $request)
@@ -85,6 +87,7 @@ class InventoryController extends Controller
         $inventory->quantity = $request->quantity;
         $inventory->unit = $request->unit;
         $inventory->price = $request->price;
+        $inventory->currency_id = $request->currency_id;
         $inventory->location = $request->location;
 
         // Upload Image if exists
@@ -131,7 +134,8 @@ class InventoryController extends Controller
     public function edit($id)
     {
         $inventory = Inventory::findOrFail($id);
-        return view('inventory.edit', compact('inventory'));
+        $currencies = Currency::all(); // Ambil semua currency dari database
+        return view('inventory.edit', compact('inventory', 'currencies'));
     }
 
     public function update(Request $request, Inventory $inventory)
@@ -141,6 +145,7 @@ class InventoryController extends Controller
             'quantity' => 'required|numeric',
             'unit' => 'required|string',
             'price' => 'nullable|numeric',
+            'currency_id' => 'required|exists:currencies,id',
             'location' => 'nullable|string',
             'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
@@ -150,6 +155,7 @@ class InventoryController extends Controller
         $inventory->quantity = $request->quantity;
         $inventory->unit = $request->unit;
         $inventory->price = $request->price;
+        $inventory->currency_id = $request->currency_id;
         $inventory->location = $request->location;
 
         // Upload image jika ada

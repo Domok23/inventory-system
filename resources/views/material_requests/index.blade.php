@@ -26,7 +26,7 @@
                     <td>{{ $req->qty }} {{ $req->inventory->unit }}</td>
                     <td>{{ $req->requested_by }} ({{ ucfirst($req->department) }})</td>
                     <td>{{ ucfirst($req->status) }}</td>
-                    <td>{{ $req->remark }}</td> 
+                    <td>{{ $req->remark }}</td>
                     <td>
                         <a href="{{ route('material_requests.edit', $req->id) }}" class="btn btn-sm btn-primary">Edit</a>
                         <form action="{{ route('material_requests.destroy', $req->id) }}" method="POST" style="display:inline;">

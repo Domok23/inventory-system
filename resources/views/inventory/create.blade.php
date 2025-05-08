@@ -23,6 +23,20 @@
         </div>
 
         <div class="mb-3">
+            <label for="currency_id" class="form-label">Currency</label>
+            <button type="button" class="btn btn-outline-primary" style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .55rem;" data-bs-toggle="modal" data-bs-target="#currencyModal">
+                + Add Currency
+            </button>
+            <select name="currency_id" id="currency_id" class="form-select" required>
+                @foreach($currencies as $currency)
+                <option value="{{ $currency->id }}" {{ old('currency_id', $inventory->currency_id ?? '') == $currency->id ? 'selected' : '' }}>
+                    {{ $currency->name }}
+                </option>
+                @endforeach
+            </select>
+        </div>
+
+        <div class="mb-3">
             <label for="price" class="form-label">Price</label>
             <input type="number" step="0.01" class="form-control" id="price" name="price" required>
         </div>
@@ -39,5 +53,31 @@
 
         <button type="submit" class="btn btn-primary">Create Inventory</button>
     </form>
+    <div class="modal fade" id="currencyModal" tabindex="-1" aria-labelledby="currencyModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form id="currencyForm" method="POST" action="{{ route('currencies.store') }}">
+            @csrf
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="currencyModalLabel">Add/Edit Currency</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="currency_name" class="form-label">Currency Name</label>
+                        <input type="text" id="currency_name" name="name" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="currency_exchange_rate" class="form-label">Exchange Rate</label>
+                        <input type="number" id="currency_exchange_rate" name="exchange_rate" class="form-control" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
 </div>
 @endsection

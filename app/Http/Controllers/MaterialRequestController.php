@@ -43,14 +43,12 @@ class MaterialRequestController extends Controller
         ]);
 
         $user = auth()->user();
-
-        // Ambil department berdasarkan role dari database
         $department = match ($user->role) {
             'admin_mascot' => 'mascot',
             'admin_costume' => 'costume',
             'admin_logistic' => 'logistic',
             'super_admin' => 'management',
-            default => 'general', // Default jika role tidak cocok
+            default => 'general',
         };
 
         MaterialRequest::create([
@@ -81,14 +79,12 @@ class MaterialRequestController extends Controller
         ]);
 
         $user = auth()->user();
-
-        // Ambil department berdasarkan role dari database
         $department = match ($user->role) {
             'admin_mascot' => 'mascot',
             'admin_costume' => 'costume',
             'admin_logistic' => 'logistic',
             'super_admin' => 'management',
-            default => 'general', // Default jika role tidak cocok
+            default => 'general',
         };
 
         foreach ($request->requests as $req) {

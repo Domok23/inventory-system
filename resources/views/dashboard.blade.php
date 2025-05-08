@@ -24,6 +24,10 @@
                     <a href="#" class="btn btn-info mb-2">View Costing Reports</a>
                 @endif
 
+                @if(in_array($user->role, ['super_admin', 'admin_finance']))
+                    <a href="{{ route('currencies.index') }}" class="btn btn-secondary mb-2">Manage Currencies</a>
+                @endif
+
                 @if($user->role === 'super_admin')
                     <a href="{{ route('users.index') }}" class="btn btn-primary mb-2">Manage Users</a>
                 @endif

@@ -44,8 +44,7 @@
             <tr>
                 <th>Name</th>
                 <th>Quantity</th>
-                <th>Unit</th>
-                <th>Price</th>
+                <th>Unit Price</th>
                 <th>Location</th>
                 <th>QR Code</th>
                 <th>Image</th>
@@ -56,9 +55,13 @@
             @foreach($inventories as $inventory)
                 <tr>
                     <td>{{ $inventory->name }}</td>
-                    <td>{{ $inventory->quantity }}</td>
-                    <td>{{ $inventory->unit }}</td>
-                    <td>{{ $inventory->price }}</td>
+                    <td>{{ $inventory->quantity }} {{ $inventory->unit }}</td>
+                    <td>
+                        @if($inventory->currency)
+                            {{ $inventory->currency->name }}
+                        @endif
+                        {{ number_format($inventory->price, 2, ',', '.') }}
+                    </td>
                     <td>{{ $inventory->location }}</td>
                     <td>@if ($inventory->qrcode_path)
                         <img src="{{ asset('storage/' . $inventory->qrcode_path) }}" alt="QR Code" width="80">

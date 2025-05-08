@@ -80,17 +80,19 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, User $user)
+    public function update(Request $request, $id)
     {
         $request->validate([
-            'username' => 'required|string|max:255|unique:users,username,' . $user->id,
-            'role' => 'required|string',
-            'password' => 'nullable|string|min:6',
+            'username' => 'required|unique:users,username,' . $id,
+            'role' => 'required',
+            'password' => 'nullable|min:6', 
         ]);
 
+        $user = User::findOrFail($id);
         $user->username = $request->username;
         $user->role = $request->role;
 
+        // Update password hanya jika diisi
         if ($request->filled('password')) {
             $user->password = bcrypt($request->password);
         }

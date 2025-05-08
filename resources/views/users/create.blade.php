@@ -14,9 +14,13 @@
         </div>
 
         <div class="mb-3">
-            <label>Password</label>
-            <input type="password" name="password" class="form-control" required>
-            @error('password') <small class="text-danger">{{ $message }}</small> @enderror
+            <label for="password" class="form-label">Password</label>
+            <div class="input-group">
+                <input type="password" id="password" name="password" class="form-control" required>
+                <button type="button" class="btn btn-outline-secondary toggle-password">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </div>
         </div>
 
         <div class="mb-3">
@@ -37,3 +41,27 @@
     </form>
 </div>
 @endsection
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const togglePasswordButtons = document.querySelectorAll('.toggle-password');
+
+        togglePasswordButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const passwordInput = this.previousElementSibling;
+                const icon = this.querySelector('i');
+
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    passwordInput.type = 'password';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+            });
+        });
+    });
+</script>
+@endpush

@@ -5,21 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Inventory extends Model
+class Currency extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'name',
-        'quantity',
-        'unit',
-        'price',
-        'location',
-        'img',
+        'exchange_rate',
     ];
 
-    public function currency()
+    public function inventories()
     {
-        return $this->belongsTo(Currency::class);
+        return $this->hasMany(Inventory::class);
     }
 }

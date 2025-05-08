@@ -15,8 +15,8 @@
             <table class="table table-bordered align-middle" id="bulk-material-table" style="min-width: 1000px;">
                 <thead class="table-light">
                     <tr>
-                        <th style="width: 25%;">Material</th>
                         <th style="width: 25%;">Project</th>
+                        <th style="width: 25%;">Material</th>
                         <th style="width: 15%;">Qty</th>
                         <th style="width: 25%;">Remark (ops)</th>
                         <th style="width: 10%;">Action</th>
@@ -26,18 +26,18 @@
                     @foreach(range(0, 0) as $index)
                         <tr>
                             <td>
-                                <select name="requests[{{ $index }}][inventory_id]" class="form-select select2 material-select" required>
-                                    <option value="">Select Material</option>
-                                    @foreach($inventories as $inv)
-                                        <option value="{{ $inv->id }}" data-unit="{{ $inv->unit }}">{{ $inv->name }}</option>
+                                <select name="requests[{{ $index }}][project_id]" class="form-select select2 project-select" required>
+                                    <option value="">Select Project</option>
+                                    @foreach($projects as $project)
+                                    <option value="{{ $project->id }}">{{ $project->name }}</option>
                                     @endforeach
                                 </select>
                             </td>
                             <td>
-                                <select name="requests[{{ $index }}][project_id]" class="form-select select2 project-select" required>
-                                    <option value="">Select Project</option>
-                                    @foreach($projects as $project)
-                                        <option value="{{ $project->id }}">{{ $project->name }}</option>
+                                <select name="requests[{{ $index }}][inventory_id]" class="form-select select2 material-select" required>
+                                    <option value="">Select Material</option>
+                                    @foreach($inventories as $inv)
+                                        <option value="{{ $inv->id }}" data-unit="{{ $inv->unit }}">{{ $inv->name }}</option>
                                     @endforeach
                                 </select>
                             </td>
@@ -164,19 +164,38 @@
             let newRow = $('#bulk-rows tr').first().clone();
             let rowCount = $('#bulk-rows tr').length;
 
+            // Reset select elements
             newRow.find('select').each(function() {
                 let name = $(this).attr('name').replace(/\d+/, rowCount);
-                $(this).attr('name', name).val(null).trigger('change');
+                $(this).attr('name', name);
+
+                // Jika ini adalah select project, salin nilai yang dipilih
+                if ($(this).hasClass('project-select')) {
+                    let selectedValue = $('#bulk-rows tr').first().find('.project-select').val(); // Ambil nilai dari baris pertama
+                    $(this).val(selectedValue).trigger('change'); // Tetapkan nilai yang sama di baris baru
+                } else {
+                    $(this).val(null).trigger('change'); // Reset untuk select lainnya
+                }
             });
 
+            // Reset input elements
             newRow.find('input').each(function() {
                 let name = $(this).attr('name').replace(/\d+/, rowCount);
                 $(this).attr('name', name).val('');
             });
 
+            // Reset textarea elements (e.g., Remark)
+            newRow.find('textarea').each(function() {
+                let name = $(this).attr('name').replace(/\d+/, rowCount);
+                $(this).attr('name', name).val(''); // Reset value to empty
+            });
+
+            // Reset unit label
             newRow.find('.unit-label').text('unit');
+
+            // Append the new row
             $('#bulk-rows').append(newRow);
-            initSelect2(newRow);
+            initSelect2(newRow); // Reinitialize Select2 for the new row
         });
 
         $(document).on('click', '.remove-row', function() {

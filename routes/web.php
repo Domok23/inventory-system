@@ -55,3 +55,9 @@ Route::post('/projects/quick-add', [ProjectController::class, 'storeQuick'])->na
 
 Route::get('/inventories/json', [InventoryController::class, 'json'])->name('inventories.json');
 Route::get('/projects/json', [ProjectController::class, 'json'])->name('projects.json');
+
+Route::middleware(['auth'])->group(function () {
+    Route::resource('currencies', \App\Http\Controllers\CurrencyController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::get('/currencies', [\App\Http\Controllers\CurrencyController::class, 'index'])->name('currencies.index');
+    Route::get('/currencies/{id}/edit', [\App\Http\Controllers\CurrencyController::class, 'edit'])->name('currencies.edit');
+});

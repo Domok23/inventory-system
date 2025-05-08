@@ -18,8 +18,14 @@
         </div>
 
         <div class="mb-3">
-            <label for="password" class="form-label">New Password (optional)</label>
-            <input type="password" class="form-control" name="password" placeholder="Leave blank to keep current password">
+            <label for="password" class="form-label mb-0">New Password</label>
+            <small class="text-muted mb-2">(Leave blank to keep current password)</small>
+            <div class="input-group">
+                <input type="password" id="password" name="password" class="form-control">
+                <button type="button" class="btn btn-outline-secondary toggle-password">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </div>
         </div>
 
         <div class="mb-3">
@@ -38,3 +44,27 @@
     </form>
 </div>
 @endsection
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const togglePasswordButtons = document.querySelectorAll('.toggle-password');
+
+        togglePasswordButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const passwordInput = this.previousElementSibling;
+                const icon = this.querySelector('i');
+
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    passwordInput.type = 'password';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+            });
+        });
+    });
+</script>
+@endpush
