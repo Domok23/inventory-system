@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Inventory;
 use App\Models\Currency;
+use App\Models\Unit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use PDF;
@@ -35,7 +36,8 @@ class InventoryController extends Controller
     public function create()
     {
         $currencies = Currency::all(); // Ambil semua currency dari database
-        return view('inventory.create', compact('currencies'));
+        $units = Unit::all(); // Ambil semua unit dari database
+        return view('inventory.create', compact('currencies', 'units'));
     }
 
     public function import(Request $request)
@@ -77,6 +79,7 @@ class InventoryController extends Controller
             'name' => 'required|string|max:255',
             'quantity' => 'required|numeric|min:0',
             'unit' => 'required|string',
+            'new_unit' => 'required_if:unit,__new__|nullable|string|max:255',
             'price' => 'required|numeric',
             'location' => 'nullable|string',
             'img' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
@@ -90,11 +93,22 @@ class InventoryController extends Controller
         $inventory->currency_id = $request->currency_id;
         $inventory->location = $request->location;
 
+        // Simpan unit baru jika ada
+        if ($request->unit === '__new__' && $request->new_unit) {
+            $unit = Unit::firstOrCreate(['name' => $request->new_unit]);
+            $inventory->unit = $unit->name; // Ganti nilai unit di $inventory
+        }
+
         // Upload Image if exists
         if ($request->hasFile('img')) {
             $imagePath = $request->file('img')->store('images', 'public');
-            $inventory->img = $imagePath;
+            if ($imagePath) {
+                $inventory->img = $imagePath;
+            }
         }
+
+        // Simpan inventory terlebih dahulu
+        $inventory->save();
 
         // Generate konten QR
         $qrContent = $inventory->id . ' - ' . $inventory->name;
@@ -108,7 +122,7 @@ class InventoryController extends Controller
 
         // Simpan path-nya ke database
         $inventory->qrcode_path = 'qrcodes/' . $qrFileName;
-        $inventory->save();
+        $inventory->save(); // Simpan lagi untuk memperbarui path QR code
 
         return redirect()->route('inventory.index')->with('success', 'Inventory added successfully!');
     }
@@ -135,7 +149,8 @@ class InventoryController extends Controller
     {
         $inventory = Inventory::findOrFail($id);
         $currencies = Currency::all(); // Ambil semua currency dari database
-        return view('inventory.edit', compact('inventory', 'currencies'));
+        $units = Unit::all();
+        return view('inventory.edit', compact('inventory', 'currencies', 'units'));
     }
 
     public function update(Request $request, Inventory $inventory)
@@ -144,6 +159,7 @@ class InventoryController extends Controller
             'name' => 'required|string|max:255',
             'quantity' => 'required|numeric',
             'unit' => 'required|string',
+            'new_unit' => 'required_if:unit,__new__|nullable|string|max:255',
             'price' => 'nullable|numeric',
             'currency_id' => 'required|exists:currencies,id',
             'location' => 'nullable|string',
@@ -158,6 +174,14 @@ class InventoryController extends Controller
         $inventory->currency_id = $request->currency_id;
         $inventory->location = $request->location;
 
+        // Simpan unit baru jika ada
+        if ($request->unit === '__new__' && $request->new_unit) {
+            $unit = Unit::firstOrCreate(['name' => $request->new_unit]);
+            $inventory->unit = $unit->name; // Ganti nilai unit di inventory
+        } else {
+            $inventory->unit = $request->unit;
+        }
+        
         // Upload image jika ada
         if ($request->hasFile('img')) {
             $imgPath = $request->file('img')->store('inventory_images', 'public');

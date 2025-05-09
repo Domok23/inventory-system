@@ -27,7 +27,16 @@
         <!-- Unit -->
         <div class="mb-3">
             <label for="unit" class="form-label">Unit</label>
-            <input type="text" class="form-control" id="unit" name="unit" value="{{ old('unit', $inventory->unit) }}" required>
+            <select id="unit-select" class="form-select" name="unit">
+                <option value="">Select Unit</option>
+                @foreach($units as $unit)
+                    <option value="{{ $unit->name }}" {{ old('unit', $inventory->unit) == $unit->name ? 'selected' : '' }}>
+                        {{ $unit->name }}
+                    </option>
+                @endforeach
+                <option value="__new__" {{ old('unit') == '__new__' ? 'selected' : '' }}>Add New Unit</option>
+            </select>
+            <input type="text" id="unit-input" class="form-control mt-2 {{ old('unit') == '__new__' ? '' : 'd-none' }}" name="new_unit" placeholder="Enter new unit" value="{{ old('new_unit') }}">
         </div>
 
         <!-- Currency -->
@@ -109,3 +118,22 @@
 </div>
 </div>
 @endsection
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const unitSelect = document.getElementById('unit-select');
+        const unitInput = document.getElementById('unit-input');
+
+        unitSelect.addEventListener('change', function () {
+            if (this.value === '__new__') {
+                unitInput.classList.remove('d-none');
+                unitInput.setAttribute('required', 'required');
+            } else {
+                unitInput.classList.add('d-none');
+                unitInput.removeAttribute('required');
+                unitInput.value = ''; // Reset nilai input teks
+            }
+        });
+    });
+</script>
+@endpush

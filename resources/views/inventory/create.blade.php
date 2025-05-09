@@ -19,7 +19,14 @@
 
         <div class="mb-3">
             <label for="unit" class="form-label">Unit</label>
-            <input type="text" class="form-control" id="unit" name="unit" required>
+            <select id="unit-select" class="form-select" name="unit">
+                <option value="">Select Unit</option>
+                @foreach($units as $unit)
+                    <option value="{{ $unit->name }}">{{ $unit->name }}</option>
+                @endforeach
+                <option value="__new__">Add New Unit</option>
+            </select>
+            <input type="text" id="unit-input" class="form-control mt-2 d-none" name="new_unit" placeholder="Enter new unit">
         </div>
 
         <div class="mb-3">
@@ -81,3 +88,21 @@
 </div>
 </div>
 @endsection
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const unitSelect = document.getElementById('unit-select');
+        const unitInput = document.getElementById('unit-input');
+
+        unitSelect.addEventListener('change', function () {
+            if (this.value === '__new__') {
+                unitInput.classList.remove('d-none');
+                unitInput.setAttribute('required', 'required');
+            } else {
+                unitInput.classList.add('d-none');
+                unitInput.removeAttribute('required');
+            }
+        });
+    });
+</script>
+@endpush
