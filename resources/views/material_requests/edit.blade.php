@@ -4,12 +4,13 @@
 <div class="container">
     <h3>Edit Material Request</h3>
     @if ($errors->any())
-        <div class="alert alert-danger">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
             <strong>Whoops!</strong> There were some problems with your input.
             <ul class="mb-0">
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
                 @endforeach
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </ul>
         </div>
     @endif
@@ -57,7 +58,7 @@
             @error('qty') <small class="text-danger">{{ $message }}</small> @enderror
         </div>
 
-        @if(auth()->user()->role === 'admin_logistic')
+        @if(in_array(auth()->user()->role, ['admin_logistic', 'super_admin']))
         <div class="mb-3">
             <label>Status</label>
             <select name="status" class="form-select">

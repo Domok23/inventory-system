@@ -4,12 +4,13 @@
 <div class="container">
     <h2>Create Inventory</h2>
     @if ($errors->any())
-        <div class="alert alert-danger">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
             <strong>Whoops!</strong> There were some problems with your input.
             <ul class="mb-0">
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>
                 @endforeach
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </ul>
         </div>
     @endif
@@ -32,10 +33,12 @@
             <label for="unit" class="form-label">Unit</label>
             <select id="unit-select" class="form-select" name="unit">
                 <option value="">Select Unit</option>
+                <option value="__new__">Add New Unit?</option>
                 @foreach($units as $unit)
-                    <option value="{{ $unit->name }}">{{ $unit->name }}</option>
+                    <option value="{{ $unit->name }}" {{ old('unit') == $unit->name ? 'selected' : '' }}>
+                        {{ $unit->name }}
+                    </option>
                 @endforeach
-                <option value="__new__">Add New Unit</option>
             </select>
             @error('unit') <small class="text-danger">{{ $message }}</small> @enderror
             <input type="text" id="unit-input" class="form-control mt-2 d-none" name="new_unit" placeholder="Enter new unit">
@@ -104,6 +107,27 @@
 </div>
 </div>
 @endsection
+@push('styles')
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.2.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+<style>
+    .select2-container .select2-selection--single {
+        height: calc(2.375rem + 2px); /* Tinggi elemen form Bootstrap */
+        padding: 0.375rem 0.75rem; /* Padding elemen form Bootstrap */
+        font-size: 1rem; /* Ukuran font Bootstrap */
+        line-height: 1.5; /* Line height Bootstrap */
+        border: 1px solid #ced4da; /* Border Bootstrap */
+        border-radius: 0.375rem; /* Border radius Bootstrap */
+    }
+
+    .select2-selection__rendered {
+        line-height: 1.5; /* Line height Bootstrap */
+    }
+
+    .select2-container .select2-selection--single .select2-selection__arrow {
+        height: calc(2.375rem + 2px); /* Tinggi elemen form Bootstrap */
+    }
+</style>
+@endpush
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -119,6 +143,36 @@
                 unitInput.removeAttribute('required');
             }
         });
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Inisialisasi Select2 untuk dropdown Unit
+        $('#unit-select').select2({
+            placeholder: 'Select Unit',
+            allowClear: true,
+            width: '100%'
+        });
+
+        // Tampilkan input teks jika "Add New Unit" dipilih
+        const unitInput = document.getElementById('unit-input');
+
+        $('#unit-select').on('change', function () {
+            if (this.value === '__new__') {
+                unitInput.classList.remove('d-none');
+                unitInput.setAttribute('required', 'required');
+            } else {
+                unitInput.classList.add('d-none');
+                unitInput.removeAttribute('required');
+                unitInput.value = ''; // Reset nilai input teks
+            }
+        });
+    });
+    $('#unit-select').select2({
+        placeholder: 'Select Unit',
+        allowClear: true,
+        width: '100%',
+        theme: 'bootstrap-5' // Gunakan tema Bootstrap
     });
 </script>
 @endpush

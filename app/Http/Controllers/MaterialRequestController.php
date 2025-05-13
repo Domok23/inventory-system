@@ -112,6 +112,9 @@ class MaterialRequestController extends Controller
     public function update(Request $request, $id)
     {
         $req = MaterialRequest::findOrFail($id);
+        $request->validate([
+            'status' => 'required|in:pending,approved',
+        ]);
         $req->update($request->only('inventory_id', 'project_id', 'qty', 'status', 'remark'));
 
         return redirect()->route('material_requests.index')->with('success', 'Updated');
