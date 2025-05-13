@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -26,21 +27,65 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 </head>
+
 <body>
     <div id="app">
-        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
-            <div class="container">
-                <a class="navbar-brand" href="{{ url('/') }}">
+        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm align-items-center">
+            <div class="container d-flex align-items-center">
+                <a class="navbar-brand" style="font-weight: bold;" href="{{ url('/') }}">
                     {{ config('app.name', 'Laravel') }}
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav me-auto">
-
+                        @if (auth()->check())
+                            @if (in_array(auth()->user()->role, ['super_admin', 'admin_logistic']))
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->is('inventory*') ? 'active text-primary' : '' }}"
+                                        href="{{ route('inventory.index') }}">
+                                        Inventory
+                                    </a>
+                                </li>
+                            @endif
+                            @if (in_array(auth()->user()->role, ['super_admin', 'admin_mascot', 'admin_costume']))
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->is('projects*') ? 'active text-primary' : '' }}"
+                                        href="{{ route('projects.index') }}">
+                                        Projects
+                                    </a>
+                                </li>
+                            @endif
+                            @if (in_array(auth()->user()->role, ['super_admin', 'admin_mascot', 'admin_costume', 'admin_logistic']))
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->is('material_requests*') ? 'active text-primary' : '' }}"
+                                        href="{{ route('material_requests.index') }}">
+                                        Material Requests
+                                    </a>
+                                </li>
+                            @endif
+                            @if (in_array(auth()->user()->role, ['super_admin', 'admin_finance']))
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->is('currencies*') ? 'active text-primary' : '' }}"
+                                        href="{{ route('currencies.index') }}">
+                                        Currencies
+                                    </a>
+                                </li>
+                            @endif
+                            @if (auth()->user()->role === 'super_admin')
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->is('users*') ? 'active text-primary' : '' }}"
+                                        href="{{ route('users.index') }}">
+                                        Users
+                                    </a>
+                                </li>
+                            @endif
+                        @endif
                     </ul>
 
                     <!-- Right Side Of Navbar -->
@@ -60,14 +105,15 @@
                             @endif
                         @else
                             <li class="nav-item dropdown">
-                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    {{ Auth::user()->name }}
+                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button"
+                                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                    {{ Auth::user()->username }}
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                                     <a class="dropdown-item" href="{{ route('logout') }}"
-                                       onclick="event.preventDefault();
-                                                     document.getElementById('logout-form').submit();">
+                                        onclick="event.preventDefault();
+                                        document.getElementById('logout-form').submit();">
                                         {{ __('Logout') }}
                                     </a>
 
@@ -86,7 +132,27 @@
             @yield('content')
         </main>
     </div>
+    @push('styles')
+        <style>
+            .nav-link.active {
+                font-weight: bold;
+                border-bottom: 2px solid var(--bs-primary);
+                /* Garis bawah warna primary */
+            }
+
+            .navbar-brand {
+                margin-right: 1rem;
+                /* Tambahkan jarak antara logo dan tombol navigasi */
+            }
+
+            .nav-item .nav-link {
+                padding: 0.5rem 1rem;
+                /* Sesuaikan padding untuk elemen navigasi */
+            }
+        </style>
+    @endpush
     @stack('styles')
     @stack('scripts')
 </body>
+
 </html>
