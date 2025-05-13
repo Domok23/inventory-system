@@ -3,7 +3,16 @@
 @section('content')
 <div class="container">
     <h2>{{ isset($project) ? 'Edit Project' : 'Create Project' }}</h2>
-
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <strong>Whoops!</strong> There were some problems with your input.
+            <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
     <form method="POST" action="{{ isset($project) ? route('projects.update', $project) : route('projects.store') }}" enctype="multipart/form-data">
         @csrf
         @if(isset($project)) @method('PUT') @endif
@@ -11,11 +20,13 @@
         <div class="mb-3">
             <label for="name">Project Name</label>
             <input type="text" name="name" value="{{ old('name', $project->name ?? '') }}" class="form-control" required>
+            @error('name') <small class="text-danger">{{ $message }}</small> @enderror
         </div>
 
         <div class="mb-3">
             <label for="qty">Quantity</label>
             <input type="number" name="qty" value="{{ old('qty', $project->qty ?? '') }}" class="form-control" required>
+            @error('qty') <small class="text-danger">{{ $message }}</small> @enderror
         </div>
 
         <div class="mb-3">
@@ -25,11 +36,13 @@
                 <option value="costume" {{ old('department', $project->department ?? '') == 'costume' ? 'selected' : '' }}>Costume</option>
                 <option value="mascot&costume" {{ old('department', $project->department ?? '') == 'mascot&costume' ? 'selected' : '' }}>Mascot & Costume</option>
             </select>
+            @error('department') <small class="text-danger">{{ $message }}</small> @enderror
         </div>
 
         <div class="mb-3">
             <label for="deadline">Deadline (optional)</label>
             <input type="date" name="deadline" value="{{ old('deadline', isset($project) ? $project->deadline : '') }}" class="form-control">
+            @error('deadline') <small class="text-danger">{{ $message }}</small> @enderror
         </div>
 
         <div class="mb-3">
@@ -38,6 +51,7 @@
             @if(isset($project) && $project->img)
                 <img src="{{ asset('storage/' . $project->img) }}" width="100" class="mt-2">
             @endif
+            @error('img') <small class="text-danger">{{ $message }}</small> @enderror
         </div>
 
         <button type="submit" class="btn btn-success">{{ isset($project) ? 'Update' : 'Create' }}</button>

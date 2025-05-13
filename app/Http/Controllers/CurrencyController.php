@@ -16,7 +16,7 @@ class CurrencyController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:currencies,name',
             'exchange_rate' => 'nullable|numeric',
         ]);
 
@@ -33,7 +33,7 @@ class CurrencyController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:currencies,name,' . $id,
             'exchange_rate' => 'nullable|numeric',
         ]);
 

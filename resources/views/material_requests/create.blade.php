@@ -2,6 +2,19 @@
 
 @section('content')
 <div class="container">
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <strong>Whoops!</strong> There were some problems with your input.
+            <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
     <form method="POST" action="{{ route('material_requests.store') }}">
         @csrf
         <div class="mb-3">
@@ -29,14 +42,17 @@
                     <option value="{{ $proj->id }}">{{ $proj->name }}</option>
                 @endforeach
             </select>
+            @error('project_id') <small class="text-danger">{{ $message }}</small> @enderror
         </div>
         <div class="mb-3">
             <label>Quantity</label>
-            <input type="number" step="0.01" name="qty" class="form-control" required>
+            <input type="number" step="0.01" name="qty" class="form-control" value="{{ old('qty') }}" required>
+            @error('qty') <small class="text-danger">{{ $message }}</small> @enderror
         </div>
         <div class="mb-3">
             <label>Remark (Optional)</label>
-            <textarea name="remark" class="form-control"></textarea>
+            <textarea name="remark" class="form-control" value="{{ old('remark') }}"></textarea>
+            @error('remark') <small class="text-danger">{{ $message }}</small> @enderror
         </div>
         <button class="btn btn-success">Submit Request</button>
     </form>

@@ -33,7 +33,7 @@ class ProjectController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:projects,name',
             'qty' => 'required|integer|min:1',
             'img' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'deadline' => 'nullable|date',
@@ -51,13 +51,19 @@ class ProjectController extends Controller
 
     public function storeQuick(Request $request)
     {
+        $request->validate([
+            'name' => 'required|string|max:255|unique:projects,name',
+            'qty' => 'nullable|numeric|min:0',
+            'department' => 'required|string',
+        ]);
+
         Project::create([
             'name'       => $request->name,
             'qty'        => $request->qty,
             'department' => $request->department,
         ]);
 
-        return back()->with('success', 'Material added');
+        return back()->with('success', 'Project added');
     }
 
     public function json()
@@ -73,7 +79,7 @@ class ProjectController extends Controller
     public function update(Request $request, Project $project)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:projects,name,' . $project->id,
             'qty' => 'required|integer|min:1',
             'img' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'deadline' => 'nullable|date',

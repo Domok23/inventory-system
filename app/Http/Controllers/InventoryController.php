@@ -52,31 +52,42 @@ class InventoryController extends Controller
         foreach ($data as $index => $row) {
             if ($index === 0) continue; // Skip header row
 
-            $inventory = new Inventory();
-            $inventory->name = $row[0] ?? null;
-            $inventory->quantity = $row[1] ?? 0;
-            $inventory->unit = $row[2] ?? '-';
-            $inventory->price = $row[3] ?? 0;
-            $inventory->location = $row[4] ?? null;
-            $inventory->save();
+            $name = $row[0] ?? null;
+            $quantity = $row[1] ?? null;
+            $unit = $row[2] ?? null;
+            $price = $row[3] ?? null;
+            $location = $row[4] ?? null;
 
-            // Generate QR
-            $qrContent = $inventory->id . ' - ' . $inventory->name;
-            $qrFileName = 'qr_' . uniqid() . '.svg';
-            $qrImage = QrCode::format('svg')->size(200)->generate($qrContent);
-            Storage::disk('public')->put('qrcodes/' . $qrFileName, $qrImage);
+            if (!$name || !$quantity || !$unit || !$price) {
+                continue; // Skip invalid rows
+            }
 
-            $inventory->qrcode_path = 'qrcodes/' . $qrFileName;
-            $inventory->save();
+            // Cek jika inventory sudah ada
+            $existingInventory = Inventory::where('name', $name)->first();
+            if ($existingInventory) {
+                continue; // Skip jika sudah ada
+            }
+
+            // Simpan unit baru jika belum ada
+            $unitModel = Unit::firstOrCreate(['name' => $unit]);
+
+            // Simpan inventory
+            Inventory::create([
+                'name' => $name,
+                'quantity' => $quantity,
+                'unit' => $unitModel->name, // Gunakan nama unit dari tabel units
+                'price' => $price,
+                'location' => $location,
+            ]);
         }
 
-        return redirect()->route('inventory.index')->with('success', 'Import berhasil.');
+        return redirect()->route('inventory.index')->with('success', 'Inventory imported successfully!');
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:inventories,name',
             'quantity' => 'required|numeric|min:0',
             'unit' => 'required|string',
             'new_unit' => 'required_if:unit,__new__|nullable|string|max:255',
@@ -129,12 +140,19 @@ class InventoryController extends Controller
 
     public function storeQuick(Request $request)
     {
+        $request->validate([
+            'name' => 'required|string|max:255|unique:inventories,name',
+            'quantity' => 'required|numeric|min:0',
+            'unit' => 'required|string',
+        ]);
+
+        $unit = Unit::firstOrCreate(['name' => $request->unit]); // Cek atau buat unit baru
         Inventory::create([
             'name'     => $request->name,
             'quantity' => $request->quantity,
-            'unit'     => $request->unit,
-            'price'    => $request->price ?? 0, // kasih default 0 kalau tidak diisi
-            'status'   => 'pending', // jika kamu ingin tandai status awal
+            'unit'     => $unit->name, // Gunakan nama unit yang ada atau baru dibuat
+            'price'    => $request->price ?? 0,
+            'status'   => 'pending',
         ]);
 
         return back()->with('success', 'Material added');
@@ -156,7 +174,7 @@ class InventoryController extends Controller
     public function update(Request $request, Inventory $inventory)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:inventories,name,' . $inventory->id,
             'quantity' => 'required|numeric',
             'unit' => 'required|string',
             'new_unit' => 'required_if:unit,__new__|nullable|string|max:255',
@@ -181,7 +199,7 @@ class InventoryController extends Controller
         } else {
             $inventory->unit = $request->unit;
         }
-        
+
         // Upload image jika ada
         if ($request->hasFile('img')) {
             $imgPath = $request->file('img')->store('inventory_images', 'public');

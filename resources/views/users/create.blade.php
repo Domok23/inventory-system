@@ -3,7 +3,16 @@
 @section('content')
 <div class="container">
     <h2>Create New User</h2>
-
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <strong>Whoops!</strong> There were some problems with your input.
+            <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
     <form method="POST" action="{{ route('users.store') }}">
         @csrf
 
@@ -21,6 +30,7 @@
                     <i class="fas fa-eye"></i>
                 </button>
             </div>
+            @error('password') <small class="text-danger">{{ $message }}</small> @enderror
         </div>
 
         <div class="mb-3">

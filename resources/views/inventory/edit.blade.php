@@ -7,6 +7,16 @@
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <strong>Whoops!</strong> There were some problems with your input.
+            <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
     <form action="{{ route('inventory.update', $inventory->id) }}" method="POST" enctype="multipart/form-data">
         @csrf
@@ -16,12 +26,14 @@
         <div class="mb-3">
             <label for="name" class="form-label">Material Name</label>
             <input type="text" class="form-control" id="name" name="name" value="{{ old('name', $inventory->name) }}" required>
+            @error('name') <small class="text-danger">{{ $message }}</small> @enderror
         </div>
 
         <!-- Quantity -->
         <div class="mb-3">
             <label for="quantity" class="form-label">Quantity</label>
             <input type="number" class="form-control" id="quantity" name="quantity" value="{{ old('quantity', $inventory->quantity) }}" required>
+            @error('quantity') <small class="text-danger">{{ $message }}</small> @enderror
         </div>
 
         <!-- Unit -->
@@ -36,6 +48,7 @@
                 @endforeach
                 <option value="__new__" {{ old('unit') == '__new__' ? 'selected' : '' }}>Add New Unit</option>
             </select>
+            @error('unit') <small class="text-danger">{{ $message }}</small> @enderror
             <input type="text" id="unit-input" class="form-control mt-2 {{ old('unit') == '__new__' ? '' : 'd-none' }}" name="new_unit" placeholder="Enter new unit" value="{{ old('new_unit') }}">
         </div>
 
@@ -52,24 +65,29 @@
                 </option>
                 @endforeach
             </select>
+            @error('currency_id') <small class="text-danger">{{ $message }}</small> @enderror
         </div>
 
         <!-- Price -->
         <div class="mb-3">
             <label for="price" class="form-label">Price (optional)</label>
             <input type="number" class="form-control" step="0.01" id="price" name="price" value="{{ old('price', $inventory->price) }}">
+            @error('price') <small class="text-danger">{{ $message }}</small> @enderror
         </div>
 
         <!-- Location -->
         <div class="mb-3">
             <label for="location" class="form-label">Location (optional)</label>
             <input type="text" class="form-control" id="location" name="location" value="{{ old('location', $inventory->location) }}">
+            @error('location') <small class="text-danger">{{ $message }}</small> @enderror
         </div>
 
         <!-- Image -->
         <div class="mb-3">
             <label for="img" class="form-label">Upload Image (optional)</label>
-            <input class="form-control" type="file" id="img" name="img">
+            <input class="form-control" type="file" id="img" name="img" accept="image/*" value="{{ old('img') }}">
+            @error('img') <small class="text-danger">{{ $message }}</small> @enderror
+            <!-- Display current image if exists -->
             @if ($inventory->img)
                 <div class="mt-2">
                     <strong>Current Image:</strong><br>

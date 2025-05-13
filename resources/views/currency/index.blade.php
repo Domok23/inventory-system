@@ -3,6 +3,19 @@
 @section('content')
 <div class="container">
     <h4 class="mb-3">Currency List</h4>
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <strong>Whoops!</strong> There were some problems with your input.
+            <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
     <div class="mb-3">
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#currencyModal">
@@ -44,7 +57,6 @@
             @endforeach
         </tbody>
     </table>
-
 </div>
 
 <!-- Modal -->

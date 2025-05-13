@@ -3,6 +3,16 @@
 @section('content')
 <div class="container">
     <h3>Edit Material Request</h3>
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <strong>Whoops!</strong> There were some problems with your input.
+            <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
     <form action="{{ route('material_requests.update', $request->id) }}" method="POST">
         @csrf
         @method('PUT')
@@ -21,6 +31,7 @@
                     </option>
                 @endforeach
             </select>
+            @error('inventory_id') <small class="text-danger">{{ $message }}</small> @enderror
         </div>
 
         <div class="mb-3">
@@ -37,11 +48,13 @@
                     </option>
                 @endforeach
             </select>
+            @error('project_id') <small class="text-danger">{{ $message }}</small> @enderror
         </div>
 
         <div class="mb-3">
             <label>Quantity</label>
             <input type="number" step="0.01" name="qty" class="form-control" value="{{ $request->qty }}" required>
+            @error('qty') <small class="text-danger">{{ $message }}</small> @enderror
         </div>
 
         @if(auth()->user()->role === 'admin_logistic')
@@ -57,6 +70,7 @@
         <div class="mb-3">
             <label>Remark</label>
             <textarea name="remark" class="form-control" rows="1">{{ $request->remark }}</textarea>
+            @error('remark') <small class="text-danger">{{ $message }}</small> @enderror
         </div>
 
         <div class="mb-3">

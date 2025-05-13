@@ -9,6 +9,17 @@
         <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#addProjectModal">+ Quick Add Project</button>
     </div>
 
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <strong>Whoops!</strong> There were some problems with your input.
+            <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <form method="POST" action="{{ route('material_requests.bulk_store') }}">
         @csrf
         <div class="table-responsive">
@@ -26,29 +37,49 @@
                     @foreach(range(0, 0) as $index)
                         <tr>
                             <td>
-                                <select name="requests[{{ $index }}][project_id]" class="form-select select2 project-select" required>
+                                <select name="requests[{{ $index }}][project_id]" class="form-select select2 project-select" value="{{ old('requests.' . $index . '.project_id') }}" required>
                                     <option value="">Select Project</option>
                                     @foreach($projects as $project)
                                     <option value="{{ $project->id }}">{{ $project->name }}</option>
                                     @endforeach
                                 </select>
+                                @error('requests.' . $index . '.project_id')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
                             </td>
                             <td>
-                                <select name="requests[{{ $index }}][inventory_id]" class="form-select select2 material-select" required>
+                                <select name="requests[{{ $index }}][inventory_id]" class="form-select select2 material-select" value="{{ old('requests.' . $index . '.inventory_id') }}" required>
                                     <option value="">Select Material</option>
                                     @foreach($inventories as $inv)
                                         <option value="{{ $inv->id }}" data-unit="{{ $inv->unit }}">{{ $inv->name }}</option>
                                     @endforeach
                                 </select>
+                                @error('requests.' . $index . '.inventory_id')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
                             </td>
                             <td>
                                 <div class="input-group">
-                                    <input type="number" name="requests[{{ $index }}][qty]" class="form-control" step="0.01" required>
+                                    <input type="number" name="requests[{{ $index }}][qty]" class="form-control" step="0.01" value="{{ old('requests.' . $index . '.qty') }}" required>
                                     <span class="input-group-text unit-label">unit</span>
+                                    @error('requests.' . $index . '.qty')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
                                 </div>
                             </td>
                             <td>
-                                <textarea name="requests[{{ $index }}][remark]" class="form-control" rows="1"></textarea>
+                                <textarea name="requests[{{ $index }}][remark]" class="form-control" value="{{ old('requests.' . $index . '.remark') }}" rows="1"></textarea>
+                                @error('requests.' . $index . '.remark')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
                             </td>
                             <td>
                                 <button type="button" class="btn btn-danger btn-sm remove-row">Remove</button>
