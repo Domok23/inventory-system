@@ -30,8 +30,8 @@
 
 <body>
     <div id="app">
-        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm align-items-center">
-            <div class="container d-flex align-items-center">
+        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
+            <div class="container">
                 <a class="navbar-brand" style="font-weight: bold;" href="{{ url('/') }}">
                     {{ config('app.name', 'Laravel') }}
                 </a>
@@ -138,16 +138,6 @@
                 font-weight: bold;
                 border-bottom: 2px solid var(--bs-primary);
                 /* Garis bawah warna primary */
-            }
-
-            .navbar-brand {
-                margin-right: 1rem;
-                /* Tambahkan jarak antara logo dan tombol navigasi */
-            }
-
-            .nav-item .nav-link {
-                padding: 0.5rem 1rem;
-                /* Sesuaikan padding untuk elemen navigasi */
             }
         </style>
     @endpush
