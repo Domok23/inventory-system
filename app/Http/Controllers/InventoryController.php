@@ -262,53 +262,6 @@ class InventoryController extends Controller
         ]);
     }
 
-    public function moveForm(Request $request)
-    {
-        $name = $request->query('name');
-        $quantity = $request->query('quantity');
-
-        return view('inventory.move', compact('name', 'quantity'));
-    }
-
-    public function processMove(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string',
-            'quantity' => 'required|numeric|min:1',
-            'destination' => 'required|string',
-        ]);
-
-        // Process inventory movement logic here (e.g., update inventory location/quantity)
-
-        return redirect()->route('inventory.index')->with('success', 'Inventory moved successfully.');
-    }
-
-    public function goodsIn($id)
-    {
-        $inventory = Inventory::findOrFail($id);
-
-        // Tambahkan logika untuk menambah barang (Goods In)
-        $inventory->quantity += 1; // Contoh: Tambah 1 unit
-        $inventory->save();
-
-        return redirect()->route('inventory.scan', ['id' => $id])->with('success', 'Goods In processed successfully.');
-    }
-
-
-    public function goodsOut($id)
-    {
-        $inventory = Inventory::findOrFail($id);
-
-        // Tambahkan logika untuk mengurangi barang (Goods Out)
-        if ($inventory->quantity > 0) {
-            $inventory->quantity -= 1; // Contoh: Kurangi 1 unit
-            $inventory->save();
-            return redirect()->route('inventory.scan', ['id' => $id])->with('success', 'Goods Out processed successfully.');
-        }
-
-        return redirect()->route('inventory.scan', ['id' => $id])->with('error', 'Insufficient stock for Goods Out.');
-    }
-
     public function scan($id)
     {
         $inventory = Inventory::findOrFail($id);

@@ -40,9 +40,11 @@ Route::middleware(['auth'])->group(function () {
 
 Route::resource('inventory', InventoryController::class)->middleware('auth');
 Route::post('/inventory/import', [InventoryController::class, 'import'])->middleware('auth')->name('inventory.import');
-Route::get('/inventory/move', [InventoryController::class, 'moveForm'])->middleware('auth')->name('inventory.move');
-Route::post('/inventory/move', [InventoryController::class, 'processMove'])->middleware('auth')->name('inventory.move.process');
 Route::get('/inventory/scan/{id}', [InventoryController::class, 'scan'])->name('inventory.scan');
+Route::get('/qr-scan', function () {
+    return view('qr-scan');
+})->middleware('auth')->name('qr.scan');
+Route::post('/process-qr', [InventoryController::class, 'processQr'])->middleware('auth')->name('qr.process');
 
 Route::resource('projects', ProjectController::class)->middleware('auth');
 
@@ -68,9 +70,3 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/currencies', [CurrencyController::class, 'index'])->name('currencies.index');
     Route::get('/currencies/{id}/edit', [CurrencyController::class, 'edit'])->name('currencies.edit');
 });
-
-Route::get('/qr-scan', function () {
-    return view('qr-scan');
-})->middleware('auth')->name('qr.scan');
-
-Route::post('/process-qr', [InventoryController::class, 'processQr'])->middleware('auth')->name('qr.process');
