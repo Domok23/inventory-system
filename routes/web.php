@@ -1,14 +1,15 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\InventoryController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\ProjectController;
-use App\Http\Controllers\MaterialRequestController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\CurrencyController;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\CurrencyController;
+use App\Http\Controllers\GoodsOutController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\MaterialRequestController;
 
 
 /*
@@ -69,4 +70,9 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('currencies', CurrencyController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::get('/currencies', [CurrencyController::class, 'index'])->name('currencies.index');
     Route::get('/currencies/{id}/edit', [CurrencyController::class, 'edit'])->name('currencies.edit');
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::resource('goods_out', GoodsOutController::class)->only(['index', 'create', 'store']);
+    Route::get('/goods_out/create/{materialRequestId}', [GoodsOutController::class, 'create'])->name('goods_out.create');
 });

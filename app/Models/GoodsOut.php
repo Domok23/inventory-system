@@ -5,17 +5,25 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class MaterialRequest extends Model
+class GoodsOut extends Model
 {
+    use HasFactory;
+
+    protected $table = 'goods_out'; // Pastikan nama tabel sesuai dengan database
+
     protected $fillable = [
+        'material_request_id',
         'inventory_id',
         'project_id',
-        'qty',
         'requested_by',
         'department',
-        'status',
-        'remark',
+        'quantity',
     ];
+
+    public function materialRequest()
+    {
+        return $this->belongsTo(MaterialRequest::class);
+    }
 
     public function inventory()
     {
@@ -25,10 +33,5 @@ class MaterialRequest extends Model
     public function project()
     {
         return $this->belongsTo(Project::class);
-    }
-
-    public function goodsOuts()
-    {
-        return $this->hasMany(GoodsOut::class);
     }
 }

@@ -39,6 +39,7 @@
                                 <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
                                     <option value="pending" {{ $req->status === 'pending' ? 'selected' : '' }}>Pending</option>
                                     <option value="approved" {{ $req->status === 'approved' ? 'selected' : '' }}>Approved</option>
+                                    <option value="delivered" {{ $req->status === 'delivered' ? 'selected' : '' }}>Delivered</option>
                                 </select>
                             </form>
                         @else
@@ -52,6 +53,9 @@
                             @csrf @method('DELETE')
                             <button class="btn btn-sm btn-danger" onclick="return confirm('Hapus?')">Delete</button>
                         </form>
+                        @if($req->status === 'approved')
+                            <a href="{{ route('goods_out.create', $req->id) }}" class="btn btn-sm btn-success">Goods Out</a>
+                        @endif
                     </td>
                 </tr>
             @endforeach

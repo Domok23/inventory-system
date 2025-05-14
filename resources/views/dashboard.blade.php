@@ -10,6 +10,7 @@
             <div class="mt-4">
                 @if(in_array($user->role, ['super_admin', 'admin_logistic']))
                     <a href="{{ route('inventory.index') }}" class="btn btn-success mb-2">Go to Inventory</a>
+                    <a href="{{ route('goods_out.index') }}" class="btn btn-primary mb-2">Go to Goods Out</a>
                 @endif
 
                 @if(in_array($user->role, ['super_admin', 'admin_mascot', 'admin_costume']))

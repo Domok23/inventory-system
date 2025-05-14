@@ -22,4 +22,9 @@ class Inventory extends Model
     {
         return $this->belongsTo(Currency::class);
     }
+
+    public function goodsOuts()
+    {
+        return $this->hasMany(GoodsOut::class);
+    }
 }
