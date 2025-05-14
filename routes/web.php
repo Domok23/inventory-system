@@ -6,6 +6,9 @@ use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\MaterialRequestController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\CurrencyController;
+use App\Http\Controllers\HomeController;
 
 
 /*
@@ -18,6 +21,7 @@ use App\Http\Controllers\MaterialRequestController;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
 Auth::routes();
 
 Route::get('/', function () {
@@ -28,14 +32,17 @@ Route::get('/register', function () {
     return redirect('/login');
 });
 
-Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->middleware('auth')->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('auth')->name('dashboard');
 
 Route::middleware(['auth'])->group(function () {
-    Route::resource('users', \App\Http\Controllers\UserController::class);
+    Route::resource('users', UserController::class);
 });
 
 Route::resource('inventory', InventoryController::class)->middleware('auth');
 Route::post('/inventory/import', [InventoryController::class, 'import'])->middleware('auth')->name('inventory.import');
+Route::get('/inventory/move', [InventoryController::class, 'moveForm'])->middleware('auth')->name('inventory.move');
+Route::post('/inventory/move', [InventoryController::class, 'processMove'])->middleware('auth')->name('inventory.move.process');
+Route::get('/inventory/scan/{id}', [InventoryController::class, 'scan'])->name('inventory.scan');
 
 Route::resource('projects', ProjectController::class)->middleware('auth');
 
@@ -57,7 +64,13 @@ Route::get('/inventories/json', [InventoryController::class, 'json'])->name('inv
 Route::get('/projects/json', [ProjectController::class, 'json'])->name('projects.json');
 
 Route::middleware(['auth'])->group(function () {
-    Route::resource('currencies', \App\Http\Controllers\CurrencyController::class)->only(['index', 'store', 'update', 'destroy']);
-    Route::get('/currencies', [\App\Http\Controllers\CurrencyController::class, 'index'])->name('currencies.index');
-    Route::get('/currencies/{id}/edit', [\App\Http\Controllers\CurrencyController::class, 'edit'])->name('currencies.edit');
+    Route::resource('currencies', CurrencyController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::get('/currencies', [CurrencyController::class, 'index'])->name('currencies.index');
+    Route::get('/currencies/{id}/edit', [CurrencyController::class, 'edit'])->name('currencies.edit');
 });
+
+Route::get('/qr-scan', function () {
+    return view('qr-scan');
+})->middleware('auth')->name('qr.scan');
+
+Route::post('/process-qr', [InventoryController::class, 'processQr'])->middleware('auth')->name('qr.process');

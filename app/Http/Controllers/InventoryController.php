@@ -12,7 +12,6 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\InventoryImport;
 
-
 class InventoryController extends Controller
 {
     public function __construct()
@@ -52,32 +51,44 @@ class InventoryController extends Controller
         foreach ($data as $index => $row) {
             if ($index === 0) continue; // Skip header row
 
-            $name = $row[0] ?? null;
-            $quantity = $row[1] ?? null;
-            $unit = $row[2] ?? null;
-            $price = $row[3] ?? null;
-            $location = $row[4] ?? null;
+            $inventory = new Inventory();
+            $inventory->name = $row[0] ?? null;
+            $inventory->quantity = $row[1] ?? 0;
+            $inventory->unit = $row[2] ?? '-';
+            $inventory->price = $row[3] ?? 0;
+            $inventory->location = $row[4] ?? null;
+            $inventory->save(); // Simpan data inventory terlebih dahulu untuk mendapatkan ID
 
-            if (!$name || !$quantity || !$unit || !$price) {
+            if (!$inventory->name || !$inventory->quantity || !$inventory->unit || !$inventory->price) {
                 continue; // Skip invalid rows
             }
 
             // Cek jika inventory sudah ada
-            $existingInventory = Inventory::where('name', $name)->first();
+            $existingInventory = Inventory::where('name', $inventory->name)->first();
             if ($existingInventory) {
                 continue; // Skip jika sudah ada
             }
 
+            // **Point 5: Generate QR Code**
+            $qrContent = route('inventory.scan', ['id' => $inventory->id]); // Gunakan URL lengkap
+            $qrFileName = 'qr_' . uniqid() . '.svg';
+            $qrImage = QrCode::format('svg')->size(200)->generate($qrContent);
+            Storage::disk('public')->put('qrcodes/' . $qrFileName, $qrImage);
+
+            // Simpan path QR Code ke database
+            $inventory->qrcode_path = 'qrcodes/' . $qrFileName;
+            $inventory->save();
+
             // Simpan unit baru jika belum ada
-            $unitModel = Unit::firstOrCreate(['name' => $unit]);
+            $inventory->unitModel = Unit::firstOrCreate(['name' => $inventory->unit]);
 
             // Simpan inventory
             Inventory::create([
-                'name' => $name,
-                'quantity' => $quantity,
-                'unit' => $unitModel->name, // Gunakan nama unit dari tabel units
-                'price' => $price,
-                'location' => $location,
+                'name' => $inventory->name,
+                'quantity' => $inventory->quantity,
+                'unit' => $inventory->unitModel->name, // Gunakan nama unit dari tabel units
+                'price' => $inventory->price,
+                'location' => $inventory->location,
             ]);
         }
 
@@ -121,14 +132,10 @@ class InventoryController extends Controller
         // Simpan inventory terlebih dahulu
         $inventory->save();
 
-        // Generate konten QR
-        $qrContent = $inventory->id . ' - ' . $inventory->name;
+        // **Point 5: Generate QR Code**
+        $qrContent = route('inventory.scan', ['id' => $inventory->id]); // URL lengkap
         $qrFileName = 'qr_' . uniqid() . '.svg';
-
-        // Generate QR sebagai SVG
         $qrImage = QrCode::format('svg')->size(200)->generate($qrContent);
-
-        // Simpan file SVG ke storage
         Storage::disk('public')->put('qrcodes/' . $qrFileName, $qrImage);
 
         // Simpan path-nya ke database
@@ -232,5 +239,79 @@ class InventoryController extends Controller
         $inventory->delete();
 
         return redirect()->route('inventory.index')->with('success', 'Inventory deleted successfully.');
+    }
+
+
+    public function processQr(Request $request)
+    {
+        $qrData = $request->input('qrData');
+
+        // Cari inventory berdasarkan ID
+        $inventoryItem = Inventory::find($qrData);
+
+        if ($inventoryItem) {
+            return response()->json([
+                'success' => true,
+                'url' => route('inventory.scan', ['id' => $inventoryItem->id])
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Item not found'
+        ]);
+    }
+
+    public function moveForm(Request $request)
+    {
+        $name = $request->query('name');
+        $quantity = $request->query('quantity');
+
+        return view('inventory.move', compact('name', 'quantity'));
+    }
+
+    public function processMove(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string',
+            'quantity' => 'required|numeric|min:1',
+            'destination' => 'required|string',
+        ]);
+
+        // Process inventory movement logic here (e.g., update inventory location/quantity)
+
+        return redirect()->route('inventory.index')->with('success', 'Inventory moved successfully.');
+    }
+
+    public function goodsIn($id)
+    {
+        $inventory = Inventory::findOrFail($id);
+
+        // Tambahkan logika untuk menambah barang (Goods In)
+        $inventory->quantity += 1; // Contoh: Tambah 1 unit
+        $inventory->save();
+
+        return redirect()->route('inventory.scan', ['id' => $id])->with('success', 'Goods In processed successfully.');
+    }
+
+
+    public function goodsOut($id)
+    {
+        $inventory = Inventory::findOrFail($id);
+
+        // Tambahkan logika untuk mengurangi barang (Goods Out)
+        if ($inventory->quantity > 0) {
+            $inventory->quantity -= 1; // Contoh: Kurangi 1 unit
+            $inventory->save();
+            return redirect()->route('inventory.scan', ['id' => $id])->with('success', 'Goods Out processed successfully.');
+        }
+
+        return redirect()->route('inventory.scan', ['id' => $id])->with('error', 'Insufficient stock for Goods Out.');
+    }
+
+    public function scan($id)
+    {
+        $inventory = Inventory::findOrFail($id);
+        return view('inventory.scan', compact('inventory'));
     }
 }
