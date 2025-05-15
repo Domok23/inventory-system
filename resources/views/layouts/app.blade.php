@@ -69,6 +69,14 @@
                                     </a>
                                 </li>
                             @endif
+                            @if (in_array(auth()->user()->role, ['super_admin', 'admin_logistic']))
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->is('goods_out*') ? 'active text-primary' : '' }}"
+                                        href="{{ route('goods_out.index') }}">
+                                        Goods Out
+                                    </a>
+                                </li>
+                            @endif
                             @if (in_array(auth()->user()->role, ['super_admin', 'admin_finance']))
                                 <li class="nav-item">
                                     <a class="nav-link {{ request()->is('currencies*') ? 'active text-primary' : '' }}"

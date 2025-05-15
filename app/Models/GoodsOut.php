@@ -34,4 +34,9 @@ class GoodsOut extends Model
     {
         return $this->belongsTo(Project::class);
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'requested_by', 'username');
+    }
 }
