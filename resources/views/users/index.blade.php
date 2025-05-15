@@ -12,7 +12,7 @@
         </div>
     @endif
 
-    <table class="table table-bordered table-striped">
+    <table class="table table-bordered table-striped" id="datatable">
         <thead>
             <tr>
                 <th>ID</th>
@@ -29,9 +29,8 @@
                 <td>{{ ucwords(str_replace('_', ' ', $user->role)) }}</td>
                 <td>
                     <a href="{{ route('users.edit', $user->id) }}" class="btn btn-sm btn-warning">Edit</a>
-                    <form action="{{ route('users.destroy', $user->id) }}" method="POST" style="display:inline;">
-                        @csrf
-                        @method('DELETE')
+                    <form action="{{ route('users.destroy', $user->id) }}" method="POST" style="display:inline;" class="delete-form">
+                        @csrf @method('DELETE')
                         <button onclick="return confirm('Delete this user?')" class="btn btn-sm btn-danger">
                             Delete
                         </button>
@@ -43,3 +42,30 @@
     </table>
 </div>
 @endsection
+@push('scripts')
+    <script>
+        $(document).ready(function() {
+            $('#datatable').DataTable();
+
+            // SweetAlert for delete confirmation
+            $('.btn-delete').on('click', function(e) {
+                e.preventDefault();
+                let form = $(this).closest('form');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "This action cannot be undone!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, delete it!',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        });
+    </script>
+@endpush

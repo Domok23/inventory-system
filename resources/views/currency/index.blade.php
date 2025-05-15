@@ -27,7 +27,7 @@
         </button>
     </div>
 
-    <table class="table table-bordered" id="datatable">
+    <table class="table table-bordered table-striped" id="datatable">
         <thead>
             <tr>
                 <th>#</th>

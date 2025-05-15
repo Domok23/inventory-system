@@ -2,7 +2,7 @@
 @section('content')
 <div class="container">
     <h3>Material Usage</h3>
-    <table class="table table-bordered">
+    <table class="table table-bordered" id="datatable">
         <thead>
             <tr>
                 <th>Material</th>
@@ -22,3 +22,10 @@
     </table>
 </div>
 @endsection
+@push('scripts')
+    <script>
+        $(document).ready(function() {
+            $('#datatable').DataTable();
+        });
+    </script>
+@endpush

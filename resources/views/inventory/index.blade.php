@@ -44,7 +44,7 @@
             </div>
         @endif
 
-        <table class="table table-bordered">
+        <table class="table table-bordered" id="datatable">
             <thead>
                 <tr>
                     <th>Name</th>
@@ -82,12 +82,12 @@
                         </td>
                         <td>
                             <a href="{{ route('inventory.edit', $inventory->id) }}" class="btn btn-warning btn-sm">Edit</a>
+                            <a href="{{ route('inventory.scan', ['id' => $inventory->id]) }}" class="btn btn-sm btn-info">Detail</a>
                             <form action="{{ route('inventory.destroy', $inventory->id) }}" method="POST"
-                                style="display:inline;"
-                                onsubmit="return confirm('Are you sure you want to delete this item?');">
+                                style="display:inline;" class="delete-form">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                <button type="button" class="btn btn-sm btn-danger btn-delete">Delete</button>
                             </form>
                         </td>
                     </tr>
@@ -96,3 +96,31 @@
         </table>
     </div>
 @endsection
+@push('scripts')
+    <script>
+        $(document).ready(function() {
+            $('#datatable').DataTable();
+
+            // SweetAlert for delete confirmation
+            $('.btn-delete').on('click', function(e) {
+                e.preventDefault();
+                let form = $(this).closest('form');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "This action cannot be undone!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, delete it!',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        });
+    </script>
+@endpush
+

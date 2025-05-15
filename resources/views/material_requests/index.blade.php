@@ -12,7 +12,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
-        <table class="table table-bordered">
+        <table class="table table-bordered" id="datatable">
             <thead>
                 <tr>
                     <th>Material</th>
@@ -53,15 +53,15 @@
                         <td>
                             <a href="{{ route('material_requests.edit', $req->id) }}"
                                 class="btn btn-sm btn-primary">Edit</a>
-                            <form action="{{ route('material_requests.destroy', $req->id) }}" method="POST"
-                                style="display:inline;">
-                                @csrf @method('DELETE')
-                                <button class="btn btn-sm btn-danger" onclick="return confirm('Hapus?')">Delete</button>
-                            </form>
                             @if ($req->status === 'approved')
                                 <a href="{{ route('goods_out.create', $req->id) }}" class="btn btn-sm btn-success">Goods
                                     Out</a>
                             @endif
+                            <form action="{{ route('material_requests.destroy', $req->id) }}" method="POST"
+                                style="display:inline;" class="delete-form">
+                                @csrf @method('DELETE')
+                                <button type="button" class="btn btn-sm btn-danger btn-delete">Delete</button>
+                            </form>
                         </td>
                     </tr>
                 @endforeach
@@ -69,3 +69,30 @@
         </table>
     </div>
 @endsection
+@push('scripts')
+    <script>
+        $(document).ready(function() {
+            $('#datatable').DataTable();
+
+            // SweetAlert for delete confirmation
+            $('.btn-delete').on('click', function(e) {
+                e.preventDefault();
+                let form = $(this).closest('form');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "This action cannot be undone!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, delete it!',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        });
+    </script>
+@endpush
