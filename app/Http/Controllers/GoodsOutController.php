@@ -101,6 +101,15 @@ class GoodsOutController extends Controller
         $inventory = Inventory::findOrFail($request->inventory_id);
         $user = User::findOrFail($request->user_id);
 
+        // Tentukan department berdasarkan role user
+        $department = match ($user->role) {
+            'admin_mascot' => 'mascot',
+            'admin_costume' => 'costume',
+            'admin_logistic' => 'logistic',
+            'super_admin' => 'management',
+            default => 'general',
+        };
+
         // Validasi quantity
         if ($request->quantity > $inventory->quantity) {
             return back()->with('error', 'Quantity cannot exceed the available inventory.');
@@ -115,8 +124,7 @@ class GoodsOutController extends Controller
             'inventory_id' => $request->inventory_id,
             'project_id' => $request->project_id,
             'requested_by' => $user->username,
-            'department' => $user->department,
-            // 'department' => User::findOrFail($request->user_id)->role,
+            'department' => $department, // Pastikan department diteruskan
             'quantity' => $request->quantity,
         ]);
 
@@ -128,7 +136,17 @@ class GoodsOutController extends Controller
         $goodsOut = GoodsOut::with('inventory', 'project')->findOrFail($id);
         $inventories = Inventory::all();
         $projects = Project::all();
-        $users = User::all();
+        $users = User::all()->map(function ($user) {
+            $user->department = match ($user->role) {
+                'admin_mascot' => 'mascot',
+                'admin_costume' => 'costume',
+                'admin_logistic' => 'logistic',
+                'super_admin' => 'management',
+                default => 'general',
+            };
+            return $user;
+        });
+
         return view('goods_out.edit', compact('goodsOut', 'inventories', 'projects', 'users'));
     }
 

@@ -26,10 +26,12 @@
                         <td>{{ $goodsOut->inventory->name }}</td>
                         <td>{{ $goodsOut->quantity }} {{ $goodsOut->inventory->unit }}</td>
                         <td>{{ $goodsOut->project->name }}</td>
-                        <td>{{ $goodsOut->requested_by }}</td>
+                        <td>{{ $goodsOut->requested_by }} ({{ ucfirst($goodsOut->department) }})</td>
                         <td>
-                            <a href="{{ route('goods_out.create', $goodsOut->material_request_id) }}"
-                                class="btn btn-sm btn-primary">Process</a>
+                            @if ($goodsOut->material_request_id)
+                                <a href="{{ route('goods_out.create', $goodsOut->material_request_id) }}"
+                                    class="btn btn-sm btn-primary">Process</a>
+                            @endif
                             <a href="{{ route('goods_out.edit', $goodsOut->id) }}" class="btn btn-sm btn-warning">Edit</a>
                             <form action="{{ route('goods_out.destroy', $goodsOut->id) }}" method="POST"
                                 style="display:inline;">

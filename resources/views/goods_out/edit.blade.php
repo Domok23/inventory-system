@@ -45,15 +45,8 @@
                 <label>Requested By</label>
                 <select name="user_id" class="form-select select2" required>
                     @foreach ($users as $user)
-                        <option value="{{ $user->id }}"
-                            data-department="{{ match ($user->role) {
-                                'admin_mascot' => 'mascot',
-                                'admin_costume' => 'costume',
-                                'admin_logistic' => 'logistic',
-                                'super_admin' => 'management',
-                                default => 'general',
-                            } }}"
-                            {{ $user->id == $goodsOut->user_id ? 'selected' : '' }}>
+                        <option value="{{ $user->id }}" data-department="{{ $user->department }}"
+                            {{ $user->username == $goodsOut->requested_by ? 'selected' : '' }}>
                             {{ $user->username }}
                         </option>
                     @endforeach
@@ -61,15 +54,7 @@
             </div>
             <div class="mb-3">
                 <label>Department</label>
-                <input type="text" class="form-control" id="department"
-                    value="{{ match ($goodsOut->user->role) {
-                        'admin_mascot' => 'mascot',
-                        'admin_costume' => 'costume',
-                        'admin_logistic' => 'logistic',
-                        'super_admin' => 'management',
-                        default => 'general',
-                    } }}"
-                    disabled>
+                <input type="text" class="form-control" id="department" value="{{ $goodsOut->department }}" disabled>
             </div>
             <button type="submit" class="btn btn-success">Update</button>
             <a href="{{ route('goods_out.index') }}" class="btn btn-secondary">Cancel</a>
@@ -93,18 +78,14 @@
                 allowClear: true
             });
 
-            $(document).ready(function() {
-                $('.select2').select2({
-                    theme: 'bootstrap-5',
-                    placeholder: 'Select an option',
-                    allowClear: true
-                });
+            // Set initial department value
+            const initialDepartment = $('select[name="user_id"]').find(':selected').data('department');
+            $('#department').val(initialDepartment || '');
 
-                // Update department dynamically when user is selected
-                $('select[name="user_id"]').on('change', function() {
-                    const selectedDepartment = $(this).find(':selected').data('department');
-                    $('#department').val(selectedDepartment || '');
-                });
+            // Update department dynamically when user is selected
+            $('select[name="user_id"]').on('change', function() {
+                const selectedDepartment = $(this).find(':selected').data('department');
+                $('#department').val(selectedDepartment || '');
             });
         });
     </script>
