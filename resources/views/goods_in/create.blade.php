@@ -1,0 +1,40 @@
+@extends('layouts.app')
+
+@section('content')
+<div class="container">
+    <h3>Process Goods In</h3>
+    @if (session('error'))
+        <div class="alert alert-danger">{{ session('error') }}</div>
+    @endif
+    <form method="POST" action="{{ route('goods_in.store') }}">
+        @csrf
+        <input type="hidden" name="goods_out_id" value="{{ $goodsOut->id }}">
+        <div class="mb-3">
+            <label>Material</label>
+            <input type="text" class="form-control" value="{{ $goodsOut->inventory->name }}" disabled>
+        </div>
+        <div class="mb-3">
+            <label>Quantity Returned</label>
+            <input type="number" name="quantity" class="form-control" step="0.01" max="{{ $goodsOut->quantity }}" required>
+        </div>
+        <div class="mb-3">
+            <label>Unit</label>
+            <input type="text" class="form-control" value="{{ $goodsOut->inventory->unit }}" disabled>
+        </div>
+        <div class="mb-3">
+            <label>Project</label>
+            <input type="text" class="form-control" value="{{ $goodsOut->project->name }}" disabled>
+        </div>
+        <div class="mb-3">
+            <label>Returned At</label>
+            <input type="datetime-local" name="returned_at" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label>Returned By</label>
+            <input type="text" class="form-control" value="{{ auth()->user()->username }}" disabled>
+        </div>
+        <button type="submit" class="btn btn-success">Submit</button>
+        <a href="{{ route('goods_in.index') }}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+@endsection

@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\GoodsInController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\GoodsOutController;
@@ -77,4 +78,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/goods_out/create/{materialRequestId}', [GoodsOutController::class, 'create'])->name('goods_out.create');
     Route::get('/goods_out/create_independent', [GoodsOutController::class, 'createIndependent'])->name('goods_out.create_independent');
     Route::post('/goods_out/store_independent', [GoodsOutController::class, 'storeIndependent'])->name('goods_out.store_independent');
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/goods_in', [GoodsInController::class, 'index'])->name('goods_in.index');
+    Route::get('/goods_in/create', [GoodsInController::class, 'create'])->name('goods_in.create');
+    Route::post('/goods_in', [GoodsInController::class, 'store'])->name('goods_in.store');
+    Route::get('/goods_in/create/{goods_out_id}', [GoodsInController::class, 'create'])->name('goods_in.create');
 });

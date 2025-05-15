@@ -28,6 +28,12 @@
                         <td>{{ $goodsOut->project->name }}</td>
                         <td>{{ $goodsOut->requested_by }} ({{ ucfirst($goodsOut->department) }})</td>
                         <td>
+                            @if ($goodsOut->quantity > 0)
+                                <a href="{{ route('goods_in.create', ['goods_out_id' => $goodsOut->id]) }}"
+                                    class="btn btn-sm btn-success">
+                                    Goods In
+                                </a>
+                            @endif
                             @if ($goodsOut->material_request_id)
                                 <a href="{{ route('goods_out.create', $goodsOut->material_request_id) }}"
                                     class="btn btn-sm btn-primary">Process</a>
