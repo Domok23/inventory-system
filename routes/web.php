@@ -10,6 +10,7 @@ use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\GoodsOutController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\MaterialUsageController;
 use App\Http\Controllers\MaterialRequestController;
 
 
@@ -38,6 +39,7 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('aut
 
 Route::middleware(['auth'])->group(function () {
     Route::resource('users', UserController::class);
+    Route::get('/material-usage', [MaterialUsageController::class, 'index'])->name('material_usage.index');
 });
 
 Route::resource('inventory', InventoryController::class)->middleware('auth');

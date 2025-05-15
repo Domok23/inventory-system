@@ -7,6 +7,7 @@ use App\Models\Project;
 use App\Models\GoodsOut;
 use App\Models\Inventory;
 use Illuminate\Http\Request;
+use App\Helpers\MaterialUsageHelper;
 
 class GoodsInController extends Controller
 {
@@ -55,6 +56,8 @@ class GoodsInController extends Controller
             'returned_at' => $request->returned_at,
         ]);
 
+        MaterialUsageHelper::sync($inventory->id, $goodsOut->project_id);
+
         return redirect()->route('goods_in.index')->with('success', 'Goods In recorded successfully.');
     }
 
@@ -89,6 +92,8 @@ class GoodsInController extends Controller
             'returned_by' => auth()->user()->username,
             'returned_at' => $request->returned_at,
         ]);
+
+        MaterialUsageHelper::sync($request->inventory_id, $request->project_id);
 
         return redirect()->route('goods_in.index')->with('success', 'Goods In created successfully.');
     }

@@ -8,6 +8,7 @@ use App\Models\GoodsOut;
 use App\Models\Inventory;
 use Illuminate\Http\Request;
 use App\Models\MaterialRequest;
+use App\Helpers\MaterialUsageHelper;
 
 class GoodsOutController extends Controller
 {
@@ -53,7 +54,7 @@ class GoodsOutController extends Controller
         }
 
         // Simpan Goods Out
-        GoodsOut::create([
+        $goodsOut = GoodsOut::create([
             'material_request_id' => $materialRequest->id,
             'inventory_id' => $inventory->id,
             'project_id' => $materialRequest->project_id,
@@ -68,6 +69,8 @@ class GoodsOutController extends Controller
             $materialRequest->status = 'delivered';
         }
         $materialRequest->save();
+
+        MaterialUsageHelper::sync($goodsOut->inventory_id, $goodsOut->project_id);
 
         return redirect()->route('goods_out.index')->with('success', 'Goods Out processed successfully.');
     }
@@ -120,13 +123,15 @@ class GoodsOutController extends Controller
         $inventory->save();
 
         // Simpan Goods Out
-        GoodsOut::create([
+        $goodsOut = GoodsOut::create([
             'inventory_id' => $request->inventory_id,
             'project_id' => $request->project_id,
             'requested_by' => $user->username,
             'department' => $department, // Pastikan department diteruskan
             'quantity' => $request->quantity,
         ]);
+
+        MaterialUsageHelper::sync($goodsOut->inventory_id, $goodsOut->project_id);
 
         return redirect()->route('goods_out.index')->with('success', 'Goods Out created successfully.');
     }
@@ -196,6 +201,8 @@ class GoodsOutController extends Controller
             'quantity' => $request->quantity,
         ]);
 
+        MaterialUsageHelper::sync($goodsOut->inventory_id, $goodsOut->project_id);
+
         return redirect()->route('goods_out.index')->with('success', 'Goods Out updated successfully.');
     }
 
@@ -210,6 +217,8 @@ class GoodsOutController extends Controller
 
         // Hapus Goods Out
         $goodsOut->delete();
+
+        MaterialUsageHelper::sync($goodsOut->inventory_id, $goodsOut->project_id);
 
         return redirect()->route('goods_out.index')->with('success', 'Goods Out deleted successfully.');
     }

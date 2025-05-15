@@ -15,10 +15,13 @@
     <link rel="dns-prefetch" href="//fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-    <!-- Scripts -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" />
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bootstrap-4/bootstrap-4.min.css">
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Select2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <!-- jQuery (required by Select2) -->
@@ -61,7 +64,7 @@
                                     </a>
                                 </li>
                             @endif
-                            @if (in_array(auth()->user()->role, ['super_admin', 'admin_mascot', 'admin_costume', 'admin_logistic']))
+                            @if (in_array(auth()->user()->role, ['super_admin', 'admin_mascot', 'admin_costume', 'admin_logistic', 'admin_finance']))
                                 <li class="nav-item">
                                     <a class="nav-link {{ request()->is('material_requests*') ? 'active text-primary' : '' }}"
                                         href="{{ route('material_requests.index') }}">
@@ -72,6 +75,12 @@
                                     <a class="nav-link {{ request()->is('goods_in*') ? 'active text-primary' : '' }}"
                                         href="{{ route('goods_in.index') }}">
                                         Goods In
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->is('material-usage*') ? 'active text-primary' : '' }}"
+                                        href="{{ route('material_usage.index') }}">
+                                        Material Usage
                                     </a>
                                 </li>
                             @endif
@@ -156,6 +165,13 @@
         </style>
     @endpush
     @stack('styles')
+    <!-- jQuery (required by DataTables & SweetAlert) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @stack('scripts')
 </body>
 

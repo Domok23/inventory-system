@@ -7,7 +7,7 @@
     @if (session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
-    <table class="table table-bordered">
+    <table class="table table-bordered" id="datatable">
         <thead>
             <tr>
                 <th>Material</th>
@@ -31,3 +31,30 @@
     </table>
 </div>
 @endsection
+@push('scripts')
+    <script>
+        $(document).ready(function() {
+            $('#datatable').DataTable();
+
+            // SweetAlert for delete confirmation
+            $('.btn-delete').on('click', function(e) {
+                e.preventDefault();
+                let form = $(this).closest('form');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "This action cannot be undone!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, delete it!',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        });
+    </script>
+@endpush
