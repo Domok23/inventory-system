@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\GoodsIn;
+use App\Models\Project;
 use App\Models\GoodsOut;
 use App\Models\Inventory;
 use Illuminate\Http\Request;
@@ -55,5 +56,40 @@ class GoodsInController extends Controller
         ]);
 
         return redirect()->route('goods_in.index')->with('success', 'Goods In recorded successfully.');
+    }
+
+    public function createIndependent()
+    {
+        $inventories = Inventory::all();
+        $projects = Project::all();
+        return view('goods_in.create_independent', compact('inventories', 'projects'));
+    }
+
+    public function storeIndependent(Request $request)
+    {
+        $request->validate([
+            'inventory_id' => 'required|exists:inventories,id',
+            'project_id' => 'required|exists:projects,id',
+            'quantity' => 'required|numeric|min:0.01',
+            'returned_at' => 'required',
+        ]);
+
+        $inventory = Inventory::findOrFail($request->inventory_id);
+
+        // Tambahkan stok ke inventory
+        $inventory->quantity += $request->quantity;
+        $inventory->save();
+
+        // Simpan Goods In
+        GoodsIn::create([
+            'goods_out_id' => null, // Tidak terkait dengan Goods Out
+            'inventory_id' => $request->inventory_id,
+            'project_id' => $request->project_id,
+            'quantity' => $request->quantity,
+            'returned_by' => auth()->user()->username,
+            'returned_at' => $request->returned_at,
+        ]);
+
+        return redirect()->route('goods_in.index')->with('success', 'Goods In created successfully.');
     }
 }

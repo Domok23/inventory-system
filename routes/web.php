@@ -85,4 +85,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/goods_in/create', [GoodsInController::class, 'create'])->name('goods_in.create');
     Route::post('/goods_in', [GoodsInController::class, 'store'])->name('goods_in.store');
     Route::get('/goods_in/create/{goods_out_id}', [GoodsInController::class, 'create'])->name('goods_in.create');
+    Route::get('/goods_in/create_independent', [GoodsInController::class, 'createIndependent'])->name('goods_in.create_independent');
+    Route::post('/goods_in/store_independent', [GoodsInController::class, 'storeIndependent'])->name('goods_in.store_independent');
 });

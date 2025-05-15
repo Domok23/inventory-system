@@ -68,6 +68,12 @@
                                         Material Requests
                                     </a>
                                 </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->is('goods_in*') ? 'active text-primary' : '' }}"
+                                        href="{{ route('goods_in.index') }}">
+                                        Goods In
+                                    </a>
+                                </li>
                             @endif
                             @if (in_array(auth()->user()->role, ['super_admin', 'admin_logistic']))
                                 <li class="nav-item">

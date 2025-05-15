@@ -3,6 +3,7 @@
 @section('content')
 <div class="container">
     <h3>Goods In Records</h3>
+    <a href="{{ route('goods_in.create_independent') }}" class="btn btn-primary mb-3">+ Create Goods In</a>
     @if (session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif

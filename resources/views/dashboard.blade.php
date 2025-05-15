@@ -19,6 +19,7 @@
 
                 @if(in_array($user->role, ['super_admin', 'admin_mascot', 'admin_costume', 'admin_logistic']))
                     <a href="{{ route('material_requests.index') }}" class="btn btn-danger mb-2">Go to Material Requests</a>
+                    <a href="{{ route('goods_in.index') }}" class="btn btn-primary mb-2">Go to Goods In</a>
                 @endif
 
                 @if(in_array($user->role, ['super_admin', 'admin_finance']))
