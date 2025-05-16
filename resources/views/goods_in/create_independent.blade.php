@@ -13,17 +13,18 @@
                 <select name="inventory_id" class="form-select select2" required>
                     <option value="">Select Material</option>
                     @foreach ($inventories as $inventory)
-                        <option value="{{ $inventory->id }}">{{ $inventory->name }}</option>
+                        <option value="{{ $inventory->id }}" data-unit="{{ $inventory->unit }}">
+                            {{ $inventory->name }}
+                        </option>
                     @endforeach
                 </select>
             </div>
             <div class="mb-3">
                 <label>Quantity</label>
-                <input type="number" name="quantity" class="form-control" step="0.01" required>
-            </div>
-            <div class="mb-3">
-                <label>Unit</label>
-                <input type="text" class="form-control" value="" id="unit" disabled>
+                <div class="input-group">
+                    <input type="number" name="quantity" class="form-control" step="0.01" required>
+                    <span class="input-group-text unit-label">unit</span>
+                </div>
             </div>
             <div class="mb-3">
                 <label>Project</label>
@@ -66,15 +67,16 @@
             }).on('select2:open', function() {
                 setTimeout(function() {
                     document.querySelector('.select2-container--open .select2-search__field')
-                    .focus();
+                        .focus();
                 }, 100);
             });
 
-            // Update unit dynamically when material is selected
+            // Update unit label dynamically when material is selected
             $('select[name="inventory_id"]').on('change', function() {
                 const selectedUnit = $(this).find(':selected').data('unit');
-                $('#unit').val(selectedUnit || '');
+                $('.unit-label').text(selectedUnit || 'unit');
             });
+            $('select[name="inventory_id"]').trigger('change');
         });
     </script>
 @endpush

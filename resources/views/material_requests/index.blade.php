@@ -16,8 +16,8 @@
             <thead>
                 <tr>
                     <th style="width: 20px;" class="text-center align-middle">#</th>
-                    <th>Material</th>
                     <th>Project</th>
+                    <th>Material</th>
                     <th>Quantity</th>
                     <th>Requested By</th>
                     <th>Status</th>
@@ -30,8 +30,8 @@
                 @foreach ($requests as $req)
                     <tr>
                         <td class="text-center align-middle">{{ $loop->iteration }}</td>
-                        <td class="align-middle">{{ $req->inventory->name }}</td>
                         <td class="align-middle">{{ $req->project->name }}</td>
+                        <td class="align-middle">{{ $req->inventory->name }}</td>
                         <td class="align-middle">{{ $req->qty }} {{ $req->inventory->unit }}</td>
                         <td class="align-middle">{{ $req->requested_by }} ({{ ucfirst($req->department) }})</td>
                         <td class="align-middle">
@@ -77,7 +77,6 @@
     <script>
         $(document).ready(function() {
             $('#datatable').DataTable();
-
             // SweetAlert for delete confirmation
             $('.btn-delete').on('click', function(e) {
                 e.preventDefault();

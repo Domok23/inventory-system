@@ -17,27 +17,6 @@
         <form action="{{ route('material_requests.update', $request->id) }}" method="POST">
             @csrf
             @method('PUT')
-
-            <div class="mb-3">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <label>Material</label>
-                    <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
-                        data-bs-target="#addMaterialModal">
-                        + Quick Add Material
-                    </button>
-                </div>
-                <select name="inventory_id" class="form-select select2" required>
-                    @foreach ($inventories as $inv)
-                        <option value="{{ $inv->id }}" {{ $inv->id == $request->inventory_id ? 'selected' : '' }}>
-                            {{ $inv->name }}
-                        </option>
-                    @endforeach
-                </select>
-                @error('inventory_id')
-                    <small class="text-danger">{{ $message }}</small>
-                @enderror
-            </div>
-
             <div class="mb-3">
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <label>Project</label>
@@ -59,9 +38,35 @@
             </div>
 
             <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <label>Material</label>
+                    <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
+                        data-bs-target="#addMaterialModal">
+                        + Quick Add Material
+                    </button>
+                </div>
+                <select name="inventory_id" class="form-select select2" required>
+                    @foreach ($inventories as $inv)
+                        <option value="{{ $inv->id }}" data-unit="{{ $inv->unit }}"
+                            {{ $request->inv_id == $inv->id ? 'selected' : '' }}>
+                            {{ $inv->name }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('inventory_id')
+                    <small class="text-danger">{{ $message }}</small>
+                @enderror
+            </div>
+
+            <div class="mb-3">
                 <label>Quantity</label>
-                <input type="number" step="0.01" name="qty" class="form-control" value="{{ $request->qty }}"
-                    required>
+                <div class="input-group">
+                    <input type="number" name="qty" class="form-control" value="{{ $request->qty }}" step="0.01"
+                        required>
+                    <span class="input-group-text unit-label">
+                        {{ $request->invr ? $request->inv->unit : 'unit' }}
+                    </span>
+                </div>
                 @error('qty')
                     <small class="text-danger">{{ $message }}</small>
                 @enderror
@@ -238,6 +243,14 @@
             function refreshProjectSelect() {
                 refreshSelect('#project_id', "{{ route('projects.json') }}");
             }
+
+            // Update unit label dynamically when material is selected
+            $('select[name="inventory_id"]').on('change', function() {
+                const selectedUnit = $(this).find(':selected').data('unit');
+                $('.unit-label').text(selectedUnit || 'unit');
+            });
+            // Trigger saat halaman load jika sudah ada value terpilih
+            $('select[name="inventory_id"]').trigger('change');
         });
     </script>
 @endpush

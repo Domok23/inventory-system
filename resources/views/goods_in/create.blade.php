@@ -15,12 +15,11 @@
             </div>
             <div class="mb-3">
                 <label>Quantity Returned</label>
-                <input type="number" name="quantity" class="form-control" step="0.01" max="{{ $goodsOut->quantity }}"
-                    required>
-            </div>
-            <div class="mb-3">
-                <label>Unit</label>
-                <input type="text" class="form-control" value="{{ $goodsOut->inventory->unit }}" disabled>
+                <div class="input-group">
+                    <input type="number" name="quantity" class="form-control" step="0.01"
+                        max="{{ $goodsOut->quantity }}" required>
+                    <span class="input-group-text unit-label">{{ $goodsOut->inventory->unit }}</span>
+                </div>
             </div>
             <div class="mb-3">
                 <label>Project</label>
