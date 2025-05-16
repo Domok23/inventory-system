@@ -45,14 +45,16 @@
         </div>
     </div>
     @if (session('success'))
-        <div class="alert alert-success mt-3">
+        <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
             {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
 
     @if (session('error'))
         <div class="alert alert-danger mt-3">
             {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
 @endsection

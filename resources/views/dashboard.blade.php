@@ -4,7 +4,7 @@
 <div class="container mt-4">
     <div class="card">
         <div class="card-body">
-            <h3 class="card-title">Welcome, {{ $user->username }}</h3>
+            <h3 class="card-title">Welcome, {{ ucwords($user->username) }}</h3>
             <p class="card-text">You are logged in as: <strong>{{ ucwords(str_replace('_', ' ', $user->role)) }}</strong></p>
 
             <div class="mt-4">

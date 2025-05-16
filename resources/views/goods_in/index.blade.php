@@ -5,7 +5,10 @@
         <h3>Goods In Records</h3>
         <a href="{{ route('goods_in.create_independent') }}" class="btn btn-primary mb-3">+ Create Goods In</a>
         @if (session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
         @endif
         <table class="table table-hover table-bordered" id="datatable">
             <thead>
