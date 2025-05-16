@@ -2,9 +2,10 @@
 @section('content')
 <div class="container">
     <h3>Material Usage</h3>
-    <table class="table table-bordered" id="datatable">
+    <table class="table table-bordered table-hover" id="datatable">
         <thead>
             <tr>
+                <th style="width: 20px;" class="text-center align-middle">#</th>
                 <th>Material</th>
                 <th>Project</th>
                 <th>Used Quantity</th>
@@ -13,9 +14,10 @@
         <tbody>
             @foreach ($usages as $usage)
                 <tr>
-                    <td>{{ $usage->inventory->name }}</td>
-                    <td>{{ $usage->project->name }}</td>
-                    <td>{{ $usage->used_quantity }} {{ $usage->inventory->unit }}</td>
+                    <td class="text-center align-middle">{{ $loop->iteration }}</td>
+                    <td class="align-middle">{{ $usage->inventory->name }}</td>
+                    <td class="align-middle">{{ $usage->project->name }}</td>
+                    <td class="align-middle" style="font-weight: bold;">{{ $usage->used_quantity }} {{ $usage->inventory->unit }}</td>
                 </tr>
             @endforeach
         </tbody>

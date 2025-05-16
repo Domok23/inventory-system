@@ -7,9 +7,10 @@
     @if (session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
-    <table class="table table-bordered" id="datatable">
+    <table class="table table-hover table-bordered" id="datatable">
         <thead>
             <tr>
+                <th style="width: 20px;" class="text-center align-middle">#</th>
                 <th>Material</th>
                 <th>Quantity Returned</th>
                 <th>Project</th>
@@ -20,11 +21,12 @@
         <tbody>
             @foreach ($goodsIns as $goodsIn)
                 <tr>
-                    <td>{{ $goodsIn->goodsOut->inventory->name }}</td>
-                    <td>{{ $goodsIn->quantity }} {{ $goodsIn->goodsOut->inventory->unit }}</td>
-                    <td>{{ $goodsIn->goodsOut->project->name }}</td>
-                    <td>{{ $goodsIn->returned_by }}</td>
-                    <td>{{ $goodsIn->returned_at }}</td>
+                    <td class="text-center align-middle">{{ $loop->iteration }}</td>
+                    <td class="align-middle">{{ $goodsIn->goodsOut->inventory->name }}</td>
+                    <td class="align-middle">{{ $goodsIn->quantity }} {{ $goodsIn->goodsOut->inventory->unit }}</td>
+                    <td class="align-middle">{{ $goodsIn->goodsOut->project->name }}</td>
+                    <td class="align-middle">{{ $goodsIn->returned_by }}</td>
+                    <td class="align-middle">{{ $goodsIn->returned_at }}</td>
                 </tr>
             @endforeach
         </tbody>

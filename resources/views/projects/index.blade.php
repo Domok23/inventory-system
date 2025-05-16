@@ -12,9 +12,10 @@
         </div>
     @endif
 
-    <table class="table table-bordered" id="datatable">
+    <table class="table table-bordered table-hover" id="datatable">
         <thead>
             <tr>
+                <th style="width: 20px;" class="text-center align-middle">#</th>
                 <th>Name</th>
                 <th>Qty</th>
                 <th>Department</th>
@@ -26,11 +27,13 @@
         <tbody>
         @forelse($projects as $project)
             <tr>
-                <td>{{ $project->name }}</td>
-                <td>{{ $project->qty }}</td>
-                <td>{{ $project->department }}</td>
-                <td>{{ $project->deadline }}</td>
-                <td>
+                <td class="text-center align-middle">{{ $loop->iteration }}</td>
+                <td class="align-middle">{{ $project->name }}</td>
+                <td class="align-middle">{{ $project->qty }}</td>
+                <td class="align-middle">{{ $project->department }}</td>
+                <td class="align-middle">{{ $project->deadline }}</td>
+                <td class="align-middle">
+                    {{-- Display the image if it exists --}}
                     @if($project->img)
                         <img src="{{ asset('storage/' . $project->img) }}" width="50">
                     @endif

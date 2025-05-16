@@ -27,10 +27,10 @@
         </button>
     </div>
 
-    <table class="table table-bordered table-striped" id="datatable">
+    <table class="table table-hover table-bordered table-striped" id="datatable">
         <thead>
             <tr>
-                <th>#</th>
+                <th style="width: 20px;" class="text-center align-middle">#</th>
                 <th>Name</th>
                 <th>Exchange Rate</th>
                 <th>Action</th>
@@ -39,9 +39,9 @@
         <tbody>
             @foreach($currencies as $currency)
             <tr>
-                <td>{{ $loop->iteration }}</td>
-                <td>{{ $currency->name }}</td>
-                <td>{{ number_format($currency->exchange_rate, 2, ',', '.') }}</td>
+                <td class="text-center align-middle">{{ $loop->iteration }}</td>
+                <td class="align-middle">{{ $currency->name }}</td>
+                <td class="align-middle">{{ number_format($currency->exchange_rate, 2, ',', '.') }}</td>
                 <td>
                     <button type="button" class="btn btn-sm btn-primary edit-currency-btn"
                             data-id="{{ $currency->id }}"

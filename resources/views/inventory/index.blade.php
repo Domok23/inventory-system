@@ -44,9 +44,10 @@
             </div>
         @endif
 
-        <table class="table table-bordered" id="datatable">
+        <table class="table table-hover table-bordered" id="datatable">
             <thead>
                 <tr>
+                    <th style="width: 20px;" class="text-center align-middle">#</th>
                     <th>Name</th>
                     <th>Quantity</th>
                     <th>Unit Price</th>
@@ -59,21 +60,22 @@
             <tbody>
                 @foreach ($inventories as $inventory)
                     <tr>
-                        <td>{{ $inventory->name }}</td>
-                        <td>{{ $inventory->quantity }} {{ $inventory->unit }}</td>
-                        <td>
+                        <td class="text-center align-middle">{{ $loop->iteration }}</td>
+                        <td class="align-middle">{{ $inventory->name }}</td>
+                        <td class="align-middle">{{ $inventory->quantity }} {{ $inventory->unit }}</td>
+                        <td class="align-middle">
                             @if ($inventory->currency)
                                 {{ $inventory->currency->name }}
                             @endif
                             {{ number_format($inventory->price, 2, ',', '.') }}
                         </td>
-                        <td>{{ $inventory->location }}</td>
-                        <td>
+                        <td class="align-middle">{{ $inventory->location }}</td>
+                        <td class="align-middle">
                             @if ($inventory->qrcode_path)
                                 <img src="{{ asset('storage/' . $inventory->qrcode_path) }}" alt="QR Code" width="80">
                             @endif
                         </td>
-                        <td>
+                        <td class="align-middle">
                             @if ($inventory->img)
                                 <img src="{{ asset('storage/' . $inventory->img) }}" alt="Image" width="100">
                             @else

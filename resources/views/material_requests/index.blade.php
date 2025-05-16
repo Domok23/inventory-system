@@ -12,9 +12,10 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
-        <table class="table table-bordered" id="datatable">
+        <table class="table table-bordered table-hover" id="datatable">
             <thead>
                 <tr>
+                    <th style="width: 20px;" class="text-center align-middle">#</th>
                     <th>Material</th>
                     <th>Project</th>
                     <th>Quantity</th>
@@ -27,11 +28,12 @@
             <tbody>
                 @foreach ($requests as $req)
                     <tr>
-                        <td>{{ $req->inventory->name }}</td>
-                        <td>{{ $req->project->name }}</td>
-                        <td>{{ $req->qty }} {{ $req->inventory->unit }}</td>
-                        <td>{{ $req->requested_by }} ({{ ucfirst($req->department) }})</td>
-                        <td>
+                        <td class="text-center align-middle">{{ $loop->iteration }}</td>
+                        <td class="align-middle">{{ $req->inventory->name }}</td>
+                        <td class="align-middle">{{ $req->project->name }}</td>
+                        <td class="align-middle">{{ $req->qty }} {{ $req->inventory->unit }}</td>
+                        <td class="align-middle">{{ $req->requested_by }} ({{ ucfirst($req->department) }})</td>
+                        <td class="align-middle">
                             @if (in_array(auth()->user()->role, ['admin_logistic', 'super_admin']))
                                 <form method="POST" action="{{ route('material_requests.update', $req->id) }}">
                                     @csrf
@@ -49,7 +51,7 @@
                                 {{ ucfirst($req->status) }}
                             @endif
                         </td>
-                        <td>{{ $req->remark }}</td>
+                        <td class="align-middle">{{ $req->remark }}</td>
                         <td>
                             <a href="{{ route('material_requests.edit', $req->id) }}"
                                 class="btn btn-sm btn-primary">Edit</a>

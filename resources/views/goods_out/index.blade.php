@@ -10,9 +10,10 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
-        <table class="table table-bordered" id="datatable">
+        <table class="table table-bordered table-hover" id="datatable">
             <thead>
                 <tr>
+                    <th style="width: 20px;" class="text-center align-middle">#</th>
                     <th>Material</th>
                     <th>Quantity</th>
                     <th>For Project</th>
@@ -23,10 +24,11 @@
             <tbody>
                 @foreach ($goodsOuts as $goodsOut)
                     <tr>
-                        <td>{{ $goodsOut->inventory->name }}</td>
-                        <td>{{ $goodsOut->quantity }} {{ $goodsOut->inventory->unit }}</td>
-                        <td>{{ $goodsOut->project->name }}</td>
-                        <td>{{ $goodsOut->requested_by }} ({{ ucfirst($goodsOut->department) }})</td>
+                        <td class="text-center align-middle">{{ $loop->iteration }}</td>
+                        <td class="align-middle">{{ $goodsOut->inventory->name }}</td>
+                        <td class="align-middle">{{ $goodsOut->quantity }} {{ $goodsOut->inventory->unit }}</td>
+                        <td class="align-middle">{{ $goodsOut->project->name }}</td>
+                        <td class="align-middle">{{ $goodsOut->requested_by }} ({{ ucfirst($goodsOut->department) }})</td>
                         <td>
                             @if ($goodsOut->quantity > 0)
                                 <a href="{{ route('goods_in.create', ['goods_out_id' => $goodsOut->id]) }}"

@@ -12,21 +12,21 @@
         </div>
     @endif
 
-    <table class="table table-bordered table-striped" id="datatable">
-        <thead>
+    <table class="table table-bordered table-striped table-hover" id="datatable">
+        <thead class="table-primary">
             <tr>
-                <th>ID</th>
-                <th>Username</th>
-                <th>Role</th>
-                <th>Actions</th>
+                <th style="width: 20px;" class="text-center align-middle">ID</th>
+                <th class="text-center align-middle">Username</th>
+                <th class="text-center align-middle">Role</th>
+                <th class="text-center align-middle">Actions</th>
             </tr>
         </thead>
         <tbody>
         @foreach($users as $user)
             <tr>
-                <td>{{ $user->id }}</td>
-                <td>{{ $user->username }}</td>
-                <td>{{ ucwords(str_replace('_', ' ', $user->role)) }}</td>
+                <td class="text-center align-middle">{{ $user->id }}</td>
+                <td class="align-middle">{{ $user->username }}</td>
+                <td class="align-middle">{{ ucwords(str_replace('_', ' ', $user->role)) }}</td>
                 <td>
                     <a href="{{ route('users.edit', $user->id) }}" class="btn btn-sm btn-warning">Edit</a>
                     <form action="{{ route('users.destroy', $user->id) }}" method="POST" style="display:inline;" class="delete-form">
