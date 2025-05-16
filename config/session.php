@@ -31,9 +31,8 @@ return [
     |
     */
 
-    'lifetime' => env('SESSION_LIFETIME', 120),
-
-    'expire_on_close' => false,
+    'lifetime' => 525600, // dalam menit, misal 1 tahun (525600 menit)
+    'expire_on_close' => false, // session tetap ada meski browser ditutup
 
     /*
     |--------------------------------------------------------------------------

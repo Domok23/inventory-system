@@ -33,7 +33,7 @@
                         <td class="align-middle">{{ $req->project->name }}</td>
                         <td class="align-middle">{{ $req->inventory->name }}</td>
                         <td class="align-middle">{{ $req->qty }} {{ $req->inventory->unit }}</td>
-                        <td class="align-middle">{{ $req->requested_by }} ({{ ucfirst($req->department) }})</td>
+                        <td class="align-middle">{{ ucfirst($req->requested_by) }} ({{ ucfirst($req->department) }})</td>
                         <td class="align-middle">
                             @if (in_array(auth()->user()->role, ['admin_logistic', 'super_admin']))
                                 <form method="POST" action="{{ route('material_requests.update', $req->id) }}">

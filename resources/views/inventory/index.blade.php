@@ -84,7 +84,7 @@
                         </td>
                         <td>
                             <a href="{{ route('inventory.edit', $inventory->id) }}" class="btn btn-warning btn-sm">Edit</a>
-                            <a href="{{ route('inventory.scan', ['id' => $inventory->id]) }}" class="btn btn-sm btn-info">Detail</a>
+                            <a href="{{ route('inventory.detail', ['id' => $inventory->id]) }}" class="btn btn-sm btn-info">Detail</a>
                             <form action="{{ route('inventory.destroy', $inventory->id) }}" method="POST"
                                 style="display:inline;" class="delete-form">
                                 @csrf

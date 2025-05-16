@@ -28,7 +28,7 @@
                         <td class="align-middle">{{ $goodsOut->inventory->name }}</td>
                         <td class="align-middle">{{ $goodsOut->quantity }} {{ $goodsOut->inventory->unit }}</td>
                         <td class="align-middle">{{ $goodsOut->project->name }}</td>
-                        <td class="align-middle">{{ $goodsOut->requested_by }} ({{ ucfirst($goodsOut->department) }})</td>
+                        <td class="align-middle">{{ ucfirst($goodsOut->requested_by) }} ({{ ucfirst($goodsOut->department) }})</td>
                         <td>
                             @if ($goodsOut->quantity > 0)
                                 <a href="{{ route('goods_in.create', ['goods_out_id' => $goodsOut->id]) }}"

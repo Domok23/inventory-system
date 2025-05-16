@@ -46,7 +46,7 @@ Route::middleware(['auth'])->group(function () {
 
 Route::resource('inventory', InventoryController::class)->middleware('auth');
 Route::post('/inventory/import', [InventoryController::class, 'import'])->middleware('auth')->name('inventory.import');
-Route::get('/inventory/scan/{id}', [InventoryController::class, 'scan'])->name('inventory.scan');
+Route::get('/inventory/detail/{id}', [InventoryController::class, 'detail'])->name('inventory.detail');
 Route::get('/qr-scan', function () {
     return view('qr-scan');
 })->middleware('auth')->name('qr.scan');

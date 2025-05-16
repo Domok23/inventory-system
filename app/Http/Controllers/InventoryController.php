@@ -72,7 +72,7 @@ class InventoryController extends Controller
             }
 
             // **Point 5: Generate QR Code**
-            $qrContent = route('inventory.scan', ['id' => $inventory->id]); // Gunakan URL lengkap
+            $qrContent = route('inventory.detail', ['id' => $inventory->id]); // Gunakan URL lengkap
             $qrFileName = 'qr_' . uniqid() . '.svg';
             $qrImage = QrCode::format('svg')->size(200)->generate($qrContent);
             Storage::disk('public')->put('qrcodes/' . $qrFileName, $qrImage);
@@ -135,7 +135,7 @@ class InventoryController extends Controller
         $inventory->save();
 
         // **Point 5: Generate QR Code**
-        $qrContent = route('inventory.scan', ['id' => $inventory->id]); // URL lengkap
+        $qrContent = route('inventory.detail', ['id' => $inventory->id]); // URL lengkap
         $qrFileName = 'qr_' . uniqid() . '.svg';
         $qrImage = QrCode::format('svg')->size(200)->generate($qrContent);
         Storage::disk('public')->put('qrcodes/' . $qrFileName, $qrImage);
@@ -216,8 +216,8 @@ class InventoryController extends Controller
             $inventory->img = $imgPath;
         }
 
-        // Generate ulang QR code jika name berubah
-        $qrContent = $inventory->id . ' - ' . $inventory->name;
+        // Generate ulang QR code dengan URL detail material
+        $qrContent = route('inventory.detail', ['id' => $inventory->id]);
         $qrFileName = 'qr_' . uniqid() . '.svg';
         $qrImage = QrCode::format('svg')->size(200)->generate($qrContent);
         Storage::disk('public')->put('qrcodes/' . $qrFileName, $qrImage);
@@ -255,7 +255,7 @@ class InventoryController extends Controller
         if ($inventoryItem) {
             return response()->json([
                 'success' => true,
-                'url' => route('inventory.scan', ['id' => $inventoryItem->id])
+                'url' => route('inventory.detail', ['id' => $inventoryItem->id])
             ]);
         }
 
@@ -265,9 +265,9 @@ class InventoryController extends Controller
         ]);
     }
 
-    public function scan($id)
+    public function detail($id)
     {
         $inventory = Inventory::findOrFail($id);
-        return view('inventory.scan', compact('inventory'));
+        return view('inventory.detail', compact('inventory'));
     }
 }

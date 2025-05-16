@@ -53,7 +53,7 @@
                                 <span class="text-danger">-</span>
                             @endif
                         </td>
-                        <td class="align-middle">{{ $goodsIn->returned_by }}</td>
+                        <td class="align-middle">{{ ucfirst($goodsIn->returned_by) }}</td>
                         <td class="align-middle">{{ \Carbon\Carbon::parse($goodsIn->returned_at)->format('d-m-Y, H:i') }}
                         </td>
                         <td class="align-middle">
