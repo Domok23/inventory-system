@@ -1,37 +1,72 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <h3>Goods In Records</h3>
-    <a href="{{ route('goods_in.create_independent') }}" class="btn btn-primary mb-3">+ Create Goods In</a>
-    @if (session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
-    <table class="table table-hover table-bordered" id="datatable">
-        <thead>
-            <tr>
-                <th style="width: 20px;" class="text-center align-middle">#</th>
-                <th>Material</th>
-                <th>Quantity Returned</th>
-                <th>Project</th>
-                <th>Returned By</th>
-                <th>Returned At</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($goodsIns as $goodsIn)
+    <div class="container">
+        <h3>Goods In Records</h3>
+        <a href="{{ route('goods_in.create_independent') }}" class="btn btn-primary mb-3">+ Create Goods In</a>
+        @if (session('success'))
+            <div class="alert alert-success">{{ session('success') }}</div>
+        @endif
+        <table class="table table-hover table-bordered" id="datatable">
+            <thead>
                 <tr>
-                    <td class="text-center align-middle">{{ $loop->iteration }}</td>
-                    <td class="align-middle">{{ $goodsIn->goodsOut->inventory->name }}</td>
-                    <td class="align-middle">{{ $goodsIn->quantity }} {{ $goodsIn->goodsOut->inventory->unit }}</td>
-                    <td class="align-middle">{{ $goodsIn->goodsOut->project->name }}</td>
-                    <td class="align-middle">{{ $goodsIn->returned_by }}</td>
-                    <td class="align-middle">{{ $goodsIn->returned_at }}</td>
+                    <th style="width: 20px;" class="text-center align-middle">#</th>
+                    <th>Material</th>
+                    <th>Quantity Returned</th>
+                    <th>Project</th>
+                    <th>Returned By</th>
+                    <th>Returned At</th>
+                    <th>Actions</th>
                 </tr>
-            @endforeach
-        </tbody>
-    </table>
-</div>
+            </thead>
+            <tbody>
+                @foreach ($goodsIns as $goodsIn)
+                    <tr>
+                        <td class="text-center align-middle">{{ $loop->iteration }}</td>
+                        <td class="align-middle">
+                            @if ($goodsIn->goodsOut && $goodsIn->goodsOut->inventory)
+                                {{ $goodsIn->goodsOut->inventory->name }}
+                            @elseif($goodsIn->inventory)
+                                {{ $goodsIn->inventory->name }}
+                            @else
+                                <span class="text-danger">-</span>
+                            @endif
+                        </td>
+                        <td class="align-middle">
+                            @if ($goodsIn->goodsOut && $goodsIn->goodsOut->inventory)
+                                {{ $goodsIn->quantity }} {{ $goodsIn->goodsOut->inventory->unit }}
+                            @elseif($goodsIn->inventory)
+                                {{ $goodsIn->quantity }} {{ $goodsIn->inventory->unit }}
+                            @else
+                                {{ $goodsIn->quantity }}
+                            @endif
+                        </td>
+                        <td class="align-middle">
+                            @if ($goodsIn->goodsOut && $goodsIn->goodsOut->project)
+                                {{ $goodsIn->goodsOut->project->name }}
+                            @elseif($goodsIn->project)
+                                {{ $goodsIn->project->name }}
+                            @else
+                                <span class="text-danger">-</span>
+                            @endif
+                        </td>
+                        <td class="align-middle">{{ $goodsIn->returned_by }}</td>
+                        <td class="align-middle">{{ \Carbon\Carbon::parse($goodsIn->returned_at)->format('d-m-Y, H:i') }}
+                        </td>
+                        <td class="align-middle">
+                            <a href="{{ route('goods_in.edit', $goodsIn->id) }}" class="btn btn-sm btn-warning">Edit</a>
+                            <form action="{{ route('goods_in.destroy', $goodsIn->id) }}" method="POST"
+                                style="display:inline;" class="delete-form">
+                                @csrf
+                                @method('DELETE')
+                                <button type="button" class="btn btn-sm btn-danger btn-delete">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
 @endsection
 @push('scripts')
     <script>

@@ -40,6 +40,7 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('aut
 Route::middleware(['auth'])->group(function () {
     Route::resource('users', UserController::class);
     Route::get('/material-usage', [MaterialUsageController::class, 'index'])->name('material_usage.index');
+    Route::delete('material-usage/{material_usage}', [MaterialUsageController::class, 'destroy'])->name('material_usage.destroy');
 });
 
 Route::resource('inventory', InventoryController::class)->middleware('auth');
@@ -89,4 +90,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/goods_in/create/{goods_out_id}', [GoodsInController::class, 'create'])->name('goods_in.create');
     Route::get('/goods_in/create_independent', [GoodsInController::class, 'createIndependent'])->name('goods_in.create_independent');
     Route::post('/goods_in/store_independent', [GoodsInController::class, 'storeIndependent'])->name('goods_in.store_independent');
+    Route::get('goods_in/{goods_in}/edit', [GoodsInController::class, 'edit'])->name('goods_in.edit');
+    Route::put('goods_in/{goods_in}', [GoodsInController::class, 'update'])->name('goods_in.update');
+    Route::delete('goods_in/{goods_in}', [GoodsInController::class, 'destroy'])->name('goods_in.destroy');
 });

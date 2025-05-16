@@ -22,6 +22,7 @@
                     <th>Requested By</th>
                     <th>Status</th>
                     <th>Remark</th>
+                    <th>Requested At</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -51,7 +52,8 @@
                                 {{ ucfirst($req->status) }}
                             @endif
                         </td>
-                        <td class="align-middle">{{ $req->remark }}</td>
+                        <td>{{ $req->remark }}</td>
+                        <td class="align-middle">{{ $req->created_at->format('d-m-Y, H:i') }}</td>
                         <td>
                             <a href="{{ route('material_requests.edit', $req->id) }}"
                                 class="btn btn-sm btn-primary">Edit</a>

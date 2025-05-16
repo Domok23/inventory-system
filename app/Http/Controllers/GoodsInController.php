@@ -13,7 +13,7 @@ class GoodsInController extends Controller
 {
     public function index()
     {
-        $goodsIns = GoodsIn::with('goodsOut.inventory', 'goodsOut.project')->get();
+        $goodsIns = GoodsIn::with(['goodsOut.inventory', 'goodsOut.project', 'inventory', 'project'])->get();
         return view('goods_in.index', compact('goodsIns'));
     }
 
@@ -96,5 +96,37 @@ class GoodsInController extends Controller
         MaterialUsageHelper::sync($request->inventory_id, $request->project_id);
 
         return redirect()->route('goods_in.index')->with('success', 'Goods In created successfully.');
+    }
+
+    public function edit(GoodsIn $goods_in)
+    {
+        $inventories = Inventory::all();
+        $projects = Project::all();
+        return view('goods_in.edit', compact('goods_in', 'inventories', 'projects'));
+    }
+
+    public function update(Request $request, GoodsIn $goods_in)
+    {
+        $request->validate([
+            'inventory_id' => 'required|exists:inventories,id',
+            'project_id' => 'required|exists:projects,id',
+            'quantity' => 'required|numeric|min:0.01',
+            'returned_at' => 'required',
+        ]);
+
+        $goods_in->update([
+            'inventory_id' => $request->inventory_id,
+            'project_id' => $request->project_id,
+            'quantity' => $request->quantity,
+            'returned_at' => $request->returned_at,
+        ]);
+
+        return redirect()->route('goods_in.index')->with('success', 'Goods In updated successfully.');
+    }
+
+    public function destroy(GoodsIn $goods_in)
+    {
+        $goods_in->delete();
+        return redirect()->route('goods_in.index')->with('success', 'Goods In deleted successfully.');
     }
 }
