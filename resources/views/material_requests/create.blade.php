@@ -30,6 +30,7 @@
                     </button>
                 </div>
                 <select name="project_id" id="project_id" class="form-select select2">
+                    <option value="">Select Project</option>
                     @foreach ($projects as $proj)
                         <option value="{{ $proj->id }}">{{ $proj->name }}</option>
                     @endforeach
