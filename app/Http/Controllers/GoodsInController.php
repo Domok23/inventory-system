@@ -48,9 +48,11 @@ class GoodsInController extends Controller
         $goodsOut->quantity -= $request->quantity;
         $goodsOut->save();
 
-        // Simpan Goods In
+        // Simpan Goods In (tambahkan inventory_id dan project_id)
         GoodsIn::create([
             'goods_out_id' => $goodsOut->id,
+            'inventory_id' => $goodsOut->inventory_id, 
+            'project_id' => $goodsOut->project_id,
             'quantity' => $request->quantity,
             'returned_by' => auth()->user()->username,
             'returned_at' => $request->returned_at,

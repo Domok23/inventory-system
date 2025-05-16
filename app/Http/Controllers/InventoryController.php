@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Inventory;
-use App\Models\Currency;
-use App\Models\Unit;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use PDF;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
-use Maatwebsite\Excel\Facades\Excel;
+use App\Models\Unit;
+use App\Models\Category;
+use App\Models\Currency;
+use App\Models\Inventory;
+use Illuminate\Http\Request;
 use App\Imports\InventoryImport;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Storage;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class InventoryController extends Controller
 {
@@ -36,7 +37,8 @@ class InventoryController extends Controller
     {
         $currencies = Currency::all(); // Ambil semua currency dari database
         $units = Unit::all(); // Ambil semua unit dari database
-        return view('inventory.create', compact('currencies', 'units'));
+        $categories = Category::all();
+        return view('inventory.create', compact('currencies', 'units', 'categories'));
     }
 
     public function import(Request $request)
@@ -175,7 +177,8 @@ class InventoryController extends Controller
         $inventory = Inventory::findOrFail($id);
         $currencies = Currency::all(); // Ambil semua currency dari database
         $units = Unit::all();
-        return view('inventory.edit', compact('inventory', 'currencies', 'units'));
+        $categories = Category::all();
+        return view('inventory.edit', compact('inventory', 'currencies', 'units', 'categories'));
     }
 
     public function update(Request $request, Inventory $inventory)

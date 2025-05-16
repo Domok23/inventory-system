@@ -61,7 +61,12 @@
             theme: 'bootstrap-5',
             placeholder: 'Select Material',
             allowClear: true
-        });
+        }).on('select2:open', function() {
+                setTimeout(function() {
+                    document.querySelector('.select2-container--open .select2-search__field')
+                    .focus();
+                }, 100);
+            });
 
         // Update unit label dynamically when material is selected
         $('select[name="inventory_id"]').on('change', function() {

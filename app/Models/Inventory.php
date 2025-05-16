@@ -27,4 +27,9 @@ class Inventory extends Model
     {
         return $this->hasMany(GoodsOut::class);
     }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
 }

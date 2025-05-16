@@ -6,6 +6,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\GoodsInController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\GoodsOutController;
 use App\Http\Controllers\DashboardController;
@@ -62,13 +63,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/material_requests/{id}/edit', [MaterialRequestController::class, 'edit'])->name('material_requests.edit');
     Route::put('/material_requests/{id}', [MaterialRequestController::class, 'update'])->name('material_requests.update');
     Route::delete('/material_requests/{id}', [MaterialRequestController::class, 'destroy'])->name('material_requests.destroy');
+    Route::post('/inventories/quick-add', [InventoryController::class, 'storeQuick'])->name('inventories.store.quick');
+    Route::post('/projects/quick-add', [ProjectController::class, 'storeQuick'])->name('projects.store.quick');
+    Route::get('/inventories/json', [InventoryController::class, 'json'])->name('inventories.json');
+    Route::get('/projects/json', [ProjectController::class, 'json'])->name('projects.json');
+    Route::post('/categories/quick-add', [CategoryController::class, 'storeQuick'])->name('categories.store');
+    Route::get('/categories/json', [CategoryController::class, 'json'])->name('categories.json');
 });
 
-Route::post('/inventories/quick-add', [InventoryController::class, 'storeQuick'])->name('inventories.store.quick');
-Route::post('/projects/quick-add', [ProjectController::class, 'storeQuick'])->name('projects.store.quick');
-
-Route::get('/inventories/json', [InventoryController::class, 'json'])->name('inventories.json');
-Route::get('/projects/json', [ProjectController::class, 'json'])->name('projects.json');
 
 Route::middleware(['auth'])->group(function () {
     Route::resource('currencies', CurrencyController::class)->only(['index', 'store', 'update', 'destroy']);

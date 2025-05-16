@@ -7,7 +7,7 @@
             @method('PUT')
             <div class="mb-3">
                 <label>Material</label>
-                <select name="inventory_id" class="form-control" required>
+                <select name="inventory_id" class="form-control select2" required>
                     @foreach ($inventories as $inventory)
                         <option value="{{ $inventory->id }}"
                             {{ $goods_in->inventory_id == $inventory->id ? 'selected' : '' }}>
@@ -18,7 +18,7 @@
             </div>
             <div class="mb-3">
                 <label>Project</label>
-                <select name="project_id" class="form-control" required>
+                <select name="project_id" class="form-control select2" required>
                     @foreach ($projects as $project)
                         <option value="{{ $project->id }}" {{ $goods_in->project_id == $project->id ? 'selected' : '' }}>
                             {{ $project->name }}
@@ -43,3 +43,24 @@
         </form>
     </div>
 @endsection
+@push('styles')
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.2.0/dist/select2-bootstrap-5-theme.min.css"
+        rel="stylesheet" />
+@endpush
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('.select2').select2({
+        theme: 'bootstrap-5',
+        placeholder: 'Select an option',
+        allowClear: true
+    }).on('select2:open', function() {
+        setTimeout(function() {
+            document.querySelector('.select2-container--open .select2-search__field').focus();
+        }, 100);
+    });
+});
+</script>
+@endpush
