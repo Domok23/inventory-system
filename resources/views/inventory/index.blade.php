@@ -58,6 +58,7 @@
                 <tr>
                     <th style="width: 20px;" class="text-center align-middle">#</th>
                     <th>Name</th>
+                    <th>Category</th>
                     <th>Quantity</th>
                     <th>Unit Price</th>
                     <th>Location</th>
@@ -69,6 +70,9 @@
                     <tr>
                         <td class="text-center align-middle">{{ $loop->iteration }}</td>
                         <td class="align-middle">{{ $inventory->name }}</td>
+                        <td class="align-middle">
+                            {{ $inventory->category ? $inventory->category->name : '-' }}
+                        </td>
                         <td class="align-middle">{{ $inventory->quantity }} {{ $inventory->unit }}</td>
                         <td class="align-middle">
                             @if ($inventory->currency)
@@ -146,13 +150,18 @@
                 });
             });
 
-            // Show Image & QR Modal
+            // Gunakan event delegation agar tetap berfungsi di semua pagination
             let currentInventoryName = 'qr-code';
-            $('.btn-show-image').on('click', function() {
+            $(document).on('click', '.btn-show-image', function() {
+                // Reset modal content
+                $('#img-container').html('');
+                $('#qr-container').html('');
+                $('#download-qr-btn').hide();
+
                 let img = $(this).data('img');
                 let qrcode = $(this).data('qrcode');
                 let name = $(this).data('name');
-                currentInventoryName = name || 'qr-code'; // simpan nama inventory/project
+                currentInventoryName = name || 'qr-code';
                 $('#imageModalLabel').text(name + ' - Image & QR Code');
                 $('#img-container').html(img ?
                     `<img src="${img}" alt="Image" class="img-fluid mb-2" style="max-width:100%;">` :
@@ -175,7 +184,6 @@
                     backgroundColor: null
                 }).then(function(canvas) {
                     let link = document.createElement('a');
-                    // Generate nama file dari nama inventory/project, ganti spasi dengan strip
                     let filename = (currentInventoryName || 'qr-code').replace(/\s+/g, '-')
                         .toLowerCase() + '-qrcode.png';
                     link.download = filename;

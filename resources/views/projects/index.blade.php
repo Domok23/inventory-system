@@ -39,7 +39,7 @@
                                 data-bs-target="#imageModal"
                                 data-img="{{ $project->img ? asset('storage/' . $project->img) : '' }}"
                                 data-name="{{ $project->name }}">
-                                Show Image
+                                Show
                             </button>
                             <a href="{{ route('projects.edit', $project) }}" class="btn btn-sm btn-warning">Edit</a>
                             <form action="{{ route('projects.destroy', $project) }}" method="POST"
@@ -100,13 +100,15 @@
             });
 
             // Show Image Modal
-            $('.btn-show-image').on('click', function() {
+            $(document).on('click', '.btn-show-image', function() {
+                // Reset modal content
+                $('#img-container').html('');
                 let img = $(this).data('img');
                 let name = $(this).data('name');
                 $('#imageModalLabel').text(name + ' - Image');
-                $('#img-container').html(img
-                    ? `<img src="${img}" alt="Image" class="img-fluid mb-2" style="max-width:100%;">`
-                    : '<span class="text-muted">No Project Image</span>');
+                $('#img-container').html(img ?
+                    `<img src="${img}" alt="Image" class="img-fluid mb-2" style="max-width:100%;">` :
+                    '<span class="text-muted">No Image</span>');
             });
         });
     </script>

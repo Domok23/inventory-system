@@ -107,6 +107,7 @@ class InventoryController extends Controller
             'price' => 'required|numeric',
             'location' => 'nullable|string',
             'img' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'category_id' => 'required|exists:categories,id',
         ]);
 
         $inventory = new Inventory;
@@ -116,6 +117,7 @@ class InventoryController extends Controller
         $inventory->price = $request->price;
         $inventory->currency_id = $request->currency_id;
         $inventory->location = $request->location;
+        $inventory->category_id = $request->category_id;
 
         // Simpan unit baru jika ada
         if ($request->unit === '__new__' && $request->new_unit) {
@@ -192,6 +194,7 @@ class InventoryController extends Controller
             'currency_id' => 'required|exists:currencies,id',
             'location' => 'nullable|string',
             'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'category_id' => 'required|exists:categories,id',
         ]);
 
         // Update data inventory
@@ -201,6 +204,7 @@ class InventoryController extends Controller
         $inventory->price = $request->price;
         $inventory->currency_id = $request->currency_id;
         $inventory->location = $request->location;
+        $inventory->category_id = $request->category_id;
 
         // Simpan unit baru jika ada
         if ($request->unit === '__new__' && $request->new_unit) {
