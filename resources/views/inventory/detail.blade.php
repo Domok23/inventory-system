@@ -34,7 +34,7 @@
                             <img src="{{ asset('storage/' . $inventory->img) }}" alt="Image" class="img-fluid rounded"
                                 style="max-height: 300px;">
                         @else
-                            <p class="text-muted">No Image</p>
+                            <p class="text-muted">No Project Image</p>
                         @endif
                     </div>
                 </div>

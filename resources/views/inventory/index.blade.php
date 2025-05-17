@@ -13,14 +13,13 @@
                 Import Inventory via XLS
             </button>
         </div>
-        <!-- Tombol Import di mobile, tampil di bawah judul -->
         <div class="mb-3 d-block d-md-none">
             <button type="button" class="btn btn-success btn-sm w-100" data-bs-toggle="modal"
                 data-bs-target="#importModal">
                 Import Inventory via XLS
             </button>
         </div>
-        <!-- Modal -->
+        <!-- Modal Import Inventory via XLS -->
         <div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <form method="POST" action="{{ route('inventory.import') }}" enctype="multipart/form-data">
@@ -62,8 +61,6 @@
                     <th>Quantity</th>
                     <th>Unit Price</th>
                     <th>Location</th>
-                    <th>QR Code</th>
-                    <th>Image</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -80,22 +77,17 @@
                             {{ number_format($inventory->price, 2, ',', '.') }}
                         </td>
                         <td class="align-middle">{{ $inventory->location }}</td>
-                        <td class="align-middle">
-                            @if ($inventory->qrcode_path)
-                                <img src="{{ asset('storage/' . $inventory->qrcode_path) }}" alt="QR Code" width="80">
-                            @endif
-                        </td>
-                        <td class="align-middle">
-                            @if ($inventory->img)
-                                <img src="{{ asset('storage/' . $inventory->img) }}" alt="Image" width="100">
-                            @else
-                                <span class="text-muted">No Image</span>
-                            @endif
-                        </td>
                         <td>
                             <a href="{{ route('inventory.edit', $inventory->id) }}" class="btn btn-warning btn-sm">Edit</a>
                             <a href="{{ route('inventory.detail', ['id' => $inventory->id]) }}"
-                                class="btn btn-sm btn-info">Detail</a>
+                                class="btn btn-sm btn-success">Detail</a>
+                            <button type="button" class="btn btn-sm btn-info btn-show-image" data-bs-toggle="modal"
+                                data-bs-target="#imageModal"
+                                data-img="{{ $inventory->img ? asset('storage/' . $inventory->img) : '' }}"
+                                data-qrcode="{{ $inventory->qrcode_path ? asset('storage/' . $inventory->qrcode_path) : '' }}"
+                                data-name="{{ $inventory->name }}">
+                                Show
+                            </button>
                             <form action="{{ route('inventory.destroy', $inventory->id) }}" method="POST"
                                 style="display:inline;" class="delete-form">
                                 @csrf
@@ -108,8 +100,26 @@
             </tbody>
         </table>
     </div>
+    <!-- Modal Show Image -->
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="imageModalLabel">Inventory Image & QR Code </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <div id="img-container" class="mb-3"></div>
+                    <div id="qr-container" class="mb-3"></div>
+                    <button id="download-qr-btn" class="btn btn-outline-primary btn-sm mb-3" style="display:none;">Download
+                        QR as PNG</button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 @push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script>
         $(document).ready(function() {
             $('#datatable').DataTable({
@@ -133,6 +143,44 @@
                     if (result.isConfirmed) {
                         form.submit();
                     }
+                });
+            });
+
+            // Show Image & QR Modal
+            let currentInventoryName = 'qr-code';
+            $('.btn-show-image').on('click', function() {
+                let img = $(this).data('img');
+                let qrcode = $(this).data('qrcode');
+                let name = $(this).data('name');
+                currentInventoryName = name || 'qr-code'; // simpan nama inventory/project
+                $('#imageModalLabel').text(name + ' - Image & QR Code');
+                $('#img-container').html(img ?
+                    `<img src="${img}" alt="Image" class="img-fluid mb-2" style="max-width:100%;">` :
+                    '<span class="text-muted">No Project Image</span>');
+                if (qrcode) {
+                    $('#qr-container').html(
+                        `<img id="qr-svg" src="${qrcode}" alt="QR Code" style="max-width:200px;">`);
+                    $('#download-qr-btn').show();
+                } else {
+                    $('#qr-container').html('<span class="text-muted">No QR Code</span>');
+                    $('#download-qr-btn').hide();
+                }
+            });
+
+            // Download QR as PNG
+            $('#download-qr-btn').on('click', function() {
+                let qrImg = document.getElementById('qr-svg');
+                if (!qrImg) return;
+                html2canvas(qrImg, {
+                    backgroundColor: null
+                }).then(function(canvas) {
+                    let link = document.createElement('a');
+                    // Generate nama file dari nama inventory/project, ganti spasi dengan strip
+                    let filename = (currentInventoryName || 'qr-code').replace(/\s+/g, '-')
+                        .toLowerCase() + '-qrcode.png';
+                    link.download = filename;
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
                 });
             });
         });

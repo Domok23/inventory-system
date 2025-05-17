@@ -4,7 +4,8 @@
     <div class="container">
         <div class="d-flex align-items-center mb-3 gap-2">
             <h2 class="mb-0 flex-shrink-0" style="font-size:1.5rem;">Projects</h2>
-            <a href="{{ route('projects.create') }}" class="btn btn-outline-primary btn-sm flex-shrink-0 ms-2">+ Add Project</a>
+            <a href="{{ route('projects.create') }}" class="btn btn-outline-primary btn-sm flex-shrink-0 ms-2">+ Add
+                Project</a>
         </div>
 
         @if (session('success'))
@@ -22,7 +23,6 @@
                     <th>Qty</th>
                     <th>Department</th>
                     <th>Deadline</th>
-                    <th>Image</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -34,13 +34,13 @@
                         <td class="align-middle">{{ $project->qty }}</td>
                         <td class="align-middle">{{ $project->department }}</td>
                         <td class="align-middle">{{ $project->deadline }}</td>
-                        <td class="align-middle">
-                            {{-- Display the image if it exists --}}
-                            @if ($project->img)
-                                <img src="{{ asset('storage/' . $project->img) }}" width="50">
-                            @endif
-                        </td>
                         <td>
+                            <button type="button" class="btn btn-info btn-sm btn-show-image" data-bs-toggle="modal"
+                                data-bs-target="#imageModal"
+                                data-img="{{ $project->img ? asset('storage/' . $project->img) : '' }}"
+                                data-name="{{ $project->name }}">
+                                Show Image
+                            </button>
                             <a href="{{ route('projects.edit', $project) }}" class="btn btn-sm btn-warning">Edit</a>
                             <form action="{{ route('projects.destroy', $project) }}" method="POST"
                                 style="display:inline-block;" class="delete-form">
@@ -56,6 +56,20 @@
                 @endforelse
             </tbody>
         </table>
+    </div>
+    <!-- Modal Show Image -->
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="imageModalLabel">Project Image</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <div id="img-container"></div>
+                </div>
+            </div>
+        </div>
     </div>
 @endsection
 @push('scripts')
@@ -83,6 +97,16 @@
                         form.submit();
                     }
                 });
+            });
+
+            // Show Image Modal
+            $('.btn-show-image').on('click', function() {
+                let img = $(this).data('img');
+                let name = $(this).data('name');
+                $('#imageModalLabel').text(name + ' - Image');
+                $('#img-container').html(img
+                    ? `<img src="${img}" alt="Image" class="img-fluid mb-2" style="max-width:100%;">`
+                    : '<span class="text-muted">No Project Image</span>');
             });
         });
     </script>
