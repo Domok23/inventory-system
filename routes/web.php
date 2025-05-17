@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\GoodsInController;
 use App\Http\Controllers\ProjectController;
@@ -13,7 +12,6 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\MaterialUsageController;
 use App\Http\Controllers\MaterialRequestController;
-
 
 /*
 |--------------------------------------------------------------------------
@@ -36,56 +34,61 @@ Route::get('/register', function () {
     return redirect('/login');
 });
 
-Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('auth')->name('dashboard');
-
 Route::middleware(['auth'])->group(function () {
+    // Dashboard
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Users
     Route::resource('users', UserController::class);
+
+    // Material Usage
     Route::get('/material-usage', [MaterialUsageController::class, 'index'])->name('material_usage.index');
     Route::delete('material-usage/{material_usage}', [MaterialUsageController::class, 'destroy'])->name('material_usage.destroy');
-});
 
-Route::resource('inventory', InventoryController::class)->middleware('auth');
-Route::post('/inventory/import', [InventoryController::class, 'import'])->middleware('auth')->name('inventory.import');
-Route::get('/inventory/detail/{id}', [InventoryController::class, 'detail'])->name('inventory.detail');
-Route::get('/qr-scan', function () {
-    return view('qr-scan');
-})->middleware('auth')->name('qr.scan');
-Route::post('/process-qr', [InventoryController::class, 'processQr'])->middleware('auth')->name('qr.process');
+    // Inventory
+    Route::resource('inventory', InventoryController::class);
+    Route::post('/inventory/import', [InventoryController::class, 'import'])->name('inventory.import');
+    Route::get('/inventory/detail/{id}', [InventoryController::class, 'detail'])->name('inventory.detail');
+    Route::post('/inventories/quick-add', [InventoryController::class, 'storeQuick'])->name('inventories.store.quick');
+    Route::get('/inventories/json', [InventoryController::class, 'json'])->name('inventories.json');
 
-Route::resource('projects', ProjectController::class)->middleware('auth');
+    // QR
+    Route::get('/qr-scan', function () {
+        return view('qr-scan');
+    })->name('qr.scan');
+    Route::post('/process-qr', [InventoryController::class, 'processQr'])->name('qr.process');
 
-Route::middleware(['auth'])->group(function () {
+    // Projects
+    Route::resource('projects', ProjectController::class);
+    Route::post('/projects/quick-add', [ProjectController::class, 'storeQuick'])->name('projects.store.quick');
+    Route::get('/projects/json', [ProjectController::class, 'json'])->name('projects.json');
+
+    // Material Requests
     Route::get('/material_requests', [MaterialRequestController::class, 'index'])->name('material_requests.index');
     Route::get('/material_requests/create', [MaterialRequestController::class, 'create'])->name('material_requests.create');
     Route::post('/material_requests', [MaterialRequestController::class, 'store'])->name('material_requests.store');
-    Route::get('/material_requests/bulk_create', [MaterialRequestController::class, 'bulkCreate'])->name('material_requests.bulk_create'); // Tambahkan ini
+    Route::get('/material_requests/bulk_create', [MaterialRequestController::class, 'bulkCreate'])->name('material_requests.bulk_create');
     Route::post('/material_requests/bulk_store', [MaterialRequestController::class, 'bulkStore'])->name('material_requests.bulk_store');
     Route::get('/material_requests/{id}/edit', [MaterialRequestController::class, 'edit'])->name('material_requests.edit');
     Route::put('/material_requests/{id}', [MaterialRequestController::class, 'update'])->name('material_requests.update');
     Route::delete('/material_requests/{id}', [MaterialRequestController::class, 'destroy'])->name('material_requests.destroy');
-    Route::post('/inventories/quick-add', [InventoryController::class, 'storeQuick'])->name('inventories.store.quick');
-    Route::post('/projects/quick-add', [ProjectController::class, 'storeQuick'])->name('projects.store.quick');
-    Route::get('/inventories/json', [InventoryController::class, 'json'])->name('inventories.json');
-    Route::get('/projects/json', [ProjectController::class, 'json'])->name('projects.json');
+
+    // Categories
     Route::post('/categories/quick-add', [CategoryController::class, 'storeQuick'])->name('categories.store');
     Route::get('/categories/json', [CategoryController::class, 'json'])->name('categories.json');
-});
 
-
-Route::middleware(['auth'])->group(function () {
+    // Currencies
     Route::resource('currencies', CurrencyController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::get('/currencies', [CurrencyController::class, 'index'])->name('currencies.index');
     Route::get('/currencies/{id}/edit', [CurrencyController::class, 'edit'])->name('currencies.edit');
-});
 
-Route::middleware(['auth'])->group(function () {
+    // Goods Out
     Route::resource('goods_out', GoodsOutController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
     Route::get('/goods_out/create/{materialRequestId}', [GoodsOutController::class, 'create'])->name('goods_out.create');
     Route::get('/goods_out/create_independent', [GoodsOutController::class, 'createIndependent'])->name('goods_out.create_independent');
     Route::post('/goods_out/store_independent', [GoodsOutController::class, 'storeIndependent'])->name('goods_out.store_independent');
-});
 
-Route::middleware(['auth'])->group(function () {
+    // Goods In
     Route::get('/goods_in', [GoodsInController::class, 'index'])->name('goods_in.index');
     Route::get('/goods_in/create', [GoodsInController::class, 'create'])->name('goods_in.create');
     Route::post('/goods_in', [GoodsInController::class, 'store'])->name('goods_in.store');
