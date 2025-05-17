@@ -18,6 +18,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" />
+    <!-- DataTables Responsive CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css" />
     <!-- SweetAlert2 CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bootstrap-4/bootstrap-4.min.css">
     <!-- Select2 CSS -->
@@ -28,6 +30,47 @@
                 font-weight: bold;
                 border-bottom: 2px solid var(--bs-primary);
                 /* Garis bawah warna primary */
+            }
+
+            @media (max-width: 768px) {
+
+                .dataTables_wrapper .dataTables_length,
+                .dataTables_wrapper .dataTables_filter {
+                    float: none !important;
+                    text-align: left !important;
+                    width: 100%;
+                    margin-bottom: 10px;
+                    display: flex !important;
+                    flex-direction: column !important;
+                    align-items: flex-start !important;
+                    justify-content: flex-start !important;
+                }
+
+                .dataTables_wrapper .dataTables_filter label,
+                .dataTables_wrapper .dataTables_length label {
+                    width: 100%;
+                    margin-bottom: 0.5rem;
+                    display: block;
+                    white-space: normal;
+                }
+
+                .dataTables_wrapper .dataTables_filter input {
+                    width: 100% !important;
+                    max-width: 300px;
+                    min-width: 0;
+                    box-sizing: border-box;
+                    margin-top: 0 !important;
+                }
+            }
+
+            @media (max-width: 576px) {
+                td .btn {
+                    margin-bottom: 0.25rem;
+                }
+
+                td .btn:last-child {
+                    margin-bottom: 0;
+                }
             }
         </style>
     @endpush
@@ -168,6 +211,9 @@
     <!-- DataTables JS -->
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+    <!-- DataTables Responsive JS -->
+    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script>
     <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @stack('scripts')

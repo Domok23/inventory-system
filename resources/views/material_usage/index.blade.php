@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('content')
     <div class="container">
-        <h3>Material Usage</h3>
+        <h3 style="font-size:1.5rem;">Material Usage</h3>
         <table class="table table-bordered table-hover" id="datatable">
             <thead>
                 <tr>
@@ -41,7 +41,9 @@
 @push('scripts')
     <script>
         $(document).ready(function() {
-            $('#datatable').DataTable();
+            $('#datatable').DataTable({
+                responsive: true
+            });
         });
     </script>
 @endpush

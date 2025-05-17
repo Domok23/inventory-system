@@ -2,8 +2,10 @@
 
 @section('content')
     <div class="container">
-        <h3>Goods Out</h3>
-        <a href="{{ route('goods_out.create_independent') }}" class="btn btn-primary mb-3">+ Create Goods Out</a>
+        <div class="d-flex align-items-center mb-3 gap-2">
+            <h2 class="mb-0 flex-shrink-0" style="font-size:1.5rem;">Goods In</h2>
+            <a href="{{ route('goods_out.create_independent') }}" class="btn btn-outline-primary btn-sm flex-shrink-0 ms-2">+ Create Goods Out</a>
+        </div>
         @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 {{ session('success') }}
@@ -57,7 +59,9 @@
 @push('scripts')
     <script>
         $(document).ready(function() {
-            $('#datatable').DataTable();
+            $('#datatable').DataTable({
+                responsive: true
+            });
 
             // SweetAlert for delete confirmation
             $('.btn-delete').on('click', function(e) {

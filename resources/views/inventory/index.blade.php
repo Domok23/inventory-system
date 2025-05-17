@@ -2,14 +2,24 @@
 
 @section('content')
     <div class="container">
-        <h2>Inventory List</h2>
-        <a href="{{ route('inventory.create') }}" class="btn btn-primary mb-3">Add Inventory</a>
-
-        <!-- Button to Open Modal -->
-        <button type="button" class="btn btn-secondary mb-3" data-bs-toggle="modal" data-bs-target="#importModal">
-            Import Inventory via XLS
-        </button>
-
+        <div class="d-flex align-items-center mb-3 gap-2">
+            <h2 class="mb-0 flex-shrink-0" style="font-size:1.5rem;">Inventory List</h2>
+            <a href="{{ route('inventory.create') }}" class="btn btn-outline-primary btn-sm flex-shrink-0 ms-2">
+                + Add Inventory
+            </a>
+            <div class="flex-grow-1"></div>
+            <button type="button" class="btn btn-success btn-sm flex-shrink-0 ms-2 d-none d-md-inline" data-bs-toggle="modal"
+                data-bs-target="#importModal">
+                Import Inventory via XLS
+            </button>
+        </div>
+        <!-- Tombol Import di mobile, tampil di bawah judul -->
+        <div class="mb-3 d-block d-md-none">
+            <button type="button" class="btn btn-success btn-sm w-100" data-bs-toggle="modal"
+                data-bs-target="#importModal">
+                Import Inventory via XLS
+            </button>
+        </div>
         <!-- Modal -->
         <div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -84,7 +94,8 @@
                         </td>
                         <td>
                             <a href="{{ route('inventory.edit', $inventory->id) }}" class="btn btn-warning btn-sm">Edit</a>
-                            <a href="{{ route('inventory.detail', ['id' => $inventory->id]) }}" class="btn btn-sm btn-info">Detail</a>
+                            <a href="{{ route('inventory.detail', ['id' => $inventory->id]) }}"
+                                class="btn btn-sm btn-info">Detail</a>
                             <form action="{{ route('inventory.destroy', $inventory->id) }}" method="POST"
                                 style="display:inline;" class="delete-form">
                                 @csrf
@@ -101,7 +112,9 @@
 @push('scripts')
     <script>
         $(document).ready(function() {
-            $('#datatable').DataTable();
+            $('#datatable').DataTable({
+                responsive: true
+            });
 
             // SweetAlert for delete confirmation
             $('.btn-delete').on('click', function(e) {
@@ -125,4 +138,3 @@
         });
     </script>
 @endpush
-

@@ -2,9 +2,23 @@
 
 @section('content')
     <div class="container">
-        <a href="{{ route('material_requests.create') }}" class="btn btn-success mb-3">+ Request Material</a>
-        <a href="{{ route('material_requests.bulk_create') }}" class="btn btn-outline-secondary mb-3">
-            + Bulk Request</a>
+        <div class="d-flex align-items-center mb-3 gap-2 overflow-hidden">
+            <h2 class="mb-0 flex-shrink-0" style="font-size:1.5rem;">Material Requests</h2>
+            <a href="{{ route('material_requests.create') }}" class="btn btn-outline-primary btn-sm flex-shrink-0 ms-2">
+                + Request Material
+            </a>
+            <div class="flex-grow-1"></div>
+            <a href="{{ route('material_requests.bulk_create') }}"
+                class="btn btn-success btn-sm flex-shrink-0 ms-2 d-none d-md-inline">
+                + Bulk Request
+            </a>
+        </div>
+        <!-- Bulk Request button for mobile, appears below the title bar -->
+        <div class="mb-3 d-block d-md-none">
+            <a href="{{ route('material_requests.bulk_create') }}" class="btn btn-success btn-sm w-100">
+                + Bulk Request
+            </a>
+        </div>
 
         @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -76,7 +90,9 @@
 @push('scripts')
     <script>
         $(document).ready(function() {
-            $('#datatable').DataTable();
+            $('#datatable').DataTable({
+                responsive: true
+            });
             // SweetAlert for delete confirmation
             $('.btn-delete').on('click', function(e) {
                 e.preventDefault();
