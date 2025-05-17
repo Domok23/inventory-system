@@ -57,6 +57,7 @@ Route::middleware(['auth'])->group(function () {
         return view('qr-scan');
     })->name('qr.scan');
     Route::post('/process-qr', [InventoryController::class, 'processQr'])->name('qr.process');
+    Route::get('/scan/{id}', [InventoryController::class, 'scanQr'])->name('inventory.scan');
 
     // Projects
     Route::resource('projects', ProjectController::class);

@@ -72,7 +72,7 @@ class InventoryController extends Controller
             }
 
             // **Point 5: Generate QR Code**
-            $qrContent = route('inventory.detail', ['id' => $inventory->id]); // Gunakan URL lengkap
+            $qrContent = route('inventory.scan', ['id' => $inventory->id]); // Gunakan URL lengkap
             $qrFileName = 'qr_' . uniqid() . '.svg';
             $qrImage = QrCode::format('svg')->size(200)->generate($qrContent);
             Storage::disk('public')->put('qrcodes/' . $qrFileName, $qrImage);
@@ -137,7 +137,7 @@ class InventoryController extends Controller
         $inventory->save();
 
         // **Point 5: Generate QR Code**
-        $qrContent = route('inventory.detail', ['id' => $inventory->id]); // URL lengkap
+        $qrContent = route('inventory.scan', ['id' => $inventory->id]); // URL lengkap
         $qrFileName = 'qr_' . uniqid() . '.svg';
         $qrImage = QrCode::format('svg')->size(200)->generate($qrContent);
         Storage::disk('public')->put('qrcodes/' . $qrFileName, $qrImage);
@@ -221,7 +221,7 @@ class InventoryController extends Controller
         }
 
         // Generate ulang QR code dengan URL detail material
-        $qrContent = route('inventory.detail', ['id' => $inventory->id]);
+        $qrContent = route('inventory.scan', ['id' => $inventory->id]);
         $qrFileName = 'qr_' . uniqid() . '.svg';
         $qrImage = QrCode::format('svg')->size(200)->generate($qrContent);
         Storage::disk('public')->put('qrcodes/' . $qrFileName, $qrImage);
@@ -273,5 +273,11 @@ class InventoryController extends Controller
     {
         $inventory = Inventory::findOrFail($id);
         return view('inventory.detail', compact('inventory'));
+    }
+
+    public function scanQr($id)
+    {
+        // Redirect ke detail inventory di domain saat ini
+        return redirect()->route('inventory.detail', ['id' => $id]);
     }
 }
