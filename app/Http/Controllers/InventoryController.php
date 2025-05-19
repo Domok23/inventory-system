@@ -35,9 +35,9 @@ class InventoryController extends Controller
 
     public function create()
     {
-        $currencies = Currency::all(); // Ambil semua currency dari database
-        $units = Unit::all(); // Ambil semua unit dari database
-        $categories = Category::all();
+        $currencies = Currency::orderBy('name')->get();
+        $units = Unit::orderBy('name')->get();
+        $categories = Category::orderBy('name')->get();
         return view('inventory.create', compact('currencies', 'units', 'categories'));
     }
 
@@ -177,9 +177,9 @@ class InventoryController extends Controller
     public function edit($id)
     {
         $inventory = Inventory::findOrFail($id);
-        $currencies = Currency::all(); // Ambil semua currency dari database
-        $units = Unit::all();
-        $categories = Category::all();
+        $currencies = Currency::orderBy('name')->get();
+        $units = Unit::orderBy('name')->get();
+        $categories = Category::orderBy('name')->get();
         return view('inventory.edit', compact('inventory', 'currencies', 'units', 'categories'));
     }
 

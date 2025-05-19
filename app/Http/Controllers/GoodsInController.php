@@ -67,8 +67,8 @@ class GoodsInController extends Controller
 
     public function createIndependent()
     {
-        $inventories = Inventory::all();
-        $projects = Project::all();
+        $inventories = Inventory::orderBy('name')->get();
+        $projects = Project::orderBy('name')->get();
         return view('goods_in.create_independent', compact('inventories', 'projects'));
     }
 
@@ -108,8 +108,8 @@ class GoodsInController extends Controller
 
     public function edit(GoodsIn $goods_in)
     {
-        $inventories = Inventory::all();
-        $projects = Project::all();
+        $inventories = Inventory::orderBy('name')->get();
+        $projects = Project::orderBy('name')->get();
         return view('goods_in.edit', compact('goods_in', 'inventories', 'projects'));
     }
 

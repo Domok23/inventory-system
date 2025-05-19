@@ -54,7 +54,7 @@
             </div>
             <div class="mb-3">
                 <label>Department</label>
-                <input type="text" class="form-control" id="department" value="{{ $goodsOut->department }}" readonly>
+                <input type="text" class="form-control" id="department" value="{{ $goodsOut->department }}" disabled>
             </div>
             <div class="mb-3">
                 <label for="remark" class="form-label">Remark</label>

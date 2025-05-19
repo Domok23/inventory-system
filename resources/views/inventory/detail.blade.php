@@ -19,7 +19,7 @@
                                 <td>{{ $inventory->quantity }} {{ $inventory->unit }}</td>
                             </tr>
                             <tr>
-                                <th>Price</th>
+                                <th>Unit Price</th>
                                 <td>{{ number_format($inventory->price, 2, ',', '.') }}</td>
                             </tr>
                             <tr>

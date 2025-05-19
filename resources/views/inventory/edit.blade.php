@@ -62,7 +62,7 @@
             <!-- Unit -->
             <div class="mb-3">
                 <label for="unit" class="form-label">Unit</label>
-                <select id="unit-select" class="form-select" name="unit">
+                <select id="unit-select" class="form-select select2" name="unit">
                     <option value="">Select Unit</option>
                     <option value="__new__">Add New Unit?</option>
                     @foreach ($units as $unit)
@@ -102,7 +102,7 @@
 
             <!-- Price -->
             <div class="mb-3">
-                <label for="price" class="form-label">Price (optional)</label>
+                <label for="price" class="form-label">Unit Price</label>
                 <input type="number" class="form-control" step="0.01" id="price" name="price"
                     value="{{ old('price', $inventory->price) }}">
                 @error('price')
@@ -241,6 +241,14 @@
                     document.querySelector('.select2-container--open .select2-search__field')
                         .focus();
                 }, 100);
+            });
+
+            // Inisialisasi Select2 untuk dropdown Category
+            $('#category_id').select2({
+                placeholder: 'Select Category',
+                allowClear: true,
+                width: '100%',
+                theme: 'bootstrap-5'
             });
 
             // Tampilkan input teks jika "Add New Unit" dipilih

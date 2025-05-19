@@ -21,7 +21,7 @@ class GoodsOutController extends Controller
     public function create($materialRequestId)
     {
         $materialRequest = MaterialRequest::with('inventory', 'project')->findOrFail($materialRequestId);
-        $inventories = Inventory::all();
+        $inventories = Inventory::orderBy('name')->get();
         return view('goods_out.create', compact('materialRequest', 'inventories'));
     }
 
@@ -79,9 +79,9 @@ class GoodsOutController extends Controller
 
     public function createIndependent()
     {
-        $inventories = Inventory::all();
-        $projects = Project::all();
-        $users = User::all()->map(function ($user) {
+        $inventories = Inventory::orderBy('name')->get();
+        $projects = Project::orderBy('name')->get();
+        $users = User::orderBy('username')->get()->map(function ($user) {
             $user->department = match ($user->role) {
                 'admin_mascot' => 'mascot',
                 'admin_costume' => 'costume',
@@ -143,8 +143,8 @@ class GoodsOutController extends Controller
     public function edit($id)
     {
         $goodsOut = GoodsOut::with('inventory', 'project')->findOrFail($id);
-        $inventories = Inventory::all();
-        $projects = Project::all();
+        $inventories = Inventory::orderBy('name')->get();
+        $projects = Project::orderBy('name')->get();
         $users = User::all()->map(function ($user) {
             $user->department = match ($user->role) {
                 'admin_mascot' => 'mascot',

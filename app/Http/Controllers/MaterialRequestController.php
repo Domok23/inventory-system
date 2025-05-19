@@ -29,8 +29,8 @@ class MaterialRequestController extends Controller
 
     public function create()
     {
-        $inventories = Inventory::all();
-        $projects = Project::all();
+        $inventories = Inventory::orderBy('name')->get();
+        $projects = Project::orderBy('name')->get();
         return view('material_requests.create', compact('inventories', 'projects'));
     }
 
@@ -65,8 +65,8 @@ class MaterialRequestController extends Controller
 
     public function bulkCreate()
     {
-        $inventories = Inventory::all();
-        $projects = Project::all();
+        $inventories = Inventory::orderBy('name')->get();
+        $projects = Project::orderBy('name')->get();
         return view('material_requests.bulk_create', compact('inventories', 'projects'));
     }
 
@@ -104,8 +104,8 @@ class MaterialRequestController extends Controller
     public function edit($id)
     {
         $request = MaterialRequest::findOrFail($id);
-        $inventories = Inventory::all();
-        $projects = Project::all();
+        $inventories = Inventory::orderBy('name')->get();
+        $projects = Project::orderBy('name')->get();
         return view('material_requests.edit', compact('request', 'inventories', 'projects'));
     }
 

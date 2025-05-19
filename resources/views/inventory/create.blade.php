@@ -27,6 +27,27 @@
             </div>
 
             <div class="mb-3">
+                <label for="category_id" class="form-label">Category</label>
+                <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal"
+                    style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .55rem;"
+                    data-bs-target="#addCategoryModal">
+                    + Add Category
+                </button>
+                <select name="category_id" id="category_id" class="form-select select2" required>
+                    <option value="">Select Category</option>
+                    @foreach ($categories as $cat)
+                        <option value="{{ $cat->id }}"
+                            {{ old('category_id', $inventory->category_id ?? '') == $cat->id ? 'selected' : '' }}>
+                            {{ $cat->name }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('category_id')
+                    <small class="text-danger">{{ $message }}</small>
+                @enderror
+            </div>
+
+            <div class="mb-3">
                 <label for="quantity" class="form-label">Quantity</label>
                 <input type="number" step="0.01" class="form-control" id="quantity" name="quantity"
                     value="{{ old('quantity') }}" required>
@@ -54,27 +75,6 @@
             </div>
 
             <div class="mb-3">
-                <label for="category_id" class="form-label">Category</label>
-                <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal"
-                    style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .55rem;"
-                    data-bs-target="#addCategoryModal">
-                    + Add Category
-                </button>
-                <select name="category_id" id="category_id" class="form-select select2" required>
-                    <option value="">Select Category</option>
-                    @foreach ($categories as $cat)
-                        <option value="{{ $cat->id }}"
-                            {{ old('category_id', $inventory->category_id ?? '') == $cat->id ? 'selected' : '' }}>
-                            {{ $cat->name }}
-                        </option>
-                    @endforeach
-                </select>
-                @error('category_id')
-                    <small class="text-danger">{{ $message }}</small>
-                @enderror
-            </div>
-
-            <div class="mb-3">
                 <label for="currency_id" class="form-label">Currency</label>
                 <button type="button" class="btn btn-outline-primary"
                     style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .55rem;"
@@ -96,7 +96,7 @@
             </div>
 
             <div class="mb-3">
-                <label for="price" class="form-label">Price</label>
+                <label for="price" class="form-label">Unit Price</label>
                 <input type="number" step="0.01" class="form-control" id="price" name="price"
                     value="{{ old('price') }}" required>
                 @error('price')
@@ -222,8 +222,8 @@
                 }
             });
         });
-    </script>
-    <script>
+
+        // Inisialisasi Select2 untuk dropdown Unit
         document.addEventListener('DOMContentLoaded', function() {
             // Inisialisasi Select2 untuk dropdown Unit
             $('#unit-select').select2({
@@ -233,7 +233,7 @@
             }).on('select2:open', function() {
                 setTimeout(function() {
                     document.querySelector('.select2-container--open .select2-search__field')
-                    .focus();
+                        .focus();
                 }, 100);
             });
 
@@ -251,10 +251,9 @@
                 }
             });
         });
-    </script>
-    <script>
+
+        // Inisialisasi Select2 untuk dropdown Kategori
         $(document).ready(function() {
-            // Inisialisasi select2 jika belum
             $('#category_id').select2({
                 theme: 'bootstrap-5',
                 placeholder: 'Select Category',
@@ -262,7 +261,7 @@
             }).on('select2:open', function() {
                 setTimeout(function() {
                     document.querySelector('.select2-container--open .select2-search__field')
-                    .focus();
+                        .focus();
                 }, 100);
             });
 
@@ -290,10 +289,8 @@
                 });
             });
         });
-    </script>
-    <script>
+
         $(document).ready(function() {
-            // Inisialisasi Select2
             $('#currency_id').select2({
                 theme: 'bootstrap-5',
                 placeholder: 'Select Currency',
@@ -301,7 +298,7 @@
             }).on('select2:open', function() {
                 setTimeout(function() {
                     document.querySelector('.select2-container--open .select2-search__field')
-                    .focus();
+                        .focus();
                 }, 100);
             });
         });
