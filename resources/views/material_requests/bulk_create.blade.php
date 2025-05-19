@@ -31,8 +31,8 @@
                         <tr>
                             <th style="width: 25%;">Project</th>
                             <th style="width: 25%;">Material</th>
-                            <th style="width: 15%;">Qty</th>
-                            <th style="width: 25%;">Remark (ops)</th>
+                            <th style="width: 15%;">Quantity</th>
+                            <th style="width: 25%;">Remark (optional)</th>
                             <th style="width: 10%;">Action</th>
                         </tr>
                     </thead>

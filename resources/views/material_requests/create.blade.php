@@ -57,7 +57,7 @@
                 </select>
             </div>
             <div class="mb-3">
-                <label>Quantity</label>
+                <label>Requested Quantity</label>
                 <div class="input-group">
                     <input type="number" name="qty" class="form-control" step="0.01" required>
                     <span class="input-group-text unit-label">unit</span>
@@ -115,7 +115,7 @@
                         <div class="modal-body">
                             <label>Project Name</label>
                             <input type="text" name="name" class="form-control" required>
-                            <label class="mt-2">Qty</label>
+                            <label class="mt-2">Quantity</label>
                             <input type="number" step="1" name="qty" class="form-control">
                             <label class="mt-2">Department</label>
                             <select name="department" class="form-select" required>

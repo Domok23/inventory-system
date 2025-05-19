@@ -32,7 +32,7 @@
                     <th style="width: 20px;" class="text-center align-middle">#</th>
                     <th>Project</th>
                     <th>Material</th>
-                    <th>Quantity</th>
+                    <th>Requested Quantity</th>
                     <th>Requested By</th>
                     <th>Status</th>
                     <th>Remark</th>

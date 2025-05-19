@@ -59,7 +59,7 @@
             </div>
 
             <div class="mb-3">
-                <label>Quantity</label>
+                <label>Requested Quantity</label>
                 <div class="input-group">
                     <input type="number" name="qty" class="form-control" value="{{ $request->qty }}" step="0.01"
                         required>

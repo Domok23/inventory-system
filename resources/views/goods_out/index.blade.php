@@ -3,7 +3,7 @@
 @section('content')
     <div class="container">
         <div class="d-flex align-items-center mb-3 gap-2">
-            <h2 class="mb-0 flex-shrink-0" style="font-size:1.5rem;">Goods In</h2>
+            <h2 class="mb-0 flex-shrink-0" style="font-size:1.5rem;"><i class="bi bi-arrow-up-circle"></i> Goods Out Records</h2>
             <a href="{{ route('goods_out.create_independent') }}" class="btn btn-outline-primary btn-sm flex-shrink-0 ms-2">+
                 Create Goods Out</a>
         </div>
