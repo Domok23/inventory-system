@@ -29,9 +29,6 @@ return new class extends Migration
         Schema::table('material_requests', function (Blueprint $table) {
             $table->softDeletes();
         });
-        Schema::table('categories', function (Blueprint $table) {
-            $table->softDeletes();
-        });
         Schema::table('currencies', function (Blueprint $table) {
             $table->softDeletes();
         });
@@ -58,12 +55,6 @@ return new class extends Migration
             $table->dropSoftDeletes();
         });
         Schema::table('material_requests', function (Blueprint $table) {
-            $table->dropSoftDeletes();
-        });
-        Schema::table('categories', function (Blueprint $table) {
-            $table->dropSoftDeletes();
-        });
-        Schema::table('currencies', function (Blueprint $table) {
             $table->dropSoftDeletes();
         });
     }

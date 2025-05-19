@@ -4,7 +4,8 @@
     <div class="container">
         <div class="d-flex align-items-center mb-3 gap-2">
             <h2 class="mb-0 flex-shrink-0" style="font-size:1.5rem;">Goods In</h2>
-            <a href="{{ route('goods_out.create_independent') }}" class="btn btn-outline-primary btn-sm flex-shrink-0 ms-2">+ Create Goods Out</a>
+            <a href="{{ route('goods_out.create_independent') }}" class="btn btn-outline-primary btn-sm flex-shrink-0 ms-2">+
+                Create Goods Out</a>
         </div>
         @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -28,10 +29,11 @@
                 @foreach ($goodsOuts as $goodsOut)
                     <tr>
                         <td class="text-center align-middle">{{ $loop->iteration }}</td>
-                        <td class="align-middle">{{ $goodsOut->inventory->name }}</td>
-                        <td class="align-middle">{{ $goodsOut->quantity }} {{ $goodsOut->inventory->unit }}</td>
-                        <td class="align-middle">{{ $goodsOut->project->name }}</td>
-                        <td class="align-middle">{{ ucfirst($goodsOut->requested_by) }} ({{ ucfirst($goodsOut->department) }})</td>
+                        <td class="align-middle">{{ $goodsOut->inventory->name ?? '-' }}</td>
+                        <td class="align-middle">{{ $goodsOut->quantity }} {{ $goodsOut->inventory->unit ?? '-' }}</td>
+                        <td class="align-middle">{{ $goodsOut->project->name ?? '-' }}</td>
+                        <td class="align-middle">{{ ucfirst($goodsOut->requested_by) }}
+                            ({{ ucfirst($goodsOut->department) }})</td>
                         <td class="align-middle">
                             @if ($goodsOut->remark)
                                 {{ $goodsOut->remark }}
@@ -72,7 +74,7 @@
             });
 
             // SweetAlert for delete confirmation
-            $('.btn-delete').on('click', function(e) {
+            $(document).on('click', '.btn-delete', function(e) {
                 e.preventDefault();
                 let form = $(this).closest('form');
                 Swal.fire({

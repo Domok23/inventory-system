@@ -10,7 +10,6 @@ use App\Models\Project;
 use App\Models\User;
 use App\Models\MaterialUsage;
 use App\Models\MaterialRequest;
-use App\Models\Category;
 use App\Models\Currency;
 
 class TrashController extends Controller
@@ -25,7 +24,6 @@ class TrashController extends Controller
             'users'            => User::onlyTrashed()->get(),
             'materialUsages'   => MaterialUsage::onlyTrashed()->get(),
             'materialRequests' => MaterialRequest::onlyTrashed()->get(),
-            'categories'       => Category::onlyTrashed()->get(),
             'currencies'       => Currency::onlyTrashed()->get(),
         ]);
     }
@@ -64,7 +62,6 @@ class TrashController extends Controller
             'user'             => User::class,
             'material_usage'   => MaterialUsage::class,
             'material_request' => MaterialRequest::class,
-            'category'         => Category::class,
             'currency'         => Currency::class,
             default            => null,
         };

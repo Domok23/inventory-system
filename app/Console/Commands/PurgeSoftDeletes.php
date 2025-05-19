@@ -11,7 +11,6 @@ use App\Models\Project;
 use App\Models\User;
 use App\Models\MaterialUsage;
 use App\Models\MaterialRequest;
-use App\Models\Category;
 use App\Models\Currency;
 
 class PurgeSoftDeletes extends Command
@@ -29,7 +28,6 @@ class PurgeSoftDeletes extends Command
             User::class,
             MaterialUsage::class,
             MaterialRequest::class,
-            Category::class,
             Currency::class,
         ];
 

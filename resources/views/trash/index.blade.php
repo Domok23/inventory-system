@@ -18,11 +18,10 @@
             'users' => 'User',
             'materialUsages' => 'Material Usage',
             'materialRequests' => 'Material Request',
-            'categories' => 'Category',
             'currencies' => 'Currency',
         ] as $var => $label)
             <h4 class="mt-4">{{ $label }}</h4>
-            <table class="table table-bordered table-sm align-middle">
+            <table class="table table-bordered table-sm align-middle" id="table-{{ $var }}">
                 <thead>
                     <tr>
                         <th>#</th>
@@ -61,7 +60,6 @@
                                             'users' => 'user',
                                             'materialUsages' => 'material_usage',
                                             'materialRequests' => 'material_request',
-                                            'categories' => 'category',
                                             'currencies' => 'currency',
                                         ][$var] }}">
                                     <input type="hidden" name="id" value="{{ $item->id }}">
@@ -80,7 +78,6 @@
                                             'users' => 'user',
                                             'materialUsages' => 'material_usage',
                                             'materialRequests' => 'material_request',
-                                            'categories' => 'category',
                                             'currencies' => 'currency',
                                         ][$var] }}">
                                     <input type="hidden" name="id" value="{{ $item->id }}">
@@ -98,3 +95,26 @@
         @endforeach
     </div>
 @endsection
+@push('scripts')
+    <script>
+        $(document).ready(function() {
+            @foreach ([
+                'inventories',
+                'goodsIns',
+                'goodsOuts',
+                'projects',
+                'users',
+                'materialUsages',
+                'materialRequests',
+                'categories',
+                'currencies'
+            ] as $var)
+                $('#table-{{ $var }}').DataTable({
+                    responsive: true,
+                    order: [],
+                    pageLength: 10
+                });
+            @endforeach
+        });
+    </script>
+@endpush
