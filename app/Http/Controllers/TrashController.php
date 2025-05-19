@@ -66,4 +66,31 @@ class TrashController extends Controller
             default            => null,
         };
     }
+    public function bulkAction(Request $request)
+    {
+        $ids = $request->input('selected_ids', []);
+        $modelMap = $request->input('model_map', []);
+        $action = $request->input('action');
+
+        if (!$ids || !$action) {
+            return back()->with('error', 'No items selected or invalid action.');
+        }
+
+        foreach ($ids as $id) {
+            $model = $modelMap[$id] ?? null;
+            $modelClass = $this->getModelClass($model);
+            if ($modelClass) {
+                $item = $modelClass::onlyTrashed()->find($id);
+                if ($item) {
+                    if ($action === 'restore') {
+                        $item->restore();
+                    } elseif ($action === 'delete') {
+                        $item->forceDelete();
+                    }
+                }
+            }
+        }
+
+        return back()->with('success', 'Bulk action completed.');
+    }
 }

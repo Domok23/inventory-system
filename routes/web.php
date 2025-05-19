@@ -105,4 +105,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/trash', [TrashController::class, 'index'])->name('trash.index');
     Route::post('/trash/restore', [TrashController::class, 'restore'])->name('trash.restore');
     Route::delete('/trash/force-delete', [TrashController::class, 'forceDelete'])->name('trash.forceDelete');
+    Route::post('/trash/bulk-action', [TrashController::class, 'bulkAction'])->name('trash.bulkAction');
+    Route::get('/trash/{id}/details', [TrashController::class, 'show'])->name('trash.show');
 });
