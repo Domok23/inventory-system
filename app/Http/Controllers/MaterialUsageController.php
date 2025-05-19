@@ -9,7 +9,7 @@ class MaterialUsageController extends Controller
 {
     public function index()
     {
-        $usages = MaterialUsage::with('inventory', 'project')->get();
+        $usages = MaterialUsage::with('inventory', 'project')->orderBy('created_at', 'desc')->get();
         return view('material_usage.index', compact('usages'));
     }
 

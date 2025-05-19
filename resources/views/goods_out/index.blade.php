@@ -20,6 +20,7 @@
                     <th>Quantity</th>
                     <th>For Project</th>
                     <th>Requested By</th>
+                    <th>Remark</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -31,6 +32,13 @@
                         <td class="align-middle">{{ $goodsOut->quantity }} {{ $goodsOut->inventory->unit }}</td>
                         <td class="align-middle">{{ $goodsOut->project->name }}</td>
                         <td class="align-middle">{{ ucfirst($goodsOut->requested_by) }} ({{ ucfirst($goodsOut->department) }})</td>
+                        <td class="align-middle">
+                            @if ($goodsOut->remark)
+                                {{ $goodsOut->remark }}
+                            @else
+                                <span class="text-danger">-</span>
+                            @endif
+                        </td>
                         <td>
                             @if ($goodsOut->quantity > 0)
                                 <a href="{{ route('goods_in.create', ['goods_out_id' => $goodsOut->id]) }}"

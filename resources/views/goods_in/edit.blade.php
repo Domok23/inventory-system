@@ -43,6 +43,10 @@
                     Current: {{ \Carbon\Carbon::parse($goods_in->returned_at)->format('d-m-Y, H:i') }}
                 </small>
             </div>
+            <div class="mb-3">
+                <label for="remark" class="form-label">Remark</label>
+                <textarea name="remark" id="remark" class="form-control">{{ old('remark', $goodsIn->remark ?? '') }}</textarea>
+            </div>
             <button type="submit" class="btn btn-primary">Update</button>
             <a href="{{ route('goods_in.index') }}" class="btn btn-secondary">Cancel</a>
         </form>
@@ -67,7 +71,7 @@
                         .focus();
                 }, 100);
             });
-            
+
             // Update unit label dynamically when material is selected
             $('select[name="inventory_id"]').on('change', function() {
                 const selectedUnit = $(this).find(':selected').data('unit');

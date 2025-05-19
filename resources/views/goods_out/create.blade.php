@@ -50,6 +50,10 @@
                 <label>Department</label>
                 <input type="text" class="form-control" value="{{ ucfirst($materialRequest->department) }}" disabled>
             </div>
+            <div class="mb-3">
+                <label for="remark" class="form-label">Remark</label>
+                <textarea name="remark" id="remark" class="form-control" rows="2">{{ old('remark') }}</textarea>
+            </div>
             <button type="submit" class="btn btn-success">Submit</button>
             <a href="{{ route('material_requests.index') }}" class="btn btn-secondary">Cancel</a>
         </form>

@@ -29,7 +29,7 @@ class InventoryController extends Controller
 
     public function index()
     {
-        $inventories = Inventory::all();
+        $inventories = Inventory::orderBy('created_at', 'desc')->get();
         return view('inventory.index', compact('inventories'));
     }
 

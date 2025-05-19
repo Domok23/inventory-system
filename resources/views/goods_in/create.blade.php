@@ -34,6 +34,10 @@
                 <label>Returned By</label>
                 <input type="text" class="form-control" value="{{ auth()->user()->username }}" disabled>
             </div>
+            <div class="mb-3">
+                <label>Remark</label>
+                <textarea name="remark" class="form-control" rows="3">{{ old('remark') }}</textarea>
+            </div>
             <button type="submit" class="btn btn-success">Submit</button>
             <a href="{{ route('goods_in.index') }}" class="btn btn-secondary">Cancel</a>
         </form>

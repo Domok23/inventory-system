@@ -54,7 +54,11 @@
             </div>
             <div class="mb-3">
                 <label>Department</label>
-                <input type="text" class="form-control" id="department" value="{{ $goodsOut->department }}" disabled>
+                <input type="text" class="form-control" id="department" value="{{ $goodsOut->department }}" readonly>
+            </div>
+            <div class="mb-3">
+                <label for="remark" class="form-label">Remark</label>
+                <textarea name="remark" id="remark" class="form-control" rows="2">{{ old('remark', $goodsOut->remark ?? '') }}</textarea>
             </div>
             <button type="submit" class="btn btn-success">Update</button>
             <a href="{{ route('goods_out.index') }}" class="btn btn-secondary">Cancel</a>
@@ -79,7 +83,7 @@
             }).on('select2:open', function() {
                 setTimeout(function() {
                     document.querySelector('.select2-container--open .select2-search__field')
-                    .focus();
+                        .focus();
                 }, 100);
             });
 

@@ -14,7 +14,7 @@ class GoodsOutController extends Controller
 {
     public function index()
     {
-        $goodsOuts = GoodsOut::with('inventory', 'project', 'materialRequest')->get();
+        $goodsOuts = GoodsOut::with('inventory', 'project', 'materialRequest')->orderBy('created_at', 'desc')->get();
         return view('goods_out.index', compact('goodsOuts'));
     }
 
@@ -30,6 +30,7 @@ class GoodsOutController extends Controller
         $request->validate([
             'material_request_id' => 'required|exists:material_requests,id',
             'quantity' => 'required|numeric|min:0.01',
+            'remark' => 'nullable|string',
         ]);
 
         $materialRequest = MaterialRequest::findOrFail($request->material_request_id);
@@ -61,6 +62,7 @@ class GoodsOutController extends Controller
             'requested_by' => $materialRequest->requested_by,
             'department' => $materialRequest->department,
             'quantity' => $request->quantity,
+            'remark' => $request->remark,
         ]);
 
         // Update status material request jika selesai
@@ -99,6 +101,7 @@ class GoodsOutController extends Controller
             'project_id' => 'required|exists:projects,id',
             'user_id' => 'required|exists:users,id',
             'quantity' => 'required|numeric|min:0.01',
+            'remark' => 'nullable|string',
         ]);
 
         $inventory = Inventory::findOrFail($request->inventory_id);
@@ -129,6 +132,7 @@ class GoodsOutController extends Controller
             'requested_by' => $user->username,
             'department' => $department, // Pastikan department diteruskan
             'quantity' => $request->quantity,
+            'remark' => $request->remark,
         ]);
 
         MaterialUsageHelper::sync($goodsOut->inventory_id, $goodsOut->project_id);
@@ -162,6 +166,7 @@ class GoodsOutController extends Controller
             'project_id' => 'required|exists:projects,id',
             'user_id' => 'required|exists:users,id',
             'quantity' => 'required|numeric|min:0.01',
+            'remark' => 'nullable|string',
         ]);
 
         $goodsOut = GoodsOut::findOrFail($id);
@@ -171,13 +176,6 @@ class GoodsOutController extends Controller
         $inventory = Inventory::findOrFail($request->inventory_id);
 
         $user = User::findOrFail($request->user_id);
-        $department = match ($user->role) {
-            'admin_mascot' => 'mascot',
-            'admin_costume' => 'costume',
-            'admin_logistic' => 'logistic',
-            'super_admin' => 'management',
-            default => 'general',
-        };
 
         // Kembalikan stok lama ke inventory
         $oldQuantity = $goodsOut->quantity;
@@ -197,8 +195,15 @@ class GoodsOutController extends Controller
             'inventory_id' => $request->inventory_id,
             'project_id' => $request->project_id,
             'requested_by' => $user->username,
-            'department' => $user->department,
+            'department' => match ($user->role) {
+                'admin_mascot' => 'mascot',
+                'admin_costume' => 'costume',
+                'admin_logistic' => 'logistic',
+                'super_admin' => 'management',
+                default => 'general',
+            },
             'quantity' => $request->quantity,
+            'remark' => $request->remark,
         ]);
 
         MaterialUsageHelper::sync($goodsOut->inventory_id, $goodsOut->project_id);

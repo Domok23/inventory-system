@@ -13,7 +13,7 @@ class GoodsInController extends Controller
 {
     public function index()
     {
-        $goodsIns = GoodsIn::with(['goodsOut.inventory', 'goodsOut.project', 'inventory', 'project'])->get();
+        $goodsIns = GoodsIn::with(['goodsOut.inventory', 'goodsOut.project', 'inventory', 'project'])->orderBy('created_at', 'desc')->get();
         return view('goods_in.index', compact('goodsIns'));
     }
 
@@ -30,6 +30,7 @@ class GoodsInController extends Controller
             'goods_out_id' => 'required|exists:goods_out,id',
             'quantity' => 'required|numeric|min:0.01',
             'returned_at' => 'required',
+            'remark' => 'nullable|string',
         ]);
 
         $goodsOut = GoodsOut::findOrFail($request->goods_out_id);
@@ -51,11 +52,12 @@ class GoodsInController extends Controller
         // Simpan Goods In (tambahkan inventory_id dan project_id)
         GoodsIn::create([
             'goods_out_id' => $goodsOut->id,
-            'inventory_id' => $goodsOut->inventory_id, 
+            'inventory_id' => $goodsOut->inventory_id,
             'project_id' => $goodsOut->project_id,
             'quantity' => $request->quantity,
             'returned_by' => auth()->user()->username,
             'returned_at' => $request->returned_at,
+            'remark' => $request->remark,
         ]);
 
         MaterialUsageHelper::sync($inventory->id, $goodsOut->project_id);
@@ -74,9 +76,10 @@ class GoodsInController extends Controller
     {
         $request->validate([
             'inventory_id' => 'required|exists:inventories,id',
-            'project_id' => 'required|exists:projects,id',
+            'project_id' => 'nullable|exists:projects,id',
             'quantity' => 'required|numeric|min:0.01',
             'returned_at' => 'required',
+            'remark' => 'nullable|string',
         ]);
 
         $inventory = Inventory::findOrFail($request->inventory_id);
@@ -93,9 +96,12 @@ class GoodsInController extends Controller
             'quantity' => $request->quantity,
             'returned_by' => auth()->user()->username,
             'returned_at' => $request->returned_at,
+            'remark' => $request->remark,
         ]);
 
-        MaterialUsageHelper::sync($request->inventory_id, $request->project_id);
+        if ($request->filled('project_id')) {
+            MaterialUsageHelper::sync($request->inventory_id, $request->project_id);
+        }
 
         return redirect()->route('goods_in.index')->with('success', 'Goods In created successfully.');
     }
@@ -111,9 +117,10 @@ class GoodsInController extends Controller
     {
         $request->validate([
             'inventory_id' => 'required|exists:inventories,id',
-            'project_id' => 'required|exists:projects,id',
+            'project_id' => 'nullable|exists:projects,id',
             'quantity' => 'required|numeric|min:0.01',
             'returned_at' => 'required',
+            'remark' => 'nullable|string',
         ]);
 
         $goods_in->update([
@@ -121,7 +128,12 @@ class GoodsInController extends Controller
             'project_id' => $request->project_id,
             'quantity' => $request->quantity,
             'returned_at' => $request->returned_at,
+            'remark' => $request->remark,
         ]);
+
+        if ($request->filled('project_id')) {
+            MaterialUsageHelper::sync($request->inventory_id, $request->project_id);
+        }
 
         return redirect()->route('goods_in.index')->with('success', 'Goods In updated successfully.');
     }

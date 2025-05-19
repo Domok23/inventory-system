@@ -154,6 +154,16 @@
                                     </a>
                                 </li>
                             @endif
+                            @auth
+                                @if (auth()->user()->role === 'super_admin')
+                                    <li class="nav-item">
+                                        <a class="nav-link {{ request()->routeIs('trash.index') ? 'active' : '' }}"
+                                            href="{{ route('trash.index') }}">
+                                            <i class="bi bi-trash"></i> Trash
+                                        </a>
+                                    </li>
+                                @endif
+                            @endauth
                         @endif
                     </ul>
 

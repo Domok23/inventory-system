@@ -28,21 +28,25 @@
             </div>
             <div class="mb-3">
                 <label>Project</label>
-                <select name="project_id" class="form-select select2" required>
-                    <option value="">Select Project</option>
+                <select name="project_id" class="form-select select2">
+                    <option value="">No Project (Restock/Supplier)</option>
                     @foreach ($projects as $project)
                         <option value="{{ $project->id }}">{{ $project->name }}</option>
                     @endforeach
                 </select>
             </div>
             <div class="mb-3">
-                <label>Returned At</label>
+                <label>Returned/In At</label>
                 <input type="datetime-local" name="returned_at" class="form-control"
                     value="{{ old('returned_at', \Carbon\Carbon::now()->format('Y-m-d\TH:i')) }}" required>
             </div>
             <div class="mb-3">
-                <label>Returned By</label>
+                <label>Returned/In By</label>
                 <input type="text" class="form-control" value="{{ auth()->user()->username }}" disabled>
+            </div>
+            <div class="mb-3">
+                <label>Remark</label>
+                <textarea name="remark" class="form-control" rows="3">{{ old('remark') }}</textarea>
             </div>
             <button type="submit" class="btn btn-success">Submit</button>
             <a href="{{ route('goods_in.index') }}" class="btn btn-secondary">Cancel</a>
@@ -62,7 +66,9 @@
         $(document).ready(function() {
             $('.select2').select2({
                 theme: 'bootstrap-5',
-                placeholder: 'Select an option',
+                placeholder: function() {
+                    return $(this).data('placeholder');
+                },
                 allowClear: true,
             }).on('select2:open', function() {
                 setTimeout(function() {

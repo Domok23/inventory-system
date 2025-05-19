@@ -12,6 +12,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\MaterialUsageController;
 use App\Http\Controllers\MaterialRequestController;
+use App\Http\Controllers\TrashController;
 
 /*
 |--------------------------------------------------------------------------
@@ -99,4 +100,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('goods_in/{goods_in}/edit', [GoodsInController::class, 'edit'])->name('goods_in.edit');
     Route::put('goods_in/{goods_in}', [GoodsInController::class, 'update'])->name('goods_in.update');
     Route::delete('goods_in/{goods_in}', [GoodsInController::class, 'destroy'])->name('goods_in.destroy');
+
+    // Trash
+    Route::get('/trash', [TrashController::class, 'index'])->name('trash.index');
+    Route::post('/trash/restore', [TrashController::class, 'restore'])->name('trash.restore');
+    Route::delete('/trash/force-delete', [TrashController::class, 'forceDelete'])->name('trash.forceDelete');
 });

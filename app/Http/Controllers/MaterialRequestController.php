@@ -23,7 +23,7 @@ class MaterialRequestController extends Controller
 
     public function index()
     {
-        $requests = MaterialRequest::with('inventory', 'project')->get();
+        $requests = MaterialRequest::with('inventory', 'project')->orderBy('created_at', 'desc')->get();
         return view('material_requests.index', compact('requests'));
     }
 

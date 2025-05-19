@@ -4,9 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class GoodsOut extends Model
 {
+    use SoftDeletes;
     use HasFactory;
 
     protected $table = 'goods_out'; // Pastikan nama tabel sesuai dengan database
@@ -18,6 +20,7 @@ class GoodsOut extends Model
         'requested_by',
         'department',
         'quantity',
+        'remark',
     ];
 
     public function materialRequest()
