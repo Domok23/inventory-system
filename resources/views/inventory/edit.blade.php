@@ -38,7 +38,7 @@
 
             <div class="mb-3">
                 <label for="category_id" class="form-label">Category</label>
-                <select name="category_id" id="category_id" class="form-select" required>
+                <select name="category_id" id="category_id" class="form-select select2" required>
                     <option value="">Select Category</option>
                     @foreach ($categories as $category)
                         <option value="{{ $category->id }}"
@@ -156,7 +156,7 @@
                     @csrf
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="currencyModalLabel">Add/Edit Currency</h5>
+                            <h5 class="modal-title" id="currencyModalLabel">Add Currency</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                 aria-label="Close"></button>
                         </div>
@@ -227,10 +227,9 @@
                 }
             });
         });
-    </script>
-    <script>
+
+        // Inisialisasi Select2 untuk dropdown Unit
         document.addEventListener('DOMContentLoaded', function() {
-            // Inisialisasi Select2 untuk dropdown Unit
             $('#unit-select').select2({
                 placeholder: 'Select Unit',
                 allowClear: true,
@@ -241,14 +240,6 @@
                     document.querySelector('.select2-container--open .select2-search__field')
                         .focus();
                 }, 100);
-            });
-
-            // Inisialisasi Select2 untuk dropdown Category
-            $('#category_id').select2({
-                placeholder: 'Select Category',
-                allowClear: true,
-                width: '100%',
-                theme: 'bootstrap-5'
             });
 
             // Tampilkan input teks jika "Add New Unit" dipilih
@@ -263,6 +254,84 @@
                     unitInput.removeAttribute('required');
                     unitInput.value = ''; // Reset nilai input teks
                 }
+            });
+        });
+
+        // Inisialisasi Select2 untuk dropdown Category
+        $(document).ready(function() {
+            $('#category_id').select2({
+                theme: 'bootstrap-5',
+                placeholder: 'Select Category',
+                allowClear: true
+            }).on('select2:open', function() {
+                setTimeout(function() {
+                    document.querySelector('.select2-container--open .select2-search__field')
+                        .focus();
+                }, 100);
+            });
+
+            // Submit form kategori via AJAX
+            $('#categoryForm').on('submit', function(e) {
+                e.preventDefault();
+                let form = $(this);
+                $.ajax({
+                    url: form.attr('action'),
+                    method: 'POST',
+                    data: form.serialize(),
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    success: function(category) {
+                        // Tambahkan ke select2 dan pilih otomatis
+                        let newOption = new Option(category.name, category.id, true, true);
+                        $('#category_id').append(newOption).trigger('change');
+                        $('#addCategoryModal').modal('hide');
+                        form[0].reset();
+                    },
+                    error: function(xhr) {
+                        alert('Failed to add category: ' + xhr.responseJSON.message);
+                    }
+                });
+            });
+        });
+
+        // Inisialisasi Select2 untuk dropdown Currency
+        $(document).ready(function() {
+            $('#currency_id').select2({
+                theme: 'bootstrap-5',
+                placeholder: 'Select Currency',
+                allowClear: true
+            }).on('select2:open', function() {
+                setTimeout(function() {
+                    document.querySelector('.select2-container--open .select2-search__field')
+                        .focus();
+                }, 100);
+            });
+        });
+        
+        // Quick Add Currency AJAX
+        $(document).ready(function() {
+            $('#currencyForm').on('submit', function(e) {
+                e.preventDefault();
+                let form = $(this);
+                $.ajax({
+                    url: form.attr('action'),
+                    method: 'POST',
+                    data: form.serialize(),
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    success: function(currency) {
+                        // Tambahkan ke select2 dan pilih otomatis
+                        let newOption = new Option(currency.name, currency.id, true, true);
+                        $('#currency_id').append(newOption).val(currency.id).trigger('change');
+                        $('#currencyModal').modal('hide');
+                        form[0].reset();
+                    },
+                    error: function(xhr) {
+                        alert('Failed to add currency: ' + (xhr.responseJSON?.message || ''));
+                    }
+                });
             });
         });
     </script>

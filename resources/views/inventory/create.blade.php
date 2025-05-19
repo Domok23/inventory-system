@@ -290,6 +290,7 @@
             });
         });
 
+        // Inisialisasi Select2 untuk dropdown Currency
         $(document).ready(function() {
             $('#currency_id').select2({
                 theme: 'bootstrap-5',
@@ -300,6 +301,31 @@
                     document.querySelector('.select2-container--open .select2-search__field')
                         .focus();
                 }, 100);
+            });
+        });
+        // Quick Add Currency AJAX
+        $(document).ready(function() {
+            $('#currencyForm').on('submit', function(e) {
+                e.preventDefault();
+                let form = $(this);
+                $.ajax({
+                    url: form.attr('action'),
+                    method: 'POST',
+                    data: form.serialize(),
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    success: function(currency) {
+                        // Tambahkan ke select2 dan pilih otomatis
+                        let newOption = new Option(currency.name, currency.id, true, true);
+                        $('#currency_id').append(newOption).val(currency.id).trigger('change');
+                        $('#currencyModal').modal('hide');
+                        form[0].reset();
+                    },
+                    error: function(xhr) {
+                        alert('Failed to add currency: ' + (xhr.responseJSON?.message || ''));
+                    }
+                });
             });
         });
     </script>

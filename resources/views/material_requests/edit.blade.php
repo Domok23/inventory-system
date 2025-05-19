@@ -48,7 +48,7 @@
                 <select name="inventory_id" class="form-select select2" required>
                     @foreach ($inventories as $inv)
                         <option value="{{ $inv->id }}" data-unit="{{ $inv->unit }}"
-                            {{ $request->inv_id == $inv->id ? 'selected' : '' }}>
+                            {{ old('inventory_id', $request->inventory_id) == $inv->id ? 'selected' : '' }}>
                             {{ $inv->name }}
                         </option>
                     @endforeach

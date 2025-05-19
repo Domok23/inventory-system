@@ -156,17 +156,15 @@ class InventoryController extends Controller
             'quantity' => 'required|numeric|min:0',
             'unit' => 'required|string',
         ]);
-
-        $unit = Unit::firstOrCreate(['name' => $request->unit]); // Cek atau buat unit baru
-        Inventory::create([
+        $unit = Unit::firstOrCreate(['name' => $request->unit]);
+        $material = Inventory::create([
             'name'     => $request->name,
             'quantity' => $request->quantity,
-            'unit'     => $unit->name, // Gunakan nama unit yang ada atau baru dibuat
+            'unit'     => $unit->name,
             'price'    => $request->price ?? 0,
             'status'   => 'pending',
         ]);
-
-        return back()->with('success', 'Material added');
+        return response()->json(['success' => true, 'material' => $material]);
     }
 
     public function json()

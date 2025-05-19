@@ -57,12 +57,18 @@ class ProjectController extends Controller
             'department' => 'required|string',
         ]);
 
-        Project::create([
+        $project = Project::create([
             'name'       => $request->name,
             'qty'        => $request->qty,
             'department' => $request->department,
         ]);
 
+        // Jika request AJAX, kembalikan JSON
+        if ($request->ajax()) {
+            return response()->json(['success' => true, 'project' => $project]);
+        }
+
+        // Jika bukan AJAX, redirect biasa
         return back()->with('success', 'Project added');
     }
 

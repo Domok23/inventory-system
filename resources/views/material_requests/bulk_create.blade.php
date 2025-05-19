@@ -5,10 +5,12 @@
         <h4 class="mb-3">Bulk Material Request</h4>
 
         <div class="mb-3">
-            <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addMaterialModal">+
-                Quick Add Material</button>
-            <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#addProjectModal">+
+            <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal"
+                data-bs-target="#quickAddProjectModal">+
                 Quick Add Project</button>
+            <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                data-bs-target="#quickAddMaterialModal">+
+                Quick Add Material</button>
         </div>
 
         @if ($errors->any())
@@ -109,9 +111,10 @@
     </div>
 
     <!-- Add Material Modal -->
-    <div class="modal fade" id="addMaterialModal" tabindex="-1" aria-labelledby="addMaterialModalLabel" aria-hidden="true">
+    <div class="modal fade" id="quickAddMaterialModal" tabindex="-1" aria-labelledby="quickAddMaterialModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog">
-            <form method="POST" action="{{ route('inventories.store.quick') }}">
+            <form id="quickAddMaterialForm" method="POST" action="{{ route('inventories.store.quick') }}">
                 @csrf
                 <div class="modal-content">
                     <div class="modal-header">
@@ -134,10 +137,10 @@
         </div>
     </div>
     <!-- Add Project Modal -->
-    <div class="modal fade" id="addProjectModal" tabindex="-1" aria-labelledby="addProjectModalLabel"
+    <div class="modal fade" id="quickAddProjectModal" tabindex="-1" aria-labelledby="quickAddProjectModalLabel"
         aria-hidden="true">
         <div class="modal-dialog">
-            <form method="POST" action="{{ route('projects.store.quick') }}">
+            <form id="quickAddProjectForm" method="POST" action="{{ route('projects.store.quick') }}">
                 @csrf
                 <div class="modal-content">
                     <div class="modal-header">
@@ -223,9 +226,9 @@
                     // Jika ini adalah select project, salin nilai yang dipilih
                     if ($(this).hasClass('project-select')) {
                         let selectedValue = $('#bulk-rows tr').first().find('.project-select')
-                    .val(); // Ambil nilai dari baris pertama
+                            .val(); // Ambil nilai dari baris pertama
                         $(this).val(selectedValue).trigger(
-                        'change'); // Tetapkan nilai yang sama di baris baru
+                            'change'); // Tetapkan nilai yang sama di baris baru
                     } else {
                         $(this).val(null).trigger('change'); // Reset untuk select lainnya
                     }
@@ -255,6 +258,80 @@
                 if ($('#bulk-rows tr').length > 1) {
                     $(this).closest('tr').remove();
                 }
+            });
+        });
+
+        $(document).ready(function() {
+            // Quick Add Project (Bulk)
+            $('#quickAddProjectForm').on('submit', function(e) {
+                e.preventDefault();
+                let form = $(this);
+                $.ajax({
+                    url: form.attr('action'),
+                    method: 'POST',
+                    data: form.serialize(),
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    success: function(res) {
+                        if (res.success && res.project) {
+                            // Tambahkan ke semua select2 project di setiap row
+                            $('.project-select').each(function() {
+                                let exists = $(this).find('option[value="' + res.project
+                                    .id + '"]').length;
+                                if (!exists) {
+                                    let newOption = new Option(res.project.name, res
+                                        .project.id, false, false);
+                                    $(this).append(newOption);
+                                }
+                            });
+                            // Pilih otomatis di row terakhir
+                            $('.project-select').last().val(res.project.id).trigger('change');
+                            $('#quickAddProjectForm').closest('.modal').modal('hide');
+                            form[0].reset();
+                        } else {
+                            alert('Failed to add project');
+                        }
+                    },
+                    error: function() {
+                        alert('Failed to add project');
+                    }
+                });
+            });
+
+            // Quick Add Material (Bulk)
+            $('#quickAddMaterialForm').on('submit', function(e) {
+                e.preventDefault();
+                let form = $(this);
+                $.ajax({
+                    url: form.attr('action'),
+                    method: 'POST',
+                    data: form.serialize(),
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    success: function(res) {
+                        if (res.success && res.material) {
+                            $('.material-select').each(function() {
+                                let exists = $(this).find('option[value="' + res
+                                    .material.id + '"]').length;
+                                if (!exists) {
+                                    let newOption = new Option(res.material.name, res
+                                        .material.id, false, false);
+                                    $(this).append(newOption);
+                                }
+                            });
+                            $('.material-select').last().val(res.material.id).trigger('change');
+                            $('#quickAddMaterialForm').closest('.modal').modal('hide');
+                            form[0].reset();
+                        } else {
+                            alert('Failed to add material');
+                        }
+                    },
+                    error: function() {
+                        alert('Failed to add material');
+                    }
+                });
             });
         });
     </script>
