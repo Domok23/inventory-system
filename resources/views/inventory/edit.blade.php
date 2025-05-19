@@ -39,7 +39,7 @@
             <div class="mb-3">
                 <label for="category_id" class="form-label">Category</label>
                 <select name="category_id" id="category_id" class="form-select" required>
-                    <option value="">-- Select Category --</option>
+                    <option value="">Select Category</option>
                     @foreach ($categories as $category)
                         <option value="{{ $category->id }}"
                             {{ old('category_id', $inventory->category_id) == $category->id ? 'selected' : '' }}>
@@ -62,7 +62,7 @@
             <!-- Unit -->
             <div class="mb-3">
                 <label for="unit" class="form-label">Unit</label>
-                <select id="unit-select" class="form-select select2" name="unit">
+                <select id="unit-select" class="form-select select2" name="unit" required>
                     <option value="">Select Unit</option>
                     <option value="__new__">Add New Unit?</option>
                     @foreach ($units as $unit)

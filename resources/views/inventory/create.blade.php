@@ -58,7 +58,7 @@
 
             <div class="mb-3">
                 <label for="unit" class="form-label">Unit</label>
-                <select id="unit-select" class="form-select" name="unit">
+                <select id="unit-select" class="form-select" name="unit" required>
                     <option value="">Select Unit</option>
                     <option value="__new__">Add New Unit?</option>
                     @foreach ($units as $unit)
@@ -81,7 +81,7 @@
                     data-bs-toggle="modal" data-bs-target="#currencyModal">
                     + Add Currency
                 </button>
-                <select name="currency_id" id="currency_id" class="form-select select2" required>
+                <select name="currency_id" id="currency_id" class="form-select select2">
                     <option value="">Select Currency</option>
                     @foreach ($currencies as $currency)
                         <option value="{{ $currency->id }}"
@@ -98,7 +98,7 @@
             <div class="mb-3">
                 <label for="price" class="form-label">Unit Price</label>
                 <input type="number" step="0.01" class="form-control" id="price" name="price"
-                    value="{{ old('price') }}" required>
+                    value="{{ old('price') }}">
                 @error('price')
                     <small class="text-danger">{{ $message }}</small>
                 @enderror

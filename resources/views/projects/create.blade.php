@@ -33,6 +33,7 @@
         <div class="mb-3">
             <label for="department">Department</label>
             <select name="department" class="form-select" required>
+                <option value="">Select Department</option>
                 <option value="mascot" {{ old('department', $project->department ?? '') == 'mascot' ? 'selected' : '' }}>Mascot</option>
                 <option value="costume" {{ old('department', $project->department ?? '') == 'costume' ? 'selected' : '' }}>Costume</option>
                 <option value="mascot&costume" {{ old('department', $project->department ?? '') == 'mascot&costume' ? 'selected' : '' }}>Mascot & Costume</option>

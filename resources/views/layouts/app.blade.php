@@ -119,6 +119,16 @@
                                         Material Requests
                                     </a>
                                 </li>
+                            @endif
+                            @if (in_array(auth()->user()->role, ['super_admin', 'admin_logistic']))
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->is('goods_out*') ? 'active text-primary' : '' }}"
+                                        href="{{ route('goods_out.index') }}">
+                                        Goods Out
+                                    </a>
+                                </li>
+                            @endif
+                            @if (in_array(auth()->user()->role, ['super_admin', 'admin_mascot', 'admin_costume', 'admin_logistic', 'admin_finance']))
                                 <li class="nav-item">
                                     <a class="nav-link {{ request()->is('goods_in*') ? 'active text-primary' : '' }}"
                                         href="{{ route('goods_in.index') }}">
@@ -129,14 +139,6 @@
                                     <a class="nav-link {{ request()->is('material-usage*') ? 'active text-primary' : '' }}"
                                         href="{{ route('material_usage.index') }}">
                                         Material Usage
-                                    </a>
-                                </li>
-                            @endif
-                            @if (in_array(auth()->user()->role, ['super_admin', 'admin_logistic']))
-                                <li class="nav-item">
-                                    <a class="nav-link {{ request()->is('goods_out*') ? 'active text-primary' : '' }}"
-                                        href="{{ route('goods_out.index') }}">
-                                        Goods Out
                                     </a>
                                 </li>
                             @endif
@@ -198,7 +200,8 @@
                                         {{ __('Logout') }}
                                     </a>
 
-                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                    <form id="logout-form" action="{{ route('logout') }}" method="POST"
+                                        class="d-none">
                                         @csrf
                                     </form>
                                 </div>

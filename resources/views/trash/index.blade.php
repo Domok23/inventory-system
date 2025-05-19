@@ -40,7 +40,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse ($$var as $item)
+                    @foreach ($$var as $item)
                         <tr>
                             <td>
                                 <input type="checkbox" class="select-item" name="selected_ids[]"
@@ -108,11 +108,7 @@
                                 </form>
                             </td>
                         </tr>
-                    @empty
-                        <tr>
-                            <td colspan="5" class="text-center text-muted">No deleted {{ $label }} data.</td>
-                        </tr>
-                    @endforelse
+                    @endforeach
                 </tbody>
             </table>
         @endforeach

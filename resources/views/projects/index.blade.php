@@ -27,7 +27,7 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse($projects as $project)
+                @foreach($projects as $project)
                     <tr>
                         <td class="text-center align-middle">{{ $loop->iteration }}</td>
                         <td class="align-middle">{{ $project->name }}</td>
@@ -49,11 +49,7 @@
                             </form>
                         </td>
                     </tr>
-                @empty
-                    <tr>
-                        <td colspan="6">No projects yet.</td>
-                    </tr>
-                @endforelse
+                @endforeach
             </tbody>
         </table>
     </div>

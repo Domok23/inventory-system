@@ -104,7 +104,7 @@ class InventoryController extends Controller
             'quantity' => 'required|numeric|min:0',
             'unit' => 'required|string',
             'new_unit' => 'required_if:unit,__new__|nullable|string|max:255',
-            'price' => 'required|numeric',
+            'price' => 'nullable|numeric',
             'location' => 'nullable|string',
             'img' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'category_id' => 'required|exists:categories,id',
@@ -191,7 +191,7 @@ class InventoryController extends Controller
             'unit' => 'required|string',
             'new_unit' => 'required_if:unit,__new__|nullable|string|max:255',
             'price' => 'nullable|numeric',
-            'currency_id' => 'required|exists:currencies,id',
+            'currency_id' => 'nullable|exists:currencies,id',
             'location' => 'nullable|string',
             'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'category_id' => 'required|exists:categories,id',
@@ -239,16 +239,6 @@ class InventoryController extends Controller
         return redirect()->route('inventory.index')->with('success', 'Inventory updated successfully.');
     }
 
-
-    public function destroy($id)
-    {
-        $inventory = Inventory::findOrFail($id);
-        $inventory->delete();
-
-        return redirect()->route('inventory.index')->with('success', 'Inventory deleted successfully.');
-    }
-
-
     public function processQr(Request $request)
     {
         $qrData = $request->input('qrData');
@@ -279,5 +269,13 @@ class InventoryController extends Controller
     {
         // Redirect ke detail inventory di domain saat ini
         return redirect()->route('inventory.detail', ['id' => $id]);
+    }
+
+    public function destroy($id)
+    {
+        $inventory = Inventory::findOrFail($id);
+        $inventory->delete();
+
+        return redirect()->route('inventory.index')->with('success', 'Inventory deleted successfully.');
     }
 }

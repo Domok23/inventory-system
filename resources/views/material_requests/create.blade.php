@@ -29,7 +29,7 @@
                         + Quick Add Project
                     </button>
                 </div>
-                <select name="project_id" id="project_id" class="form-select select2">
+                <select name="project_id" id="project_id" class="form-select select2" required>
                     <option value="">Select Project</option>
                     @foreach ($projects as $proj)
                         <option value="{{ $proj->id }}">{{ $proj->name }}</option>
@@ -47,7 +47,7 @@
                         + Quick Add Material
                     </button>
                 </div>
-                <select name="inventory_id" id="inventory_id" class="form-select select2">
+                <select name="inventory_id" id="inventory_id" class="form-select select2" required>
                     <option value="">Select Material</option>
                     @foreach ($inventories as $inv)
                         <option value="{{ $inv->id }}" data-unit="{{ $inv->unit }}">
