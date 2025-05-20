@@ -129,7 +129,11 @@
             <div class="mb-3">
                 <label for="img" class="form-label">Upload Image (optional)</label>
                 <input class="form-control" type="file" id="img" name="img" accept="image/*"
-                    value="{{ old('img') }}">
+                    onchange="previewImage(event)">
+                <img id="img-preview"
+                    src="{{ isset($inventory) && $inventory->img ? asset('storage/' . $inventory->img) : '' }}"
+                    alt="Image Preview" class="mt-2"
+                    style="max-width: 200px; display: {{ isset($inventory) && $inventory->img ? 'block' : 'none' }};">
                 @error('img')
                     <small class="text-danger">{{ $message }}</small>
                 @enderror
@@ -137,7 +141,7 @@
                 @if ($inventory->img)
                     <div class="mt-2">
                         <strong>Current Image:</strong><br>
-                        <img src="{{ asset('storage/' . $inventory->img) }}" alt="Material Image" width="150">
+                        <img src="{{ asset('storage/' . $inventory->img) }}" alt="Material Image" width="200">
                     </div>
                 @endif
             </div>
@@ -366,5 +370,24 @@
                 });
             });
         });
+
+        function previewImage(event) {
+            const input = event.target;
+            const preview = document.getElementById('img-preview');
+
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                preview.src = '';
+                preview.style.display = 'none';
+            }
+        }
     </script>
 @endpush

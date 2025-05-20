@@ -113,16 +113,22 @@
             </div>
 
             <div class="mb-3">
-                <label for="img" class="form-label">Image (Optional)</label>
-                <input type="file" class="form-control" id="img" name="img" accept="image/*"
-                    value="{{ old('img') }}">
+                <label for="img" class="form-label">Upload Image (optional)</label>
+                <input class="form-control" type="file" id="img" name="img" accept="image/*"
+                    onchange="previewImage(event)">
+                <img id="img-preview"
+                    src="{{ isset($inventory) && $inventory->img ? asset('storage/' . $inventory->img) : '' }}"
+                    alt="Image Preview" class="mt-2"
+                    style="max-width: 200px; display: {{ isset($inventory) && $inventory->img ? 'block' : 'none' }};">
                 @error('img')
                     <small class="text-danger">{{ $message }}</small>
                 @enderror
             </div>
 
+            <a href="{{ route('inventory.index') }}" class="btn btn-secondary">Cancel</a>
             <button type="submit" class="btn btn-primary">Create Inventory</button>
         </form>
+
         <div class="modal fade" id="currencyModal" tabindex="-1" aria-labelledby="currencyModalLabel"
             aria-hidden="true">
             <div class="modal-dialog">
@@ -328,5 +334,24 @@
                 });
             });
         });
+
+        function previewImage(event) {
+            const input = event.target;
+            const preview = document.getElementById('img-preview');
+
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                preview.src = '';
+                preview.style.display = 'none';
+            }
+        }
     </script>
 @endpush
