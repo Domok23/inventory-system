@@ -3,7 +3,8 @@
 @section('content')
     <div class="container">
         <div class="d-flex align-items-center mb-3 gap-2">
-            <h2 class="mb-0 flex-shrink-0" style="font-size:1.5rem;"><i class="bi bi-arrow-up-circle"></i> Goods Out Records</h2>
+            <h2 class="mb-0 flex-shrink-0" style="font-size:1.5rem;"><i class="bi bi-arrow-up-circle"></i> Goods Out Records
+            </h2>
             <a href="{{ route('goods_out.create_independent') }}" class="btn btn-outline-primary btn-sm flex-shrink-0 ms-2">+
                 Create Goods Out</a>
         </div>
@@ -33,7 +34,8 @@
                         <td class="align-middle">{{ $goodsOut->quantity }} {{ $goodsOut->inventory->unit ?? '-' }}</td>
                         <td class="align-middle">{{ $goodsOut->project->name ?? '-' }}</td>
                         <td class="align-middle">{{ ucfirst($goodsOut->requested_by) }}
-                            ({{ ucfirst($goodsOut->department) }})</td>
+                            ({{ ucfirst($goodsOut->department) }})
+                        </td>
                         <td class="align-middle">
                             @if ($goodsOut->remark)
                                 {{ $goodsOut->remark }}
@@ -48,7 +50,7 @@
                                     Goods In
                                 </a>
                             @endif
-                            @if ($goodsOut->material_request_id)
+                            @if ($goodsOut->material_request_id && $goodsOut->materialRequest->qty > 0)
                                 <a href="{{ route('goods_out.create', $goodsOut->material_request_id) }}"
                                     class="btn btn-sm btn-primary">Process</a>
                             @endif

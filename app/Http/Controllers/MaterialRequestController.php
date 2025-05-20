@@ -149,7 +149,7 @@ class MaterialRequestController extends Controller
         $materialRequest = MaterialRequest::findOrFail($id);
 
         // Jika hanya status yang diperbarui
-        if ($request->has('status')) {
+        if ($request->has('status') && $request->keys() === ['_token', '_method', 'status']) {
             $request->validate([
                 'status' => 'required|in:pending,approved,delivered',
             ]);
