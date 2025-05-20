@@ -64,10 +64,10 @@
         <div class="modal-dialog">
             <form id="currencyForm" method="POST" action="{{ route('currencies.store') }}">
                 @csrf
-                <input type="hidden" id="currency_id" name="id"> <!-- Input hidden untuk ID currency -->
+                <input type="hidden" id="currency_id" name="id">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="currencyModalLabel">Add/Edit Currency</h5>
+                        <h5 class="modal-title" id="currencyModalLabel">Add Currency</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
