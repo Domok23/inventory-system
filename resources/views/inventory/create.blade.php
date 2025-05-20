@@ -98,7 +98,7 @@
             <div class="mb-3">
                 <label for="price" class="form-label">Unit Price</label>
                 <input type="number" step="0.01" class="form-control" id="price" name="price"
-                    value="{{ old('price') }}">
+                    value="{{ old('price', $inventory->price ?? '') }}">
                 @error('price')
                     <small class="text-danger">{{ $message }}</small>
                 @enderror
@@ -231,7 +231,6 @@
 
         // Inisialisasi Select2 untuk dropdown Unit
         document.addEventListener('DOMContentLoaded', function() {
-            // Inisialisasi Select2 untuk dropdown Unit
             $('#unit-select').select2({
                 placeholder: 'Select Unit',
                 allowClear: true,

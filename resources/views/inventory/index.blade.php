@@ -53,6 +53,13 @@
             </div>
         @endif
 
+        @if (session('warning'))
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                {{ session('warning') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+
         <table class="table table-hover table-bordered" id="datatable">
             <thead>
                 <tr>
@@ -115,7 +122,8 @@
                 <div class="modal-body text-center">
                     <div id="img-container" class="mb-3"></div>
                     <div id="qr-container" class="mb-3"></div>
-                    <button id="download-qr-btn" class="btn btn-outline-primary btn-sm mb-3" style="display:none;">Download
+                    <button id="download-qr-btn" class="btn btn-outline-primary btn-sm mb-3"
+                        style="display:none;">Download
                         QR as PNG</button>
                 </div>
             </div>

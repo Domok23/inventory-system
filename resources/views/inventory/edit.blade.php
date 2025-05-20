@@ -92,7 +92,8 @@
                     data-bs-toggle="modal" data-bs-target="#currencyModal">
                     + Add Currency
                 </button>
-                <select name="currency_id" id="currency_id" class="form-select" required>
+                <select name="currency_id" id="currency_id" class="form-select select2">
+                    <option value="">Select Currency</option>
                     @foreach ($currencies as $currency)
                         <option value="{{ $currency->id }}"
                             {{ old('currency_id', $inventory->currency_id) == $currency->id ? 'selected' : '' }}>
@@ -137,13 +138,6 @@
                 @error('img')
                     <small class="text-danger">{{ $message }}</small>
                 @enderror
-                <!-- Display current image if exists -->
-                @if ($inventory->img)
-                    <div class="mt-2">
-                        <strong>Current Image:</strong><br>
-                        <img src="{{ asset('storage/' . $inventory->img) }}" alt="Material Image" width="200">
-                    </div>
-                @endif
             </div>
 
             <!-- QR Code -->

@@ -146,7 +146,16 @@ class InventoryController extends Controller
         $inventory->qrcode_path = 'qrcodes/' . $qrFileName;
         $inventory->save(); // Simpan lagi untuk memperbarui path QR code
 
-        return redirect()->route('inventory.index')->with('success', 'Inventory added successfully!');
+        // Buat pesan peringatan jika currency atau price kosong
+        $warningMessage = null;
+        if (!$inventory->currency_id || !$inventory->price) {
+            $warningMessage = "Currency or Price is empty for '{$inventory->name}'. Please update it as soon as possible!";
+        }
+
+        return redirect()->route('inventory.index')->with([
+            'success' => 'Inventory added successfully!',
+            'warning' => $warningMessage,
+        ]);
     }
 
     public function storeQuick(Request $request)
@@ -234,7 +243,16 @@ class InventoryController extends Controller
 
         $inventory->save();
 
-        return redirect()->route('inventory.index')->with('success', 'Inventory updated successfully.');
+        // Buat pesan peringatan jika currency atau price kosong
+        $warningMessage = null;
+        if (!$inventory->currency_id || !$inventory->price) {
+            $warningMessage = "Currency or Price is empty for '{$inventory->name}'. Please update it as soon as possible!";
+        }
+
+        return redirect()->route('inventory.index')->with([
+            'success' => 'Inventory added successfully!',
+            'warning' => $warningMessage,
+        ]);
     }
 
     public function processQr(Request $request)
