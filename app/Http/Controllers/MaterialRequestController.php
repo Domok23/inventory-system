@@ -148,12 +148,25 @@ class MaterialRequestController extends Controller
     {
         $materialRequest = MaterialRequest::findOrFail($id);
 
-        // Validasi input
+        // Jika hanya status yang diperbarui
+        if ($request->has('status')) {
+            $request->validate([
+                'status' => 'required|in:pending,approved,delivered',
+            ]);
+
+            $materialRequest->update([
+                'status' => $request->status,
+            ]);
+
+            return redirect()->route('material_requests.index')->with('success', 'Status updated successfully.');
+        }
+
+        // Validasi untuk pembaruan lengkap
         $request->validate([
             'inventory_id' => 'required|exists:inventories,id',
             'project_id' => 'required|exists:projects,id',
             'qty' => 'required|numeric|min:0.01',
-            'status' => 'required|in:pending,approved',
+            'status' => 'required|in:pending,approved,delivered',
             'remark' => 'nullable|string',
         ]);
 
@@ -164,7 +177,6 @@ class MaterialRequestController extends Controller
             return back()->withInput()->withErrors(['qty' => 'Requested quantity cannot exceed available inventory quantity.']);
         }
 
-        // Perbarui data Material Request
         $materialRequest->update([
             'inventory_id' => $request->inventory_id,
             'project_id' => $request->project_id,

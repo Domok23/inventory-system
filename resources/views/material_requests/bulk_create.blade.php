@@ -209,7 +209,17 @@
             initSelect2($('#bulk-rows tr').first());
 
             $('#add-row').click(function() {
-                let newRow = $('#bulk-rows tr').first().clone();
+                let lastRow = $('#bulk-rows tr').last(); // Ambil baris terakhir
+
+                // Check if Select2 is initialized before destroying
+                lastRow.find('.select2').each(function() {
+                    if ($(this).data('select2')) {
+                        $(this).select2('destroy');
+                    }
+                });
+
+                // Clone the last row
+                let newRow = lastRow.clone();
                 let rowCount = $('#bulk-rows tr').length;
 
                 // Reset select elements
@@ -217,14 +227,13 @@
                     let name = $(this).attr('name').replace(/\d+/, rowCount);
                     $(this).attr('name', name);
 
-                    // Jika ini adalah select project, salin nilai yang dipilih
+                    // If it's the project-select, copy the value from the last row
                     if ($(this).hasClass('project-select')) {
-                        let selectedValue = $('#bulk-rows tr').first().find('.project-select')
-                            .val(); // Ambil nilai dari baris pertama
-                        $(this).val(selectedValue).trigger(
-                            'change'); // Tetapkan nilai yang sama di baris baru
+                        let previousValue = lastRow.find('.project-select').val();
+                        $(this).val(previousValue).trigger('change');
                     } else {
-                        $(this).val(null).trigger('change'); // Reset untuk select lainnya
+                        // Clear the value for other select elements
+                        $(this).val('').trigger('change');
                     }
                 });
 
@@ -234,10 +243,10 @@
                     $(this).attr('name', name).val('');
                 });
 
-                // Reset textarea elements (e.g., Remark)
+                // Reset textarea elements
                 newRow.find('textarea').each(function() {
                     let name = $(this).attr('name').replace(/\d+/, rowCount);
-                    $(this).attr('name', name).val(''); // Reset value to empty
+                    $(this).attr('name', name).val('');
                 });
 
                 // Reset unit label
@@ -245,7 +254,12 @@
 
                 // Append the new row
                 $('#bulk-rows').append(newRow);
-                initSelect2(newRow); // Reinitialize Select2 for the new row
+
+                // Reinitialize Select2 for the new row
+                initSelect2(newRow);
+
+                // Reinitialize Select2 for the last row
+                initSelect2(lastRow);
             });
 
             $(document).on('click', '.remove-row', function() {
