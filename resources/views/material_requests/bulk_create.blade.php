@@ -39,59 +39,53 @@
                         </tr>
                     </thead>
                     <tbody id="bulk-rows">
-                        @foreach (range(0, 0) as $index)
+                        @foreach (old('requests', [0 => []]) as $index => $request)
                             <tr>
                                 <td>
                                     <select name="requests[{{ $index }}][project_id]"
-                                        class="form-select select2 project-select"
-                                        value="{{ old('requests.' . $index . '.project_id') }}" required>
+                                        class="form-select select2 project-select" required>
                                         <option value="">Select Project</option>
                                         @foreach ($projects as $project)
-                                            <option value="{{ $project->id }}">{{ $project->name }}</option>
+                                            <option value="{{ $project->id }}"
+                                                {{ old("requests.$index.project_id") == $project->id ? 'selected' : '' }}>
+                                                {{ $project->name }}
+                                            </option>
                                         @endforeach
                                     </select>
-                                    @error('requests.' . $index . '.project_id')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
+                                    @error("requests.$index.project_id")
+                                        <span class="text-danger">{{ $message }}</span>
                                     @enderror
                                 </td>
                                 <td>
                                     <select name="requests[{{ $index }}][inventory_id]"
-                                        class="form-select select2 material-select"
-                                        value="{{ old('requests.' . $index . '.inventory_id') }}" required>
+                                        class="form-select select2 material-select" required>
                                         <option value="">Select Material</option>
-                                        @foreach ($inventories as $inv)
-                                            <option value="{{ $inv->id }}" data-unit="{{ $inv->unit }}">
-                                                {{ $inv->name }}</option>
+                                        @foreach ($inventories as $inventory)
+                                            <option value="{{ $inventory->id }}" data-unit="{{ $inventory->unit }}"
+                                                {{ old("requests.$index.inventory_id") == $inventory->id ? 'selected' : '' }}>
+                                                {{ $inventory->name }}
+                                            </option>
                                         @endforeach
                                     </select>
-                                    @error('requests.' . $index . '.inventory_id')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
+                                    @error("requests.$index.inventory_id")
+                                        <span class="text-danger">{{ $message }}</span>
                                     @enderror
                                 </td>
                                 <td>
                                     <div class="input-group">
                                         <input type="number" name="requests[{{ $index }}][qty]"
-                                            class="form-control" step="0.01"
-                                            value="{{ old('requests.' . $index . '.qty') }}" required>
+                                            class="form-control" step="0.01" value="{{ old("requests.$index.qty") }}"
+                                            required>
                                         <span class="input-group-text unit-label">unit</span>
-                                        @error('requests.' . $index . '.qty')
-                                            <span class="invalid-feedback" role="alert">
-                                                <strong>{{ $message }}</strong>
-                                            </span>
-                                        @enderror
                                     </div>
+                                    @error("requests.$index.qty")
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
                                 </td>
                                 <td>
-                                    <textarea name="requests[{{ $index }}][remark]" class="form-control"
-                                        value="{{ old('requests.' . $index . '.remark') }}" rows="1"></textarea>
-                                    @error('requests.' . $index . '.remark')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
+                                    <textarea name="requests[{{ $index }}][remark]" class="form-control" rows="1">{{ old("requests.$index.remark") }}</textarea>
+                                    @error("requests.$index.remark")
+                                        <span class="text-danger">{{ $message }}</span>
                                     @enderror
                                 </td>
                                 <td>
@@ -259,6 +253,17 @@
                     $(this).closest('tr').remove();
                 }
             });
+        });
+
+        $(document).ready(function() {
+            // Update unit label dynamically when material is selected
+            $(document).on('change', '.material-select', function() {
+                const unit = $(this).find(':selected').data('unit') || 'unit';
+                $(this).closest('tr').find('.unit-label').text(unit);
+            });
+
+            // Trigger change event on page load to restore old values
+            $('.material-select').trigger('change');
         });
 
         $(document).ready(function() {

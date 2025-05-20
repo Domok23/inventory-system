@@ -38,6 +38,11 @@
 
             <div class="mb-3">
                 <label for="category_id" class="form-label">Category</label>
+                <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal"
+                    style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .55rem;"
+                    data-bs-target="#addCategoryModal">
+                    + Add Category
+                </button>
                 <select name="category_id" id="category_id" class="form-select select2" required>
                     <option value="">Select Category</option>
                     @foreach ($categories as $category)
@@ -149,6 +154,33 @@
             <button type="submit" class="btn btn-primary">Update Inventory</button>
             <a href="{{ route('inventory.index') }}" class="btn btn-secondary">Back</a>
         </form>
+
+        <!-- Add Category Modal -->
+        <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <form id="categoryForm" method="POST" action="{{ route('categories.store') }}">
+                    @csrf
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addCategoryModalLabel">Add Category</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="category_name" class="form-label">Category Name</label>
+                                <input type="text" id="category_name" name="name" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- Add Currency Modal -->
         <div class="modal fade" id="currencyModal" tabindex="-1" aria-labelledby="currencyModalLabel"
             aria-hidden="true">
             <div class="modal-dialog">
@@ -308,7 +340,7 @@
                 }, 100);
             });
         });
-        
+
         // Quick Add Currency AJAX
         $(document).ready(function() {
             $('#currencyForm').on('submit', function(e) {

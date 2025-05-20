@@ -16,7 +16,8 @@
                 <select name="inventory_id" class="form-select select2" required>
                     <option value="">Select Material</option>
                     @foreach ($inventories as $inventory)
-                        <option value="{{ $inventory->id }}" data-unit="{{ $inventory->unit }}">
+                        <option value="{{ $inventory->id }}" data-unit="{{ $inventory->unit }}"
+                            {{ old('inventory_id') == $inventory->id ? 'selected' : '' }}>
                             {{ $inventory->name }}
                         </option>
                     @endforeach
@@ -25,16 +26,23 @@
             <div class="mb-3">
                 <label>Quantity</label>
                 <div class="input-group">
-                    <input type="number" name="quantity" class="form-control" step="0.01" required>
-                    <span class="input-group-text unit-label">unit</span>
+                    <input type="number" name="quantity" class="form-control" step="0.01" value="{{ old('quantity') }}"
+                        required>
+                    <span class="input-group-text unit-label">{{ old('unit', 'unit') }}</span>
                 </div>
+                <input type="hidden" name="unit" id="unit-hidden" value="{{ old('unit') }}">
+                @error('quantity')
+                    <small class="text-danger">{{ $message }}</small>
+                @enderror
             </div>
             <div class="mb-3">
                 <label>Project</label>
                 <select name="project_id" class="form-select select2" required>
                     <option value="">Select Project</option>
                     @foreach ($projects as $project)
-                        <option value="{{ $project->id }}">{{ $project->name }}</option>
+                        <option value="{{ $project->id }}" {{ old('project_id') == $project->id ? 'selected' : '' }}>
+                            {{ $project->name }}
+                        </option>
                     @endforeach
                 </select>
             </div>
@@ -43,7 +51,8 @@
                 <select name="user_id" class="form-select select2" required>
                     <option value="">Select User</option>
                     @foreach ($users as $user)
-                        <option value="{{ $user->id }}" data-department="{{ $user->department }}">
+                        <option value="{{ $user->id }}" data-department="{{ $user->department }}"
+                            {{ old('user_id') == $user->id ? 'selected' : '' }}>
                             {{ $user->username }}
                         </option>
                     @endforeach
@@ -51,11 +60,15 @@
             </div>
             <div class="mb-3">
                 <label>Department</label>
-                <input type="text" class="form-control" id="department" value="" disabled>
+                <input type="text" class="form-control" id="department" value="{{ old('department') }}" disabled>
+                <input type="hidden" name="department" id="department-hidden" value="{{ old('department') }}">
             </div>
             <div class="mb-3">
                 <label for="remark" class="form-label">Remark</label>
                 <textarea name="remark" id="remark" class="form-control" rows="2">{{ old('remark') }}</textarea>
+                @error('remark')
+                    <small class="text-danger">{{ $message }}</small>
+                @enderror
             </div>
             <button type="submit" class="btn btn-success">Submit</button>
             <a href="{{ route('goods_out.index') }}" class="btn btn-secondary">Cancel</a>
@@ -88,13 +101,19 @@
             $('select[name="inventory_id"]').on('change', function() {
                 const selectedUnit = $(this).find(':selected').data('unit');
                 $('.unit-label').text(selectedUnit || 'unit');
+                $('#unit-hidden').val(selectedUnit || 'unit'); // Update hidden input
             });
 
             // Update department dynamically when user is selected
             $('select[name="user_id"]').on('change', function() {
                 const selectedDepartment = $(this).find(':selected').data('department');
                 $('#department').val(selectedDepartment || '');
+                $('#department-hidden').val(selectedDepartment || ''); // Update hidden input
             });
+
+            // Trigger change event on page load to restore old values
+            $('select[name="inventory_id"]').trigger('change');
+            $('select[name="user_id"]').trigger('change');
         });
     </script>
 @endpush

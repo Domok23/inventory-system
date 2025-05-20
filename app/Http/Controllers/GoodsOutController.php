@@ -38,11 +38,11 @@ class GoodsOutController extends Controller
 
         // Validasi quantity
         if ($request->quantity > $materialRequest->qty) {
-            return back()->with('error', 'Quantity cannot exceed the requested quantity.');
+            return back()->withInput()->with('error', 'Quantity cannot exceed the requested quantity.');
         }
 
         if ($request->quantity > $inventory->quantity) {
-            return back()->with('error', 'Quantity cannot exceed the available inventory.');
+            return back()->withInput()->with('error', 'Quantity cannot exceed the available inventory.');
         }
 
         // Kurangi stok di inventory
@@ -118,7 +118,7 @@ class GoodsOutController extends Controller
 
         // Validasi quantity
         if ($request->quantity > $inventory->quantity) {
-            return back()->with('error', 'Quantity cannot exceed the available inventory.');
+            return back()->withInput()->with('error', 'Quantity cannot exceed the available inventory.');
         }
 
         // Kurangi stok di inventory

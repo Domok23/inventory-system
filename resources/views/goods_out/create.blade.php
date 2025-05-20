@@ -17,7 +17,7 @@
                 <select name="inventory_id" class="form-select select2" required>
                     @foreach ($inventories as $inventory)
                         <option value="{{ $inventory->id }}" data-unit="{{ $inventory->unit }}"
-                            {{ $inventory->id == $materialRequest->inventory_id ? 'selected' : '' }}>
+                            {{ old('inventory_id', $materialRequest->inventory_id) == $inventory->id ? 'selected' : '' }}>
                             {{ $inventory->name }}
                         </option>
                     @endforeach
@@ -35,16 +35,19 @@
             <div class="mb-3">
                 <label>Quantity to Goods Out</label>
                 <div class="input-group">
-                    <input type="number" name="quantity" class="form-control" value="{{ $materialRequest->qty }}"
-                        step="0.01" required>
+                    <input type="number" name="quantity" class="form-control"
+                        value="{{ old('quantity', $materialRequest->qty) }}" step="0.01" required>
                     <span class="input-group-text unit-label">
                         {{ $materialRequest->inventory ? $materialRequest->inventory->unit : 'unit' }}
                     </span>
                 </div>
+                @error('quantity')
+                    <small class="text-danger">{{ $message }}</small>
+                @enderror
             </div>
             <div class="mb-3">
                 <label>Requested By</label>
-                <input type="text" class="form-control" value="{{ $materialRequest->requested_by }}" disabled>
+                <input type="text" class="form-control" value="{{ ucwords($materialRequest->requested_by) }}" disabled>
             </div>
             <div class="mb-3">
                 <label>Department</label>
@@ -53,17 +56,22 @@
             <div class="mb-3">
                 <label for="remark" class="form-label">Remark</label>
                 <textarea name="remark" id="remark" class="form-control" rows="2">{{ old('remark') }}</textarea>
+                @error('remark')
+                    <small class="text-danger">{{ $message }}</small>
+                @enderror
             </div>
             <button type="submit" class="btn btn-success">Submit</button>
             <a href="{{ route('material_requests.index') }}" class="btn btn-secondary">Cancel</a>
         </form>
     </div>
 @endsection
+
 @push('styles')
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.2.0/dist/select2-bootstrap-5-theme.min.css"
         rel="stylesheet" />
 @endpush
+
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>

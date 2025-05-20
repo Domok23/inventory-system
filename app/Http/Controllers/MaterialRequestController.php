@@ -42,6 +42,13 @@ class MaterialRequestController extends Controller
             'qty' => 'required|numeric|min:0.01',
         ]);
 
+        $inventory = Inventory::findOrFail($request->inventory_id);
+
+        // Validasi: Pastikan qty tidak melebihi quantity inventory
+        if ($request->qty > $inventory->quantity) {
+            return back()->withInput()->withErrors(['qty' => 'Requested quantity cannot exceed available inventory quantity.']);
+        }
+
         $user = auth()->user();
         $department = match ($user->role) {
             'admin_mascot' => 'mascot',
@@ -87,7 +94,16 @@ class MaterialRequestController extends Controller
             default => 'general',
         };
 
-        foreach ($request->requests as $req) {
+        foreach ($request->requests as $index => $req) {
+            $inventory = Inventory::findOrFail($req['inventory_id']);
+
+            // Validasi: Pastikan qty tidak melebihi stok yang tersedia
+            if ($req['qty'] > $inventory->quantity) {
+                return back()->withInput()->withErrors([
+                    "requests.$index.qty" => "Quantity exceeds stock for '{$inventory->name}'."
+                ]);
+            }
+
             MaterialRequest::create([
                 'inventory_id' => $req['inventory_id'],
                 'project_id' => $req['project_id'],
@@ -103,21 +119,61 @@ class MaterialRequestController extends Controller
 
     public function edit($id)
     {
-        $request = MaterialRequest::findOrFail($id);
-        $inventories = Inventory::orderBy('name')->get();
+        // Ambil data Material Request berdasarkan ID
+        $request = MaterialRequest::with('inventory', 'project')->findOrFail($id);
+
+        // Validasi: Pastikan hanya Material Request dengan status tertentu yang bisa diedit
+        if ($request->status !== 'pending') {
+            return redirect()->route('material_requests.index')->with('error', 'Only pending requests can be edited.');
+        }
+
+        // Validasi: Pastikan inventory dan project terkait masih ada
+        if (!$request->inventory || !$request->project) {
+            return redirect()->route('material_requests.index')->with('error', 'The associated inventory or project no longer exists.');
+        }
+
+        // Ambil data tambahan untuk dropdown
+        $inventories = Inventory::orderBy('name')->get()->map(function ($inventory) {
+            $inventory->available_quantity = $inventory->quantity; // Tambahkan stok tersedia
+            return $inventory;
+        });
+
         $projects = Project::orderBy('name')->get();
+
+        // Tampilkan view edit dengan data yang diperlukan
         return view('material_requests.edit', compact('request', 'inventories', 'projects'));
     }
 
     public function update(Request $request, $id)
     {
-        $req = MaterialRequest::findOrFail($id);
-        $request->validate([
-            'status' => 'required|in:pending,approved',
-        ]);
-        $req->update($request->only('inventory_id', 'project_id', 'qty', 'status', 'remark'));
+        $materialRequest = MaterialRequest::findOrFail($id);
 
-        return redirect()->route('material_requests.index')->with('success', 'Updated');
+        // Validasi input
+        $request->validate([
+            'inventory_id' => 'required|exists:inventories,id',
+            'project_id' => 'required|exists:projects,id',
+            'qty' => 'required|numeric|min:0.01',
+            'status' => 'required|in:pending,approved',
+            'remark' => 'nullable|string',
+        ]);
+
+        $inventory = Inventory::findOrFail($request->inventory_id);
+
+        // Validasi: Pastikan qty tidak melebihi stok yang tersedia
+        if ($request->qty > $inventory->quantity) {
+            return back()->withInput()->withErrors(['qty' => 'Requested quantity cannot exceed available inventory quantity.']);
+        }
+
+        // Perbarui data Material Request
+        $materialRequest->update([
+            'inventory_id' => $request->inventory_id,
+            'project_id' => $request->project_id,
+            'qty' => $request->qty,
+            'status' => $request->status,
+            'remark' => $request->remark,
+        ]);
+
+        return redirect()->route('material_requests.index')->with('success', 'Material Request updated successfully.');
     }
 
     public function destroy($id)
