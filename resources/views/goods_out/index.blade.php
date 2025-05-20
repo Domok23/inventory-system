@@ -23,6 +23,7 @@
                     <th>For Project</th>
                     <th>Requested By</th>
                     <th>Remark</th>
+                    <th>Proceed At</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -43,6 +44,7 @@
                                 <span class="text-danger">-</span>
                             @endif
                         </td>
+                        <td class="align-middle">{{ $goodsOut->created_at->format('d-m-Y, H:i') }}</td>
                         <td>
                             @if ($goodsOut->quantity > 0)
                                 <a href="{{ route('goods_in.create', ['goods_out_id' => $goodsOut->id]) }}"
