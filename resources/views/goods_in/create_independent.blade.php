@@ -29,7 +29,7 @@
             <div class="mb-3">
                 <label>Project</label>
                 <select name="project_id" class="form-select select2">
-                    <option value="">No Project (Restock/Supplier)</option>
+                    <option value="">No Project</option>
                     @foreach ($projects as $project)
                         <option value="{{ $project->id }}">{{ $project->name }}</option>
                     @endforeach

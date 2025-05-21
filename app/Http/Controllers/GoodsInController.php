@@ -36,18 +36,19 @@ class GoodsInController extends Controller
         $goodsOut = GoodsOut::findOrFail($request->goods_out_id);
 
         // Validasi jumlah pengembalian
-        if ($request->quantity > $goodsOut->quantity) {
+        if ($request->quantity > $goodsOut->remaining_quantity) {
             return back()->with('error', 'Returned quantity cannot exceed Goods Out quantity.');
         }
 
         // Tambahkan stok ke inventory
         $inventory = $goodsOut->inventory;
-        $inventory->quantity += $request->quantity;
-        $inventory->save();
+        if (!$inventory) {
+            return back()->with('error', 'Inventory not found.');
+        }
 
         // Kurangi jumlah Goods Out
-        $goodsOut->quantity -= $request->quantity;
-        $goodsOut->save();
+        $inventory->quantity += $request->quantity;
+        $inventory->save();
 
         // Simpan Goods In (tambahkan inventory_id dan project_id)
         GoodsIn::create([
@@ -60,6 +61,7 @@ class GoodsInController extends Controller
             'remark' => $request->remark,
         ]);
 
+        // Sinkronkan data penggunaan material
         MaterialUsageHelper::sync($inventory->id, $goodsOut->project_id);
 
         return redirect()->route('goods_in.index')->with('success', 'Goods In recorded successfully.');

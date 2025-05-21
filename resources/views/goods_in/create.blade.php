@@ -14,10 +14,17 @@
                 <input type="text" class="form-control" value="{{ $goodsOut->inventory->name }}" disabled>
             </div>
             <div class="mb-3">
-                <label>Quantity Returned</label>
+                <label>Proceeded Quantity</label>
+                <div class="input-group">
+                    <input type="number" class="form-control" value="{{ $goodsOut->quantity }}" disabled>
+                    <span class="input-group-text unit-label">{{ $goodsOut->inventory->unit }}</span>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label>Quantity Returned (If Any)</label>
                 <div class="input-group">
                     <input type="number" name="quantity" class="form-control" step="0.01"
-                        max="{{ $goodsOut->quantity }}" required>
+                        max="{{ $goodsOut->quantity }}" value="{{ old('quantity', $goodsOut->quantity) }}" required>
                     <span class="input-group-text unit-label">{{ $goodsOut->inventory->unit }}</span>
                 </div>
             </div>

@@ -9,7 +9,7 @@ return new class extends Migration {
     {
         Schema::create('goods_in', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('goods_out_id')->constrained('goods_out')->onDelete('cascade');
+            $table->foreignId('goods_out_id')->nullable()->constrained('goods_out')->onDelete('cascade');
             $table->decimal('quantity', 10, 2);
             $table->string('returned_by');
             $table->timestamp('returned_at');

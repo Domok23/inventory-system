@@ -20,6 +20,7 @@
                     <th style="width: 20px;" class="text-center align-middle">#</th>
                     <th>Material</th>
                     <th>Quantity</th>
+                    <th>Remaining Quantity</th>
                     <th>For Project</th>
                     <th>Requested By</th>
                     <th>Remark</th>
@@ -33,11 +34,12 @@
                         <td class="text-center align-middle">{{ $loop->iteration }}</td>
                         <td class="align-middle">{{ $goodsOut->inventory->name ?? '-' }}</td>
                         <td class="align-middle">{{ $goodsOut->quantity }} {{ $goodsOut->inventory->unit ?? '-' }}</td>
+                        <td class="align-middle">{{ $goodsOut->remaining_quantity }} {{ $goodsOut->inventory->unit ?? '-' }}</td>
                         <td class="align-middle">{{ $goodsOut->project->name ?? '-' }}</td>
                         <td class="align-middle">{{ ucfirst($goodsOut->requested_by) }}
                             ({{ ucfirst($goodsOut->department) }})
                         </td>
-                        <td class="align-middle">
+                        <td class="align-middle child">
                             @if ($goodsOut->remark)
                                 {{ $goodsOut->remark }}
                             @else

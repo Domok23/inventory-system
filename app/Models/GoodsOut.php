@@ -42,4 +42,15 @@ class GoodsOut extends Model
     {
         return $this->belongsTo(User::class, 'requested_by', 'username');
     }
+
+    public function goodsIns()
+    {
+        return $this->hasMany(GoodsIn::class);
+    }
+
+    public function getRemainingQuantityAttribute()
+    {
+        $totalGoodsIn = $this->goodsIns()->sum('quantity');
+        return $this->quantity - $totalGoodsIn;
+    }
 }

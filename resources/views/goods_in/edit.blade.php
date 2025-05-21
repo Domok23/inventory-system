@@ -27,7 +27,8 @@
             </div>
             <div class="mb-3">
                 <label>Project</label>
-                <select name="project_id" class="form-control select2" required>
+                <select name="project_id" class="form-control select2">
+                    <option value="">No Project</option>
                     @foreach ($projects as $project)
                         <option value="{{ $project->id }}" {{ $goods_in->project_id == $project->id ? 'selected' : '' }}>
                             {{ $project->name }}
