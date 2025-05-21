@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\File;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,6 +25,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        // $link = public_path('storage');
+        // $target = storage_path('app/public');
+
+
+        // if (file_exists($link) && !is_link($link)) {
+        //     File::deleteDirectory($link);
+        // }
+
+        // if (!file_exists($link)) {
+        //     Artisan::call('storage:link');
+        // }
     }
 }
