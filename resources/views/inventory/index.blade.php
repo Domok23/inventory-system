@@ -135,7 +135,8 @@
     <script>
         $(document).ready(function() {
             $('#datatable').DataTable({
-                responsive: true
+                responsive: true,
+                fixedHeader: true
             });
 
             // SweetAlert for delete confirmation
