@@ -174,12 +174,18 @@ class GoodsOutController extends Controller
             return redirect()->route('goods_out.index')->with('error', 'Goods Out not found.');
         }
         $inventory = Inventory::findOrFail($request->inventory_id);
+        $materialRequest = $goodsOut->materialRequest;
 
         $user = User::findOrFail($request->user_id);
 
         // Kembalikan stok lama ke inventory
         $oldQuantity = $goodsOut->quantity;
         $inventory->quantity += $oldQuantity;
+
+        // Kembalikan quantity lama ke Material Request
+        if ($materialRequest) {
+            $materialRequest->qty += $oldQuantity;
+        }
 
         // Validasi quantity baru
         if ($request->quantity > ($inventory->quantity + $oldQuantity)) {
@@ -189,6 +195,20 @@ class GoodsOutController extends Controller
         // Kurangi stok dengan quantity baru
         $inventory->quantity -= $request->quantity;
         $inventory->save();
+
+        // Perbarui Material Request dengan quantity baru
+        if ($materialRequest) {
+            $materialRequest->qty -= $request->quantity;
+
+            // Perbarui status jika quantity habis
+            if ($materialRequest->qty == 0) {
+                $materialRequest->status = 'delivered';
+            } else {
+                $materialRequest->status = 'approved';
+            }
+
+            $materialRequest->save();
+        }
 
         // Perbarui Goods Out
         $goodsOut->update([
