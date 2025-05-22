@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use PDF;
 use App\Models\Unit;
+use App\Models\User;
+use App\Models\Project;
 use App\Models\Category;
 use App\Models\Currency;
 use App\Models\Inventory;
@@ -278,7 +280,10 @@ class InventoryController extends Controller
     public function detail($id)
     {
         $inventory = Inventory::findOrFail($id);
-        return view('inventory.detail', compact('inventory'));
+        $projects = Project::orderBy('name')->get();
+        $users = User::orderBy('username')->get();
+
+        return view('inventory.detail', compact('inventory', 'projects', 'users'));
     }
 
     public function scanQr($id)

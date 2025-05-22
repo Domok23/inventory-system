@@ -45,6 +45,7 @@ Route::middleware(['auth'])->group(function () {
     // Material Usage
     Route::get('/material-usage', [MaterialUsageController::class, 'index'])->name('material_usage.index');
     Route::delete('material-usage/{material_usage}', [MaterialUsageController::class, 'destroy'])->name('material_usage.destroy');
+    Route::get('/material-usage/get-by-inventory', [MaterialUsageController::class, 'getByInventory'])->name('material_usage.get_by_inventory');
 
     // Inventory
     Route::resource('inventory', InventoryController::class);
