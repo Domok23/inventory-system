@@ -171,19 +171,21 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Project</th>
-                                <th>Goods Out Quantity</th>
-                                <th>Goods In Quantity</th>
-                                <th>Used Quantity</th>
-                            </tr>
-                        </thead>
-                        <tbody id="materialUsageTable">
-                            <!-- Data akan dimuat melalui AJAX -->
-                        </tbody>
-                    </table>
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="materialUsageDataTable">
+                            <thead>
+                                <tr>
+                                    <th>Project</th>
+                                    <th>Goods Out Quantity</th>
+                                    <th>Goods In Quantity</th>
+                                    <th>Used Quantity</th>
+                                </tr>
+                            </thead>
+                            <tbody id="materialUsageTable">
+                                <!-- Data akan dimuat melalui AJAX -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -200,23 +202,40 @@
 
             // Fetch data melalui AJAX
             $.ajax({
-                url: "{{ route('material_usage.index') }}",
+                url: "{{ route('material_usage.get_by_inventory') }}",
                 method: "GET",
                 data: {
                     inventory_id: inventoryId
                 },
                 success: function(response) {
-                    console.log(response);
-                    response.forEach(function(usage) {
-                        $('#materialUsageTable').append(`
-                    <tr>
-                        <td>${usage.project_name}</td>
-                        <td>${usage.goods_out_quantity}</td>
-                        <td>${usage.goods_in_quantity}</td>
-                        <td>${usage.used_quantity}</td>
-                    </tr>
-                `);
-                    });
+                    console.log(response); // Log respons dari server
+
+                    // Kosongkan tabel sebelum memuat data baru
+                    $('#materialUsageTable').empty();
+
+                    if (Array.isArray(response)) {
+                        response.forEach(function(usage) {
+                            $('#materialUsageTable').append(`
+                                <tr>
+                                    <td>${usage.project_name}</td>
+                                    <td>${usage.goods_out_quantity}</td>
+                                    <td>${usage.goods_in_quantity}</td>
+                                    <td>${usage.used_quantity}</td>
+                                </tr>
+                            `);
+                        });
+
+                        // Inisialisasi DataTables setelah data dimuat
+                        $('#materialUsageDataTable').DataTable({
+                            destroy: true, // Hapus inisialisasi sebelumnya jika ada
+                            paging: true,
+                            searching: true,
+                            ordering: true,
+                        });
+                    } else {
+                        console.error('Unexpected response format:', response);
+                        alert('Failed to load material usage data. Please try again.');
+                    }
 
                     // Tampilkan modal
                     $('#materialUsageModal').modal('show');

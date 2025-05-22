@@ -24,7 +24,7 @@ class MaterialUsageController extends Controller
             ->get()
             ->map(function ($usage) {
                 return [
-                    'project_name' => $usage->project->name,
+                    'project_name' => $usage->project->name ?? 'N/A',
                     'goods_out_quantity' => GoodsOut::where('inventory_id', $usage->inventory_id)
                         ->where('project_id', $usage->project_id)
                         ->sum('quantity'),
