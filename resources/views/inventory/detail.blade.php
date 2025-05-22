@@ -40,7 +40,11 @@
                 </div>
             </div>
             <div class="card-footer text-center">
-                <a href="{{ route('inventory.index') }}" class="btn btn-primary">Back to Inventory</a>
+                <a href="" class="btn btn-primary my-1">Goods In</a>
+                <a href="" class="btn btn-success my-1">Goods Out</a>
+                <a href="" class="btn btn-warning my-1">View Material Usage</a>
+                <br>
+                <a href="{{ route('inventory.index') }}" class="btn btn-secondary my-2">Back to Inventory</a>
             </div>
         </div>
     </div>
