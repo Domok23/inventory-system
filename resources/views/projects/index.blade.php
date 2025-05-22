@@ -18,7 +18,7 @@
         <table class="table table-bordered table-hover" id="datatable">
             <thead>
                 <tr>
-                    <th style="width: 20px;" class="text-center align-middle">#</th>
+                    <th></th>
                     <th>Name</th>
                     <th>Qty</th>
                     <th>Department</th>
@@ -27,7 +27,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($projects as $project)
+                @foreach ($projects as $project)
                     <tr>
                         <td class="text-center align-middle">{{ $loop->iteration }}</td>
                         <td class="align-middle">{{ $project->name }}</td>
@@ -35,18 +35,20 @@
                         <td class="align-middle">{{ $project->department }}</td>
                         <td class="align-middle">{{ $project->deadline }}</td>
                         <td>
-                            <button type="button" class="btn btn-info btn-sm btn-show-image" data-bs-toggle="modal"
-                                data-bs-target="#imageModal"
-                                data-img="{{ $project->img ? asset('storage/' . $project->img) : '' }}"
-                                data-name="{{ $project->name }}">
-                                Show
-                            </button>
-                            <a href="{{ route('projects.edit', $project) }}" class="btn btn-sm btn-warning">Edit</a>
-                            <form action="{{ route('projects.destroy', $project) }}" method="POST"
-                                style="display:inline-block;" class="delete-form">
-                                @csrf @method('DELETE')
-                                <button type="button" class="btn btn-sm btn-danger btn-delete">Delete</button>
-                            </form>
+                            <div class="d-flex flex-wrap gap-1">
+                                <button type="button" class="btn btn-info btn-sm btn-show-image" data-bs-toggle="modal"
+                                    data-bs-target="#imageModal"
+                                    data-img="{{ $project->img ? asset('storage/' . $project->img) : '' }}"
+                                    data-name="{{ $project->name }}">
+                                    Show
+                                </button>
+                                <a href="{{ route('projects.edit', $project) }}" class="btn btn-sm btn-warning">Edit</a>
+                                <form action="{{ route('projects.destroy', $project) }}" method="POST"
+                                    class="delete-form">
+                                    @csrf @method('DELETE')
+                                    <button type="button" class="btn btn-sm btn-danger btn-delete">Delete</button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                 @endforeach

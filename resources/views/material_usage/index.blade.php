@@ -5,7 +5,7 @@
         <table class="table table-bordered table-hover" id="datatable">
             <thead>
                 <tr>
-                    <th style="width: 20px;" class="text-center align-middle">#</th>
+                    <th></th>
                     <th>Material</th>
                     <th>Project</th>
                     <th>Used Quantity</th>
@@ -24,12 +24,14 @@
                             {{ $usage->inventory->unit ?? '-' }}</td>
                         @if (auth()->user()->role === 'super_admin')
                             <td>
-                                <form action="{{ route('material_usage.destroy', $usage->id) }}" method="POST"
-                                    style="display:inline;" class="delete-form">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="button" class="btn btn-sm btn-danger btn-delete">Delete</button>
-                                </form>
+                                <div class="d-flex flex-wrap gap-1">
+                                    <form action="{{ route('material_usage.destroy', $usage->id) }}" method="POST"
+                                        class="delete-form">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="button" class="btn btn-sm btn-danger btn-delete">Delete</button>
+                                    </form>
+                                </div>
                             </td>
                         @endif
                     </tr>

@@ -32,7 +32,6 @@
                 <thead>
                     <tr>
                         <th><input type="checkbox" class="select-all"></th>
-                        <th>#</th>
                         <th>ID</th>
                         <th>Name/Info</th>
                         <th>Deleted At</th>
@@ -57,7 +56,6 @@
                                         'currencies' => 'currency',
                                     ][$var] }}">
                             </td>
-                            <td>{{ $loop->iteration }}</td>
                             <td>{{ $item->id }}</td>
                             <td>
                                 @if (isset($item->name))
@@ -72,7 +70,8 @@
                             </td>
                             <td>{{ $item->deleted_at }}</td>
                             <td>
-                                <form action="{{ route('trash.restore') }}" method="POST" style="display:inline;">
+                                <div class="d-flex flex-wrap gap-1">
+                                <form action="{{ route('trash.restore') }}" method="POST">
                                     @csrf
                                     <input type="hidden" name="model"
                                         value="{{ [
@@ -88,7 +87,7 @@
                                     <input type="hidden" name="id" value="{{ $item->id }}">
                                     <button class="btn btn-success btn-sm" type="submit">Restore</button>
                                 </form>
-                                <form action="{{ route('trash.forceDelete') }}" method="POST" style="display:inline;"
+                                <form action="{{ route('trash.forceDelete') }}" method="POST"
                                     onsubmit="return confirm('Delete permanently?')">
                                     @csrf
                                     @method('DELETE')
@@ -106,6 +105,7 @@
                                     <input type="hidden" name="id" value="{{ $item->id }}">
                                     <button class="btn btn-danger btn-sm" type="submit">Delete Permanently</button>
                                 </form>
+                                </div>
                             </td>
                         </tr>
                     @endforeach

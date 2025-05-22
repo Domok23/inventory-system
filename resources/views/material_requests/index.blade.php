@@ -35,7 +35,7 @@
         <table class="table table-bordered table-hover" id="datatable">
             <thead>
                 <tr>
-                    <th style="width: 20px;" class="text-center align-middle">#</th>
+                    <th></th>
                     <th>Project</th>
                     <th>Material</th>
                     <th>Requested Quantity</th>
@@ -75,17 +75,20 @@
                         <td>{{ $req->remark }}</td>
                         <td class="align-middle">{{ $req->created_at->format('d-m-Y, H:i') }}</td>
                         <td>
-                            <a href="{{ route('material_requests.edit', $req->id) }}"
-                                class="btn btn-sm btn-primary">Edit</a>
-                            @if ($req->status === 'approved')
-                                <a href="{{ route('goods_out.create', $req->id) }}" class="btn btn-sm btn-success">Goods
-                                    Out</a>
-                            @endif
-                            <form action="{{ route('material_requests.destroy', $req->id) }}" method="POST"
-                                style="display:inline;" class="delete-form">
-                                @csrf @method('DELETE')
-                                <button type="button" class="btn btn-sm btn-danger btn-delete">Delete</button>
-                            </form>
+                            <div class="d-flex flex-wrap gap-1">
+                                <a href="{{ route('material_requests.edit', $req->id) }}"
+                                    class="btn btn-sm btn-primary">Edit</a>
+                                @if ($req->status === 'approved')
+                                    <a href="{{ route('goods_out.create', $req->id) }}"
+                                        class="btn btn-sm btn-success">Goods
+                                        Out</a>
+                                @endif
+                                <form action="{{ route('material_requests.destroy', $req->id) }}" method="POST"
+                                    class="delete-form">
+                                    @csrf @method('DELETE')
+                                    <button type="button" class="btn btn-sm btn-danger btn-delete">Delete</button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                 @endforeach

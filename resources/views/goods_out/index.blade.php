@@ -17,7 +17,7 @@
         <table class="table table-bordered table-hover" id="datatable">
             <thead>
                 <tr>
-                    <th style="width: 20px;" class="text-center align-middle">#</th>
+                    <th></th>
                     <th>Material</th>
                     <th>Quantity</th>
                     <th>Remaining Quantity</th>
@@ -34,7 +34,8 @@
                         <td class="text-center align-middle">{{ $loop->iteration }}</td>
                         <td class="align-middle">{{ $goodsOut->inventory->name ?? '-' }}</td>
                         <td class="align-middle">{{ $goodsOut->quantity }} {{ $goodsOut->inventory->unit ?? '-' }}</td>
-                        <td class="align-middle">{{ $goodsOut->remaining_quantity }} {{ $goodsOut->inventory->unit ?? '-' }}</td>
+                        <td class="align-middle">{{ $goodsOut->remaining_quantity }} {{ $goodsOut->inventory->unit ?? '-' }}
+                        </td>
                         <td class="align-middle">{{ $goodsOut->project->name ?? '-' }}</td>
                         <td class="align-middle">{{ ucfirst($goodsOut->requested_by) }}
                             ({{ ucfirst($goodsOut->department) }})
@@ -48,23 +49,28 @@
                         </td>
                         <td class="align-middle">{{ $goodsOut->created_at->format('d-m-Y, H:i') }}</td>
                         <td>
-                            @if ($goodsOut->quantity > 0)
-                                <a href="{{ route('goods_in.create', ['goods_out_id' => $goodsOut->id]) }}"
-                                    class="btn btn-sm btn-success">
-                                    Goods In
-                                </a>
-                            @endif
-                            @if ($goodsOut->material_request_id && $goodsOut->materialRequest->qty > 0)
-                                <a href="{{ route('goods_out.create', $goodsOut->material_request_id) }}"
-                                    class="btn btn-sm btn-primary">Process</a>
-                            @endif
-                            <a href="{{ route('goods_out.edit', $goodsOut->id) }}" class="btn btn-sm btn-warning">Edit</a>
-                            <form action="{{ route('goods_out.destroy', $goodsOut->id) }}" method="POST"
-                                style="display:inline;" class="delete-form">
-                                @csrf
-                                @method('DELETE')
-                                <button type="button" class="btn btn-sm btn-danger btn-delete">Delete</button>
-                            </form>
+                            <div class="d-flex flex-wrap gap-1">
+                                @if ($goodsOut->quantity > 0)
+                                    <a href="{{ route('goods_in.create', ['goods_out_id' => $goodsOut->id]) }}"
+                                        class="btn btn-sm btn-success">
+                                        Goods In
+                                    </a>
+                                @endif
+                                @if ($goodsOut->material_request_id && $goodsOut->materialRequest->qty > 0)
+                                    <a href="{{ route('goods_out.create', $goodsOut->material_request_id) }}"
+                                        class="btn btn-sm btn-primary">
+                                        Process
+                                    </a>
+                                @endif
+                                <a href="{{ route('goods_out.edit', $goodsOut->id) }}"
+                                    class="btn btn-sm btn-warning">Edit</a>
+                                <form action="{{ route('goods_out.destroy', $goodsOut->id) }}" method="POST"
+                                    class="delete-form">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="button" class="btn btn-sm btn-danger btn-delete">Delete</button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                 @endforeach
@@ -88,8 +94,8 @@
                     text: "This action cannot be undone!",
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
+                    confirmButtonColor: '#dc3545',
+                    cancelButtonColor: '#7C7C7CFF',
                     confirmButtonText: 'Yes, delete it!',
                     reverseButtons: true
                 }).then((result) => {

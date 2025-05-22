@@ -63,7 +63,7 @@
         <table class="table table-hover table-bordered" id="datatable">
             <thead>
                 <tr>
-                    <th style="width: 20px;" class="text-center align-middle">#</th>
+                    <th></th>
                     <th>Name</th>
                     <th>Category</th>
                     <th>Quantity</th>
@@ -89,6 +89,7 @@
                         </td>
                         <td class="align-middle">{{ $inventory->location }}</td>
                         <td>
+                            <div class="d-flex flex-wrap gap-1">
                             <a href="{{ route('inventory.edit', $inventory->id) }}" class="btn btn-warning btn-sm">Edit</a>
                             <a href="{{ route('inventory.detail', ['id' => $inventory->id]) }}"
                                 class="btn btn-sm btn-success">Detail</a>
@@ -100,11 +101,12 @@
                                 Show
                             </button>
                             <form action="{{ route('inventory.destroy', $inventory->id) }}" method="POST"
-                                style="display:inline;" class="delete-form">
+                                class="delete-form">
                                 @csrf
                                 @method('DELETE')
                                 <button type="button" class="btn btn-sm btn-danger btn-delete">Delete</button>
                             </form>
+                            </div>
                         </td>
                     </tr>
                 @endforeach

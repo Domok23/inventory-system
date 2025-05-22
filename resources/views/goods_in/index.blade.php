@@ -3,7 +3,8 @@
 @section('content')
     <div class="container">
         <div class="d-flex align-items-center mb-3 gap-2">
-            <h2 class="mb-0 flex-shrink-0" style="font-size:1.5rem;"><i class="bi bi-arrow-down-circle"></i> Goods In Records</h2>
+            <h2 class="mb-0 flex-shrink-0" style="font-size:1.5rem;"><i class="bi bi-arrow-down-circle"></i> Goods In Records
+            </h2>
             <a href="{{ route('goods_in.create_independent') }}" class="btn btn-outline-primary btn-sm flex-shrink-0 ms-2">+
                 Create Goods In</a>
         </div>
@@ -16,7 +17,7 @@
         <table class="table table-hover table-bordered" id="datatable">
             <thead>
                 <tr>
-                    <th style="width: 20px;" class="text-center align-middle">#</th>
+                    <th></th>
                     <th>Material</th>
                     <th>Quantity Returned/In</th>
                     <th>Project</th>
@@ -68,13 +69,16 @@
                             @endif
                         </td>
                         <td class="align-middle">
-                            <a href="{{ route('goods_in.edit', $goodsIn->id) }}" class="btn btn-sm btn-warning">Edit</a>
-                            <form action="{{ route('goods_in.destroy', $goodsIn->id) }}" method="POST"
-                                style="display:inline;" class="delete-form">
-                                @csrf
-                                @method('DELETE')
-                                <button type="button" class="btn btn-sm btn-danger btn-delete">Delete</button>
-                            </form>
+                            <div class="d-flex flex-wrap gap-1">
+                                <a href="{{ route('goods_in.edit', $goodsIn->id) }}"
+                                    class="btn btn-sm btn-warning">Edit</a>
+                                <form action="{{ route('goods_in.destroy', $goodsIn->id) }}" method="POST"
+                                    class="delete-form">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="button" class="btn btn-sm btn-danger btn-delete">Delete</button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                 @endforeach

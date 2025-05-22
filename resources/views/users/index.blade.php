@@ -16,9 +16,9 @@
         @endif
 
         <table class="table table-bordered table-striped table-hover" id="datatable">
-            <thead class="table-primary">
+            <thead>
                 <tr>
-                    <th style="width: 20px;" class="text-center align-middle">ID</th>
+                    <th class="text-center align-middle">ID</th>
                     <th class="text-center align-middle">Username</th>
                     <th class="text-center align-middle">Role</th>
                     <th class="text-center align-middle">Actions</th>
@@ -31,12 +31,13 @@
                         <td class="align-middle">{{ $user->username }}</td>
                         <td class="align-middle">{{ ucwords(str_replace('_', ' ', $user->role)) }}</td>
                         <td>
+                            <div class="d-flex flex-wrap gap-1">
                             <a href="{{ route('users.edit', $user->id) }}" class="btn btn-sm btn-warning">Edit</a>
-                            <form action="{{ route('users.destroy', $user->id) }}" method="POST" style="display:inline;"
-                                class="delete-form">
+                            <form action="{{ route('users.destroy', $user->id) }}" method="POST" class="delete-form">
                                 @csrf @method('DELETE')
                                 <button type="button" class="btn btn-sm btn-danger btn-delete">Delete</button>
                             </form>
+                            </div>
                         </td>
                     </tr>
                 @endforeach

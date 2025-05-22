@@ -4,7 +4,8 @@
     <div class="container">
         <div class="d-flex align-items-center mb-3 gap-2">
             <h2 class="mb-0 flex-shrink-0" style="font-size:1.5rem;">Currency List</h2>
-            <button type="button" class="btn btn-outline-primary btn-sm flex-shrink-0 ms-2" data-bs-toggle="modal" data-bs-target="#currencyModal">
+            <button type="button" class="btn btn-outline-primary btn-sm flex-shrink-0 ms-2" data-bs-toggle="modal"
+                data-bs-target="#currencyModal">
                 + Add Currency
             </button>
         </div>
@@ -28,7 +29,7 @@
         <table class="table table-hover table-bordered table-striped" id="datatable">
             <thead>
                 <tr>
-                    <th style="width: 20px;" class="text-center align-middle">#</th>
+                    <th></th>
                     <th>Name</th>
                     <th>Exchange Rate</th>
                     <th>Action</th>
@@ -41,17 +42,19 @@
                         <td class="align-middle">{{ $currency->name }}</td>
                         <td class="align-middle">{{ number_format($currency->exchange_rate, 2, ',', '.') }}</td>
                         <td>
-                            <button type="button" class="btn btn-sm btn-primary edit-currency-btn"
-                                data-id="{{ $currency->id }}" data-name="{{ $currency->name }}"
-                                data-exchange-rate="{{ $currency->exchange_rate }}" data-bs-toggle="modal"
-                                data-bs-target="#currencyModal">
-                                Edit
-                            </button>
-                            <form action="{{ route('currencies.destroy', $currency->id) }}" method="POST"
-                                style="display:inline;" class="delete-form">
-                                @csrf @method('DELETE')
-                                <button type="button" class="btn btn-sm btn-danger btn-delete">Delete</button>
-                            </form>
+                            <div class="d-flex flex-wrap gap-1">
+                                <button type="button" class="btn btn-sm btn-primary edit-currency-btn"
+                                    data-id="{{ $currency->id }}" data-name="{{ $currency->name }}"
+                                    data-exchange-rate="{{ $currency->exchange_rate }}" data-bs-toggle="modal"
+                                    data-bs-target="#currencyModal">
+                                    Edit
+                                </button>
+                                <form action="{{ route('currencies.destroy', $currency->id) }}" method="POST"
+                                    class="delete-form">
+                                    @csrf @method('DELETE')
+                                    <button type="button" class="btn btn-sm btn-danger btn-delete">Delete</button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                 @endforeach
