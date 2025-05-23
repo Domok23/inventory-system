@@ -94,8 +94,8 @@
                     text: "This action cannot be undone!",
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonColor: '#dc3545',
-                    cancelButtonColor: '#7C7C7CFF',
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
                     confirmButtonText: 'Yes, delete it!',
                     reverseButtons: true
                 }).then((result) => {
