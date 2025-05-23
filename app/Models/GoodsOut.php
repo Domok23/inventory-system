@@ -25,7 +25,7 @@ class GoodsOut extends Model
 
     public function materialRequest()
     {
-        return $this->belongsTo(MaterialRequest::class);
+        return $this->belongsTo(MaterialRequest::class, 'material_request_id');
     }
 
     public function inventory()

@@ -41,6 +41,7 @@ class GoodsOutController extends Controller
             return back()->withInput()->with('error', 'Quantity cannot exceed the requested quantity.');
         }
 
+        // Validasi tambahan: Pastikan stok inventory tidak menjadi negatif
         if ($request->quantity > $inventory->quantity) {
             return back()->withInput()->with('error', 'Quantity cannot exceed the available inventory.');
         }
@@ -135,7 +136,7 @@ class GoodsOutController extends Controller
             'remark' => $request->remark,
         ]);
 
-        MaterialUsageHelper::sync($goodsOut->inventory_id, $goodsOut->project_id);
+        MaterialUsageHelper::sync($request->inventory_id, $request->project_id);
 
         return redirect()->route('goods_out.index')->with('success', 'Goods Out created successfully.');
     }
@@ -235,12 +236,17 @@ class GoodsOutController extends Controller
     {
         $goodsOut = GoodsOut::findOrFail($id);
 
+        // Cek apakah ada Goods In yang terkait
+        if ($goodsOut->goodsIns()->exists()) {
+            return redirect()->route('goods_out.index')->with('error', 'Cannot delete Goods Out with related Goods In.');
+        }
+
         // Kembalikan stok ke inventory
         $inventory = $goodsOut->inventory;
         $inventory->quantity += $goodsOut->quantity;
         $inventory->save();
 
-        // Hapus Goods Out
+        // Soft delete Goods Out
         $goodsOut->delete();
 
         MaterialUsageHelper::sync($goodsOut->inventory_id, $goodsOut->project_id);

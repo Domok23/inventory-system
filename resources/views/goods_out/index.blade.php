@@ -56,7 +56,7 @@
                                         Goods In
                                     </a>
                                 @endif
-                                @if ($goodsOut->material_request_id && $goodsOut->materialRequest->qty > 0)
+                                @if ($goodsOut->material_request_id && $goodsOut->materialRequest && $goodsOut->materialRequest->qty > 0)
                                     <a href="{{ route('goods_out.create', $goodsOut->material_request_id) }}"
                                         class="btn btn-sm btn-primary">
                                         Process
@@ -64,12 +64,16 @@
                                 @endif
                                 <a href="{{ route('goods_out.edit', $goodsOut->id) }}"
                                     class="btn btn-sm btn-warning">Edit</a>
-                                <form action="{{ route('goods_out.destroy', $goodsOut->id) }}" method="POST"
-                                    class="delete-form">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="button" class="btn btn-sm btn-danger btn-delete">Delete</button>
-                                </form>
+                                @if (!$goodsOut->goodsIns()->exists())
+                                    <form action="{{ route('goods_out.destroy', $goodsOut->id) }}" method="POST"
+                                        class="delete-form">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="button" class="btn btn-sm btn-danger btn-delete">Delete</button>
+                                    </form>
+                                @else
+                                    <button type="button" class="btn btn-sm btn-danger" disabled>Delete</button>
+                                @endif
                             </div>
                         </td>
                     </tr>

@@ -46,6 +46,11 @@ class GoodsInController extends Controller
             return back()->with('error', 'Inventory not found.');
         }
 
+        // Validasi pastikan stok inventory tidak menjadi negatif
+        if ($inventory->quantity + $request->quantity < 0) {
+            return back()->with('error', 'Inventory stock cannot be negative.');
+        }
+
         // Kurangi jumlah Goods Out
         $inventory->quantity += $request->quantity;
         $inventory->save();
@@ -85,6 +90,11 @@ class GoodsInController extends Controller
         ]);
 
         $inventory = Inventory::findOrFail($request->inventory_id);
+
+        // Validasi tambahan: Pastikan stok inventory tidak menjadi negatif
+        if ($inventory->quantity + $request->quantity < 0) {
+            return back()->with('error', 'Inventory stock cannot be negative.');
+        }
 
         // Tambahkan stok ke inventory
         $inventory->quantity += $request->quantity;

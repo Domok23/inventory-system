@@ -12,6 +12,7 @@ class MaterialUsageHelper
     {
         $goodsOutTotal = GoodsOut::where('inventory_id', $inventory_id)
             ->where('project_id', $project_id)
+            ->whereNull('deleted_at')
             ->sum('quantity');
 
         $goodsInTotal = GoodsIn::where('inventory_id', $inventory_id)
