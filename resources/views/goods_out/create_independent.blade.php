@@ -26,7 +26,7 @@
             <div class="mb-3">
                 <label>Quantity</label>
                 <div class="input-group">
-                    <input type="number" name="quantity" class="form-control" step="0.01" value="{{ old('quantity') }}"
+                    <input type="number" name="quantity" class="form-control" step="any" value="{{ old('quantity') }}"
                         required>
                     <span class="input-group-text unit-label">{{ old('unit', 'unit') }}</span>
                 </div>

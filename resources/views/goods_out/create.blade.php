@@ -36,7 +36,7 @@
                 <label>Quantity to Goods Out</label>
                 <div class="input-group">
                     <input type="number" name="quantity" class="form-control"
-                        value="{{ old('quantity', $materialRequest->qty) }}" step="0.01" required>
+                        value="{{ old('quantity', $materialRequest->qty) }}" step="any" required>
                     <span class="input-group-text unit-label">
                         {{ $materialRequest->inventory ? $materialRequest->inventory->unit : 'unit' }}
                     </span>

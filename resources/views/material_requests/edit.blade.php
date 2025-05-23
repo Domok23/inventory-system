@@ -61,7 +61,7 @@
             <div class="mb-3">
                 <label>Requested Quantity</label>
                 <div class="input-group">
-                    <input type="number" name="qty" class="form-control" value="{{ $request->qty }}" step="0.01"
+                    <input type="number" name="qty" class="form-control" value="{{ $request->qty }}" step="any"
                         required>
                     <span class="input-group-text unit-label">
                         {{ $request->invr ? $request->inv->unit : 'unit' }}
@@ -119,7 +119,7 @@
                             <label>Name</label>
                             <input type="text" name="name" class="form-control" required>
                             <label class="mt-2">Quantity</label>
-                            <input type="number" step="0.01" name="quantity" class="form-control">
+                            <input type="number" step="any" name="quantity" class="form-control">
                             <label class="mt-2">Unit</label>
                             <input type="text" name="unit" class="form-control" required>
                         </div>
@@ -146,7 +146,7 @@
                             <label>Project Name</label>
                             <input type="text" name="name" class="form-control" required>
                             <label class="mt-2">Qty</label>
-                            <input type="number" step="1" name="qty" class="form-control">
+                            <input type="number" step="any" name="qty" class="form-control">
                             <label class="mt-2">Department</label>
                             <select name="department" class="form-select" required>
                                 <option value="mascot">Mascot</option>

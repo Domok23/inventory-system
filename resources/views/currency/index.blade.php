@@ -81,7 +81,7 @@
                         <div class="mb-3">
                             <label for="currency_exchange_rate" class="form-label">Exchange Rate</label>
                             <input type="number" id="currency_exchange_rate" name="exchange_rate" class="form-control"
-                                step="0.01" required>
+                                step="any" required>
                         </div>
                     </div>
                     <div class="modal-footer">

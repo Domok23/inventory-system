@@ -38,7 +38,7 @@
                     <th></th>
                     <th>Project</th>
                     <th>Material</th>
-                    <th>Requested Quantity</th>
+                    <th>Requested Qty</th>
                     <th>Requested By</th>
                     <th>Status</th>
                     <th>Remark</th>

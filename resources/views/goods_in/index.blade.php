@@ -19,7 +19,7 @@
                 <tr>
                     <th></th>
                     <th>Material</th>
-                    <th>Quantity Returned/In</th>
+                    <th>Qty Returned/In</th>
                     <th>Project</th>
                     <th>Returned/In By</th>
                     <th>Returned/In At</th>

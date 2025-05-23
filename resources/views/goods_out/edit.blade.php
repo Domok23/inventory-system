@@ -27,7 +27,7 @@
                 <label>Quantity</label>
                 <div class="input-group">
                     <input type="number" name="quantity" class="form-control" value="{{ $goodsOut->quantity }}"
-                        step="0.01" required>
+                        step="any" required>
                     <span class="input-group-text unit-label">{{ $goodsOut->inventory->unit }}</span>
                 </div>
             </div>

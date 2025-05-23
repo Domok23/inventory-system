@@ -31,8 +31,8 @@
                 <tr>
                     <th></th>
                     <th>Material</th>
-                    <th>Quantity</th>
-                    <th>Remaining Quantity</th>
+                    <th>Qty</th>
+                    <th>Remaining Qty</th>
                     <th>For Project</th>
                     <th>Requested By</th>
                     <th>Remark</th>

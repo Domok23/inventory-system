@@ -94,7 +94,7 @@
                         <div class="mb-3">
                             <label for="quantity" class="form-label">Quantity</label>
                             <input type="number" name="quantity" id="quantity" class="form-control" required
-                                min="0.01" step="0.01">
+                                min="0.01" step="any">
                         </div>
                         <div class="mb-3">
                             <label for="returned_at" class="form-label">Returned At</label>
@@ -146,7 +146,7 @@
                         <div class="mb-3">
                             <label for="quantity" class="form-label">Quantity</label>
                             <input type="number" name="quantity" id="quantity" class="form-control" required
-                                min="0.01" step="0.01">
+                                min="0.01" step="any">
                         </div>
                         <div class="mb-3">
                             <label for="remark" class="form-label">Remark</label>

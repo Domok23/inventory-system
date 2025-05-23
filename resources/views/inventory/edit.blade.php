@@ -58,7 +58,7 @@
             <div class="mb-3">
                 <label for="quantity" class="form-label">Quantity</label>
                 <input type="number" class="form-control" id="quantity" name="quantity"
-                    value="{{ old('quantity', $inventory->quantity) }}" required>
+                    value="{{ old('quantity', $inventory->quantity) }}" step="any" required>
                 @error('quantity')
                     <small class="text-danger">{{ $message }}</small>
                 @enderror
@@ -109,7 +109,7 @@
             <!-- Price -->
             <div class="mb-3">
                 <label for="price" class="form-label">Unit Price</label>
-                <input type="number" class="form-control" step="0.01" id="price" name="price"
+                <input type="number" class="form-control" step="any" id="price" name="price"
                     value="{{ old('price', $inventory->price) }}">
                 @error('price')
                     <small class="text-danger">{{ $message }}</small>

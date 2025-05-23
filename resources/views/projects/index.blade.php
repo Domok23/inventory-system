@@ -20,7 +20,7 @@
                 <tr>
                     <th></th>
                     <th>Name</th>
-                    <th>Qty</th>
+                    <th>Quantity</th>
                     <th>Department</th>
                     <th>Deadline</th>
                     <th>Actions</th>
