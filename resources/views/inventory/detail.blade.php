@@ -85,7 +85,7 @@
                         <div class="mb-3">
                             <label for="project_id" class="form-label">Project (Optional)</label>
                             <select name="project_id" id="project_id" class="form-select">
-                                <option value="" disabled selected>Select Project</option>
+                                <option value="" disabled selected>Select an option</option>
                                 @foreach ($projects as $project)
                                     <option value="{{ $project->id }}">{{ $project->name }}</option>
                                 @endforeach
@@ -128,7 +128,7 @@
                         <div class="mb-3">
                             <label for="project_id" class="form-label">Project</label>
                             <select name="project_id" id="project_id" class="form-select" required>
-                                <option value="" disabled selected>Select Project</option>
+                                <option value="" disabled selected>Select an option</option>
                                 @foreach ($projects as $project)
                                     <option value="{{ $project->id }}">{{ $project->name }}</option>
                                 @endforeach
@@ -137,7 +137,7 @@
                         <div class="mb-3">
                             <label for="user_id" class="form-label">User</label>
                             <select name="user_id" id="user_id" class="form-select" required>
-                                <option value="" disabled selected>Select User</option>
+                                <option value="" disabled selected>Select an option</option>
                                 @foreach ($users as $user)
                                     <option value="{{ $user->id }}">{{ $user->username }}</option>
                                 @endforeach
@@ -191,6 +191,10 @@
         </div>
     </div>
 @endsection
+@push('styles')
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.2.0/dist/select2-bootstrap-5-theme.min.css"
+        rel="stylesheet" />
+@endpush
 @push('scripts')
     <script>
         $(document).on('click', '#viewMaterialUsage', function(e) {
@@ -243,6 +247,29 @@
                 error: function(xhr) {
                     alert('Failed to load material usage data.');
                 }
+            });
+        });
+        $(document).ready(function() {
+            // Inisialisasi Select2 di modal Goods Out
+            $('#goodsOutModal').on('shown.bs.modal', function() {
+                $('#goodsOutModal select').select2({
+                    dropdownParent: $('#goodsOutModal'), // Agar dropdown muncul di dalam modal
+                    width: '100%', // Sesuaikan lebar dropdown
+                    theme: 'bootstrap-5', // Gunakan tema Bootstrap 5
+                    placeholder: 'Select an option',
+                    allowClear: true
+                });
+            });
+
+            // Inisialisasi Select2 di modal Goods In
+            $('#goodsInModal').on('shown.bs.modal', function() {
+                $('#goodsInModal select').select2({
+                    dropdownParent: $('#goodsInModal'), // Agar dropdown muncul di dalam modal
+                    width: '100%', // Sesuaikan lebar dropdown
+                    theme: 'bootstrap-5', // Gunakan tema Bootstrap 5
+                    placeholder: 'Select an option',
+                    allowClear: true
+                });
             });
         });
     </script>
