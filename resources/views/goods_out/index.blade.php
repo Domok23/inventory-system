@@ -14,6 +14,18 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
+        @if (session('warning'))
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                {{ session('warning') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
+        @if (session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        @endif
         <table class="table table-bordered table-hover" id="datatable">
             <thead>
                 <tr>
@@ -49,7 +61,7 @@
                         </td>
                         <td class="align-middle">{{ $goodsOut->created_at->format('d-m-Y, H:i') }}</td>
                         <td>
-                            <div class="d-flex flex-wrap gap-1">
+                            <div class="d-flex flex-wrap gap-1 align-items-center">
                                 @if ($goodsOut->quantity > 0)
                                     <a href="{{ route('goods_in.create', ['goods_out_id' => $goodsOut->id]) }}"
                                         class="btn btn-sm btn-success">
@@ -64,15 +76,14 @@
                                 @endif
                                 <a href="{{ route('goods_out.edit', $goodsOut->id) }}"
                                     class="btn btn-sm btn-warning">Edit</a>
-                                @if (!$goodsOut->goodsIns()->exists())
+                                @if ($goodsOut->goodsIns->isEmpty())
+                                    {{-- Cek apakah tidak ada Goods In terkait --}}
                                     <form action="{{ route('goods_out.destroy', $goodsOut->id) }}" method="POST"
                                         class="delete-form">
                                         @csrf
                                         @method('DELETE')
                                         <button type="button" class="btn btn-sm btn-danger btn-delete">Delete</button>
                                     </form>
-                                @else
-                                    <button type="button" class="btn btn-sm btn-danger" disabled>Delete</button>
                                 @endif
                             </div>
                         </td>

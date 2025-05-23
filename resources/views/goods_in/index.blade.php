@@ -72,12 +72,14 @@
                             <div class="d-flex flex-wrap gap-1">
                                 <a href="{{ route('goods_in.edit', $goodsIn->id) }}"
                                     class="btn btn-sm btn-warning">Edit</a>
-                                <form action="{{ route('goods_in.destroy', $goodsIn->id) }}" method="POST"
-                                    class="delete-form">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="button" class="btn btn-sm btn-danger btn-delete">Delete</button>
-                                </form>
+                                @if (!$goodsIn->goods_out_id)
+                                    <form action="{{ route('goods_in.destroy', $goodsIn->id) }}" method="POST"
+                                        class="delete-form">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="button" class="btn btn-sm btn-danger btn-delete">Delete</button>
+                                    </form>
+                                @endif
                             </div>
                         </td>
                     </tr>

@@ -41,12 +41,7 @@
 
             td .btn {
                 margin-bottom: 0.25rem;
-                /* Tambahkan jarak antar tombol */
-            }
-
-            td .btn:last-child {
-                margin-bottom: 0;
-                /* Hilangkan margin bawah untuk tombol terakhir */
+                text-align: center;
             }
 
             .delete-form {

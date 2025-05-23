@@ -152,7 +152,17 @@ class GoodsInController extends Controller
 
     public function destroy(GoodsIn $goods_in)
     {
+        // Cek apakah Goods In terkait dengan Goods Out
+        if ($goods_in->goods_out_id) {
+            return redirect()->route('goods_in.index')->with('error', 'Cannot delete Goods In that is linked to a Goods Out.');
+        }
+
+        // Hapus Goods In
         $goods_in->delete();
+
+        // Sinkronkan Material Usage
+        MaterialUsageHelper::sync($goods_in->inventory_id, $goods_in->project_id);
+
         return redirect()->route('goods_in.index')->with('success', 'Goods In deleted successfully.');
     }
 }

@@ -232,6 +232,26 @@ class GoodsOutController extends Controller
         return redirect()->route('goods_out.index')->with('success', 'Goods Out updated successfully.');
     }
 
+    public function restore($id)
+    {
+        $goodsOut = GoodsOut::withTrashed()->findOrFail($id);
+
+        // Restore Goods Out
+        $goodsOut->restore();
+
+        // Kurangi stok di inventory
+        $inventory = $goodsOut->inventory;
+        if ($inventory) {
+            $inventory->quantity -= $goodsOut->quantity;
+            $inventory->save();
+        }
+
+        // Sinkronkan Material Usage
+        MaterialUsageHelper::sync($goodsOut->inventory_id, $goodsOut->project_id);
+
+        return redirect()->route('goods_out.index')->with('success', 'Goods Out restored successfully.');
+    }
+
     public function destroy($id)
     {
         $goodsOut = GoodsOut::findOrFail($id);
