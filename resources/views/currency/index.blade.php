@@ -1,65 +1,77 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container">
-        <div class="d-flex align-items-center mb-3 gap-2">
-            <h2 class="mb-0 flex-shrink-0" style="font-size:1.5rem;">Currency List</h2>
-            <button type="button" class="btn btn-outline-primary btn-sm flex-shrink-0 ms-2" data-bs-toggle="modal"
-                data-bs-target="#currencyModal">
-                + Add Currency
-            </button>
+    <div class="container mt-4">
+        <div class="card shadow rounded">
+            <div class="card-body">
+                <!-- Header -->
+                <div class="d-flex align-items-center mb-3 gap-2">
+                    <h2 class="mb-0 flex-shrink-0" style="font-size:1.5rem;">Currency List</h2>
+                    <button type="button" class="btn btn-outline-primary btn-sm flex-shrink-0 ms-2" data-bs-toggle="modal"
+                        data-bs-target="#currencyModal">
+                        + Add Currency
+                    </button>
+                </div>
+                @if (session('success'))
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ session('success') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
+                @if ($errors->any())
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <strong>Whoops!</strong> There were some problems with your input.
+                        <ul class="mb-0">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </ul>
+                    </div>
+                @endif
+                @if (session('warning'))
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        {{ session('warning') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
+
+                <table class="table table-hover table-bordered table-striped" id="datatable">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Name</th>
+                            <th>Exchange Rate</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($currencies as $currency)
+                            <tr>
+                                <td class="text-center align-middle">{{ $loop->iteration }}</td>
+                                <td class="align-middle">{{ $currency->name }}</td>
+                                <td class="align-middle">{{ number_format($currency->exchange_rate, 2, ',', '.') }}</td>
+                                <td>
+                                    <div class="d-flex flex-wrap gap-1">
+                                        <button type="button" class="btn btn-sm btn-primary edit-currency-btn"
+                                            data-id="{{ $currency->id }}" data-name="{{ $currency->name }}"
+                                            data-exchange-rate="{{ $currency->exchange_rate }}" data-bs-toggle="modal"
+                                            data-bs-target="#currencyModal">
+                                            Edit
+                                        </button>
+                                        <form action="{{ route('currencies.destroy', $currency->id) }}" method="POST"
+                                            class="delete-form">
+                                            @csrf @method('DELETE')
+                                            <button type="button" class="btn btn-sm btn-danger btn-delete">Delete</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
         </div>
-        @if (session('success'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
-        @if ($errors->any())
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <strong>Whoops!</strong> There were some problems with your input.
-                <ul class="mb-0">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </ul>
-            </div>
-        @endif
-        <table class="table table-hover table-bordered table-striped" id="datatable">
-            <thead>
-                <tr>
-                    <th></th>
-                    <th>Name</th>
-                    <th>Exchange Rate</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($currencies as $currency)
-                    <tr>
-                        <td class="text-center align-middle">{{ $loop->iteration }}</td>
-                        <td class="align-middle">{{ $currency->name }}</td>
-                        <td class="align-middle">{{ number_format($currency->exchange_rate, 2, ',', '.') }}</td>
-                        <td>
-                            <div class="d-flex flex-wrap gap-1">
-                                <button type="button" class="btn btn-sm btn-primary edit-currency-btn"
-                                    data-id="{{ $currency->id }}" data-name="{{ $currency->name }}"
-                                    data-exchange-rate="{{ $currency->exchange_rate }}" data-bs-toggle="modal"
-                                    data-bs-target="#currencyModal">
-                                    Edit
-                                </button>
-                                <form action="{{ route('currencies.destroy', $currency->id) }}" method="POST"
-                                    class="delete-form">
-                                    @csrf @method('DELETE')
-                                    <button type="button" class="btn btn-sm btn-danger btn-delete">Delete</button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
     </div>
 
     <!-- Modal -->

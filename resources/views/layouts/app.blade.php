@@ -33,6 +33,22 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     @push('styles')
         <style>
+            html,
+            body {
+                height: 100%;
+                background-color: #F5F6FA
+            }
+
+            #app {
+                min-height: 100%;
+                display: flex;
+                flex-direction: column;
+            }
+
+            main {
+                flex: 1;
+            }
+
             .nav-link.active {
                 font-weight: bold;
                 border-bottom: 2px solid var(--bs-primary);
@@ -48,6 +64,12 @@
                 margin: 0;
                 /* Hilangkan margin default pada form */
             }
+
+            .dropdown-menu {
+                z-index: 1050;
+                pointer-events: auto;
+                /* Pastikan elemen dapat diklik */
+            }
         </style>
     @endpush
     @stack('styles')
@@ -55,8 +77,8 @@
 
 <body>
     <div id="app">
-        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
-            <div class="container">
+        <nav class="navbar navbar-expand-md navbar-light bg-white shadow rounded">
+            <div class="container-fluid">
                 <a class="navbar-brand" style="font-weight: bold;" href="{{ url('/') }}">
                     {{ config('app.name', 'Laravel') }}
                 </a>
@@ -163,17 +185,14 @@
                         @else
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button"
-                                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     {{ Auth::user()->username }}
                                 </a>
-
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                                     <a class="dropdown-item" href="{{ route('logout') }}"
-                                        onclick="event.preventDefault();
-                                        document.getElementById('logout-form').submit();">
+                                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                         {{ __('Logout') }}
                                     </a>
-
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                                         @csrf
                                     </form>
@@ -189,12 +208,12 @@
             @yield('content')
         </main>
     </div>
+    <!-- jQuery (required by DataTables & SweetAlert) -->
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+
     <!-- Bootstrap JS Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- jQuery (required by DataTables & SweetAlert) -->
-    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 
     <!-- Select2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
@@ -211,6 +230,26 @@
     <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @stack('scripts')
+
+    <footer class="bg-light text-center text-lg-start mt-5">
+        <div class="container-fluid">
+            <div class="row">
+                <!-- About Section -->
+                <div class="bg-white col-lg-12 col-md-12 mb-2 mb-md-0">
+                    <h5 class="text-uppercase mt-2">About:</h5>
+                    <p class="mb-3">
+                        This is an inventory management system designed to streamline your operations and improve
+                        efficiency.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center p-1 bg-dark text-secondary">
+            © {{ date('Y') }} {{ config('app.name', 'Laravel') }}. Created with <i
+                class="fas fa-heart text-danger"></i> by IT Team (Gen 1)
+        </div>
+    </footer>
 </body>
 
 </html>

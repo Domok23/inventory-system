@@ -1,23 +1,43 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container">
-        <h2>Trash Bin</h2>
-        @if (session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
-        @if (session('error'))
-            <div class="alert alert-danger">{{ session('error') }}</div>
-        @endif
+    <div class="container mt-4">
+        <div class="card shadow rounded">
+            <div class="card-body">
+                <!-- Header -->
+                <h2>Trash Bin</h2>
+                <form id="bulk-action-form" method="POST" action="{{ route('trash.bulkAction') }}">
+                    @csrf
+                    <input type="hidden" name="action" id="bulk-action-type">
+                    <button type="button" class="btn btn-success btn-sm mb-2" id="bulk-restore-btn">Bulk Restore</button>
+                    <button type="button" class="btn btn-danger btn-sm mb-2" id="bulk-delete-btn">Bulk Delete
+                        Permanently</button>
+                </form>
 
-        <form id="bulk-action-form" method="POST" action="{{ route('trash.bulkAction') }}">
-            @csrf
-            <input type="hidden" name="action" id="bulk-action-type">
-            <button type="button" class="btn btn-success btn-sm mb-2" id="bulk-restore-btn">Bulk Restore</button>
-            <button type="button" class="btn btn-danger btn-sm mb-2" id="bulk-delete-btn">Bulk Delete Permanently</button>
-        </form>
+                <!-- Alerts -->
+                @if (session('success'))
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ session('success') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
 
-        @foreach ([
+                @if (session('error'))
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        {{ session('error') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
+
+                @if (session('warning'))
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        {{ session('warning') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
+
+                <!-- Trash Tables -->
+                @foreach ([
             'inventories' => 'Inventory',
             'goodsIns' => 'Goods In',
             'goodsOuts' => 'Goods Out',
@@ -27,91 +47,94 @@
             'materialRequests' => 'Material Request',
             'currencies' => 'Currency',
         ] as $var => $label)
-            <h4 class="mt-4">{{ $label }}</h4>
-            <table class="table table-bordered table-sm align-middle" id="table-{{ $var }}">
-                <thead>
-                    <tr>
-                        <th><input type="checkbox" class="select-all"></th>
-                        <th>ID</th>
-                        <th>Name/Info</th>
-                        <th>Deleted At</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($$var as $item)
-                        <tr>
-                            <td>
-                                <input type="checkbox" class="select-item" name="selected_ids[]"
-                                    value="{{ $item->id }}">
-                                <input type="hidden" name="model_map[{{ $item->id }}]"
-                                    value="{{ [
-                                        'inventories' => 'inventory',
-                                        'goodsIns' => 'goods_in',
-                                        'goodsOuts' => 'goods_out',
-                                        'projects' => 'project',
-                                        'users' => 'user',
-                                        'materialUsages' => 'material_usage',
-                                        'materialRequests' => 'material_request',
-                                        'currencies' => 'currency',
-                                    ][$var] }}">
-                            </td>
-                            <td>{{ $item->id }}</td>
-                            <td>
-                                @if (isset($item->name))
-                                    {{ $item->name }}
-                                @elseif(isset($item->username))
-                                    {{ $item->username }}
-                                @elseif(isset($item->remark))
-                                    {{ $item->remark }}
-                                @else
-                                    (no info)
-                                @endif
-                            </td>
-                            <td>{{ $item->deleted_at }}</td>
-                            <td>
-                                <div class="d-flex flex-wrap gap-1">
-                                <form action="{{ route('trash.restore') }}" method="POST">
-                                    @csrf
-                                    <input type="hidden" name="model"
-                                        value="{{ [
-                                            'inventories' => 'inventory',
-                                            'goodsIns' => 'goods_in',
-                                            'goodsOuts' => 'goods_out',
-                                            'projects' => 'project',
-                                            'users' => 'user',
-                                            'materialUsages' => 'material_usage',
-                                            'materialRequests' => 'material_request',
-                                            'currencies' => 'currency',
-                                        ][$var] }}">
-                                    <input type="hidden" name="id" value="{{ $item->id }}">
-                                    <button class="btn btn-success btn-sm" type="submit">Restore</button>
-                                </form>
-                                <form action="{{ route('trash.forceDelete') }}" method="POST"
-                                    onsubmit="return confirm('Delete permanently?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <input type="hidden" name="model"
-                                        value="{{ [
-                                            'inventories' => 'inventory',
-                                            'goodsIns' => 'goods_in',
-                                            'goodsOuts' => 'goods_out',
-                                            'projects' => 'project',
-                                            'users' => 'user',
-                                            'materialUsages' => 'material_usage',
-                                            'materialRequests' => 'material_request',
-                                            'currencies' => 'currency',
-                                        ][$var] }}">
-                                    <input type="hidden" name="id" value="{{ $item->id }}">
-                                    <button class="btn btn-danger btn-sm" type="submit">Delete Permanently</button>
-                                </form>
-                                </div>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        @endforeach
+                    <h4 class="mt-4">{{ $label }}</h4>
+                    <table class="table table-bordered table-sm align-middle" id="table-{{ $var }}">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" class="select-all"></th>
+                                <th>ID</th>
+                                <th>Name/Info</th>
+                                <th>Deleted At</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($$var as $item)
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" class="select-item" name="selected_ids[]"
+                                            value="{{ $item->id }}">
+                                        <input type="hidden" name="model_map[{{ $item->id }}]"
+                                            value="{{ [
+                                                'inventories' => 'inventory',
+                                                'goodsIns' => 'goods_in',
+                                                'goodsOuts' => 'goods_out',
+                                                'projects' => 'project',
+                                                'users' => 'user',
+                                                'materialUsages' => 'material_usage',
+                                                'materialRequests' => 'material_request',
+                                                'currencies' => 'currency',
+                                            ][$var] }}">
+                                    </td>
+                                    <td>{{ $item->id }}</td>
+                                    <td>
+                                        @if (isset($item->name))
+                                            {{ $item->name }}
+                                        @elseif(isset($item->username))
+                                            {{ $item->username }}
+                                        @elseif(isset($item->remark))
+                                            {{ $item->remark }}
+                                        @else
+                                            (no info)
+                                        @endif
+                                    </td>
+                                    <td>{{ $item->deleted_at }}</td>
+                                    <td>
+                                        <div class="d-flex flex-wrap gap-1">
+                                            <form action="{{ route('trash.restore') }}" method="POST">
+                                                @csrf
+                                                <input type="hidden" name="model"
+                                                    value="{{ [
+                                                        'inventories' => 'inventory',
+                                                        'goodsIns' => 'goods_in',
+                                                        'goodsOuts' => 'goods_out',
+                                                        'projects' => 'project',
+                                                        'users' => 'user',
+                                                        'materialUsages' => 'material_usage',
+                                                        'materialRequests' => 'material_request',
+                                                        'currencies' => 'currency',
+                                                    ][$var] }}">
+                                                <input type="hidden" name="id" value="{{ $item->id }}">
+                                                <button class="btn btn-success btn-sm" type="submit">Restore</button>
+                                            </form>
+                                            <form action="{{ route('trash.forceDelete') }}" method="POST"
+                                                onsubmit="return confirm('Delete permanently?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <input type="hidden" name="model"
+                                                    value="{{ [
+                                                        'inventories' => 'inventory',
+                                                        'goodsIns' => 'goods_in',
+                                                        'goodsOuts' => 'goods_out',
+                                                        'projects' => 'project',
+                                                        'users' => 'user',
+                                                        'materialUsages' => 'material_usage',
+                                                        'materialRequests' => 'material_request',
+                                                        'currencies' => 'currency',
+                                                    ][$var] }}">
+                                                <input type="hidden" name="id" value="{{ $item->id }}">
+                                                <button class="btn btn-danger btn-sm" type="submit">Delete
+                                                    Permanently</button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                @endforeach
+            </div>
+        </div>
     </div>
 @endsection
 @push('scripts')
