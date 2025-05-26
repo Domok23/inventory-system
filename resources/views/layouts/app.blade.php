@@ -139,6 +139,12 @@
                             @endif
                             @if (in_array(auth()->user()->role, ['super_admin', 'admin_finance']))
                                 <li class="nav-item">
+                                    <a class="nav-link {{ request()->is('costing-report*') ? 'active text-primary' : '' }}"
+                                        href="{{ route('costing.report') }}">
+                                        Costing Report
+                                    </a>
+                                </li>
+                                <li class="nav-item">
                                     <a class="nav-link {{ request()->is('currencies*') ? 'active text-primary' : '' }}"
                                         href="{{ route('currencies.index') }}">
                                         Currencies
@@ -152,17 +158,13 @@
                                         Users
                                     </a>
                                 </li>
+                                <li class="nav-item">
+                                    <a class="nav-link {{ request()->routeIs('trash.index') ? 'active' : '' }}"
+                                        href="{{ route('trash.index') }}">
+                                        <i class="bi bi-trash"></i> Trash
+                                    </a>
+                                </li>
                             @endif
-                            @auth
-                                @if (auth()->user()->role === 'super_admin')
-                                    <li class="nav-item">
-                                        <a class="nav-link {{ request()->routeIs('trash.index') ? 'active' : '' }}"
-                                            href="{{ route('trash.index') }}">
-                                            <i class="bi bi-trash"></i> Trash
-                                        </a>
-                                    </li>
-                                @endif
-                            @endauth
                         @endif
                     </ul>
 
@@ -183,8 +185,8 @@
                             @endif
                         @else
                             <li class="nav-item dropdown">
-                                <a id="navbarDropdown" class="nav-link btn btn-warning dropdown-toggle" href="#" role="button"
-                                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <a id="navbarDropdown" class="nav-link btn btn-warning dropdown-toggle" href="#"
+                                    role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     {{ Auth::user()->username }}
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">

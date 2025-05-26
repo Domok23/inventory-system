@@ -50,7 +50,7 @@
                     @endif
 
                     @if (in_array($user->role, ['super_admin', 'admin_finance']))
-                        <a href="#" class="btn btn-info mb-2">View Costing Reports</a>
+                        <a href="{{ route('costing.report') }}" class="btn btn-info mb-2">View Costing Reports</a>
                     @endif
 
                     @if (in_array($user->role, ['super_admin', 'admin_finance']))

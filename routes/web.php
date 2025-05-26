@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\TrashController;
 use App\Http\Controllers\GoodsInController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\CategoryController;
@@ -11,8 +12,9 @@ use App\Http\Controllers\GoodsOutController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\MaterialUsageController;
+use App\Http\Controllers\ProjectCostingController;
 use App\Http\Controllers\MaterialRequestController;
-use App\Http\Controllers\TrashController;
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -101,6 +103,18 @@ Route::middleware(['auth'])->group(function () {
     Route::get('goods_in/{goods_in}/edit', [GoodsInController::class, 'edit'])->name('goods_in.edit');
     Route::put('goods_in/{goods_in}', [GoodsInController::class, 'update'])->name('goods_in.update');
     Route::delete('goods_in/{goods_in}', [GoodsInController::class, 'destroy'])->name('goods_in.destroy');
+
+    // Costings
+    Route::get('/costing-report', [ProjectCostingController::class, 'index'])->name('costing.report');
+    Route::get('/costing-report/{project_id}', [ProjectCostingController::class, 'viewCosting'])->name('costing.view');
+    Route::get('/costing-report/export/{project_id}', [ProjectCostingController::class, 'exportCosting'])->name('costing.export');
+    Route::get('/costing-report', [ProjectCostingController::class, 'index'])->name('costing.report');
+
+    //set inventory
+    Route::post('/set-inventory', function (Request $request) {
+        $request->session()->put('inventory_id', $request->input('inventory_id'));
+        return redirect()->back();
+    })->name('set_inventory');
 
     // Trash
     Route::get('/trash', [TrashController::class, 'index'])->name('trash.index');
