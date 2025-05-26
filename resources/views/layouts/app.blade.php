@@ -65,10 +65,9 @@
                 /* Hilangkan margin default pada form */
             }
 
-            .dropdown-menu {
-                z-index: 1050;
-                pointer-events: auto;
-                /* Pastikan elemen dapat diklik */
+            .card {
+                border: none;
+                /* Menghilangkan border pada card */
             }
         </style>
     @endpush
@@ -77,7 +76,7 @@
 
 <body>
     <div id="app">
-        <nav class="navbar navbar-expand-md navbar-light bg-white shadow rounded">
+        <nav class="navbar navbar-expand-md navbar-light bg-white shadow rounded-4 rounded-top-0">
             <div class="container-fluid">
                 <a class="navbar-brand" style="font-weight: bold;" href="{{ url('/') }}">
                     {{ config('app.name', 'Laravel') }}
@@ -184,7 +183,7 @@
                             @endif
                         @else
                             <li class="nav-item dropdown">
-                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button"
+                                <a id="navbarDropdown" class="nav-link btn btn-warning dropdown-toggle" href="#" role="button"
                                     data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     {{ Auth::user()->username }}
                                 </a>
