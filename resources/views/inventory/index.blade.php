@@ -17,12 +17,6 @@
                         Import Inventory via XLS
                     </button>
                 </div>
-                <div class="mb-3 d-block d-md-none">
-                    <button type="button" class="btn btn-success btn-sm w-100" data-bs-toggle="modal"
-                        data-bs-target="#importModal">
-                        Import Inventory via XLS
-                    </button>
-                </div>
                 <!-- Alerts -->
                 @if (session('success'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -99,23 +93,57 @@
                         @endforeach
                     </tbody>
                 </table>
-            </div>
-        </div>
-    </div>
 
-    <!-- Modal Show Image -->
-    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="imageModalLabel">Inventory Image & QR Code </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <!-- Modal Show Image -->
+                <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="imageModalLabel">Inventory Image & QR Code </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body text-center">
+                                <div id="img-container" class="mb-3"></div>
+                                <div id="qr-container" class="mb-3"></div>
+                                <button id="download-qr-btn" class="btn btn-outline-primary btn-sm mb-3"
+                                    style="display:none;">Download
+                                    QR as PNG</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="modal-body text-center">
-                    <div id="img-container" class="mb-3"></div>
-                    <div id="qr-container" class="mb-3"></div>
-                    <button id="download-qr-btn" class="btn btn-outline-primary btn-sm mb-3" style="display:none;">Download
-                        QR as PNG</button>
+
+                <!-- Modal Import Inventory via XLS -->
+                <div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <form method="POST" action="{{ route('inventory.import') }}" enctype="multipart/form-data">
+                            @csrf
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="importModalLabel">Import Inventory</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="mb-3">
+                                        <label for="xls_file" class="form-label">Upload XLS File</label>
+                                        <input type="file" name="xls_file" id="xls_file" class="form-control" required
+                                            accept=".xls,.xlsx">
+                                    </div>
+                                    <p class="text-muted">
+                                        Template kolom: <code>name, quantity, unit, currency, price, location
+                                            (opsional)</code>
+                                    </p>
+                                    <a href="{{ route('inventory.template') }}" class="btn btn-outline-secondary btn-sm">
+                                        Download Template
+                                    </a>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-primary">Import</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>

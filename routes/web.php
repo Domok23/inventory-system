@@ -50,6 +50,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/material-usage/get-by-inventory', [MaterialUsageController::class, 'getByInventory'])->name('material_usage.get_by_inventory');
 
     // Inventory
+    Route::get('/inventory/template', [InventoryController::class, 'downloadTemplate'])->name('inventory.template');
     Route::resource('inventory', InventoryController::class);
     Route::post('/inventory/import', [InventoryController::class, 'import'])->name('inventory.import');
     Route::get('/inventory/detail/{id}', [InventoryController::class, 'detail'])->name('inventory.detail');

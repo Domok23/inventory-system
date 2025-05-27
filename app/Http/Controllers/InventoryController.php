@@ -14,6 +14,7 @@ use App\Imports\InventoryImport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use App\Exports\InventoryTemplateExport;
 
 class InventoryController extends Controller
 {
@@ -55,10 +56,16 @@ class InventoryController extends Controller
         foreach ($data as $index => $row) {
             if ($index === 0) continue; // Skip header row
 
+            $currency = Currency::where('name', $row[3] ?? '')->first(); // Cari currency berdasarkan nama
+            if (!$currency) {
+                continue; // Skip jika currency tidak ditemukan
+            }
+
             $inventory = new Inventory();
             $inventory->name = $row[0] ?? null;
             $inventory->quantity = $row[1] ?? 0;
             $inventory->unit = $row[2] ?? '-';
+            $inventory->currency_id = $currency->id;
             $inventory->price = $row[3] ?? 0;
             $inventory->location = $row[4] ?? null;
             $inventory->save(); // Simpan data inventory terlebih dahulu untuk mendapatkan ID
@@ -90,13 +97,19 @@ class InventoryController extends Controller
             Inventory::create([
                 'name' => $inventory->name,
                 'quantity' => $inventory->quantity,
-                'unit' => $inventory->unitModel->name, // Gunakan nama unit dari tabel units
+                'unit' => $inventory->unitModel->name,
+                'currency_id' => $inventory->currency_id,
                 'price' => $inventory->price,
                 'location' => $inventory->location,
             ]);
         }
 
         return redirect()->route('inventory.index')->with('success', 'Inventory imported successfully!');
+    }
+
+    public function downloadTemplate()
+    {
+        return Excel::download(new InventoryTemplateExport, 'inventory_template.xlsx');
     }
 
     public function store(Request $request)
