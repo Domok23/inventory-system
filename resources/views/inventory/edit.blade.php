@@ -124,38 +124,44 @@
                     </div>
 
                     <div class="row">
-                    <!-- Location -->
-                    <div class="col-md-12 mb-3">
-                        <label for="location" class="form-label">Location (optional)</label>
-                        <input type="text" class="form-control" id="location" name="location"
-                            value="{{ old('location', $inventory->location) }}">
-                        @error('location')
-                            <small class="text-danger">{{ $message }}</small>
-                        @enderror
-                    </div>
-
-                    <!-- Image -->
-                    <div class="col-md-12 mb-3">
-                        <label for="img" class="form-label">Upload Image (optional)</label>
-                        <input class="form-control" type="file" id="img" name="img" accept="image/*"
-                            onchange="previewImage(event)">
-                        <img id="img-preview"
-                            src="{{ isset($inventory) && $inventory->img ? asset('storage/' . $inventory->img) : '' }}"
-                            alt="Image Preview" class="mt-2 rounded"
-                            style="max-width: 200px; display: {{ isset($inventory) && $inventory->img ? 'block' : 'none' }};">
-                        @error('img')
-                            <small class="text-danger">{{ $message }}</small>
-                        @enderror
-                    </div>
-                    </div>
-
-                    <!-- QR Code -->
-                    @if ($inventory->qrcode_path)
-                        <div class="mb-3">
-                            <label class="form-label">QR Code</label><br>
-                            <img src="{{ asset('storage/' . $inventory->qrcode_path) }}" alt="QR Code" width="150">
+                        <!-- Location -->
+                        <div class="col-md-12 mb-3">
+                            <label for="location" class="form-label">Location (optional)</label>
+                            <input type="text" class="form-control" id="location" name="location"
+                                value="{{ old('location', $inventory->location) }}">
+                            @error('location')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
                         </div>
-                    @endif
+
+                        <!-- Image -->
+                        <div class="col-md-6 mb-3">
+                            <label for="img" class="form-label">Upload Image (optional)</label>
+                            <input class="form-control" type="file" id="img" name="img" accept="image/*"
+                                onchange="previewImage(event)">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <!-- Image Preview -->
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Image Preview</label><br>
+                            <img id="img-preview"
+                                src="{{ isset($inventory) && $inventory->img ? asset('storage/' . $inventory->img) : asset('images/default-image.png') }}"
+                                alt="Image Preview" class="rounded" style="max-width: 200px;">
+                            @error('img')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
+                        <!-- QR Code -->
+                        @if ($inventory->qrcode_path)
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">QR Code</label><br>
+                                <img src="{{ asset('storage/' . $inventory->qrcode_path) }}" alt="QR Code"
+                                    width="150">
+                            </div>
+                        @endif
+                    </div>
+
 
                     <!-- Submit -->
                     <a href="{{ route('inventory.index') }}" class="btn btn-secondary">Cancel</a>

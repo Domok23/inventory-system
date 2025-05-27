@@ -92,7 +92,8 @@
                                     <td>{{ $item->deleted_at }}</td>
                                     <td>
                                         <div class="d-flex flex-wrap gap-1">
-                                            <form action="{{ route('trash.restore') }}" method="POST">
+                                            <form action="{{ route('trash.restore') }}" method="POST"
+                                                class="restore-form">
                                                 @csrf
                                                 <input type="hidden" name="model"
                                                     value="{{ [
@@ -106,10 +107,11 @@
                                                         'currencies' => 'currency',
                                                     ][$var] }}">
                                                 <input type="hidden" name="id" value="{{ $item->id }}">
-                                                <button class="btn btn-success btn-sm" type="submit">Restore</button>
+                                                <button class="btn btn-success btn-sm restore-btn"
+                                                    type="button">Restore</button>
                                             </form>
                                             <form action="{{ route('trash.forceDelete') }}" method="POST"
-                                                onsubmit="return confirm('Delete permanently?')">
+                                                class="delete-form">
                                                 @csrf
                                                 @method('DELETE')
                                                 <input type="hidden" name="model"
@@ -124,7 +126,7 @@
                                                         'currencies' => 'currency',
                                                     ][$var] }}">
                                                 <input type="hidden" name="id" value="{{ $item->id }}">
-                                                <button class="btn btn-danger btn-sm" type="submit">Delete
+                                                <button class="btn btn-danger btn-sm delete-btn" type="button">Delete
                                                     Permanently</button>
                                             </form>
                                         </div>
@@ -175,6 +177,48 @@
                     $('#bulk-action-type').val('delete');
                     $('#bulk-action-form').submit();
                 }
+            });
+        });
+
+        $(document).ready(function() {
+            // SweetAlert2 for Restore
+            $('.restore-btn').on('click', function(e) {
+                e.preventDefault();
+                const form = $(this).closest('form');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You are about to restore this item.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, restore it!',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+
+            // SweetAlert2 for Delete Permanently
+            $('.delete-btn').on('click', function(e) {
+                e.preventDefault();
+                const form = $(this).closest('form');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "This action cannot be undone. The item will be permanently deleted.",
+                    icon: 'error',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, delete it!',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
             });
         });
     </script>

@@ -121,7 +121,7 @@
                         @enderror
                     </div>
 
-                    <div class="mb-3">
+                    <div class="col-md-6 mb-3">
                         <label for="img" class="form-label">Upload Image (optional)</label>
                         <input class="form-control" type="file" id="img" name="img" accept="image/*"
                             onchange="previewImage(event)">

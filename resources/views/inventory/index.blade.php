@@ -107,7 +107,7 @@
                                 <div id="qr-container" class="mb-3"></div>
                                 <button id="download-qr-btn" class="btn btn-outline-primary btn-sm mb-3"
                                     style="display:none;">Download
-                                    QR as PNG</button>
+                                    QR</button>
                             </div>
                         </div>
                     </div>
