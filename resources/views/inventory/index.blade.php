@@ -23,7 +23,6 @@
                         Import Inventory via XLS
                     </button>
                 </div>
-
                 <!-- Alerts -->
                 @if (session('success'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -31,7 +30,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
-                
+
                 @if (session('error'))
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         {{ session('error') }}
@@ -123,7 +122,6 @@
     </div>
 @endsection
 @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script>
         $(document).ready(function() {
             $('#datatable').DataTable({
@@ -165,7 +163,7 @@
                 currentInventoryName = name || 'qr-code';
                 $('#imageModalLabel').text(name + ' - Image & QR Code');
                 $('#img-container').html(img ?
-                    `<img src="${img}" alt="Image" class="img-fluid mb-2" style="max-width:100%;">` :
+                    `<img src="${img}" alt="Image" class="img-fluid mb-2 rounded" style="max-width:100%;">` :
                     '<span class="text-muted">No Project Image</span>');
                 if (qrcode) {
                     $('#qr-container').html(

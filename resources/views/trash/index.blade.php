@@ -5,7 +5,8 @@
         <div class="card shadow rounded">
             <div class="card-body">
                 <!-- Header -->
-                <h2>Trash Bin</h2>
+                <h3 class="mb-0 flex-shrink-0" style="font-size:1.5rem;">Trash Bin</h3>
+                <hr>
                 <form id="bulk-action-form" method="POST" action="{{ route('trash.bulkAction') }}">
                     @csrf
                     <input type="hidden" name="action" id="bulk-action-type">
@@ -47,7 +48,7 @@
             'materialRequests' => 'Material Request',
             'currencies' => 'Currency',
         ] as $var => $label)
-                    <h4 class="mt-4">{{ $label }}</h4>
+                    <h5 class="mt-4">{{ $label }}</h5>
                     <table class="table table-bordered table-sm align-middle" id="table-{{ $var }}">
                         <thead>
                             <tr>

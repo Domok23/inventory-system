@@ -127,7 +127,7 @@
                 let name = $(this).data('name');
                 $('#imageModalLabel').text(name + ' - Image');
                 $('#img-container').html(img ?
-                    `<img src="${img}" alt="Image" class="img-fluid mb-2" style="max-width:100%;">` :
+                    `<img src="${img}" alt="Image" class="img-fluid mb-2 rounded" style="max-width:100%;">` :
                     '<span class="text-muted">No Image</span>');
             });
         });

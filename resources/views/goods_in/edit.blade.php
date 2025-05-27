@@ -1,65 +1,72 @@
 @extends('layouts.app')
 @section('content')
-    <div class="container">
-        <h3>Edit Goods In</h3>
-        <form action="{{ route('goods_in.update', $goods_in->id) }}" method="POST">
-            @csrf
-            @method('PUT')
-            <div class="mb-3">
-                <label>Material</label>
-                <select name="inventory_id" class="form-control select2" required>
-                    @foreach ($inventories as $inventory)
-                        <option value="{{ $inventory->id }}" data-unit="{{ $inventory->unit }}"
-                            {{ $goods_in->inventory_id == $inventory->id ? 'selected' : '' }}>
-                            {{ $inventory->name }}
-                        </option>
-                    @endforeach
-                </select>
+    <div class="container mt-4">
+        <div class="card shadow rounded">
+            <div class="card-body">
+                <h2 class="mb-0 flex-shrink-0" style="font-size:1.5rem;">Edit Goods In</h2>
+                <hr>
+                <form action="{{ route('goods_in.update', $goods_in->id) }}" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label>Material</label>
+                            <select name="inventory_id" class="form-control select2" required>
+                                @foreach ($inventories as $inventory)
+                                    <option value="{{ $inventory->id }}" data-unit="{{ $inventory->unit }}"
+                                        {{ $goods_in->inventory_id == $inventory->id ? 'selected' : '' }}>
+                                        {{ $inventory->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label>Quantity</label>
+                            <div class="input-group">
+                                <input type="number" name="quantity" class="form-control" value="{{ $goods_in->quantity }}"
+                                    required>
+                                <span class="input-group-text unit-label">
+                                    {{ $goods_in->inventory ? $goods_in->inventory->unit : 'unit' }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label>Project</label>
+                            <select name="project_id" class="form-control select2">
+                                <option value="">No Project</option>
+                                @foreach ($projects as $project)
+                                    <option value="{{ $project->id }}"
+                                        {{ $goods_in->project_id == $project->id ? 'selected' : '' }}>
+                                        {{ $project->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Returned At</span></label>
+                            <input type="datetime-local" name="returned_at" class="form-control"
+                                value="{{ \Carbon\Carbon::parse($goods_in->returned_at)->format('Y-m-d\TH:i') }}" required>
+                            <small class="form-text text-muted">
+                                Current: {{ \Carbon\Carbon::parse($goods_in->returned_at)->format('m/d/Y, H:i') }}
+                            </small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Returned By</label>
+                            <input type="text" class="form-control" value="{{ $goods_in->returned_by }}" disabled>
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label for="remark" class="form-label">Remark</label>
+                            <textarea name="remark" id="remark" class="form-control">{{ old('remark', $goodsIn->remark ?? '') }}</textarea>
+                        </div>
+                    </div>
+                    <a href="{{ route('goods_in.index') }}" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </form>
             </div>
-            <div class="mb-3">
-                <label>Quantity</label>
-                <div class="input-group">
-                    <input type="number" name="quantity" class="form-control" value="{{ $goods_in->quantity }}" required>
-                    <span class="input-group-text unit-label">
-                        {{ $goods_in->inventory ? $goods_in->inventory->unit : 'unit' }}
-                    </span>
-                </div>
-            </div>
-            <div class="mb-3">
-                <label>Project</label>
-                <select name="project_id" class="form-control select2">
-                    <option value="">No Project</option>
-                    @foreach ($projects as $project)
-                        <option value="{{ $project->id }}" {{ $goods_in->project_id == $project->id ? 'selected' : '' }}>
-                            {{ $project->name }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="mb-3">
-                <label>Returned At</span></label>
-                <input type="datetime-local" name="returned_at" class="form-control"
-                    value="{{ \Carbon\Carbon::parse($goods_in->returned_at)->format('Y-m-d\TH:i') }}" required>
-                <small class="form-text text-muted">
-                    Current: {{ \Carbon\Carbon::parse($goods_in->returned_at)->format('d-m-Y, H:i') }}
-                </small>
-            </div>
-            <div class="mb-3">
-                <label for="remark" class="form-label">Remark</label>
-                <textarea name="remark" id="remark" class="form-control">{{ old('remark', $goodsIn->remark ?? '') }}</textarea>
-            </div>
-            <button type="submit" class="btn btn-primary">Update</button>
-            <a href="{{ route('goods_in.index') }}" class="btn btn-secondary">Cancel</a>
-        </form>
+        </div>
     </div>
 @endsection
-@push('styles')
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.2.0/dist/select2-bootstrap-5-theme.min.css"
-        rel="stylesheet" />
-@endpush
 @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         $(document).ready(function() {
             $('.select2').select2({

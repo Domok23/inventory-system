@@ -1,89 +1,94 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container">
-        <h3>Create Goods Out</h3>
-        @if (session('error'))
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                {{ session('error') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <div class="container mt-4">
+        <div class="card shadow rounded">
+            <div class="card-body">
+                <h2 class="mb-0 flex-shrink-0" style="font-size:1.5rem;">Create Goods Out</h2>
+                <hr>
+                @if (session('error'))
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        {{ session('error') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
+                <form method="POST" action="{{ route('goods_out.store_independent') }}">
+                    @csrf
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label>Material</label>
+                            <select name="inventory_id" class="form-select select2" required>
+                                <option value="">Select an option</option>
+                                @foreach ($inventories as $inventory)
+                                    <option value="{{ $inventory->id }}" data-unit="{{ $inventory->unit }}"
+                                        {{ old('inventory_id') == $inventory->id ? 'selected' : '' }}>
+                                        {{ $inventory->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label>Quantity</label>
+                            <div class="input-group">
+                                <input type="number" name="quantity" class="form-control" step="any"
+                                    value="{{ old('quantity') }}" required>
+                                <span class="input-group-text unit-label">{{ old('unit', 'unit') }}</span>
+                            </div>
+                            <input type="hidden" name="unit" id="unit-hidden" value="{{ old('unit') }}">
+                            @error('quantity')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label>Project</label>
+                            <select name="project_id" class="form-select select2" required>
+                                <option value="">Select an option</option>
+                                @foreach ($projects as $project)
+                                    <option value="{{ $project->id }}"
+                                        {{ old('project_id') == $project->id ? 'selected' : '' }}>
+                                        {{ $project->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label>Requested By</label>
+                            <select name="user_id" class="form-select select2" required>
+                                <option value="">Select an option</option>
+                                @foreach ($users as $user)
+                                    <option value="{{ $user->id }}" data-department="{{ $user->department }}"
+                                        {{ old('user_id') == $user->id ? 'selected' : '' }}>
+                                        {{ $user->username }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Department</label>
+                            <input type="text" class="form-control" id="department" value="{{ old('department') }}"
+                                disabled>
+                            <input type="hidden" name="department" id="department-hidden" value="{{ old('department') }}">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label for="remark" class="form-label">Remark</label>
+                            <textarea name="remark" id="remark" class="form-control" rows="2">{{ old('remark') }}</textarea>
+                            @error('remark')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
+                    </div>
+                    <a href="{{ route('goods_out.index') }}" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-success">Submit</button>
+                </form>
             </div>
-        @endif
-        <form method="POST" action="{{ route('goods_out.store_independent') }}">
-            @csrf
-            <div class="mb-3">
-                <label>Material</label>
-                <select name="inventory_id" class="form-select select2" required>
-                    <option value="">Select Material</option>
-                    @foreach ($inventories as $inventory)
-                        <option value="{{ $inventory->id }}" data-unit="{{ $inventory->unit }}"
-                            {{ old('inventory_id') == $inventory->id ? 'selected' : '' }}>
-                            {{ $inventory->name }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="mb-3">
-                <label>Quantity</label>
-                <div class="input-group">
-                    <input type="number" name="quantity" class="form-control" step="any" value="{{ old('quantity') }}"
-                        required>
-                    <span class="input-group-text unit-label">{{ old('unit', 'unit') }}</span>
-                </div>
-                <input type="hidden" name="unit" id="unit-hidden" value="{{ old('unit') }}">
-                @error('quantity')
-                    <small class="text-danger">{{ $message }}</small>
-                @enderror
-            </div>
-            <div class="mb-3">
-                <label>Project</label>
-                <select name="project_id" class="form-select select2" required>
-                    <option value="">Select Project</option>
-                    @foreach ($projects as $project)
-                        <option value="{{ $project->id }}" {{ old('project_id') == $project->id ? 'selected' : '' }}>
-                            {{ $project->name }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="mb-3">
-                <label>Requested By</label>
-                <select name="user_id" class="form-select select2" required>
-                    <option value="">Select User</option>
-                    @foreach ($users as $user)
-                        <option value="{{ $user->id }}" data-department="{{ $user->department }}"
-                            {{ old('user_id') == $user->id ? 'selected' : '' }}>
-                            {{ $user->username }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="mb-3">
-                <label>Department</label>
-                <input type="text" class="form-control" id="department" value="{{ old('department') }}" disabled>
-                <input type="hidden" name="department" id="department-hidden" value="{{ old('department') }}">
-            </div>
-            <div class="mb-3">
-                <label for="remark" class="form-label">Remark</label>
-                <textarea name="remark" id="remark" class="form-control" rows="2">{{ old('remark') }}</textarea>
-                @error('remark')
-                    <small class="text-danger">{{ $message }}</small>
-                @enderror
-            </div>
-            <button type="submit" class="btn btn-success">Submit</button>
-            <a href="{{ route('goods_out.index') }}" class="btn btn-secondary">Cancel</a>
-        </form>
+        </div>
     </div>
 @endsection
-
-@push('styles')
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.2.0/dist/select2-bootstrap-5-theme.min.css"
-        rel="stylesheet" />
-@endpush
-
 @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         $(document).ready(function() {
             $('.select2').select2({

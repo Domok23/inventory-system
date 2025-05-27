@@ -4,7 +4,8 @@
     <div class="container mt-4">
         <div class="card shadow rounded">
             <div class="card-body">
-                <h3>Costing Report</h3>
+                <h2 class="mb-0 flex-shrink-0" style="font-size:1.5rem;">Costing Report</h2>
+                <hr>
                 <table class="table table-bordered" id="datatable">
                     <thead>
                         <tr>
@@ -16,9 +17,9 @@
                     <tbody>
                         @foreach ($projects as $project)
                             <tr>
-                                <td>{{ $loop->iteration }}</td>
-                                <td>{{ $project->name }}</td>
-                                <td>
+                                <td class="text-center align-middle">{{ $loop->iteration }}</td>
+                                <td class="align-middle">{{ $project->name }}</td>
+                                <td class="align-middle">
                                     <button class="btn btn-primary btn-sm"
                                         onclick="viewCosting('{{ $project->id }}')">View</button>
                                     <a href="{{ route('costing.export', $project->id) }}"

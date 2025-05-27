@@ -1,171 +1,176 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container">
-        <h4 class="mb-3">Bulk Material Request</h4>
-
-        <div class="mb-3">
-            <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal"
-                data-bs-target="#quickAddProjectModal">+
-                Quick Add Project</button>
-            <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
-                data-bs-target="#quickAddMaterialModal">+
-                Quick Add Material</button>
-        </div>
-
-        @if ($errors->any())
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <strong>Whoops!</strong> There were some problems with your input.
-                <ul class="mb-0">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </ul>
-            </div>
-        @endif
-
-        <form method="POST" action="{{ route('material_requests.bulk_store') }}">
-            @csrf
-            <div class="table-responsive">
-                <table class="table table-bordered align-middle" id="bulk-material-table" style="min-width: 1000px;">
-                    <thead class="table-light">
-                        <tr>
-                            <th style="width: 25%;">Project</th>
-                            <th style="width: 25%;">Material</th>
-                            <th style="width: 15%;">Quantity</th>
-                            <th style="width: 25%;">Remark (optional)</th>
-                            <th style="width: 10%;">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="bulk-rows">
-                        @foreach (old('requests', [0 => []]) as $index => $request)
-                            <tr>
-                                <td>
-                                    <select name="requests[{{ $index }}][project_id]"
-                                        class="form-select select2 project-select" required>
-                                        <option value="">Select Project</option>
-                                        @foreach ($projects as $project)
-                                            <option value="{{ $project->id }}"
-                                                {{ old("requests.$index.project_id") == $project->id ? 'selected' : '' }}>
-                                                {{ $project->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error("requests.$index.project_id")
-                                        <span class="text-danger">{{ $message }}</span>
-                                    @enderror
-                                </td>
-                                <td>
-                                    <select name="requests[{{ $index }}][inventory_id]"
-                                        class="form-select select2 material-select" required>
-                                        <option value="">Select Material</option>
-                                        @foreach ($inventories as $inventory)
-                                            <option value="{{ $inventory->id }}" data-unit="{{ $inventory->unit }}"
-                                                {{ old("requests.$index.inventory_id") == $inventory->id ? 'selected' : '' }}>
-                                                {{ $inventory->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error("requests.$index.inventory_id")
-                                        <span class="text-danger">{{ $message }}</span>
-                                    @enderror
-                                </td>
-                                <td>
-                                    <div class="input-group">
-                                        <input type="number" name="requests[{{ $index }}][qty]"
-                                            class="form-control" step="any" value="{{ old("requests.$index.qty") }}"
-                                            required>
-                                        <span class="input-group-text unit-label">unit</span>
-                                    </div>
-                                    @error("requests.$index.qty")
-                                        <span class="text-danger">{{ $message }}</span>
-                                    @enderror
-                                </td>
-                                <td>
-                                    <textarea name="requests[{{ $index }}][remark]" class="form-control" rows="1">{{ old("requests.$index.remark") }}</textarea>
-                                    @error("requests.$index.remark")
-                                        <span class="text-danger">{{ $message }}</span>
-                                    @enderror
-                                </td>
-                                <td>
-                                    <button type="button" class="btn btn-danger btn-sm remove-row">Remove</button>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="d-flex justify-content-between mt-3">
-                <button type="button" class="btn btn-outline-primary" id="add-row">+ Add Row</button>
-                <button type="submit" class="btn btn-success">Submit All</button>
-            </div>
-        </form>
-    </div>
-
-    <!-- Add Material Modal -->
-    <div class="modal fade" id="quickAddMaterialModal" tabindex="-1" aria-labelledby="quickAddMaterialModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <form id="quickAddMaterialForm" method="POST" action="{{ route('inventories.store.quick') }}">
-                @csrf
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Quick Add Material</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <label>Name</label>
-                        <input type="text" name="name" class="form-control" required>
-                        <label class="mt-2">Quantity</label>
-                        <input type="number" step="any" name="quantity" class="form-control">
-                        <label class="mt-2">Unit</label>
-                        <input type="text" name="unit" class="form-control" required>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Add Material</button>
-                    </div>
+    <div class="container-fluid mt-4">
+        <div class="card shadow rounded">
+            <div class="card-body">
+                <h4 class="">Bulk Material Request</h4>
+                <p class="text-muted mb-3">Use this form to create multiple material requests at once. You can add multiple
+                    rows for different projects and materials.</p>
+                <div class="mb-3">
+                    <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal"
+                        data-bs-target="#quickAddProjectModal">+
+                        Quick Add Project</button>
+                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#quickAddMaterialModal">+
+                        Quick Add Material</button>
                 </div>
-            </form>
-        </div>
-    </div>
-    <!-- Add Project Modal -->
-    <div class="modal fade" id="quickAddProjectModal" tabindex="-1" aria-labelledby="quickAddProjectModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <form id="quickAddProjectForm" method="POST" action="{{ route('projects.store.quick') }}">
-                @csrf
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Quick Add Project</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+                @if ($errors->any())
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <strong>Whoops!</strong> There were some problems with your input.
+                        <ul class="mb-0">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </ul>
                     </div>
-                    <div class="modal-body">
-                        <label>Project Name</label>
-                        <input type="text" name="name" class="form-control" required>
-                        <label class="mt-2">Qty</label>
-                        <input type="number" step="any" name="qty" class="form-control">
-                        <label class="mt-2">Department</label>
-                        <select name="department" class="form-select" required>
-                            <option value="mascot">Mascot</option>
-                            <option value="costume">Costume</option>
-                            <option value="mascot&costume">Mascot & Costume</option>
-                        </select>
+                @endif
+
+                <form method="POST" action="{{ route('material_requests.bulk_store') }}">
+                    @csrf
+                    <div class="table-responsive">
+                        <table class="table table-bordered align-middle" id="bulk-material-table"
+                            style="min-width: 1000px;">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width: 25%;">Project</th>
+                                    <th style="width: 25%;">Material</th>
+                                    <th style="width: 15%;">Quantity</th>
+                                    <th style="width: 25%;">Remark (optional)</th>
+                                    <th style="width: 10%;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bulk-rows">
+                                @foreach (old('requests', [0 => []]) as $index => $request)
+                                    <tr>
+                                        <td>
+                                            <select name="requests[{{ $index }}][project_id]"
+                                                class="form-select select2 project-select" required>
+                                                <option value="">Select Project</option>
+                                                @foreach ($projects as $project)
+                                                    <option value="{{ $project->id }}"
+                                                        {{ old("requests.$index.project_id") == $project->id ? 'selected' : '' }}>
+                                                        {{ $project->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            @error("requests.$index.project_id")
+                                                <span class="text-danger">{{ $message }}</span>
+                                            @enderror
+                                        </td>
+                                        <td>
+                                            <select name="requests[{{ $index }}][inventory_id]"
+                                                class="form-select select2 material-select" required>
+                                                <option value="">Select Material</option>
+                                                @foreach ($inventories as $inventory)
+                                                    <option value="{{ $inventory->id }}" data-unit="{{ $inventory->unit }}"
+                                                        {{ old("requests.$index.inventory_id") == $inventory->id ? 'selected' : '' }}>
+                                                        {{ $inventory->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            @error("requests.$index.inventory_id")
+                                                <span class="text-danger">{{ $message }}</span>
+                                            @enderror
+                                        </td>
+                                        <td>
+                                            <div class="input-group">
+                                                <input type="number" name="requests[{{ $index }}][qty]"
+                                                    class="form-control" step="any"
+                                                    value="{{ old("requests.$index.qty") }}" required>
+                                                <span class="input-group-text unit-label">unit</span>
+                                            </div>
+                                            @error("requests.$index.qty")
+                                                <span class="text-danger">{{ $message }}</span>
+                                            @enderror
+                                        </td>
+                                        <td>
+                                            <textarea name="requests[{{ $index }}][remark]" class="form-control" rows="1">{{ old("requests.$index.remark") }}</textarea>
+                                            @error("requests.$index.remark")
+                                                <span class="text-danger">{{ $message }}</span>
+                                            @enderror
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-danger btn-sm remove-row">Remove</button>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-success">Add Project</button>
+
+                    <div class="d-flex justify-content-between mt-3">
+                        <button type="button" class="btn btn-outline-primary" id="add-row">+ Add Row</button>
+                        <button type="submit" class="btn btn-success">Submit All</button>
                     </div>
+                </form>
+            </div>
+
+            <!-- Add Material Modal -->
+            <div class="modal fade" id="quickAddMaterialModal" tabindex="-1" aria-labelledby="quickAddMaterialModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <form id="quickAddMaterialForm" method="POST" action="{{ route('inventories.store.quick') }}">
+                        @csrf
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Quick Add Material</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <label>Name</label>
+                                <input type="text" name="name" class="form-control" required>
+                                <label class="mt-2">Quantity</label>
+                                <input type="number" step="any" name="quantity" class="form-control">
+                                <label class="mt-2">Unit</label>
+                                <input type="text" name="unit" class="form-control" required>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary">Add Material</button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
-            </form>
+            </div>
+            <!-- Add Project Modal -->
+            <div class="modal fade" id="quickAddProjectModal" tabindex="-1" aria-labelledby="quickAddProjectModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <form id="quickAddProjectForm" method="POST" action="{{ route('projects.store.quick') }}">
+                        @csrf
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Quick Add Project</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <label>Project Name</label>
+                                <input type="text" name="name" class="form-control" required>
+                                <label class="mt-2">Qty</label>
+                                <input type="number" step="any" name="qty" class="form-control">
+                                <label class="mt-2">Department</label>
+                                <select name="department" class="form-select" required>
+                                    <option value="mascot">Mascot</option>
+                                    <option value="costume">Costume</option>
+                                    <option value="mascot&costume">Mascot & Costume</option>
+                                </select>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-success">Add Project</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 @endsection
 
 @push('styles')
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.2.0/dist/select2-bootstrap-5-theme.min.css"
-        rel="stylesheet" />
     <style>
         .select2-container .select2-selection--single {
             height: calc(2.375rem + 2px);
@@ -183,8 +188,6 @@
 @endpush
 
 @push('scripts')
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         function initSelect2(row) {
             row.find('.select2').select2({

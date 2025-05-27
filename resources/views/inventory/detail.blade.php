@@ -1,10 +1,10 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container mt-5">
-        <div class="card">
+    <div class="container mt-4">
+        <div class="card shadow rounded">
             <div class="card-header bg-primary text-white">
-                <h3>Inventory Details</h3>
+                <h2 class="mb-0 flex-shrink-0" style="font-size:1.5rem;">Inventory Details</h2>
             </div>
             @if (session('success'))
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -191,10 +191,6 @@
         </div>
     </div>
 @endsection
-@push('styles')
-    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.2.0/dist/select2-bootstrap-5-theme.min.css"
-        rel="stylesheet" />
-@endpush
 @push('scripts')
     <script>
         $(document).on('click', '#viewMaterialUsage', function(e) {

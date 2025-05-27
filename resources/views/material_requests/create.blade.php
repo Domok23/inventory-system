@@ -1,141 +1,153 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container">
-        @if (session('success'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
-        @if ($errors->any())
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <strong>Whoops!</strong> There were some problems with your input.
-                <ul class="mb-0">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </ul>
-            </div>
-        @endif
-        <form method="POST" action="{{ route('material_requests.store') }}">
-            @csrf
-            <div class="mb-3">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <label>Project</label>
-                    <button type="button" class="btn btn-sm btn-outline-success" data-bs-toggle="modal"
-                        data-bs-target="#addProjectModal">
-                        + Quick Add Project
-                    </button>
-                </div>
-                <select name="project_id" id="project_id" class="form-select select2" required>
-                    <option value="">Select Project</option>
-                    @foreach ($projects as $proj)
-                        <option value="{{ $proj->id }}">{{ $proj->name }}</option>
-                    @endforeach
-                </select>
-                @error('project_id')
-                    <small class="text-danger">{{ $message }}</small>
-                @enderror
-            </div>
-            <div class="mb-3">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <label>Material</label>
-                    <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
-                        data-bs-target="#addMaterialModal">
-                        + Quick Add Material
-                    </button>
-                </div>
-                <select name="inventory_id" id="inventory_id" class="form-select select2" required>
-                    <option value="">Select Material</option>
-                    @foreach ($inventories as $inv)
-                        <option value="{{ $inv->id }}" data-unit="{{ $inv->unit }}">
-                            {{ $inv->name }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="mb-3">
-                <label>Requested Quantity</label>
-                <div class="input-group">
-                    <input type="number" name="qty" class="form-control" step="any" required>
-                    <span class="input-group-text unit-label">unit</span>
-                </div>
-                @error('qty')
-                    <small class="text-danger">{{ $message }}</small>
-                @enderror
-            </div>
-            <div class="mb-3">
-                <label>Remark (Optional)</label>
-                <textarea name="remark" class="form-control" value="{{ old('remark') }}"></textarea>
-                @error('remark')
-                    <small class="text-danger">{{ $message }}</small>
-                @enderror
-            </div>
-            <button class="btn btn-success">Submit Request</button>
-        </form>
-        <!-- Add Material Modal -->
-        <div class="modal fade" id="addMaterialModal" tabindex="-1" aria-labelledby="addMaterialModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog">
-                <form id="quickAddMaterialForm" method="POST" action="{{ route('inventories.store.quick') }}">
-                    @csrf
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Quick Add Material</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <label>Name</label>
-                            <input type="text" name="name" class="form-control" required>
-                            <label class="mt-2">Quantity</label>
-                            <input type="number" step="any" name="quantity" class="form-control">
-                            <label class="mt-2">Unit</label>
-                            <input type="text" name="unit" class="form-control" required>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary">Add Material</button>
-                        </div>
+    <div class="container mt-4">
+        <div class="card shadow rounded">
+            <div class="card-body">
+                <h2 class="mb-0 flex-shrink-0" style="font-size:1.5rem;">Create Material Request</h2>
+                <hr>
+                @if (session('success'))
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ session('success') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
-                </form>
-            </div>
-        </div>
-        <!-- Add Project Modal -->
-        <div class="modal fade" id="addProjectModal" tabindex="-1" aria-labelledby="addProjectModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog">
-                <form id="quickAddProjectForm" method="POST" action="{{ route('projects.store.quick') }}">
+                @endif
+                @if ($errors->any())
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <strong>Whoops!</strong> There were some problems with your input.
+                        <ul class="mb-0">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </ul>
+                    </div>
+                @endif
+                <form method="POST" action="{{ route('material_requests.store') }}">
                     @csrf
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Quick Add Project</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <label>Project</label>
+                                <button type="button" class="btn btn-sm btn-outline-success" data-bs-toggle="modal"
+                                    data-bs-target="#addProjectModal">
+                                    + Quick Add Project
+                                </button>
+                            </div>
+                            <select name="project_id" id="project_id" class="form-select select2" required>
+                                <option value="">Select an option</option>
+                                @foreach ($projects as $proj)
+                                    <option value="{{ $proj->id }}">{{ $proj->name }}</option>
+                                @endforeach
+                            </select>
+                            @error('project_id')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
                         </div>
-                        <div class="modal-body">
-                            <label>Project Name</label>
-                            <input type="text" name="name" class="form-control" required>
-                            <label class="mt-2">Quantity</label>
-                            <input type="number" step="any" name="qty" class="form-control">
-                            <label class="mt-2">Department</label>
-                            <select name="department" class="form-select" required>
-                                <option value="mascot">Mascot</option>
-                                <option value="costume">Costume</option>
-                                <option value="mascot&costume">Mascot & Costume</option>
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <label>Material</label>
+                                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
+                                    data-bs-target="#addMaterialModal">
+                                    + Quick Add Material
+                                </button>
+                            </div>
+                            <select name="inventory_id" id="inventory_id" class="form-select select2" required>
+                                <option value="">Select an option</option>
+                                @foreach ($inventories as $inv)
+                                    <option value="{{ $inv->id }}" data-unit="{{ $inv->unit }}">
+                                        {{ $inv->name }}
+                                    </option>
+                                @endforeach
                             </select>
                         </div>
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-success">Add Project</button>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label>Requested Quantity</label>
+                            <div class="input-group">
+                                <input type="number" name="qty" class="form-control" step="any" required>
+                                <span class="input-group-text unit-label">unit</span>
+                            </div>
+                            @error('qty')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label>Remark (Optional)</label>
+                            <textarea name="remark" class="form-control" value="{{ old('remark') }}"></textarea>
+                            @error('remark')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
                         </div>
                     </div>
+
+                    <button class="btn btn-success">Submit Request</button>
                 </form>
+                <!-- Add Material Modal -->
+                <div class="modal fade" id="addMaterialModal" tabindex="-1" aria-labelledby="addMaterialModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <form id="quickAddMaterialForm" method="POST" action="{{ route('inventories.store.quick') }}">
+                            @csrf
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Quick Add Material</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <label>Name</label>
+                                    <input type="text" name="name" class="form-control" required>
+                                    <label class="mt-2">Quantity</label>
+                                    <input type="number" step="any" name="quantity" class="form-control">
+                                    <label class="mt-2">Unit</label>
+                                    <input type="text" name="unit" class="form-control" required>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-primary">Add Material</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <!-- Add Project Modal -->
+                <div class="modal fade" id="addProjectModal" tabindex="-1" aria-labelledby="addProjectModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <form id="quickAddProjectForm" method="POST" action="{{ route('projects.store.quick') }}">
+                            @csrf
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Quick Add Project</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <label>Project Name</label>
+                                    <input type="text" name="name" class="form-control" required>
+                                    <label class="mt-2">Quantity</label>
+                                    <input type="number" step="any" name="qty" class="form-control">
+                                    <label class="mt-2">Department</label>
+                                    <select name="department" class="form-select" required>
+                                        <option value="mascot">Mascot</option>
+                                        <option value="costume">Costume</option>
+                                        <option value="mascot&costume">Mascot & Costume</option>
+                                    </select>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-success">Add Project</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 @endsection
 @push('styles')
-    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.2.0/dist/select2-bootstrap-5-theme.min.css"
-        rel="stylesheet" />
     <style>
         .select2-container .select2-selection--single {
             height: calc(2.375rem + 2px);
