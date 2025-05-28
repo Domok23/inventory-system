@@ -6,6 +6,7 @@ use App\Models\MaterialRequest;
 use App\Models\Inventory;
 use App\Models\Project;
 use Illuminate\Http\Request;
+use App\Events\MaterialRequestUpdated;
 
 class MaterialRequestController extends Controller
 {
@@ -58,7 +59,7 @@ class MaterialRequestController extends Controller
             default => 'general',
         };
 
-        MaterialRequest::create([
+        $materialRequest = MaterialRequest::create([
             'inventory_id' => $request->inventory_id,
             'project_id' => $request->project_id,
             'qty' => $request->qty,
@@ -66,6 +67,9 @@ class MaterialRequestController extends Controller
             'department' => $department,
             'remark' => $request->remark,
         ]);
+
+        // Trigger event
+        event(new MaterialRequestUpdated($materialRequest));
 
         return redirect()->route('material_requests.index')->with('success', 'Material Request Created');
     }
@@ -158,6 +162,9 @@ class MaterialRequestController extends Controller
                 'status' => $request->status,
             ]);
 
+            // Trigger event
+            event(new MaterialRequestUpdated($materialRequest));
+
             return redirect()->route('material_requests.index')->with('success', 'Status updated successfully.');
         }
 
@@ -185,12 +192,21 @@ class MaterialRequestController extends Controller
             'remark' => $request->remark,
         ]);
 
+        // Trigger event
+        event(new MaterialRequestUpdated($materialRequest));
+
         return redirect()->route('material_requests.index')->with('success', 'Material Request updated successfully.');
     }
 
     public function destroy($id)
     {
-        MaterialRequest::findOrFail($id)->delete();
+        $materialRequest = MaterialRequest::findOrFail($id);
+
+        // Trigger event
+        event(new MaterialRequestUpdated($materialRequest));
+
+        $materialRequest->delete();
+
         return back()->with('success', 'Deleted');
     }
 }

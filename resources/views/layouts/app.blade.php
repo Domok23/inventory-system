@@ -233,6 +233,8 @@
 
     <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>
     @stack('scripts')
 
     <footer class="bg-light text-center text-lg-start mt-5">
