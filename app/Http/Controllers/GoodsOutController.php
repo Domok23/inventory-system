@@ -252,6 +252,47 @@ class GoodsOutController extends Controller
         return redirect()->route('goods_out.index')->with('success', 'Goods Out restored successfully.');
     }
 
+    public function bulkGoodsOut(Request $request)
+    {
+        $request->validate([
+            'selected_ids' => 'required|array',
+            'selected_ids.*' => 'exists:material_requests,id',
+        ]);
+
+        $materialRequests = MaterialRequest::whereIn('id', $request->selected_ids)
+            ->where('status', 'approved') // Hanya proses yang sudah disetujui
+            ->get();
+
+        foreach ($materialRequests as $materialRequest) {
+            $inventory = $materialRequest->inventory;
+
+            // Validasi stok
+            if ($materialRequest->qty > $inventory->quantity) {
+                return back()->with('error', "Insufficient stock for {$inventory->name}.");
+            }
+
+            // Kurangi stok inventory
+            $inventory->quantity -= $materialRequest->qty;
+            $inventory->save();
+
+            // Buat Goods Out
+            GoodsOut::create([
+                'material_request_id' => $materialRequest->id,
+                'inventory_id' => $inventory->id,
+                'project_id' => $materialRequest->project_id,
+                'requested_by' => $materialRequest->requested_by,
+                'department' => $materialRequest->department,
+                'quantity' => $materialRequest->qty,
+                'remark' => $materialRequest->remark,
+            ]);
+
+            // Update status material request
+            $materialRequest->update(['status' => 'delivered']);
+        }
+
+        return redirect()->route('material_requests.index')->with('success', 'Bulk Goods Out processed successfully.');
+    }
+
     public function destroy($id)
     {
         $goodsOut = GoodsOut::findOrFail($id);

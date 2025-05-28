@@ -93,6 +93,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/goods_out/create/{materialRequestId}', [GoodsOutController::class, 'create'])->name('goods_out.create');
     Route::get('/goods_out/create_independent', [GoodsOutController::class, 'createIndependent'])->name('goods_out.create_independent');
     Route::post('/goods_out/store_independent', [GoodsOutController::class, 'storeIndependent'])->name('goods_out.store_independent');
+    Route::post('/material-requests/bulk-goods-out', [GoodsOutController::class, 'bulkGoodsOut'])->name('goods_out.bulk');
 
     // Goods In
     Route::get('/goods_in', [GoodsInController::class, 'index'])->name('goods_in.index');
@@ -104,6 +105,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('goods_in/{goods_in}/edit', [GoodsInController::class, 'edit'])->name('goods_in.edit');
     Route::put('goods_in/{goods_in}', [GoodsInController::class, 'update'])->name('goods_in.update');
     Route::delete('goods_in/{goods_in}', [GoodsInController::class, 'destroy'])->name('goods_in.destroy');
+    Route::post('/goods-out/bulk-goods-in', [GoodsInController::class, 'bulkGoodsIn'])->name('goods_in.bulk');
 
     // Costings
     Route::get('/costing-report', [ProjectCostingController::class, 'index'])->name('costing.report');

@@ -118,6 +118,37 @@ class GoodsInController extends Controller
         return redirect()->route('goods_in.index')->with('success', 'Goods In created successfully.');
     }
 
+    public function bulkGoodsIn(Request $request)
+    {
+        $request->validate([
+            'selected_ids' => 'required|array',
+            'selected_ids.*' => 'exists:goods_out,id',
+        ]);
+
+        $goodsOuts = GoodsOut::whereIn('id', $request->selected_ids)->get();
+
+        foreach ($goodsOuts as $goodsOut) {
+            $inventory = $goodsOut->inventory;
+
+            // Tambahkan stok ke inventory
+            $inventory->quantity += $goodsOut->quantity;
+            $inventory->save();
+
+            // Buat Goods In
+            GoodsIn::create([
+                'goods_out_id' => $goodsOut->id,
+                'inventory_id' => $goodsOut->inventory_id,
+                'project_id' => $goodsOut->project_id,
+                'quantity' => $goodsOut->quantity,
+                'returned_by' => auth()->user()->username,
+                'returned_at' => now(),
+                'remark' => 'Bulk Goods In',
+            ]);
+        }
+
+        return redirect()->route('goods_out.index')->with('success', 'Bulk Goods In processed successfully.');
+    }
+
     public function edit(GoodsIn $goods_in)
     {
         $inventories = Inventory::orderBy('name')->get();

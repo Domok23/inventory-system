@@ -193,7 +193,7 @@
                     confirmButtonColor: '#3085d6',
                     cancelButtonColor: '#d33',
                     confirmButtonText: 'Yes, restore it!',
-                    reverseButtons: true
+                    reverseButtons: true,
                 }).then((result) => {
                     if (result.isConfirmed) {
                         form.submit();
@@ -213,7 +213,7 @@
                     confirmButtonColor: '#d33',
                     cancelButtonColor: '#3085d6',
                     confirmButtonText: 'Yes, delete it!',
-                    reverseButtons: true
+                    reverseButtons: true,
                 }).then((result) => {
                     if (result.isConfirmed) {
                         form.submit();

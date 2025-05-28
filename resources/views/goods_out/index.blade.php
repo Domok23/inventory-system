@@ -12,6 +12,7 @@
                     <a href="{{ route('goods_out.create_independent') }}"
                         class="btn btn-outline-primary btn-sm flex-shrink-0 ms-2">+
                         Create Goods Out</a>
+                    <button id="bulk-goods-in-btn" class="btn btn-primary btn-sm">Bulk Goods In</button>
                 </div>
                 @if (session('success'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -48,7 +49,11 @@
                     <tbody>
                         @foreach ($goodsOuts as $goodsOut)
                             <tr>
-                                <td class="text-center align-middle">{{ $loop->iteration }}</td>
+                                <td>
+                                    @if ($goodsOut->quantity > 0)
+                                        <input type="checkbox" class="select-row" value="{{ $goodsOut->id }}">
+                                    @endif
+                                </td>
                                 <td class="align-middle">{{ $goodsOut->inventory->name ?? '-' }}</td>
                                 <td class="align-middle">{{ $goodsOut->quantity }} {{ $goodsOut->inventory->unit ?? '-' }}
                                 </td>
@@ -126,6 +131,48 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         form.submit();
+                    }
+                });
+            });
+
+            $('#bulk-goods-in-btn').on('click', function() {
+                const selectedIds = $('.select-row:checked').map(function() {
+                    return $(this).val();
+                }).get();
+
+                if (selectedIds.length === 0) {
+                    Swal.fire('Error', 'Please select at least one goods out.', 'error');
+                    return;
+                }
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You are about to process bulk goods in.",
+                    icon: "question",
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, proceed!',
+                    cancelButtonText: 'Cancel',
+                    reverseButtons: true,
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: "{{ route('goods_in.bulk') }}",
+                            method: 'POST',
+                            data: {
+                                _token: "{{ csrf_token() }}",
+                                selected_ids: selectedIds,
+                            },
+                            success: function(response) {
+                                Swal.fire('Success',
+                                        'Bulk Goods In processed successfully.',
+                                        'success')
+                                    .then(() => location.reload());
+                            },
+                            error: function(xhr) {
+                                Swal.fire('Error',
+                                    'An error occurred while processing.', 'error');
+                            }
+                        });
                     }
                 });
             });

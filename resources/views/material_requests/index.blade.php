@@ -16,6 +16,8 @@
                         class="btn btn-success btn-sm flex-shrink-0 ms-2 d-none d-md-inline">
                         + Bulk Request
                     </a>
+                    <button id="bulk-goods-out-btn" class="btn btn-primary btn-sm flex-shrink-0 d-none d-md-inline">Bulk Goods
+                        Out</button>
                 </div>
                 <!-- Bulk Request button for mobile, appears below the title bar -->
                 <div class="mb-3 d-block d-md-none">
@@ -64,12 +66,17 @@
                     <tbody>
                         @foreach ($requests as $req)
                             <tr>
-                                <td class="text-center align-middle">{{ $loop->iteration }}</td>
+                                <td>
+                                    @if ($req->status === 'approved')
+                                        <input type="checkbox" class="select-row" value="{{ $req->id }}">
+                                    @endif
+                                </td>
                                 <td class="align-middle">{{ $req->project->name ?? '-' }}</td>
                                 <td class="align-middle">{{ $req->inventory->name ?? '-' }}</td>
                                 <td class="align-middle">{{ $req->qty }} {{ $req->inventory->unit ?? '-' }}</td>
                                 <td class="align-middle">{{ ucfirst($req->requested_by) }}
-                                    ({{ ucfirst($req->department) }})</td>
+                                    ({{ ucfirst($req->department) }})
+                                </td>
                                 <td class="align-middle">
                                     @if (in_array(auth()->user()->role, ['admin_logistic', 'super_admin']))
                                         <form method="POST" action="{{ route('material_requests.update', $req->id) }}">
@@ -141,6 +148,54 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         form.submit();
+                    }
+                });
+            });
+        });
+
+        $(document).ready(function() {
+            $('#select-all').on('change', function() {
+                $('.select-row').prop('checked', $(this).prop('checked'));
+            });
+
+            $('#bulk-goods-out-btn').on('click', function() {
+                const selectedIds = $('.select-row:checked').map(function() {
+                    return $(this).val();
+                }).get();
+
+                if (selectedIds.length === 0) {
+                    Swal.fire('Error', 'Please select at least one material request.', 'error');
+                    return;
+                }
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You are about to process bulk goods out.",
+                    icon: "question",
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, proceed!',
+                    cancelButtonText: 'Cancel',
+                    reverseButtons: true,
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: "{{ route('goods_out.bulk') }}",
+                            method: 'POST',
+                            data: {
+                                _token: "{{ csrf_token() }}",
+                                selected_ids: selectedIds,
+                            },
+                            success: function(response) {
+                                Swal.fire('Success',
+                                        'Bulk Goods Out processed successfully.',
+                                        'success')
+                                    .then(() => location.reload());
+                            },
+                            error: function(xhr) {
+                                Swal.fire('Error',
+                                    'An error occurred while processing.', 'error');
+                            }
+                        });
                     }
                 });
             });
