@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use App\Models\Inventory;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 
 class SetInventory
 {
@@ -20,15 +21,13 @@ class SetInventory
     public function handle(Request $request, Closure $next)
     {
         if (!$request->session()->has('inventory_id')) {
-            $inventory = Inventory::first(); // Ambil inventory pertama
+            $inventory = Cache::remember('default_inventory', 60, function () {
+                return Inventory::first();
+            });
+
             if ($inventory) {
                 $request->session()->put('inventory_id', $inventory->id);
-                Log::info('SetInventory Middleware: inventory_id set to ' . $inventory->id);
-            } else {
-                Log::warning('SetInventory Middleware: No inventory found in database.');
             }
-        } else {
-            Log::info('SetInventory Middleware: inventory_id already in session: ' . $request->session()->get('inventory_id'));
         }
 
         return $next($request);
