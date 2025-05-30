@@ -238,7 +238,7 @@
 
     <script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>
     <script>
-        const authUserRole = "{{ auth()->user()->role }}";
+        const authUserRole = "{{ auth()->check() ? auth()->user()->role : '' }}";
     </script>
     @stack('scripts')
 
