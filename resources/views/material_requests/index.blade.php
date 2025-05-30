@@ -100,7 +100,7 @@
                                         {{ ucfirst($req->status) }}
                                     @endif
                                 </td>
-                                <td>{{ $req->remark }}</td>
+                                <td class="align-middle">{{ $req->remark }}</td>
                                 <td class="align-middle">{{ $req->created_at->format('d-m-Y, H:i') }}</td>
                                 <td>
                                     <div class="d-flex flex-wrap gap-1">

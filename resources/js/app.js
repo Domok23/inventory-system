@@ -139,45 +139,45 @@ function updateDataTable(materialRequest) {
     let statusColumn = materialRequest.status;
     if (["admin_logistic", "super_admin"].includes(authUserRole)) {
         statusColumn = `
-            <form method="POST" action="/material_requests/${
-                materialRequest.id
-            }">
-                <input type="hidden" name="_token" value="${$(
-                    'meta[name="csrf-token"]'
-                ).attr("content")}">
-                <input type="hidden" name="_method" value="PUT">
-                <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
-                    <option value="pending" ${
-                        materialRequest.status === "pending" ? "selected" : ""
-                    }>Pending</option>
-                    <option value="approved" ${
-                        materialRequest.status === "approved" ? "selected" : ""
-                    }>Approved</option>
-                    <option value="delivered" ${
-                        materialRequest.status === "delivered" ? "selected" : ""
-                    }>Delivered</option>
-                </select>
-            </form>
-        `;
+           <form method="POST" action="/material_requests/${
+               materialRequest.id
+           }">
+               <input type="hidden" name="_token" value="${$(
+                   'meta[name="csrf-token"]'
+               ).attr("content")}">
+               <input type="hidden" name="_method" value="PUT">
+               <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+                   <option value="pending" ${
+                       materialRequest.status === "pending" ? "selected" : ""
+                   }>Pending</option>
+                   <option value="approved" ${
+                       materialRequest.status === "approved" ? "selected" : ""
+                   }>Approved</option>
+                   <option value="delivered" ${
+                       materialRequest.status === "delivered" ? "selected" : ""
+                   }>Delivered</option>
+               </select>
+           </form>
+       `;
     }
 
-    const formattedDate = moment(materialRequest.created_at).format(
-        "DD-MM-YYYY, HH:mm"
-    );
+    // Logika untuk checkbox
+    let checkboxColumn = "";
+    if (materialRequest.status === "approved") {
+        checkboxColumn = `<input type="checkbox" class="select-row" value="${materialRequest.id}">`;
+    }
 
-    const rowData = [
-        "", // Kolom untuk checkbox (kosong jika tidak digunakan)
-        materialRequest.project?.name || "N/A",
-        materialRequest.inventory?.name || "N/A",
-        `${materialRequest.qty} ${materialRequest.inventory?.unit || ""}`,
-        `${materialRequest.requested_by} (${materialRequest.department})`,
-        statusColumn, // Kolom status dengan logika tambahan
-        materialRequest.remark || "-",
-        formattedDate,
-        `<div class="d-flex flex-wrap gap-1">
-            <a href="/material_requests/${
-                materialRequest.id
-            }/edit" class="btn btn-sm btn-primary">Edit</a>
+    // Logika untuk tombol Goods Out
+    let actionColumn = `
+        <div class="d-flex flex-wrap gap-1">
+            <a href="/material_requests/${materialRequest.id}/edit" class="btn btn-sm btn-primary">Edit</a>
+    `;
+    if (materialRequest.status === "approved") {
+        actionColumn += `
+            <a href="/goods_out/create/${materialRequest.id}" class="btn btn-sm btn-success">Goods Out</a>
+        `;
+    }
+    actionColumn += `
             <form action="/material_requests/${
                 materialRequest.id
             }" method="POST" class="delete-form">
@@ -187,7 +187,23 @@ function updateDataTable(materialRequest) {
                 ).attr("content")}">
                 <button type="button" class="btn btn-sm btn-danger btn-delete">Delete</button>
             </form>
-        </div>`,
+        </div>
+    `;
+
+    const formattedDate = moment(materialRequest.created_at).format(
+        "DD-MM-YYYY, HH:mm"
+    );
+
+    const rowData = [
+        checkboxColumn, // Kolom untuk checkbox (kosong jika tidak digunakan)
+        materialRequest.project?.name || "N/A",
+        materialRequest.inventory?.name || "N/A",
+        `${materialRequest.qty} ${materialRequest.inventory?.unit || ""}`,
+        `${materialRequest.requested_by} (${materialRequest.department})`,
+        statusColumn, // Kolom status dengan logika tambahan
+        materialRequest.remark || "-",
+        formattedDate,
+        actionColumn, // Kolom action dengan tombol Edit, Goods Out, dan Delete
     ];
 
     if (!row.node()) {

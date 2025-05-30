@@ -27465,14 +27465,28 @@ function updateDataTable(materialRequest) {
   // Logika untuk kolom status
   var statusColumn = materialRequest.status;
   if (["admin_logistic", "super_admin"].includes(authUserRole)) {
-    statusColumn = "\n            <form method=\"POST\" action=\"/material_requests/".concat(materialRequest.id, "\">\n                <input type=\"hidden\" name=\"_token\" value=\"").concat($('meta[name="csrf-token"]').attr("content"), "\">\n                <input type=\"hidden\" name=\"_method\" value=\"PUT\">\n                <select name=\"status\" class=\"form-select form-select-sm\" onchange=\"this.form.submit()\">\n                    <option value=\"pending\" ").concat(materialRequest.status === "pending" ? "selected" : "", ">Pending</option>\n                    <option value=\"approved\" ").concat(materialRequest.status === "approved" ? "selected" : "", ">Approved</option>\n                    <option value=\"delivered\" ").concat(materialRequest.status === "delivered" ? "selected" : "", ">Delivered</option>\n                </select>\n            </form>\n        ");
+    statusColumn = "\n           <form method=\"POST\" action=\"/material_requests/".concat(materialRequest.id, "\">\n               <input type=\"hidden\" name=\"_token\" value=\"").concat($('meta[name="csrf-token"]').attr("content"), "\">\n               <input type=\"hidden\" name=\"_method\" value=\"PUT\">\n               <select name=\"status\" class=\"form-select form-select-sm\" onchange=\"this.form.submit()\">\n                   <option value=\"pending\" ").concat(materialRequest.status === "pending" ? "selected" : "", ">Pending</option>\n                   <option value=\"approved\" ").concat(materialRequest.status === "approved" ? "selected" : "", ">Approved</option>\n                   <option value=\"delivered\" ").concat(materialRequest.status === "delivered" ? "selected" : "", ">Delivered</option>\n               </select>\n           </form>\n       ");
   }
+
+  // Logika untuk checkbox
+  var checkboxColumn = "";
+  if (materialRequest.status === "approved") {
+    checkboxColumn = "<input type=\"checkbox\" class=\"select-row\" value=\"".concat(materialRequest.id, "\">");
+  }
+
+  // Logika untuk tombol Goods Out
+  var actionColumn = "\n        <div class=\"d-flex flex-wrap gap-1\">\n            <a href=\"/material_requests/".concat(materialRequest.id, "/edit\" class=\"btn btn-sm btn-primary\">Edit</a>\n    ");
+  if (materialRequest.status === "approved") {
+    actionColumn += "\n            <a href=\"/goods_out/create/".concat(materialRequest.id, "\" class=\"btn btn-sm btn-success\">Goods Out</a>\n        ");
+  }
+  actionColumn += "\n            <form action=\"/material_requests/".concat(materialRequest.id, "\" method=\"POST\" class=\"delete-form\">\n                <input type=\"hidden\" name=\"_method\" value=\"DELETE\">\n                <input type=\"hidden\" name=\"_token\" value=\"").concat($('meta[name="csrf-token"]').attr("content"), "\">\n                <button type=\"button\" class=\"btn btn-sm btn-danger btn-delete\">Delete</button>\n            </form>\n        </div>\n    ");
   var formattedDate = moment__WEBPACK_IMPORTED_MODULE_0___default()(materialRequest.created_at).format("DD-MM-YYYY, HH:mm");
-  var rowData = ["",
+  var rowData = [checkboxColumn,
   // Kolom untuk checkbox (kosong jika tidak digunakan)
   ((_materialRequest$proj4 = materialRequest.project) === null || _materialRequest$proj4 === void 0 ? void 0 : _materialRequest$proj4.name) || "N/A", ((_materialRequest$inve4 = materialRequest.inventory) === null || _materialRequest$inve4 === void 0 ? void 0 : _materialRequest$inve4.name) || "N/A", "".concat(materialRequest.qty, " ").concat(((_materialRequest$inve5 = materialRequest.inventory) === null || _materialRequest$inve5 === void 0 ? void 0 : _materialRequest$inve5.unit) || ""), "".concat(materialRequest.requested_by, " (").concat(materialRequest.department, ")"), statusColumn,
   // Kolom status dengan logika tambahan
-  materialRequest.remark || "-", formattedDate, "<div class=\"d-flex flex-wrap gap-1\">\n            <a href=\"/material_requests/".concat(materialRequest.id, "/edit\" class=\"btn btn-sm btn-primary\">Edit</a>\n            <form action=\"/material_requests/").concat(materialRequest.id, "\" method=\"POST\" class=\"delete-form\">\n                <input type=\"hidden\" name=\"_method\" value=\"DELETE\">\n                <input type=\"hidden\" name=\"_token\" value=\"").concat($('meta[name="csrf-token"]').attr("content"), "\">\n                <button type=\"button\" class=\"btn btn-sm btn-danger btn-delete\">Delete</button>\n            </form>\n        </div>")];
+  materialRequest.remark || "-", formattedDate, actionColumn // Kolom action dengan tombol Edit, Goods Out, dan Delete
+  ];
   if (!row.node()) {
     table.row.add(rowData).draw();
     table.order([7, "desc"]).draw(); // Urutkan ulang tabel berdasarkan kolom `Requested At`
