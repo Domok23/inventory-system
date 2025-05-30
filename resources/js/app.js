@@ -19,10 +19,48 @@ window.Echo.channel("material-requests").listen(
     }
 );
 
+let audioContext;
+let audioBuffer;
+
+function initializeAudio() {
+    // Inisialisasi AudioContext
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+    // Ambil file audio dan decode menjadi buffer
+    fetch("/sounds/notification.mp3") // Pastikan path ini sesuai dengan lokasi file audio Anda
+        .then((response) => response.arrayBuffer())
+        .then((data) => audioContext.decodeAudioData(data))
+        .then((buffer) => {
+            audioBuffer = buffer;
+        })
+        .catch((error) => {
+            console.error("Failed to load audio file:", error);
+        });
+}
+
+document.body.addEventListener(
+    "click",
+    () => {
+        if (audioContext && audioContext.state === "suspended") {
+            audioContext.resume();
+        }
+    },
+    { once: true }
+);
+
+function playNotificationSound() {
+    if (!audioContext || !audioBuffer) return;
+
+    // Buat sumber audio baru
+    const source = audioContext.createBufferSource();
+    source.buffer = audioBuffer;
+    source.connect(audioContext.destination);
+    source.start(0);
+}
+
 function showToast(materialRequest, action) {
     const toastContainer = document.getElementById("toast-container");
     const toastTemplate = document.getElementById("toast-template");
-    const notificationSound = document.getElementById("notification-sound");
 
     // Clone elemen template toast
     const toastElement = toastTemplate.cloneNode(true);
@@ -82,13 +120,8 @@ function showToast(materialRequest, action) {
     });
     toast.show();
 
-    // Putar suara notifikasi hanya jika tidak sedang diputar
-    if (notificationSound.paused) {
-        notificationSound.currentTime = 0; // Reset waktu audio ke awal
-        notificationSound.play().catch((error) => {
-            console.error("Failed to play notification sound:", error);
-        });
-    }
+    // Putar suara notifikasi
+    playNotificationSound();
 
     // Hapus toast dari DOM jika tombol silang diklik
     toastElement.addEventListener("hidden.bs.toast", () => {
@@ -166,3 +199,7 @@ function updateDataTable(materialRequest) {
     row.data(rowData).draw();
     table.order([7, "desc"]).draw(); // Urutkan ulang tabel setelah pembaruan
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+    initializeAudio();
+});
