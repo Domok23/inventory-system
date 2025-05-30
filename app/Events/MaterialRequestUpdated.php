@@ -1,6 +1,7 @@
 <?php
 namespace App\Events;
 
+use Illuminate\Support\Facades\Log;
 use App\Models\MaterialRequest;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Queue\SerializesModels;
@@ -15,7 +16,8 @@ class MaterialRequestUpdated implements ShouldBroadcast
 
     public function __construct(MaterialRequest $materialRequest)
     {
-        $this->materialRequest = $materialRequest;
+        $this->materialRequest = $materialRequest->load('inventory', 'project');
+        Log::info('MaterialRequestUpdated Event Data:', $this->materialRequest->toArray());
     }
 
     public function broadcastOn()

@@ -1,4 +1,4 @@
-import 'bootstrap';
+// import 'bootstrap';
 
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests
@@ -6,11 +6,11 @@ import 'bootstrap';
  * CSRF token as a header based on the value of the "XSRF" token cookie.
  */
 
-import axios from 'axios';
-window.axios = axios;
+// import axios from 'axios';
+// window.axios = axios;
 
-// Set default headers untuk Axios
-window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+// // Set default headers untuk Axios
+// window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 // Laravel Echo dan Pusher konfigurasi
 import Echo from 'laravel-echo';

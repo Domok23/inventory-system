@@ -219,6 +219,8 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
+    <script src="{{ mix('js/app.js') }}"></script>
+
     <!-- Select2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
@@ -235,6 +237,9 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>
+    <script>
+        const authUserRole = "{{ auth()->user()->role }}";
+    </script>
     @stack('scripts')
 
     <footer class="bg-light text-center text-lg-start mt-5">

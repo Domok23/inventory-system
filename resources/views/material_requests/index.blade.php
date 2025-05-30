@@ -16,7 +16,8 @@
                         class="btn btn-success btn-sm flex-shrink-0 ms-2 d-none d-md-inline">
                         + Bulk Request
                     </a>
-                    <button id="bulk-goods-out-btn" class="btn btn-primary btn-sm flex-shrink-0 d-none d-md-inline">Bulk Goods
+                    <button id="bulk-goods-out-btn" class="btn btn-primary btn-sm flex-shrink-0 d-none d-md-inline">Bulk
+                        Goods
                         Out</button>
                 </div>
                 <!-- Bulk Request button for mobile, appears below the title bar -->
@@ -65,7 +66,7 @@
                     </thead>
                     <tbody>
                         @foreach ($requests as $req)
-                            <tr>
+                            <tr id="row-{{ $req->id }}">
                                 <td>
                                     @if ($req->status === 'approved')
                                         <input type="checkbox" class="select-row" value="{{ $req->id }}">
@@ -129,7 +130,13 @@
     <script>
         $(document).ready(function() {
             $('#datatable').DataTable({
-                responsive: true
+                responsive: true,
+                desytroy: true,
+                columnDefs: [{
+                        orderable: false,
+                        targets: 0
+                    }, // Kolom checkbox tidak dapat diurutkan
+                ],
             });
 
             // SweetAlert for delete confirmation
