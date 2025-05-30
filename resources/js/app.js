@@ -5,10 +5,88 @@ import moment from "moment";
 window.Echo.channel("material-requests").listen(
     "MaterialRequestUpdated",
     (e) => {
-        console.log("Material Request Updated:", e.materialRequest);
+        console.log("Material Request Updated:", e.materialRequest, e.action);
         updateDataTable(e.materialRequest);
+        showToast(e.materialRequest, e.action);
     }
 );
+
+function showToast(materialRequest, action) {
+    const toastContainer = document.getElementById("toast-container");
+    const toastTemplate = document.getElementById("toast-template");
+    const notificationSound = document.getElementById("notification-sound");
+
+    // Clone elemen template toast
+    const toastElement = toastTemplate.cloneNode(true);
+    toastElement.classList.remove("d-none"); // Tampilkan toast
+    toastElement.classList.add("toast"); // Tambahkan kelas toast
+
+    // Tentukan pesan berdasarkan jenis aksi
+    let message = "";
+    if (action === "created") {
+        message = `
+            <strong>${materialRequest.requested_by}</strong><br>
+            New Material Request: <strong>${
+                materialRequest.inventory?.name || "N/A"
+            }</strong>
+            for <strong>${materialRequest.project?.name || "N/A"}</strong><br>
+            <a href="/material_requests/${
+                materialRequest.id
+            }/edit" class="text-primary">View More...</a>
+        `;
+    } else if (action === "updated") {
+        message = `
+            <strong>${materialRequest.requested_by}</strong><br>
+            Material Request: <strong>${
+                materialRequest.inventory?.name || "N/A"
+            }</strong>
+            for <strong>${
+                materialRequest.project?.name || "N/A"
+            }</strong> has been updated.<br>
+            <a href="/material_requests/${
+                materialRequest.id
+            }/edit" class="text-primary">View More...</a>
+        `;
+    } else if (action === "deleted") {
+        message = `
+            <strong>${materialRequest.requested_by}</strong><br>
+            Material Request: <strong>${
+                materialRequest.inventory?.name || "N/A"
+            }</strong>
+            for <strong>${
+                materialRequest.project?.name || "N/A"
+            }</strong> has been deleted.
+        `;
+    }
+
+    // Isi konten toast
+    toastElement.querySelector(".toast-time").textContent = moment(
+        materialRequest.created_at
+    ).fromNow();
+    toastElement.querySelector(".toast-body").innerHTML = message;
+
+    // Tambahkan toast ke dalam container
+    toastContainer.appendChild(toastElement);
+
+    // Tampilkan toast dengan opsi autohide: false
+    const toast = new bootstrap.Toast(toastElement, {
+        autohide: false, // Toast tidak akan hilang otomatis
+    });
+    toast.show();
+
+    // Putar suara notifikasi
+    if (notificationSound) {
+        notificationSound.currentTime = 0; // Reset waktu audio ke awal
+        notificationSound.play().catch((error) => {
+            console.error("Failed to play notification sound:", error);
+        });
+    }
+
+    // Hapus toast dari DOM jika tombol silang diklik
+    toastElement.addEventListener("hidden.bs.toast", () => {
+        toastElement.remove();
+    });
+}
 
 function updateDataTable(materialRequest) {
     console.log("Updating datatable with:", materialRequest);

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Events;
 
 use Illuminate\Support\Facades\Log;
@@ -13,11 +14,16 @@ class MaterialRequestUpdated implements ShouldBroadcast
     use InteractsWithSockets, SerializesModels;
 
     public $materialRequest;
+    public $action; // Tambahkan properti action
 
-    public function __construct(MaterialRequest $materialRequest)
+    public function __construct(MaterialRequest $materialRequest, string $action)
     {
         $this->materialRequest = $materialRequest->load('inventory', 'project');
-        Log::info('MaterialRequestUpdated Event Data:', $this->materialRequest->toArray());
+        $this->action = $action; // Set action
+        Log::info('MaterialRequestUpdated Event Data:', [
+            'materialRequest' => $this->materialRequest->toArray(),
+            'action' => $this->action,
+        ]);
     }
 
     public function broadcastOn()

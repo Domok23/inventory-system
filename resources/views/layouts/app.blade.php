@@ -72,6 +72,14 @@
                 border: none;
                 /* Menghilangkan border pada card */
             }
+
+            .toast-container {
+                z-index: 1055;
+            }
+
+            .toast-container .toast {
+                margin-bottom: 0.5rem;
+            }
         </style>
     @endpush
     @stack('styles')
@@ -212,6 +220,30 @@
             @yield('content')
         </main>
     </div>
+
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" id="toast-container">
+        <!-- Template toast kosong -->
+        <div class="toast d-none" id="toast-template" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <span class="rounded-circle bg-primary d-inline-block" style="width: 10px; height: 10px;"></span>
+                <strong class="me-auto ms-2">Material Request</strong>
+                <small class="toast-time">Just now</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                <!-- Konten toast akan diisi melalui JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <div id="notification-sound-container">
+        <audio id="notification-sound" src="{{ asset('sounds/notification.mp3') }}" preload="auto"></audio>
+    </div>
+
+    <!-- Scripts -->
     <!-- jQuery (required by DataTables & SweetAlert) -->
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 

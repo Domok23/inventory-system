@@ -27367,11 +27367,61 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
 window.Echo.channel("material-requests").listen("MaterialRequestUpdated", function (e) {
-  console.log("Material Request Updated:", e.materialRequest);
+  console.log("Material Request Updated:", e.materialRequest, e.action);
   updateDataTable(e.materialRequest);
+  showToast(e.materialRequest, e.action);
 });
+function showToast(materialRequest, action) {
+  var toastContainer = document.getElementById("toast-container");
+  var toastTemplate = document.getElementById("toast-template");
+  var notificationSound = document.getElementById("notification-sound");
+
+  // Clone elemen template toast
+  var toastElement = toastTemplate.cloneNode(true);
+  toastElement.classList.remove("d-none"); // Tampilkan toast
+  toastElement.classList.add("toast"); // Tambahkan kelas toast
+
+  // Tentukan pesan berdasarkan jenis aksi
+  var message = "";
+  if (action === "created") {
+    var _materialRequest$inve, _materialRequest$proj;
+    message = "\n            <strong>".concat(materialRequest.requested_by, "</strong><br>\n            New Material Request: <strong>").concat(((_materialRequest$inve = materialRequest.inventory) === null || _materialRequest$inve === void 0 ? void 0 : _materialRequest$inve.name) || "N/A", "</strong>\n            for <strong>").concat(((_materialRequest$proj = materialRequest.project) === null || _materialRequest$proj === void 0 ? void 0 : _materialRequest$proj.name) || "N/A", "</strong><br>\n            <a href=\"/material_requests/").concat(materialRequest.id, "/edit\" class=\"text-primary\">View More...</a>\n        ");
+  } else if (action === "updated") {
+    var _materialRequest$inve2, _materialRequest$proj2;
+    message = "\n            <strong>".concat(materialRequest.requested_by, "</strong><br>\n            Material Request: <strong>").concat(((_materialRequest$inve2 = materialRequest.inventory) === null || _materialRequest$inve2 === void 0 ? void 0 : _materialRequest$inve2.name) || "N/A", "</strong>\n            for <strong>").concat(((_materialRequest$proj2 = materialRequest.project) === null || _materialRequest$proj2 === void 0 ? void 0 : _materialRequest$proj2.name) || "N/A", "</strong> has been updated.<br>\n            <a href=\"/material_requests/").concat(materialRequest.id, "/edit\" class=\"text-primary\">View More...</a>\n        ");
+  } else if (action === "deleted") {
+    var _materialRequest$inve3, _materialRequest$proj3;
+    message = "\n            <strong>".concat(materialRequest.requested_by, "</strong><br>\n            Material Request: <strong>").concat(((_materialRequest$inve3 = materialRequest.inventory) === null || _materialRequest$inve3 === void 0 ? void 0 : _materialRequest$inve3.name) || "N/A", "</strong>\n            for <strong>").concat(((_materialRequest$proj3 = materialRequest.project) === null || _materialRequest$proj3 === void 0 ? void 0 : _materialRequest$proj3.name) || "N/A", "</strong> has been deleted.\n        ");
+  }
+
+  // Isi konten toast
+  toastElement.querySelector(".toast-time").textContent = moment__WEBPACK_IMPORTED_MODULE_0___default()(materialRequest.created_at).fromNow();
+  toastElement.querySelector(".toast-body").innerHTML = message;
+
+  // Tambahkan toast ke dalam container
+  toastContainer.appendChild(toastElement);
+
+  // Tampilkan toast dengan opsi autohide: false
+  var toast = new bootstrap.Toast(toastElement, {
+    autohide: false // Toast tidak akan hilang otomatis
+  });
+  toast.show();
+
+  // Putar suara notifikasi
+  if (notificationSound) {
+    notificationSound.currentTime = 0; // Reset waktu audio ke awal
+    notificationSound.play()["catch"](function (error) {
+      console.error("Failed to play notification sound:", error);
+    });
+  }
+
+  // Hapus toast dari DOM jika tombol silang diklik
+  toastElement.addEventListener("hidden.bs.toast", function () {
+    toastElement.remove();
+  });
+}
 function updateDataTable(materialRequest) {
-  var _materialRequest$proj, _materialRequest$inve, _materialRequest$inve2;
+  var _materialRequest$proj4, _materialRequest$inve4, _materialRequest$inve5;
   console.log("Updating datatable with:", materialRequest);
   var table = $("#datatable").DataTable();
   var row = table.row("#row-".concat(materialRequest.id));
@@ -27384,7 +27434,7 @@ function updateDataTable(materialRequest) {
   var formattedDate = moment__WEBPACK_IMPORTED_MODULE_0___default()(materialRequest.created_at).format("DD-MM-YYYY, HH:mm");
   var rowData = ["",
   // Kolom untuk checkbox (kosong jika tidak digunakan)
-  ((_materialRequest$proj = materialRequest.project) === null || _materialRequest$proj === void 0 ? void 0 : _materialRequest$proj.name) || "N/A", ((_materialRequest$inve = materialRequest.inventory) === null || _materialRequest$inve === void 0 ? void 0 : _materialRequest$inve.name) || "N/A", "".concat(materialRequest.qty, " ").concat(((_materialRequest$inve2 = materialRequest.inventory) === null || _materialRequest$inve2 === void 0 ? void 0 : _materialRequest$inve2.unit) || ""), "".concat(materialRequest.requested_by, " (").concat(materialRequest.department, ")"), statusColumn,
+  ((_materialRequest$proj4 = materialRequest.project) === null || _materialRequest$proj4 === void 0 ? void 0 : _materialRequest$proj4.name) || "N/A", ((_materialRequest$inve4 = materialRequest.inventory) === null || _materialRequest$inve4 === void 0 ? void 0 : _materialRequest$inve4.name) || "N/A", "".concat(materialRequest.qty, " ").concat(((_materialRequest$inve5 = materialRequest.inventory) === null || _materialRequest$inve5 === void 0 ? void 0 : _materialRequest$inve5.unit) || ""), "".concat(materialRequest.requested_by, " (").concat(materialRequest.department, ")"), statusColumn,
   // Kolom status dengan logika tambahan
   materialRequest.remark || "-", formattedDate, "<div class=\"d-flex flex-wrap gap-1\">\n            <a href=\"/material_requests/".concat(materialRequest.id, "/edit\" class=\"btn btn-sm btn-primary\">Edit</a>\n            <form action=\"/material_requests/").concat(materialRequest.id, "\" method=\"POST\" class=\"delete-form\">\n                <input type=\"hidden\" name=\"_method\" value=\"DELETE\">\n                <input type=\"hidden\" name=\"_token\" value=\"").concat($('meta[name="csrf-token"]').attr("content"), "\">\n                <button type=\"button\" class=\"btn btn-sm btn-danger btn-delete\">Delete</button>\n            </form>\n        </div>")];
   if (!row.node()) {

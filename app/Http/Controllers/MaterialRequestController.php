@@ -69,7 +69,7 @@ class MaterialRequestController extends Controller
         ]);
 
         // Trigger event
-        event(new MaterialRequestUpdated($materialRequest));
+        event(new MaterialRequestUpdated($materialRequest, 'created'));
 
         return redirect()->route('material_requests.index')->with('success', 'Material Request Created');
     }
@@ -163,7 +163,7 @@ class MaterialRequestController extends Controller
             ]);
 
             // Trigger event
-            event(new MaterialRequestUpdated($materialRequest));
+            event(new MaterialRequestUpdated($materialRequest, 'updated'));
 
             return redirect()->route('material_requests.index')->with('success', 'Status updated successfully.');
         }
@@ -193,7 +193,7 @@ class MaterialRequestController extends Controller
         ]);
 
         // Trigger event
-        event(new MaterialRequestUpdated($materialRequest));
+        event(new MaterialRequestUpdated($materialRequest, 'updated'));
 
         return redirect()->route('material_requests.index')->with('success', 'Material Request updated successfully.');
     }
@@ -203,7 +203,7 @@ class MaterialRequestController extends Controller
         $materialRequest = MaterialRequest::findOrFail($id);
 
         // Trigger event
-        event(new MaterialRequestUpdated($materialRequest));
+        event(new MaterialRequestUpdated($materialRequest, 'deleted'));
 
         $materialRequest->delete();
 
