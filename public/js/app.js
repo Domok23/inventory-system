@@ -27415,8 +27415,8 @@ function showToast(materialRequest, action) {
   });
   toast.show();
 
-  // Putar suara notifikasi
-  if (notificationSound) {
+  // Putar suara notifikasi hanya jika tidak sedang diputar
+  if (notificationSound.paused) {
     notificationSound.currentTime = 0; // Reset waktu audio ke awal
     notificationSound.play()["catch"](function (error) {
       console.error("Failed to play notification sound:", error);

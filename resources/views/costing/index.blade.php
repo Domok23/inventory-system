@@ -6,7 +6,7 @@
             <div class="card-body">
                 <h2 class="mb-0 flex-shrink-0" style="font-size:1.5rem;">Costing Report</h2>
                 <hr>
-                <table class="table table-bordered" id="datatable">
+                <table class="table table-hover table-bordered" id="datatable">
                     <thead>
                         <tr>
                             <th></th>

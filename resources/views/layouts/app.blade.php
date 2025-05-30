@@ -80,6 +80,24 @@
             .toast-container .toast {
                 margin-bottom: 0.5rem;
             }
+
+            #toast-container {
+                scrollbar-width: thin;
+                scrollbar-color: #007bff #f1f1f1;
+            }
+
+            #toast-container::-webkit-scrollbar {
+                width: 8px;
+            }
+
+            #toast-container::-webkit-scrollbar-thumb {
+                background-color: #007bff;
+                border-radius: 4px;
+            }
+
+            #toast-container::-webkit-scrollbar-track {
+                background-color: #f1f1f1;
+            }
         </style>
     @endpush
     @stack('styles')
@@ -87,7 +105,7 @@
 
 <body>
     <div id="app">
-        <nav class="navbar navbar-expand-md navbar-light bg-white shadow rounded-4 rounded-top-0">
+        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm rounded-4 rounded-top-0">
             <div class="container-fluid">
                 <a class="navbar-brand" style="font-weight: bold;" href="{{ url('/') }}">
                     {{ config('app.name', 'Laravel') }}
@@ -224,7 +242,8 @@
     </div>
 
     <!-- Toast Container -->
-    <div class="toast-container position-fixed bottom-0 end-0 p-3" id="toast-container" style="max-height: 50vh; overflow-y: auto;">
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" id="toast-container"
+        style="max-height: 50vh; overflow-y: auto;">
         <!-- Template toast kosong -->
         <div class="toast d-none" id="toast-template" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="toast-header">

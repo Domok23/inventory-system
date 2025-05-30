@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="container mt-4">
-        <div class="card">
+        <div class="card shadow-sm rounded">
             <div class="card-body">
                 <h3 class="card-title">Welcome, {{ ucwords($user->username) }}</h3>
                 <p class="card-text">You are logged in as: <strong>{{ ucwords(str_replace('_', ' ', $user->role)) }}</strong>
