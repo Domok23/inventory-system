@@ -27367,9 +27367,17 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
 window.Echo.channel("material-requests").listen("MaterialRequestUpdated", function (e) {
-  console.log("Material Request Updated:", e.materialRequest, e.action);
-  updateDataTable(e.materialRequest);
-  showToast(e.materialRequest, e.action);
+  if (Array.isArray(e.materialRequest)) {
+    // Jika menerima array material request (bulk create)
+    e.materialRequest.forEach(function (request) {
+      updateDataTable(request);
+      showToast(request, e.action);
+    });
+  } else {
+    // Jika menerima single material request
+    updateDataTable(e.materialRequest);
+    showToast(e.materialRequest, e.action);
+  }
 });
 function showToast(materialRequest, action) {
   var toastContainer = document.getElementById("toast-container");
@@ -27438,12 +27446,10 @@ function updateDataTable(materialRequest) {
   // Kolom status dengan logika tambahan
   materialRequest.remark || "-", formattedDate, "<div class=\"d-flex flex-wrap gap-1\">\n            <a href=\"/material_requests/".concat(materialRequest.id, "/edit\" class=\"btn btn-sm btn-primary\">Edit</a>\n            <form action=\"/material_requests/").concat(materialRequest.id, "\" method=\"POST\" class=\"delete-form\">\n                <input type=\"hidden\" name=\"_method\" value=\"DELETE\">\n                <input type=\"hidden\" name=\"_token\" value=\"").concat($('meta[name="csrf-token"]').attr("content"), "\">\n                <button type=\"button\" class=\"btn btn-sm btn-danger btn-delete\">Delete</button>\n            </form>\n        </div>")];
   if (!row.node()) {
-    console.log("Row with ID #row-".concat(materialRequest.id, " not found. Adding new row."));
     table.row.add(rowData).draw();
     table.order([7, "desc"]).draw(); // Urutkan ulang tabel berdasarkan kolom `Requested At`
     return;
   }
-  console.log("Row exists, updating...");
   row.data(rowData).draw();
   table.order([7, "desc"]).draw(); // Urutkan ulang tabel setelah pembaruan
 }

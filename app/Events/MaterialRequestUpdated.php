@@ -18,8 +18,10 @@ class MaterialRequestUpdated implements ShouldBroadcast
 
     public function __construct(MaterialRequest $materialRequest, string $action)
     {
-        $this->materialRequest = $materialRequest->load('inventory', 'project');
-        $this->action = $action; // Set action
+        $this->materialRequest = is_array($materialRequest)
+            ? collect($materialRequest)->map->load('inventory', 'project')
+            : $materialRequest->load('inventory', 'project');
+        $this->action = $action;
         Log::info('MaterialRequestUpdated Event Data:', [
             'materialRequest' => $this->materialRequest->toArray(),
             'action' => $this->action,

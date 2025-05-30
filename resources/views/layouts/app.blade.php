@@ -224,7 +224,7 @@
     </div>
 
     <!-- Toast Container -->
-    <div class="toast-container position-fixed bottom-0 end-0 p-3" id="toast-container">
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" id="toast-container" style="max-height: 50vh; overflow-y: auto;">
         <!-- Template toast kosong -->
         <div class="toast d-none" id="toast-template" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="toast-header">

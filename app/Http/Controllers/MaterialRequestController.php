@@ -98,6 +98,8 @@ class MaterialRequestController extends Controller
             default => 'general',
         };
 
+        $createdRequests = []; // Array untuk menyimpan material request yang dibuat
+
         foreach ($request->requests as $index => $req) {
             $inventory = Inventory::findOrFail($req['inventory_id']);
 
@@ -108,7 +110,7 @@ class MaterialRequestController extends Controller
                 ]);
             }
 
-            MaterialRequest::create([
+            $materialRequest = MaterialRequest::create([
                 'inventory_id' => $req['inventory_id'],
                 'project_id' => $req['project_id'],
                 'qty' => $req['qty'],
@@ -116,9 +118,24 @@ class MaterialRequestController extends Controller
                 'department' => $department,
                 'remark' => $req['remark'] ?? null,
             ]);
+
+            $createdRequests[] = $materialRequest; // Tambahkan ke array
+
+            // Trigger event untuk setiap material request
+            event(new MaterialRequestUpdated($materialRequest, 'created'));
         }
 
-        return redirect()->route('material_requests.index')->with('success', 'Bulk material requests submitted!');
+        if ($request->ajax()) {
+            // Jika permintaan berasal dari AJAX, kembalikan JSON response
+            return response()->json([
+                'success' => true,
+                'message' => 'Bulk material requests submitted!',
+                'created_requests' => $createdRequests,
+            ]);
+        }
+
+        // Jika bukan AJAX, redirect ke halaman daftar material request
+        return redirect()->route('material_requests.index')->with('success', 'Bulk material requests submitted successfully!');
     }
 
     public function edit($id)

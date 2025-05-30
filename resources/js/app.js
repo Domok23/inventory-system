@@ -5,9 +5,17 @@ import moment from "moment";
 window.Echo.channel("material-requests").listen(
     "MaterialRequestUpdated",
     (e) => {
-        console.log("Material Request Updated:", e.materialRequest, e.action);
-        updateDataTable(e.materialRequest);
-        showToast(e.materialRequest, e.action);
+        if (Array.isArray(e.materialRequest)) {
+            // Jika menerima array material request (bulk create)
+            e.materialRequest.forEach((request) => {
+                updateDataTable(request);
+                showToast(request, e.action);
+            });
+        } else {
+            // Jika menerima single material request
+            updateDataTable(e.materialRequest);
+            showToast(e.materialRequest, e.action);
+        }
     }
 );
 
@@ -74,8 +82,8 @@ function showToast(materialRequest, action) {
     });
     toast.show();
 
-    // Putar suara notifikasi
-    if (notificationSound) {
+    // Putar suara notifikasi hanya jika tidak sedang diputar
+    if (notificationSound.paused) {
         notificationSound.currentTime = 0; // Reset waktu audio ke awal
         notificationSound.play().catch((error) => {
             console.error("Failed to play notification sound:", error);
@@ -150,15 +158,11 @@ function updateDataTable(materialRequest) {
     ];
 
     if (!row.node()) {
-        console.log(
-            `Row with ID #row-${materialRequest.id} not found. Adding new row.`
-        );
         table.row.add(rowData).draw();
         table.order([7, "desc"]).draw(); // Urutkan ulang tabel berdasarkan kolom `Requested At`
         return;
     }
 
-    console.log("Row exists, updating...");
     row.data(rowData).draw();
     table.order([7, "desc"]).draw(); // Urutkan ulang tabel setelah pembaruan
 }
