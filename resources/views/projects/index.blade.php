@@ -5,10 +5,14 @@
         <div class="card shadow rounded">
             <div class="card-body">
                 <!-- Header -->
-                <div class="d-flex align-items-center mb-3 gap-2">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <!-- Header -->
                     <h2 class="mb-0 flex-shrink-0" style="font-size:1.5rem;">Projects</h2>
-                    <a href="{{ route('projects.create') }}" class="btn btn-outline-primary btn-sm flex-shrink-0 ms-2">+ Add
-                        Project</a>
+
+                    <!-- Tombol -->
+                    <a href="{{ route('projects.create') }}" class="btn btn-primary btn-sm flex-shrink-0">
+                        + New Project
+                    </a>
                 </div>
 
                 <!-- Alerts -->

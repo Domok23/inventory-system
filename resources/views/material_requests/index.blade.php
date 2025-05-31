@@ -5,26 +5,22 @@
         <div class="card shadow rounded">
             <div class="card-body">
                 <!-- Header -->
-                <div class="d-flex align-items-center mb-3 gap-2 overflow-hidden">
-                    <h2 class="mb-0 flex-shrink-0" style="font-size:1.5rem;">Material Requests</h2>
-                    <a href="{{ route('material_requests.create') }}"
-                        class="btn btn-outline-primary btn-sm flex-shrink-0 ms-2">
-                        + Request Material
-                    </a>
-                    <div class="flex-grow-1"></div>
-                    <a href="{{ route('material_requests.bulk_create') }}"
-                        class="btn btn-success btn-sm flex-shrink-0 ms-2 d-none d-md-inline">
-                        + Bulk Request
-                    </a>
-                    <button id="bulk-goods-out-btn" class="btn btn-primary btn-sm flex-shrink-0 d-none d-md-inline">Bulk
-                        Goods
-                        Out</button>
-                </div>
-                <!-- Bulk Request button for mobile, appears below the title bar -->
-                <div class="mb-3 d-block d-md-none">
-                    <a href="{{ route('material_requests.bulk_create') }}" class="btn btn-success btn-sm w-100">
-                        + Bulk Request
-                    </a>
+                <div class="d-flex flex-column flex-md-row align-items-md-center gap-2 mb-3">
+                    <!-- Header -->
+                    <h2 class="mb-2 mb-md-0 flex-shrink-0" style="font-size:1.5rem;">Material Requests</h2>
+
+                    <!-- Spacer untuk mendorong tombol ke kanan -->
+                    <div class="ms-md-auto d-flex flex-wrap gap-2">
+                        <a href="{{ route('material_requests.create') }}" class="btn btn-outline-primary btn-sm flex-shrink-0">
+                            + Request Material
+                        </a>
+                        <a href="{{ route('material_requests.bulk_create') }}" class="btn btn-success btn-sm flex-shrink-0">
+                            + Bulk Request
+                        </a>
+                        <button id="bulk-goods-out-btn" class="btn btn-primary btn-sm flex-shrink-0">
+                            Bulk Goods Out
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Alerts -->
@@ -69,7 +65,8 @@
                             <tr id="row-{{ $req->id }}">
                                 <td>
                                     @if ($req->status === 'approved')
-                                        <input type="checkbox" class="select-row" value="{{ $req->id }}">
+                                        <input type="checkbox" class="select-row" id="checkbox-{{ $req->id }}"
+                                            value="{{ $req->id }}">
                                     @endif
                                 </td>
                                 <td class="align-middle">{{ $req->project->name ?? '-' }}</td>

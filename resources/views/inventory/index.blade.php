@@ -6,17 +6,21 @@
         <div class="card shadow rounded">
             <div class="card-body">
                 <!-- Header -->
-                <div class="d-flex align-items-center mb-3 gap-2">
-                    <h2 class="mb-0 flex-shrink-0" style="font-size:1.5rem;">Inventory List</h2>
-                    <a href="{{ route('inventory.create') }}" class="btn btn-outline-primary btn-sm flex-shrink-0 ms-2">
-                        + Add Inventory
-                    </a>
-                    <div class="flex-grow-1"></div>
-                    <button type="button" class="btn btn-success btn-sm flex-shrink-0 ms-2 d-none d-md-inline"
-                        data-bs-toggle="modal" data-bs-target="#importModal">
-                        Import Inventory via XLS
-                    </button>
+                <div class="d-flex flex-column flex-md-row align-items-md-center gap-2 mb-3">
+                    <!-- Header -->
+                    <h2 class="mb-2 mb-md-0 flex-shrink-0" style="font-size:1.5rem;">Inventory List</h2>
+
+                    <!-- Spacer untuk mendorong tombol ke kanan -->
+                    <div class="ms-md-auto d-flex flex-wrap gap-2">
+                        <a href="{{ route('inventory.create') }}" class="btn btn-outline-primary btn-sm flex-shrink-0">
+                            + Add Inventory
+                        </a>
+                        <button type="button" class="btn btn-success btn-sm flex-shrink-0" data-bs-toggle="modal" data-bs-target="#importModal">
+                            Import Inventory via XLS
+                        </button>
+                    </div>
                 </div>
+
                 <!-- Alerts -->
                 @if (session('success'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
