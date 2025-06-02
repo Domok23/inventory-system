@@ -9,8 +9,7 @@
                 <div class="mb-3">
                     <form id="filter-form" method="GET" action="{{ route('costing.report') }}" class="row g-2">
                         <div class="col-md-3">
-                            <label for="filter-department" class="form-label">Department</label>
-                            <select id="filter-department" name="department" class="form-select select2" data-placeholder="Select Department">
+                            <select id="filter-department" name="department" class="form-select select2">
                                 <option value="">All Departments</option>
                                 @foreach ($departments as $department)
                                     <option value="{{ $department }}" {{ request('department') == $department ? 'selected' : '' }}>
