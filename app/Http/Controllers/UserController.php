@@ -39,7 +39,7 @@ class UserController extends Controller
         $validated = $request->validate([
             'username' => 'required|unique:users',
             'password' => 'required|min:6',
-            'role' => 'required|in:super_admin,admin_logistic,admin_mascot,admin_costume,admin_finance',
+            'role' => 'required|in:super_admin,admin_logistic,admin_mascot,admin_costume,admin_finance,admin_animatronic,general',
         ]);
 
         User::create([
@@ -85,7 +85,7 @@ class UserController extends Controller
         $request->validate([
             'username' => 'required|unique:users,username,' . $id,
             'role' => 'required',
-            'password' => 'nullable|min:6', 
+            'password' => 'nullable|min:6',
         ]);
 
         $user = User::findOrFail($id);

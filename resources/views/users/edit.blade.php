@@ -69,6 +69,11 @@
                                 <option value="admin_finance"
                                     {{ old('role', $user->role) == 'admin_finance' ? 'selected' : '' }}>Admin Finance
                                 </option>
+                                <option value="admin_animatronic"
+                                    {{ old('role', $user->role) == 'admin_animatronic' ? 'selected' : '' }}>
+                                    Admin Animatronic</option>
+                                <option value="general"
+                                    {{ old('role', $user->role) == 'general' ? 'selected' : '' }}>General</option>
                             </select>
                             @error('role')
                                 <small class="text-danger">{{ $message }}</small>

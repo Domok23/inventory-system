@@ -8,6 +8,8 @@ use App\Models\Project;
 use Illuminate\Http\Request;
 use App\Events\MaterialRequestUpdated;
 use App\Models\User;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\MaterialRequestExport;
 
 class MaterialRequestController extends Controller
 {
@@ -58,6 +60,65 @@ class MaterialRequestController extends Controller
         return view('material_requests.index', compact('requests', 'projects', 'materials', 'users'));
     }
 
+    public function export(Request $request)
+    {
+        // Ambil filter dari request
+        $project = $request->project;
+        $material = $request->material;
+        $status = $request->status;
+        $requestedBy = $request->requested_by;
+        $requestedAt = $request->requested_at;
+
+        // Filter data berdasarkan request
+        $query = MaterialRequest::with('inventory', 'project');
+
+        if ($project) {
+            $query->where('project_id', $project);
+        }
+
+        if ($material) {
+            $query->where('inventory_id', $material);
+        }
+
+        if ($status) {
+            $query->where('status', $status);
+        }
+
+        if ($requestedBy) {
+            $query->where('requested_by', $requestedBy);
+        }
+
+        if ($requestedAt) {
+            $query->whereDate('created_at', $requestedAt);
+        }
+
+        $requests = $query->get();
+
+        // Buat nama file dinamis
+        $fileName = 'material_requests';
+        if ($project) {
+            $projectName = Project::find($project)->name ?? 'Unknown Project';
+            $fileName .= '_project-' . str_replace(' ', '-', strtolower($projectName));
+        }
+        if ($material) {
+            $materialName = Inventory::find($material)->name ?? 'Unknown Material';
+            $fileName .= '_material-' . str_replace(' ', '-', strtolower($materialName));
+        }
+        if ($status) {
+            $fileName .= '_status-' . strtolower($status);
+        }
+        if ($requestedBy) {
+            $fileName .= '_requested_by-' . strtolower($requestedBy);
+        }
+        if ($requestedAt) {
+            $fileName .= '_requested_at-' . $requestedAt;
+        }
+        $fileName .= '_' . now()->format('Y-m-d') . '.xlsx';
+
+        // Ekspor data menggunakan kelas MaterialRequestExport
+        return Excel::download(new MaterialRequestExport($requests), $fileName);
+    }
+
     public function create()
     {
         $inventories = Inventory::orderBy('name')->get();
@@ -85,6 +146,7 @@ class MaterialRequestController extends Controller
             'admin_mascot' => 'mascot',
             'admin_costume' => 'costume',
             'admin_logistic' => 'logistic',
+            'admin_finance' => 'finance',
             'super_admin' => 'management',
             default => 'general',
         };
@@ -124,6 +186,7 @@ class MaterialRequestController extends Controller
             'admin_mascot' => 'mascot',
             'admin_costume' => 'costume',
             'admin_logistic' => 'logistic',
+            'admin_finance' => 'finance',
             'super_admin' => 'management',
             default => 'general',
         };

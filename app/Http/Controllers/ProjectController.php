@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Project;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\ProjectExport;
 
 class ProjectController extends Controller
 {
@@ -35,6 +37,39 @@ class ProjectController extends Controller
         $projects = $query->latest()->get();
 
         return view('projects.index', compact('projects'));
+    }
+
+    public function export(Request $request)
+    {
+        // Ambil filter dari request
+        $quantity = $request->quantity;
+        $department = $request->department;
+
+        // Filter data berdasarkan request
+        $query = Project::query();
+
+        if ($quantity) {
+            $query->where('qty', $quantity);
+        }
+
+        if ($department) {
+            $query->where('department', $department);
+        }
+
+        $projects = $query->get();
+
+        // Buat nama file dinamis
+        $fileName = 'projects';
+        if ($quantity) {
+            $fileName .= '_quantity-' . $quantity;
+        }
+        if ($department) {
+            $fileName .= '_department-' . str_replace('&', 'and', strtolower($department));
+        }
+        $fileName .= '_' . now()->format('Y-m-d') . '.xlsx';
+
+        // Ekspor data menggunakan kelas ProjectExport
+        return Excel::download(new ProjectExport($projects), $fileName);
     }
 
     public function create()

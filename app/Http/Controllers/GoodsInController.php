@@ -9,6 +9,8 @@ use App\Models\Inventory;
 use Illuminate\Http\Request;
 use App\Helpers\MaterialUsageHelper;
 use App\Models\User;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\GoodsInExport;
 
 class GoodsInController extends Controller
 {
@@ -46,6 +48,65 @@ class GoodsInController extends Controller
         $users = User::orderBy('username')->get();
 
         return view('goods_in.index', compact('goodsIns', 'materials', 'projects', 'quantities', 'users'));
+    }
+
+    public function export(Request $request)
+    {
+        // Ambil filter dari request
+        $material = $request->material;
+        $project = $request->project;
+        $qty = $request->qty;
+        $returnedBy = $request->returned_by;
+        $returnedAt = $request->returned_at;
+
+        // Filter data berdasarkan request
+        $query = GoodsIn::with(['goodsOut.project', 'project']);
+
+        if ($material) {
+            $query->where('inventory_id', $material);
+        }
+
+        if ($project) {
+            $query->where('project_id', $project);
+        }
+
+        if ($qty) {
+            $query->where('quantity', $qty);
+        }
+
+        if ($returnedBy) {
+            $query->where('returned_by', $returnedBy);
+        }
+
+        if ($returnedAt) {
+            $query->whereDate('returned_at', $returnedAt);
+        }
+
+        $goodsIns = $query->get();
+
+        // Buat nama file dinamis
+        $fileName = 'goods_in';
+        if ($material) {
+            $materialName = Inventory::find($material)->name ?? 'Unknown Material';
+            $fileName .= '_material-' . str_replace(' ', '-', strtolower($materialName));
+        }
+        if ($project) {
+            $projectName = Project::find($project)->name ?? 'Unknown Project';
+            $fileName .= '_project-' . str_replace(' ', '-', strtolower($projectName));
+        }
+        if ($qty) {
+            $fileName .= '_qty-' . $qty;
+        }
+        if ($returnedBy) {
+            $fileName .= '_returned_by-' . strtolower($returnedBy);
+        }
+        if ($returnedAt) {
+            $fileName .= '_returned_at-' . $returnedAt;
+        }
+        $fileName .= '_' . now()->format('Y-m-d') . '.xlsx';
+
+        // Ekspor data menggunakan kelas GoodsInExport
+        return Excel::download(new GoodsInExport($goodsIns), $fileName);
     }
 
     public function create($goods_out_id)

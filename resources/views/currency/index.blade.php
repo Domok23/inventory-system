@@ -9,7 +9,7 @@
                     <h2 class="mb-0 flex-shrink-0" style="font-size:1.5rem;">Currency List</h2>
                     <button type="button" class="btn btn-outline-primary btn-sm flex-shrink-0 ms-2" data-bs-toggle="modal"
                         data-bs-target="#currencyModal">
-                        + Add Currency
+                        + New Currency
                     </button>
                 </div>
                 @if (session('success'))

@@ -12,15 +12,18 @@
                     <!-- Spacer untuk mendorong tombol ke kanan -->
                     <div class="ms-md-auto d-flex flex-wrap gap-2">
                         <a href="{{ route('material_requests.create') }}"
-                            class="btn btn-outline-primary btn-sm flex-shrink-0">
+                            class="btn btn-primary btn-sm flex-shrink-0">
                             + Request Material
                         </a>
-                        <a href="{{ route('material_requests.bulk_create') }}" class="btn btn-success btn-sm flex-shrink-0">
+                        <a href="{{ route('material_requests.bulk_create') }}" class="btn btn-warning btn-sm flex-shrink-0">
                             + Bulk Request
                         </a>
-                        <button id="bulk-goods-out-btn" class="btn btn-primary btn-sm flex-shrink-0">
+                        <button id="bulk-goods-out-btn" class="btn btn-info btn-sm flex-shrink-0">
                             Bulk Goods Out
                         </button>
+                        <a href="{{ route('material_requests.export', request()->query()) }}" class="btn btn-success btn-sm flex-shrink-0">
+                            Export to Excel
+                        </a>
                     </div>
                 </div>
 
@@ -94,7 +97,7 @@
                         </div>
                         <div class="col-md-2">
                             <input type="date" id="filter-requested-at" name="requested_at" class="form-control"
-                                value="{{ request('requested_at') }}" placeholder="Requested At">
+                                value="{{ request('requested_at') }}" placeholder="Requested At Date">
                         </div>
                         <div class="col-md-2 align-self-end">
                             <button type="submit" class="btn btn-primary">Filter</button>
@@ -112,9 +115,9 @@
                             <th>Material</th>
                             <th>Requested Qty</th>
                             <th>Requested By</th>
+                            <th>Requested At</th>
                             <th>Status</th>
                             <th>Remark</th>
-                            <th>Requested At</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -133,6 +136,7 @@
                                 <td class="align-middle">{{ ucfirst($req->requested_by) }}
                                     ({{ ucfirst($req->department) }})
                                 </td>
+                                <td class="align-middle">{{ $req->created_at->format('d-m-Y, H:i') }}</td>
                                 <td class="align-middle">
                                     @if (in_array(auth()->user()->role, ['admin_logistic', 'super_admin']))
                                         <form method="POST" action="{{ route('material_requests.update', $req->id) }}">
@@ -156,7 +160,6 @@
                                     @endif
                                 </td>
                                 <td class="align-middle">{{ $req->remark }}</td>
-                                <td class="align-middle">{{ $req->created_at->format('d-m-Y, H:i') }}</td>
                                 <td>
                                     <div class="d-flex flex-wrap gap-1">
                                         <a href="{{ route('material_requests.edit', $req->id) }}"

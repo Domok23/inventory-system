@@ -23,6 +23,10 @@ class GoodsIn extends Model
         'remark',
     ];
 
+    protected $casts = [
+        'returned_at' => 'datetime',
+    ];
+
     public function inventory()
     {
         return $this->belongsTo(Inventory::class);

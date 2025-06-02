@@ -12,13 +12,16 @@
 
                     <!-- Spacer untuk mendorong tombol ke kanan -->
                     <div class="ms-md-auto d-flex flex-wrap gap-2">
-                        <a href="{{ route('goods_out.create_independent') }}"
-                            class="btn btn-outline-primary btn-sm flex-shrink-0">
-                            + Goods Out
+                        <a href="{{ route('goods_out.create_independent') }}" class="btn btn-primary btn-sm flex-shrink-0">
+                            + New Goods Out
                         </a>
-                        <button id="bulk-goods-in-btn" class="btn btn-primary btn-sm flex-shrink-0">
+                        <button id="bulk-goods-in-btn" class="btn btn-info btn-sm flex-shrink-0">
                             Bulk Goods In
                         </button>
+                        <a href="{{ route('goods_out.export', request()->query()) }}"
+                            class="btn btn-success btn-sm flex-shrink-0">
+                            Export to Excel
+                        </a>
                     </div>
                 </div>
 
@@ -79,7 +82,8 @@
                             <select id="filter-requested-by" name="requested_by" class="form-select select2">
                                 <option value="">All Requested By</option>
                                 @foreach ($users as $user)
-                                    <option value="{{ $user->username }}" {{ request('requested_by') == $user->username ? 'selected' : '' }}>
+                                    <option value="{{ $user->username }}"
+                                        {{ request('requested_by') == $user->username ? 'selected' : '' }}>
                                         {{ ucfirst($user->username) }}
                                     </option>
                                 @endforeach
@@ -87,7 +91,7 @@
                         </div>
                         <div class="col-md-2">
                             <input type="date" id="filter-requested-at" name="requested_at" class="form-control"
-                                value="{{ request('requested_at') }}" placeholder="Requested At Date">
+                                value="{{ request('requested_at') }}" placeholder="Proceed At Date">
                         </div>
                         <div class="col-md-2 align-self-end">
                             <button type="submit" class="btn btn-primary">Filter</button>
@@ -106,8 +110,8 @@
                             <th>Remaining Qty</th>
                             <th>For Project</th>
                             <th>Requested By</th>
-                            <th>Remark</th>
                             <th>Proceed At</th>
+                            <th>Remark</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -124,20 +128,18 @@
                                 <td class="align-middle">{{ $goodsOut->quantity }} {{ $goodsOut->inventory->unit ?? '-' }}
                                 </td>
                                 <td class="align-middle">{{ $goodsOut->remaining_quantity }}
-                                    {{ $goodsOut->inventory->unit ?? '-' }}
-                                </td>
+                                    {{ $goodsOut->inventory->unit ?? '-' }}</td>
                                 <td class="align-middle">{{ $goodsOut->project->name ?? '-' }}</td>
                                 <td class="align-middle">{{ ucfirst($goodsOut->requested_by) }}
-                                    ({{ ucfirst($goodsOut->department) }})
-                                </td>
-                                <td class="align-middle child">
-                                    @if ($goodsOut->remark)
-                                        {{ $goodsOut->remark }}
-                                    @else
-                                        <span class="text-danger">-</span>
-                                    @endif
-                                </td>
-                                <td class="align-middle">{{ $goodsOut->created_at->format('d-m-Y, H:i') }}</td>
+                                    ({{ ucfirst($goodsOut->department) }})</td>
+                                    <td class="align-middle">{{ $goodsOut->created_at->format('d-m-Y, H:i') }}</td>
+                                    <td class="align-middle">
+                                        @if ($goodsOut->remark)
+                                            {{ $goodsOut->remark }}
+                                        @else
+                                            <span class="text-danger">-</span>
+                                        @endif
+                                    </td>
                                 <td>
                                     <div class="d-flex flex-wrap gap-1 align-items-center">
                                         @if ($goodsOut->quantity > 0)
@@ -155,7 +157,6 @@
                                         <a href="{{ route('goods_out.edit', $goodsOut->id) }}"
                                             class="btn btn-sm btn-warning">Edit</a>
                                         @if ($goodsOut->goodsIns->isEmpty())
-                                            {{-- Cek apakah tidak ada Goods In terkait --}}
                                             <form action="{{ route('goods_out.destroy', $goodsOut->id) }}" method="POST"
                                                 class="delete-form">
                                                 @csrf

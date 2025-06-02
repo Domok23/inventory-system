@@ -52,6 +52,8 @@
                                 <option value="admin_mascot">Admin Mascot</option>
                                 <option value="admin_costume">Admin Costume</option>
                                 <option value="admin_finance">Admin Finance</option>
+                                <option value="admin_animatronic">Admin Animatronic</option>
+                                <option value="general">General</option>
                             </select>
                             @error('role')
                                 <small class="text-danger">{{ $message }}</small>

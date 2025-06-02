@@ -3,8 +3,18 @@
     <div class="container-fluid mt-4">
         <div class="card shadow rounded">
             <div class="card-body">
-                <!-- Header -->
-                <h3 style="font-size:1.5rem;">Material Usage</h3>
+                <div class="d-flex flex-column flex-md-row align-items-md-center gap-2 mb-3">
+                    <!-- Header -->
+                    <h2 class="mb-2 mb-md-0 flex-shrink-0" style="font-size:1.5rem;">Material Usage</h2>
+
+                    <!-- Spacer untuk mendorong tombol ke kanan -->
+                    <div class="ms-md-auto d-flex flex-wrap gap-2">
+                        <a href="{{ route('material_usage.export', request()->query()) }}"
+                            class="btn btn-success btn-sm flex-shrink-0">
+                            Export to Excel
+                        </a>
+                    </div>
+                </div>
                 <!-- Alerts -->
                 @if (session('success'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -33,7 +43,8 @@
                             <select id="filter-material" name="material" class="form-select select2">
                                 <option value="">All Materials</option>
                                 @foreach ($materials as $material)
-                                    <option value="{{ $material->id }}" {{ request('material') == $material->id ? 'selected' : '' }}>
+                                    <option value="{{ $material->id }}"
+                                        {{ request('material') == $material->id ? 'selected' : '' }}>
                                         {{ $material->name }}
                                     </option>
                                 @endforeach
@@ -43,7 +54,8 @@
                             <select id="filter-project" name="project" class="form-select select2">
                                 <option value="">All Projects</option>
                                 @foreach ($projects as $project)
-                                    <option value="{{ $project->id }}" {{ request('project') == $project->id ? 'selected' : '' }}>
+                                    <option value="{{ $project->id }}"
+                                        {{ request('project') == $project->id ? 'selected' : '' }}>
                                         {{ $project->name }}
                                     </option>
                                 @endforeach

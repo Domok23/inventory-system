@@ -45,19 +45,21 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('users', UserController::class);
 
     // Material Usage
+    Route::get('/material-usage/export', [MaterialUsageController::class, 'export'])->name('material_usage.export');
     Route::get('/material-usage', [MaterialUsageController::class, 'index'])->name('material_usage.index');
     Route::delete('material-usage/{material_usage}', [MaterialUsageController::class, 'destroy'])->name('material_usage.destroy');
     Route::get('/material-usage/get-by-inventory', [MaterialUsageController::class, 'getByInventory'])->name('material_usage.get_by_inventory');
 
     // Inventory
     Route::get('/inventory/template', [InventoryController::class, 'downloadTemplate'])->name('inventory.template');
+    Route::get('/inventory/export', [InventoryController::class, 'export'])->name('inventory.export');
     Route::resource('inventory', InventoryController::class);
     Route::post('/inventory/import', [InventoryController::class, 'import'])->name('inventory.import');
     Route::get('/inventory/detail/{id}', [InventoryController::class, 'detail'])->name('inventory.detail');
     Route::post('/inventories/quick-add', [InventoryController::class, 'storeQuick'])->name('inventories.store.quick');
     Route::get('/inventories/json', [InventoryController::class, 'json'])->name('inventories.json');
 
-    // QR
+    // QR Code
     Route::get('/qr-scan', function () {
         return view('qr-scan');
     })->name('qr.scan');
@@ -65,11 +67,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/scan/{id}', [InventoryController::class, 'scanQr'])->name('inventory.scan');
 
     // Projects
+    Route::get('/projects/export', [ProjectController::class, 'export'])->name('projects.export');
     Route::resource('projects', ProjectController::class);
     Route::post('/projects/quick-add', [ProjectController::class, 'storeQuick'])->name('projects.store.quick');
     Route::get('/projects/json', [ProjectController::class, 'json'])->name('projects.json');
 
     // Material Requests
+    Route::get('/material_requests/export', [MaterialRequestController::class, 'export'])->name('material_requests.export');
     Route::get('/material_requests', [MaterialRequestController::class, 'index'])->name('material_requests.index');
     Route::get('/material_requests/create', [MaterialRequestController::class, 'create'])->name('material_requests.create');
     Route::post('/material_requests', [MaterialRequestController::class, 'store'])->name('material_requests.store');
@@ -89,6 +93,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/currencies/{id}/edit', [CurrencyController::class, 'edit'])->name('currencies.edit');
 
     // Goods Out
+    Route::get('/goods_out/export', [GoodsOutController::class, 'export'])->name('goods_out.export');
     Route::resource('goods_out', GoodsOutController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
     Route::get('/goods_out/create/{materialRequestId}', [GoodsOutController::class, 'create'])->name('goods_out.create');
     Route::get('/goods_out/create_independent', [GoodsOutController::class, 'createIndependent'])->name('goods_out.create_independent');
@@ -96,6 +101,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/material-requests/bulk-goods-out', [GoodsOutController::class, 'bulkGoodsOut'])->name('goods_out.bulk');
 
     // Goods In
+    Route::get('/goods_in/export', [GoodsInController::class, 'export'])->name('goods_in.export');
     Route::get('/goods_in', [GoodsInController::class, 'index'])->name('goods_in.index');
     Route::get('/goods_in/create', [GoodsInController::class, 'create'])->name('goods_in.create');
     Route::post('/goods_in', [GoodsInController::class, 'store'])->name('goods_in.store');

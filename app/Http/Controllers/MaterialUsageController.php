@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use App\Models\MaterialUsage;
 use App\Models\Inventory;
 use App\Models\Project;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\MaterialUsageExport;
 
 class MaterialUsageController extends Controller
 {
@@ -31,6 +33,41 @@ class MaterialUsageController extends Controller
         $projects = Project::orderBy('name')->get();
 
         return view('material_usage.index', compact('usages', 'materials', 'projects'));
+    }
+
+    public function export(Request $request)
+    {
+        // Ambil filter dari request
+        $material = $request->material;
+        $project = $request->project;
+
+        // Filter data berdasarkan request
+        $query = MaterialUsage::with(['inventory', 'project']);
+
+        if ($material) {
+            $query->where('inventory_id', $material);
+        }
+
+        if ($project) {
+            $query->where('project_id', $project);
+        }
+
+        $usages = $query->get();
+
+        // Buat nama file dinamis
+        $fileName = 'material_usage';
+        if ($material) {
+            $materialName = Inventory::find($material)->name ?? 'Unknown Material';
+            $fileName .= '_material-' . str_replace(' ', '-', strtolower($materialName));
+        }
+        if ($project) {
+            $projectName = Project::find($project)->name ?? 'Unknown Project';
+            $fileName .= '_project-' . str_replace(' ', '-', strtolower($projectName));
+        }
+        $fileName .= '_' . now()->format('Y-m-d') . '.xlsx';
+
+        // Ekspor data menggunakan kelas MaterialUsageExport
+        return Excel::download(new MaterialUsageExport($usages), $fileName);
     }
 
     public function getByInventory(Request $request)

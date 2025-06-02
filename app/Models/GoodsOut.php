@@ -50,7 +50,7 @@ class GoodsOut extends Model
 
     public function getRemainingQuantityAttribute()
     {
-        $totalGoodsIn = $this->goodsIns()->sum('quantity');
+        $totalGoodsIn = $this->goodsIns->sum('quantity');
         return $this->quantity - $totalGoodsIn;
     }
 }

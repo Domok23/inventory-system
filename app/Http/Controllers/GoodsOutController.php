@@ -9,12 +9,15 @@ use App\Models\Inventory;
 use Illuminate\Http\Request;
 use App\Models\MaterialRequest;
 use App\Helpers\MaterialUsageHelper;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\GoodsOutExport;
 
 class GoodsOutController extends Controller
 {
     public function index(Request $request)
     {
-        $query = GoodsOut::with('inventory', 'project');
+        // Tambahkan eager loading untuk relasi goodsIns
+        $query = GoodsOut::with(['inventory', 'project', 'goodsIns', 'materialRequest']);
 
         // Apply filters
         if ($request->has('material') && $request->material !== null) {
@@ -43,9 +46,68 @@ class GoodsOutController extends Controller
         $materials = Inventory::orderBy('name')->get();
         $projects = Project::orderBy('name')->get();
         $quantities = GoodsOut::select('quantity')->distinct()->pluck('quantity');
-        $users = User::orderBy('username')->get(); // Ambil daftar pengguna
+        $users = User::orderBy('username')->get();
 
         return view('goods_out.index', compact('goodsOuts', 'materials', 'projects', 'quantities', 'users'));
+    }
+
+    public function export(Request $request)
+    {
+        // Ambil filter dari request
+        $material = $request->material;
+        $qty = $request->qty;
+        $project = $request->project;
+        $requestedBy = $request->requested_by;
+        $requestedAt = $request->requested_at;
+
+        // Filter data berdasarkan request
+        $query = GoodsOut::with('inventory', 'project');
+
+        if ($material) {
+            $query->where('inventory_id', $material);
+        }
+
+        if ($qty) {
+            $query->where('quantity', $qty);
+        }
+
+        if ($project) {
+            $query->where('project_id', $project);
+        }
+
+        if ($requestedBy) {
+            $query->where('requested_by', $requestedBy);
+        }
+
+        if ($requestedAt) {
+            $query->whereDate('created_at', $requestedAt);
+        }
+
+        $goodsOuts = $query->get();
+
+        // Buat nama file dinamis
+        $fileName = 'goods_out';
+        if ($material) {
+            $materialName = Inventory::find($material)->name ?? 'Unknown Material';
+            $fileName .= '_material-' . str_replace(' ', '-', strtolower($materialName));
+        }
+        if ($qty) {
+            $fileName .= '_qty-' . $qty;
+        }
+        if ($project) {
+            $projectName = Project::find($project)->name ?? 'Unknown Project';
+            $fileName .= '_project-' . str_replace(' ', '-', strtolower($projectName));
+        }
+        if ($requestedBy) {
+            $fileName .= '_requested_by-' . strtolower($requestedBy);
+        }
+        if ($requestedAt) {
+            $fileName .= '_proceed_at-' . $requestedAt;
+        }
+        $fileName .= '_' . now()->format('Y-m-d') . '.xlsx';
+
+        // Ekspor data menggunakan kelas GoodsOutExport
+        return Excel::download(new GoodsOutExport($goodsOuts), $fileName);
     }
 
     public function create($materialRequestId)
@@ -117,6 +179,7 @@ class GoodsOutController extends Controller
                 'admin_mascot' => 'mascot',
                 'admin_costume' => 'costume',
                 'admin_logistic' => 'logistic',
+                'admin_finance' => 'finance',
                 'super_admin' => 'management',
                 default => 'general',
             };
@@ -143,6 +206,7 @@ class GoodsOutController extends Controller
             'admin_mascot' => 'mascot',
             'admin_costume' => 'costume',
             'admin_logistic' => 'logistic',
+            'admin_finance' => 'finance',
             'super_admin' => 'management',
             default => 'general',
         };
@@ -181,6 +245,7 @@ class GoodsOutController extends Controller
                 'admin_mascot' => 'mascot',
                 'admin_costume' => 'costume',
                 'admin_logistic' => 'logistic',
+                'admin_finance' => 'finance',
                 'super_admin' => 'management',
                 default => 'general',
             };
@@ -250,6 +315,7 @@ class GoodsOutController extends Controller
                 'admin_mascot' => 'mascot',
                 'admin_costume' => 'costume',
                 'admin_logistic' => 'logistic',
+                'admin_finance' => 'finance',
                 'super_admin' => 'management',
                 default => 'general',
             },

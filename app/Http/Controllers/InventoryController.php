@@ -15,6 +15,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Exports\InventoryTemplateExport;
+use App\Exports\InventoryExport;
 
 class InventoryController extends Controller
 {
@@ -32,7 +33,8 @@ class InventoryController extends Controller
 
     public function index(Request $request)
     {
-        $query = Inventory::query();
+        // Tambahkan eager loading untuk relasi category dan currency
+        $query = Inventory::with(['category', 'currency']);
 
         // Filter berdasarkan Category
         if ($request->has('category') && $request->category) {
@@ -55,6 +57,49 @@ class InventoryController extends Controller
         $locations = Inventory::select('location')->distinct()->whereNotNull('location')->orderBy('location')->pluck('location');
 
         return view('inventory.index', compact('inventories', 'categories', 'currencies', 'locations'));
+    }
+
+    public function export(Request $request)
+    {
+        // Ambil filter dari request
+        $category = $request->category;
+        $currency = $request->currency;
+        $location = $request->location;
+
+        // Filter data berdasarkan request
+        $query = Inventory::query();
+
+        if ($category) {
+            $query->where('category_id', $category);
+        }
+
+        if ($currency) {
+            $query->where('currency_id', $currency);
+        }
+
+        if ($location) {
+            $query->where('location', $location);
+        }
+
+        $inventories = $query->get();
+
+        // Buat nama file dinamis
+        $fileName = 'inventory';
+        if ($category) {
+            $categoryName = Category::find($category)->name ?? 'Unknown Category';
+            $fileName .= '_category-' . str_replace(' ', '-', strtolower($categoryName));
+        }
+        if ($currency) {
+            $currencyName = Currency::find($currency)->name ?? 'Unknown Currency';
+            $fileName .= '_currency-' . str_replace(' ', '-', strtolower($currencyName));
+        }
+        if ($location) {
+            $fileName .= '_location-' . str_replace(' ', '-', strtolower($location));
+        }
+        $fileName .= '_' . now()->format('Y-m-d') . '.xlsx';
+
+        // Ekspor data menggunakan kelas InventoryExport
+        return Excel::download(new InventoryExport($inventories), $fileName);
     }
 
     public function create()

@@ -5,14 +5,20 @@
         <div class="card shadow rounded">
             <div class="card-body">
                 <!-- Header -->
-                <div class="d-flex align-items-center justify-content-between mb-3">
+                <div class="d-flex flex-column flex-md-row align-items-md-center gap-2 mb-3">
                     <!-- Header -->
-                    <h2 class="mb-0 flex-shrink-0" style="font-size:1.5rem;">Projects</h2>
+                    <h2 class="mb-2 mb-md-0 flex-shrink-0" style="font-size:1.5rem;">Projects</h2>
 
-                    <!-- Tombol -->
-                    <a href="{{ route('projects.create') }}" class="btn btn-primary btn-sm flex-shrink-0">
-                        + New Project
-                    </a>
+                    <!-- Spacer untuk mendorong tombol ke kanan -->
+                    <div class="ms-md-auto d-flex flex-wrap gap-2">
+                        <a href="{{ route('projects.create') }}" class="btn btn-primary btn-sm flex-shrink-0">
+                            + New Project
+                        </a>
+                        <a href="{{ route('projects.export', request()->query()) }}"
+                            class="btn btn-success btn-sm flex-shrink-0">
+                            Export to Excel
+                        </a>
+                    </div>
                 </div>
 
                 <!-- Alerts -->

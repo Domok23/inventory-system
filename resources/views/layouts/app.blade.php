@@ -120,7 +120,7 @@
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav me-auto">
                         @if (auth()->check())
-                            @if (in_array(auth()->user()->role, ['super_admin', 'admin_logistic']))
+                            @if (in_array(auth()->user()->role, ['super_admin', 'admin_logistic', 'admin_finance']))
                                 <li class="nav-item">
                                     <a class="nav-link {{ request()->is('inventory*') ? 'active text-primary' : '' }}"
                                         href="{{ route('inventory.index') }}">
@@ -128,7 +128,7 @@
                                     </a>
                                 </li>
                             @endif
-                            @if (in_array(auth()->user()->role, ['super_admin', 'admin_mascot', 'admin_costume']))
+                            @if (in_array(auth()->user()->role, ['super_admin', 'admin_mascot', 'admin_costume', 'admin_logistic', 'admin_finance', 'admin_animatronic', 'general']))
                                 <li class="nav-item">
                                     <a class="nav-link {{ request()->is('projects*') ? 'active text-primary' : '' }}"
                                         href="{{ route('projects.index') }}">
@@ -136,7 +136,7 @@
                                     </a>
                                 </li>
                             @endif
-                            @if (in_array(auth()->user()->role, ['super_admin', 'admin_mascot', 'admin_costume', 'admin_logistic', 'admin_finance']))
+                            @if (in_array(auth()->user()->role, ['super_admin', 'admin_mascot', 'admin_costume', 'admin_logistic', 'admin_finance', 'admin_animatronic', 'general']))
                                 <li class="nav-item">
                                     <a class="nav-link {{ request()->is('material_requests*') ? 'active text-primary' : '' }}"
                                         href="{{ route('material_requests.index') }}">
@@ -152,7 +152,7 @@
                                     </a>
                                 </li>
                             @endif
-                            @if (in_array(auth()->user()->role, ['super_admin', 'admin_mascot', 'admin_costume', 'admin_logistic', 'admin_finance']))
+                            @if (in_array(auth()->user()->role, ['super_admin', 'admin_mascot', 'admin_costume', 'admin_logistic', 'admin_finance', 'admin_animatronic', 'general']))
                                 <li class="nav-item">
                                     <a class="nav-link {{ request()->is('goods_in*') ? 'active text-primary' : '' }}"
                                         href="{{ route('goods_in.index') }}">
