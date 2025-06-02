@@ -123,6 +123,13 @@
                                     <div class="d-flex flex-wrap gap-1">
                                         <a href="{{ route('inventory.edit', $inventory->id) }}" class="btn btn-warning btn-sm">Edit</a>
                                         <a href="{{ route('inventory.detail', ['id' => $inventory->id]) }}" class="btn btn-sm btn-success">Detail</a>
+                                        <button type="button" class="btn btn-sm btn-info btn-show-image"
+                                            data-bs-toggle="modal" data-bs-target="#imageModal"
+                                            data-img="{{ $inventory->img ? asset('storage/' . $inventory->img) : '' }}"
+                                            data-qrcode="{{ $inventory->qrcode_path ? asset('storage/' . $inventory->qrcode_path) : '' }}"
+                                            data-name="{{ $inventory->name }}">
+                                            Show
+                                        </button>
                                         <form action="{{ route('inventory.destroy', $inventory->id) }}" method="POST" class="delete-form">
                                             @csrf
                                             @method('DELETE')

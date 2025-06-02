@@ -14,6 +14,18 @@ use App\Exports\GoodsInExport;
 
 class GoodsInController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+        $this->middleware(function ($request, $next) {
+            $rolesAllowed = ['super_admin', 'admin_logistic', 'admin_mascot', 'admin_costume', 'admin_animatronic', 'admin_finance', 'general'];
+            if (!in_array(auth()->user()->role, $rolesAllowed)) {
+                abort(403, 'Unauthorized');
+            }
+            return $next($request);
+        });
+    }
+    
     public function index(Request $request)
     {
         $query = GoodsIn::with(['goodsOut.inventory', 'goodsOut.project', 'inventory', 'project']);

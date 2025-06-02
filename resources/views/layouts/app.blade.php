@@ -120,7 +120,7 @@
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav me-auto">
                         @if (auth()->check())
-                            @if (in_array(auth()->user()->role, ['super_admin', 'admin_logistic', 'admin_finance']))
+                        @if (in_array(auth()->user()->role, ['super_admin', 'admin_mascot', 'admin_costume', 'admin_logistic', 'admin_finance', 'admin_animatronic', 'general']))
                                 <li class="nav-item">
                                     <a class="nav-link {{ request()->is('inventory*') ? 'active text-primary' : '' }}"
                                         href="{{ route('inventory.index') }}">

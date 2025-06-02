@@ -12,6 +12,18 @@ use Illuminate\Support\Facades\Log;
 
 class ProjectCostingController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+        $this->middleware(function ($request, $next) {
+            $rolesAllowed = ['super_admin', 'admin_finance'];
+            if (!in_array(auth()->user()->role, $rolesAllowed)) {
+                abort(403, 'Unauthorized');
+            }
+            return $next($request);
+        });
+    }
+
     public function index(Request $request)
     {
         $query = Project::query();

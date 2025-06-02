@@ -13,6 +13,18 @@ use App\Exports\MaterialUsageExport;
 
 class MaterialUsageController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+        $this->middleware(function ($request, $next) {
+            $rolesAllowed = ['super_admin', 'admin_logistic', 'admin_mascot', 'admin_costume', 'admin_animatronic', 'admin_finance', 'general'];
+            if (!in_array(auth()->user()->role, $rolesAllowed)) {
+                abort(403, 'Unauthorized');
+            }
+            return $next($request);
+        });
+    }
+    
     public function index(Request $request)
     {
         $query = MaterialUsage::with('inventory', 'project');

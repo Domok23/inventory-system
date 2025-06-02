@@ -17,7 +17,7 @@ class MaterialRequestController extends Controller
     {
         $this->middleware('auth');
         $this->middleware(function ($request, $next) {
-            $rolesAllowed = ['super_admin', 'admin_mascot', 'admin_costume', 'admin_logistic'];
+            $rolesAllowed = ['super_admin', 'admin_logistic', 'admin_mascot', 'admin_costume', 'admin_animatronic', 'admin_finance', 'general'];
             if (!in_array(auth()->user()->role, $rolesAllowed)) {
                 abort(403, 'Unauthorized');
             }

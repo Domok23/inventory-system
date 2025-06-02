@@ -14,6 +14,17 @@ use App\Models\Currency;
 
 class TrashController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+        $this->middleware(function ($request, $next) {
+            $rolesAllowed = ['super_admin'];
+            if (!in_array(auth()->user()->role, $rolesAllowed)) {
+                abort(403, 'Unauthorized');
+            }
+            return $next($request);
+        });
+    }
     public function index()
     {
         return view('trash.index', [
