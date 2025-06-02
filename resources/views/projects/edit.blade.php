@@ -70,6 +70,21 @@
                                     {{ old('department', $project->department ?? '') == 'mascot&costume' ? 'selected' : '' }}>
                                     Mascot &
                                     Costume</option>
+                                <option value="animatronic"
+                                    {{ old('department', $project->department ?? '') == 'animatronic' ? 'selected' : '' }}>
+                                    Animatronic</option>
+                                <option value="plustoys"
+                                    {{ old('department', $project->department ?? '') == 'plustoys' ? 'selected' : '' }}>
+                                    Plus Toys</option>
+                                <option value="it"
+                                    {{ old('department', $project->department ?? '') == 'it' ? 'selected' : '' }}>
+                                    IT</option>
+                                <option value="facility"
+                                    {{ old('department', $project->department ?? '') == 'facility' ? 'selected' : '' }}>
+                                    Facility</option>
+                                <option value="bag"
+                                    {{ old('department', $project->department ?? '') == 'bag' ? 'selected' : '' }}>
+                                    Bag</option>
                             </select>
                             @error('department')
                                 <small class="text-danger">{{ $message }}</small>

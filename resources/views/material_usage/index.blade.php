@@ -26,6 +26,36 @@
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
+
+                <div class="mb-3">
+                    <form id="filter-form" method="GET" action="{{ route('material_usage.index') }}" class="row g-2">
+                        <div class="col-md-2">
+                            <select id="filter-material" name="material" class="form-select select2">
+                                <option value="">All Materials</option>
+                                @foreach ($materials as $material)
+                                    <option value="{{ $material->id }}" {{ request('material') == $material->id ? 'selected' : '' }}>
+                                        {{ $material->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select id="filter-project" name="project" class="form-select select2">
+                                <option value="">All Projects</option>
+                                @foreach ($projects as $project)
+                                    <option value="{{ $project->id }}" {{ request('project') == $project->id ? 'selected' : '' }}>
+                                        {{ $project->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-2 align-self-end">
+                            <button type="submit" class="btn btn-primary">Filter</button>
+                            <a href="{{ route('material_usage.index') }}" class="btn btn-secondary">Reset</a>
+                        </div>
+                    </form>
+                </div>
+
                 <!-- Table -->
                 <table class="table table-bordered table-hover" id="datatable">
                     <thead>
@@ -73,6 +103,15 @@
         $(document).ready(function() {
             $('#datatable').DataTable({
                 responsive: true
+            });
+
+            // Initialize Select2
+            $('.select2').select2({
+                theme: 'bootstrap-5',
+                placeholder: function() {
+                    return $(this).data('placeholder');
+                },
+                allowClear: true
             });
 
             // SweetAlert for delete confirmation

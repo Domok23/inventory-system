@@ -15,7 +15,8 @@
                         <a href="{{ route('inventory.create') }}" class="btn btn-outline-primary btn-sm flex-shrink-0">
                             + Add Inventory
                         </a>
-                        <button type="button" class="btn btn-success btn-sm flex-shrink-0" data-bs-toggle="modal" data-bs-target="#importModal">
+                        <button type="button" class="btn btn-success btn-sm flex-shrink-0" data-bs-toggle="modal"
+                            data-bs-target="#importModal">
                             Import Inventory via XLS
                         </button>
                     </div>
@@ -42,6 +43,49 @@
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
+
+
+                <div class="mb-3">
+                    <form method="GET" action="{{ route('inventory.index') }}" class="row g-2">
+                        <div class="col-md-2">
+                            <select name="category" id="category" class="form-select select2">
+                                <option value="">All Categories</option>
+                                @foreach ($categories as $category)
+                                    <option value="{{ $category->id }}"
+                                        {{ request('category') == $category->id ? 'selected' : '' }}>
+                                        {{ $category->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select name="currency" id="currency" class="form-select select2">
+                                <option value="">All Currencies</option>
+                                @foreach ($currencies as $currency)
+                                    <option value="{{ $currency->id }}"
+                                        {{ request('currency') == $currency->id ? 'selected' : '' }}>
+                                        {{ $currency->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select name="location" id="location" class="form-select select2">
+                                <option value="">All Locations</option>
+                                @foreach ($locations as $location)
+                                    <option value="{{ $location }}"
+                                        {{ request('location') == $location ? 'selected' : '' }}>
+                                        {{ $location }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end gap-2">
+                            <button type="submit" class="btn btn-primary">Filter</button>
+                            <a href="{{ route('inventory.index') }}" class="btn btn-secondary">Reset</a>
+                        </div>
+                    </form>
+                </div>
 
                 <!-- Table -->
                 <table class="table table-hover table-bordered" id="datatable">
@@ -131,8 +175,8 @@
                                 <div class="modal-body">
                                     <div class="mb-3">
                                         <label for="xls_file" class="form-label">Upload XLS File</label>
-                                        <input type="file" name="xls_file" id="xls_file" class="form-control" required
-                                            accept=".xls,.xlsx">
+                                        <input type="file" name="xls_file" id="xls_file" class="form-control"
+                                            required accept=".xls,.xlsx">
                                     </div>
                                     <p class="text-muted">
                                         Template kolom: <code>name, quantity, unit, currency, price, location
@@ -159,6 +203,15 @@
             $('#datatable').DataTable({
                 responsive: true,
                 fixedHeader: true
+            });
+
+            // Initialize Select2
+            $('.select2').select2({
+                theme: 'bootstrap-5',
+                placeholder: function() {
+                    return $(this).data('placeholder');
+                },
+                allowClear: true
             });
 
             // SweetAlert for delete confirmation

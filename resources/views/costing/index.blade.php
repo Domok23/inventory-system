@@ -4,13 +4,33 @@
     <div class="container mt-4">
         <div class="card shadow rounded">
             <div class="card-body">
-                <h2 class="mb-0 flex-shrink-0" style="font-size:1.5rem;">Costing Report</h2>
+                <h2 class="mb-0 flex-shrink-0" style="font-size:1.5rem;">Project Costing Report</h2>
                 <hr>
+                <div class="mb-3">
+                    <form id="filter-form" method="GET" action="{{ route('costing.report') }}" class="row g-2">
+                        <div class="col-md-3">
+                            <label for="filter-department" class="form-label">Department</label>
+                            <select id="filter-department" name="department" class="form-select select2" data-placeholder="Select Department">
+                                <option value="">All Departments</option>
+                                @foreach ($departments as $department)
+                                    <option value="{{ $department }}" {{ request('department') == $department ? 'selected' : '' }}>
+                                        {{ ucfirst($department) }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-2 align-self-end">
+                            <button type="submit" class="btn btn-primary">Filter</button>
+                            <a href="{{ route('costing.report') }}" class="btn btn-secondary">Reset</a>
+                        </div>
+                    </form>
+                </div>
                 <table class="table table-hover table-bordered" id="datatable">
                     <thead>
                         <tr>
                             <th></th>
                             <th>Project Name</th>
+                            <th>Department</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -19,6 +39,7 @@
                             <tr>
                                 <td class="text-center align-middle">{{ $loop->iteration }}</td>
                                 <td class="align-middle">{{ $project->name }}</td>
+                                <td class="align-middle">{{ ucfirst($project->department) ?? '-' }}</td>
                                 <td class="align-middle">
                                     <button class="btn btn-primary btn-sm"
                                         onclick="viewCosting('{{ $project->id }}')">View</button>
@@ -68,6 +89,15 @@
                 responsive: true
             });
         });
+
+        // Initialize Select2
+        $('.select2').select2({
+                theme: 'bootstrap-5',
+                placeholder: function() {
+                    return $(this).data('placeholder');
+                },
+                allowClear: true
+            });
 
         function formatCurrency(value) {
             return new Intl.NumberFormat('id-ID', {

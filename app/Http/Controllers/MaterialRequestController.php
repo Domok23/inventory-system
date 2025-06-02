@@ -7,6 +7,7 @@ use App\Models\Inventory;
 use App\Models\Project;
 use Illuminate\Http\Request;
 use App\Events\MaterialRequestUpdated;
+use App\Models\User;
 
 class MaterialRequestController extends Controller
 {
@@ -22,10 +23,39 @@ class MaterialRequestController extends Controller
         });
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $requests = MaterialRequest::with('inventory', 'project')->orderBy('created_at', 'desc')->get();
-        return view('material_requests.index', compact('requests'));
+        $query = MaterialRequest::with('inventory', 'project');
+
+        // Apply filters
+        if ($request->has('project') && $request->project !== null) {
+            $query->where('project_id', $request->project);
+        }
+
+        if ($request->has('material') && $request->material !== null) {
+            $query->where('inventory_id', $request->material);
+        }
+
+        if ($request->has('status') && $request->status !== null) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->has('requested_by') && $request->requested_by !== null) {
+            $query->where('requested_by', $request->requested_by);
+        }
+
+        if ($request->has('requested_at') && $request->requested_at !== null) {
+            $query->whereDate('created_at', $request->requested_at);
+        }
+
+        $requests = $query->orderBy('created_at', 'desc')->get();
+
+        // Pass data for filters
+        $projects = Project::orderBy('name')->get();
+        $materials = Inventory::orderBy('name')->get();
+        $users = User::orderBy('username')->get();
+
+        return view('material_requests.index', compact('requests', 'projects', 'materials', 'users'));
     }
 
     public function create()

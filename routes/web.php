@@ -111,7 +111,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/costing-report', [ProjectCostingController::class, 'index'])->name('costing.report');
     Route::get('/costing-report/{project_id}', [ProjectCostingController::class, 'viewCosting'])->name('costing.view');
     Route::get('/costing-report/export/{project_id}', [ProjectCostingController::class, 'exportCosting'])->name('costing.export');
-    Route::get('/costing-report', [ProjectCostingController::class, 'index'])->name('costing.report');
 
     //set inventory
     Route::post('/set-inventory', function (Request $request) {

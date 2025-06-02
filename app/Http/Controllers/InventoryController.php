@@ -30,10 +30,31 @@ class InventoryController extends Controller
         });
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $inventories = Inventory::orderBy('created_at', 'desc')->get();
-        return view('inventory.index', compact('inventories'));
+        $query = Inventory::query();
+
+        // Filter berdasarkan Category
+        if ($request->has('category') && $request->category) {
+            $query->where('category_id', $request->category);
+        }
+
+        // Filter berdasarkan Currency
+        if ($request->has('currency') && $request->currency) {
+            $query->where('currency_id', $request->currency);
+        }
+
+        // Filter berdasarkan Location
+        if ($request->has('location') && $request->location) {
+            $query->where('location', $request->location);
+        }
+
+        $inventories = $query->orderBy('created_at', 'desc')->get();
+        $categories = Category::orderBy('name')->get();
+        $currencies = Currency::orderBy('name')->get();
+        $locations = Inventory::select('location')->distinct()->whereNotNull('location')->orderBy('location')->pluck('location');
+
+        return view('inventory.index', compact('inventories', 'categories', 'currencies', 'locations'));
     }
 
     public function create()

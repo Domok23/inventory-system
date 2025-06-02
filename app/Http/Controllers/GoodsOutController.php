@@ -12,10 +12,40 @@ use App\Helpers\MaterialUsageHelper;
 
 class GoodsOutController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $goodsOuts = GoodsOut::with('inventory', 'project', 'materialRequest')->orderBy('created_at', 'desc')->get();
-        return view('goods_out.index', compact('goodsOuts'));
+        $query = GoodsOut::with('inventory', 'project');
+
+        // Apply filters
+        if ($request->has('material') && $request->material !== null) {
+            $query->where('inventory_id', $request->material);
+        }
+
+        if ($request->has('qty') && $request->qty !== null) {
+            $query->where('quantity', $request->qty);
+        }
+
+        if ($request->has('project') && $request->project !== null) {
+            $query->where('project_id', $request->project);
+        }
+
+        if ($request->has('requested_at') && $request->requested_at !== null) {
+            $query->whereDate('created_at', $request->requested_at);
+        }
+
+        if ($request->has('requested_by') && $request->requested_by !== null) {
+            $query->where('requested_by', $request->requested_by);
+        }
+
+        $goodsOuts = $query->orderBy('created_at', 'desc')->get();
+
+        // Pass data for filters
+        $materials = Inventory::orderBy('name')->get();
+        $projects = Project::orderBy('name')->get();
+        $quantities = GoodsOut::select('quantity')->distinct()->pluck('quantity');
+        $users = User::orderBy('username')->get(); // Ambil daftar pengguna
+
+        return view('goods_out.index', compact('goodsOuts', 'materials', 'projects', 'quantities', 'users'));
     }
 
     public function create($materialRequestId)

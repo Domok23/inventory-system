@@ -19,9 +19,21 @@ class ProjectController extends Controller
         });
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $projects = Project::latest()->get();
+        $query = Project::query();
+
+        // Apply filters
+        if ($request->has('quantity') && $request->quantity !== null) {
+            $query->where('qty', $request->quantity);
+        }
+
+        if ($request->has('department') && $request->department !== null) {
+            $query->where('department', $request->department);
+        }
+
+        $projects = $query->latest()->get();
+
         return view('projects.index', compact('projects'));
     }
 
@@ -37,7 +49,7 @@ class ProjectController extends Controller
             'qty' => 'required|integer|min:1',
             'img' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'deadline' => 'nullable|date',
-            'department' => 'required|in:mascot,costume,mascot&costume'
+            'department' => 'required|in:mascot,costume,mascot&costume,animatronic,plustoys,it,facility,bag'
         ]);
 
         if ($request->hasFile('img')) {
@@ -89,7 +101,7 @@ class ProjectController extends Controller
             'qty' => 'required|integer|min:1',
             'img' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'deadline' => 'nullable|date',
-            'department' => 'required|in:mascot,costume,mascot&costume'
+            'department' => 'required|in:mascot,costume,mascot&costume,animatronic,plustoys,it,facility,bag'
         ]);
 
         if ($request->hasFile('img')) {

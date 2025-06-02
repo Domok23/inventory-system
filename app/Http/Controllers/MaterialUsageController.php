@@ -6,13 +6,31 @@ use App\Models\GoodsIn;
 use App\Models\GoodsOut;
 use Illuminate\Http\Request;
 use App\Models\MaterialUsage;
+use App\Models\Inventory;
+use App\Models\Project;
 
 class MaterialUsageController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $usages = MaterialUsage::with('inventory', 'project')->orderBy('created_at', 'desc')->get();
-        return view('material_usage.index', compact('usages'));
+        $query = MaterialUsage::with('inventory', 'project');
+
+        // Apply filters
+        if ($request->has('material') && $request->material !== null) {
+            $query->where('inventory_id', $request->material);
+        }
+
+        if ($request->has('project') && $request->project !== null) {
+            $query->where('project_id', $request->project);
+        }
+
+        $usages = $query->orderBy('created_at', 'desc')->get();
+
+        // Pass data for filters
+        $materials = Inventory::orderBy('name')->get();
+        $projects = Project::orderBy('name')->get();
+
+        return view('material_usage.index', compact('usages', 'materials', 'projects'));
     }
 
     public function getByInventory(Request $request)

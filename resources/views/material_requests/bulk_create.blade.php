@@ -157,6 +157,11 @@
                                     <option value="mascot">Mascot</option>
                                     <option value="costume">Costume</option>
                                     <option value="mascot&costume">Mascot & Costume</option>
+                                    <option value="animatronic">Animatronic</option>
+                                    <option value="plustoys">Plus Toys</option>
+                                    <option value="it">IT</option>
+                                    <option value="facility">Facility</option>
+                                    <option value="bag">Bag</option>
                                 </select>
                             </div>
                             <div class="modal-footer">

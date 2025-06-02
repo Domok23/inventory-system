@@ -7,11 +7,13 @@
                 <!-- Header -->
                 <div class="d-flex flex-column flex-md-row align-items-md-center gap-2 mb-3">
                     <!-- Header -->
-                    <h2 class="mb-md-0 flex-shrink-0" style="font-size:1.5rem;"><i class="bi bi-arrow-up-circle"></i> Goods Out Records</h2>
+                    <h2 class="mb-md-0 flex-shrink-0" style="font-size:1.5rem;"><i class="bi bi-arrow-up-circle"></i> Goods Out
+                        Records</h2>
 
                     <!-- Spacer untuk mendorong tombol ke kanan -->
                     <div class="ms-md-auto d-flex flex-wrap gap-2">
-                        <a href="{{ route('goods_out.create_independent') }}" class="btn btn-outline-primary btn-sm flex-shrink-0">
+                        <a href="{{ route('goods_out.create_independent') }}"
+                            class="btn btn-outline-primary btn-sm flex-shrink-0">
                             + Goods Out
                         </a>
                         <button id="bulk-goods-in-btn" class="btn btn-primary btn-sm flex-shrink-0">
@@ -38,6 +40,63 @@
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
+
+                <div class="mb-3">
+                    <form id="filter-form" method="GET" action="{{ route('goods_out.index') }}" class="row g-2">
+                        <div class="col-md-2">
+                            <select id="filter-material" name="material" class="form-select select2">
+                                <option value="">All Materials</option>
+                                @foreach ($materials as $material)
+                                    <option value="{{ $material->id }}"
+                                        {{ request('material') == $material->id ? 'selected' : '' }}>
+                                        {{ $material->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select id="filter-qty" name="qty" class="form-select select2">
+                                <option value="">All Quantities</option>
+                                @foreach ($quantities as $qty)
+                                    <option value="{{ $qty }}" {{ request('qty') == $qty ? 'selected' : '' }}>
+                                        {{ $qty }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select id="filter-project" name="project" class="form-select select2">
+                                <option value="">All Projects</option>
+                                @foreach ($projects as $project)
+                                    <option value="{{ $project->id }}"
+                                        {{ request('project') == $project->id ? 'selected' : '' }}>
+                                        {{ $project->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select id="filter-requested-by" name="requested_by" class="form-select select2">
+                                <option value="">All Requested By</option>
+                                @foreach ($users as $user)
+                                    <option value="{{ $user->username }}" {{ request('requested_by') == $user->username ? 'selected' : '' }}>
+                                        {{ ucfirst($user->username) }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="date" id="filter-requested-at" name="requested_at" class="form-control"
+                                value="{{ request('requested_at') }}" placeholder="Requested At Date">
+                        </div>
+                        <div class="col-md-2 align-self-end">
+                            <button type="submit" class="btn btn-primary">Filter</button>
+                            <a href="{{ route('goods_out.index') }}" class="btn btn-secondary">Reset</a>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Tabel Data -->
                 <table class="table table-bordered table-hover" id="datatable">
                     <thead>
                         <tr>
@@ -119,8 +178,34 @@
     <script>
         $(document).ready(function() {
             $('#datatable').DataTable({
-                responsive: true
+                responsive: true,
+                columnDefs: [{
+                        orderable: false,
+                        targets: 0
+                    }, // Kolom checkbox tidak dapat diurutkan
+                ],
             });
+
+            // Initialize Select2
+            $('.select2').select2({
+                theme: 'bootstrap-5',
+                placeholder: function() {
+                    return $(this).data('placeholder');
+                },
+                allowClear: true
+            });
+
+            // Add placeholder support for input[type="date"]
+            const dateInput = document.getElementById('filter-requested-at');
+            if (dateInput) {
+                dateInput.onfocus = function() {
+                    this.type = 'date';
+                };
+                dateInput.onblur = function() {
+                    if (!this.value) this.type = 'text';
+                };
+                if (!dateInput.value) dateInput.type = 'text';
+            }
 
             // SweetAlert for delete confirmation
             $(document).on('click', '.btn-delete', function(e) {

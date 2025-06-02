@@ -8,13 +8,44 @@ use App\Models\GoodsOut;
 use App\Models\Inventory;
 use Illuminate\Http\Request;
 use App\Helpers\MaterialUsageHelper;
+use App\Models\User;
 
 class GoodsInController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $goodsIns = GoodsIn::with(['goodsOut.inventory', 'goodsOut.project', 'inventory', 'project'])->orderBy('created_at', 'desc')->get();
-        return view('goods_in.index', compact('goodsIns'));
+        $query = GoodsIn::with(['goodsOut.inventory', 'goodsOut.project', 'inventory', 'project']);
+
+        // Apply filters
+        if ($request->has('material') && $request->material !== null) {
+            $query->where('inventory_id', $request->material);
+        }
+
+        if ($request->has('project') && $request->project !== null) {
+            $query->where('project_id', $request->project);
+        }
+
+        if ($request->has('qty') && $request->qty !== null) {
+            $query->where('quantity', $request->qty);
+        }
+
+        if ($request->has('returned_by') && $request->returned_by !== null) {
+            $query->where('returned_by', $request->returned_by);
+        }
+
+        if ($request->has('returned_at') && $request->returned_at !== null) {
+            $query->whereDate('returned_at', $request->returned_at);
+        }
+
+        $goodsIns = $query->orderBy('created_at', 'desc')->get();
+
+        // Pass data for filters
+        $materials = Inventory::orderBy('name')->get();
+        $projects = Project::orderBy('name')->get();
+        $quantities = GoodsIn::select('quantity')->distinct()->pluck('quantity');
+        $users = User::orderBy('username')->get();
+
+        return view('goods_in.index', compact('goodsIns', 'materials', 'projects', 'quantities', 'users'));
     }
 
     public function create($goods_out_id)

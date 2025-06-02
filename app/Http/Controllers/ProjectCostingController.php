@@ -12,10 +12,21 @@ use Illuminate\Support\Facades\Log;
 
 class ProjectCostingController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $projects = Project::all(); // Ambil semua proyek
-        return view('costing.index', compact('projects'));
+        $query = Project::query();
+
+        // Apply filters
+        if ($request->has('department') && $request->department !== null) {
+            $query->where('department', $request->department);
+        }
+
+        $projects = $query->orderBy('name')->get();
+
+        // Pass data for filters
+        $departments = Project::select('department')->distinct()->pluck('department');
+
+        return view('costing.index', compact('projects', 'departments'));
     }
 
     public function viewCosting($project_id)

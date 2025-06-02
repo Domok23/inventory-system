@@ -38,6 +38,60 @@
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
+
+                <div class="mb-3">
+                    <form id="filter-form" method="GET" action="{{ route('goods_in.index') }}" class="row g-2">
+                        <div class="col-md-2">
+                            <select id="filter-material" name="material" class="form-select select2">
+                                <option value="">All Materials</option>
+                                @foreach ($materials as $material)
+                                    <option value="{{ $material->id }}" {{ request('material') == $material->id ? 'selected' : '' }}>
+                                        {{ $material->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select id="filter-project" name="project" class="form-select select2">
+                                <option value="">All Projects</option>
+                                @foreach ($projects as $project)
+                                    <option value="{{ $project->id }}" {{ request('project') == $project->id ? 'selected' : '' }}>
+                                        {{ $project->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select id="filter-qty" name="qty" class="form-select select2">
+                                <option value="">All Quantities</option>
+                                @foreach ($quantities as $qty)
+                                    <option value="{{ $qty }}" {{ request('qty') == $qty ? 'selected' : '' }}>
+                                        {{ $qty }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select id="filter-returned-by" name="returned_by" class="form-select select2">
+                                <option value="">All Returned By</option>
+                                @foreach ($users as $user)
+                                    <option value="{{ $user->username }}" {{ request('returned_by') == $user->username ? 'selected' : '' }}>
+                                        {{ ucfirst($user->username) }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="date" id="filter-returned-at" name="returned_at" class="form-control"
+                                value="{{ request('returned_at') }}" placeholder="Returned At Date">
+                        </div>
+                        <div class="col-md-2 align-self-end">
+                            <button type="submit" class="btn btn-primary">Filter</button>
+                            <a href="{{ route('goods_in.index') }}" class="btn btn-secondary">Reset</a>
+                        </div>
+                    </form>
+                </div>
+
                 <!-- Table -->
                 <table class="table table-hover table-bordered" id="datatable">
                     <thead>
@@ -143,6 +197,27 @@
                     }
                 });
             });
+
+            // Initialize Select2
+            $('.select2').select2({
+                theme: 'bootstrap-5',
+                placeholder: function() {
+                    return $(this).data('placeholder');
+                },
+                allowClear: true
+            });
+
+            // Add placeholder support for input[type="date"]
+            const dateInput = document.getElementById('filter-returned-at');
+            if (dateInput) {
+                dateInput.onfocus = function() {
+                    this.type = 'date';
+                };
+                dateInput.onblur = function() {
+                    if (!this.value) this.type = 'text';
+                };
+                if (!dateInput.value) dateInput.type = 'text';
+            }
         });
     </script>
 @endpush

@@ -37,6 +37,45 @@
                     </div>
                 @endif
 
+                <div class="mb-3">
+                    <form id="filter-form" method="GET" action="{{ route('projects.index') }}" class="row g-2">
+                        <div class="col-md-2">
+                            <select id="filter-quantity" name="quantity" class="form-select select2">
+                                <option value="">All Quantity</option>
+                                @foreach ($projects->pluck('qty')->unique() as $qty)
+                                    <option value="{{ $qty }}" {{ request('quantity') == $qty ? 'selected' : '' }}>
+                                        {{ $qty }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select id="filter-department" name="department" class="form-select select2">
+                                <option value="">All Department</option>
+                                <option value="mascot" {{ request('department') == 'mascot' ? 'selected' : '' }}>Mascot
+                                </option>
+                                <option value="costume" {{ request('department') == 'costume' ? 'selected' : '' }}>Costume
+                                </option>
+                                <option value="mascot&costume"
+                                    {{ request('department') == 'mascot&costume' ? 'selected' : '' }}>Mascot & Costume
+                                </option>
+                                <option value="animatronic" {{ request('department') == 'animatronic' ? 'selected' : '' }}>
+                                    Animatronic</option>
+                                <option value="plustoys" {{ request('department') == 'plustoys' ? 'selected' : '' }}>Plus
+                                    Toys</option>
+                                <option value="it" {{ request('department') == 'it' ? 'selected' : '' }}>IT</option>
+                                <option value="facility" {{ request('department') == 'facility' ? 'selected' : '' }}>
+                                    Facility</option>
+                                <option value="bag" {{ request('department') == 'bag' ? 'selected' : '' }}>Bag</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 align-self-end">
+                            <button type="submit" class="btn btn-primary">Filter</button>
+                            <a href="{{ route('projects.index') }}" class="btn btn-secondary">Reset</a>
+                        </div>
+                    </form>
+                </div>
+
                 <!-- Table -->
                 <table class="table table-bordered table-hover" id="datatable">
                     <thead>
@@ -55,8 +94,11 @@
                                 <td class="text-center align-middle">{{ $loop->iteration }}</td>
                                 <td class="align-middle">{{ $project->name }}</td>
                                 <td class="align-middle">{{ $project->qty }}</td>
-                                <td class="align-middle">{{ $project->department }}</td>
-                                <td class="align-middle">{{ $project->deadline }}</td>
+                                <td class="align-middle">
+                                    {{ ucwords(str_replace('&', ' & ', $project->department)) }}
+                                </td>
+                                <td class="align-middle">
+                                    {{ \Carbon\Carbon::parse($project->deadline)->translatedFormat('d F Y') }}</td>
                                 <td>
                                     <div class="d-flex flex-wrap gap-1">
                                         <button type="button" class="btn btn-info btn-sm btn-show-image"
@@ -101,6 +143,15 @@
         $(document).ready(function() {
             $('#datatable').DataTable({
                 responsive: true
+            });
+
+            // Initialize Select2
+            $('.select2').select2({
+                theme: 'bootstrap-5',
+                placeholder: function() {
+                    return $(this).data('placeholder');
+                },
+                allowClear: true
             });
 
             // SweetAlert for delete confirmation
