@@ -21,7 +21,7 @@
                     @csrf
 
                     <div class="mb-3">
-                        <label for="name" class="form-label">Material Name</label>
+                        <label for="name" class="form-label">Material Name <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="name" name="name" value="{{ old('name') }}"
                             required>
                         @error('name')
@@ -30,7 +30,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="category_id" class="form-label">Category</label>
+                        <label for="category_id" class="form-label">Category <span class="text-danger">*</span></label>
                         <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal"
                             style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .55rem;"
                             data-bs-target="#addCategoryModal">
@@ -52,7 +52,7 @@
 
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="quantity" class="form-label">Quantity</label>
+                            <label for="quantity" class="form-label">Quantity <span class="text-danger">*</span></label>
                             <input type="number" step="any" class="form-control" id="quantity" name="quantity"
                                 value="{{ old('quantity') }}" required>
                             @error('quantity')
@@ -61,7 +61,7 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label for="unit" class="form-label">Unit</label>
+                            <label for="unit" class="form-label">Unit <span class="text-danger">*</span></label>
                             <select id="unit-select" class="form-select" name="unit" required>
                                 <option value="">Select Unit</option>
                                 <option value="__new__">Add New Unit?</option>
@@ -151,12 +151,12 @@
                                 </div>
                                 <div class="modal-body">
                                     <div class="mb-3">
-                                        <label for="currency_name" class="form-label">Currency Name</label>
+                                        <label for="currency_name" class="form-label">Currency Name <span class="text-danger">*</span></label>
                                         <input type="text" id="currency_name" name="name" class="form-control"
                                             required>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="currency_exchange_rate" class="form-label">Exchange Rate</label>
+                                        <label for="currency_exchange_rate" class="form-label">Exchange Rate <span class="text-danger">*</span></label>
                                         <input type="number" id="currency_exchange_rate" name="exchange_rate"
                                             class="form-control" required>
                                     </div>
@@ -180,7 +180,7 @@
                                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <label>Category Name</label>
+                                    <label>Category Name <span class="text-danger">*</span></label>
                                     <input type="text" name="name" class="form-control" required>
                                 </div>
                                 <div class="modal-footer">

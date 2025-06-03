@@ -18,7 +18,7 @@
                     <input type="hidden" name="material_request_id" value="{{ $materialRequest->id }}">
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label>Material</label>
+                            <label>Material <span class="text-danger">*</span></label>
                             <select name="inventory_id" class="form-select select2" required>
                                 @foreach ($inventories as $inventory)
                                     <option value="{{ $inventory->id }}" data-unit="{{ $inventory->unit }}"
@@ -42,7 +42,7 @@
                                 value="{{ $materialRequest->qty }} {{ $materialRequest->inventory->unit }}" disabled>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label>Quantity to Goods Out</label>
+                            <label>Quantity to Goods Out <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <input type="number" name="quantity" class="form-control"
                                     value="{{ old('quantity', $materialRequest->qty) }}" step="any" required>

@@ -16,7 +16,7 @@
                     @csrf
                     <div class="row">
                         <div class="col-md-12 mb-3">
-                            <label>Material</label>
+                            <label>Material <span class="text-danger">*</span></label>
                             <select name="inventory_id" class="form-select select2" required>
                                 <option value="">Select an option</option>
                                 @foreach ($inventories as $inventory)
@@ -28,7 +28,7 @@
                             </select>
                         </div>
                         <div class="col-md-12 mb-3">
-                            <label>Quantity</label>
+                            <label>Quantity <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <input type="number" name="quantity" class="form-control" step="any"
                                     value="{{ old('quantity') }}" required>
@@ -40,7 +40,7 @@
                             @enderror
                         </div>
                         <div class="col-md-12 mb-3">
-                            <label>Project</label>
+                            <label>Project <span class="text-danger">*</span></label>
                             <select name="project_id" class="form-select select2" required>
                                 <option value="">Select an option</option>
                                 @foreach ($projects as $project)
@@ -54,7 +54,7 @@
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label>Requested By</label>
+                            <label>Requested By <span class="text-danger">*</span></label>
                             <select name="user_id" class="form-select select2" required>
                                 <option value="">Select an option</option>
                                 @foreach ($users as $user)

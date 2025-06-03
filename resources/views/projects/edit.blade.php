@@ -27,7 +27,7 @@
                     @endif
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="name">Project Name</label>
+                            <label for="name">Project Name <span class="text-danger">*</span></label>
                             <input type="text" name="name" value="{{ old('name', $project->name ?? '') }}"
                                 class="form-control" required>
                             @error('name')
@@ -36,7 +36,7 @@
                         </div>
 
                         <div class="col-md-6 mb-3">
-                            <label for="qty">Quantity</label>
+                            <label for="qty">Quantity <span class="text-danger">*</span></label>
                             <input type="number" name="qty" value="{{ old('qty', $project->qty ?? '') }}"
                                 class="form-control" required>
                             @error('qty')
@@ -57,7 +57,7 @@
                         </div>
 
                         <div class="col-md-6 mb-3">
-                            <label for="department">Department</label>
+                            <label for="department">Department <span class="text-danger">*</span></label>
                             <select name="department" class="form-select" required>
                                 <option value="mascot"
                                     {{ old('department', $project->department ?? '') == 'mascot' ? 'selected' : '' }}>Mascot

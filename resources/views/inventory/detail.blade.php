@@ -94,12 +94,12 @@
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label for="quantity" class="form-label">Quantity</label>
+                            <label for="quantity" class="form-label">Quantity <span class="text-danger">*</span></label>
                             <input type="number" name="quantity" id="quantity" class="form-control" required
                                 min="0.01" step="any">
                         </div>
                         <div class="mb-3">
-                            <label for="returned_at" class="form-label">Returned/In At</label>
+                            <label for="returned_at" class="form-label">Returned/In At <span class="text-danger">*</span></label>
                             <input type="date" name="returned_at" id="returned_at" class="form-control" required>
                         </div>
                         <div class="mb-3">
@@ -128,7 +128,7 @@
                     <div class="modal-body">
                         <input type="hidden" name="inventory_id" value="{{ $inventory->id }}">
                         <div class="mb-3">
-                            <label for="project_id" class="form-label">Project</label>
+                            <label for="project_id" class="form-label">Project <span class="text-danger">*</span></label>
                             <select name="project_id" id="project_id" class="form-select" required>
                                 <option value="" disabled selected>Select an option</option>
                                 @foreach ($projects as $project)
@@ -137,7 +137,7 @@
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label for="user_id" class="form-label">User</label>
+                            <label for="user_id" class="form-label">User <span class="text-danger">*</span></label>
                             <select name="user_id" id="user_id" class="form-select" required>
                                 <option value="" disabled selected>Select an option</option>
                                 @foreach ($users as $user)
@@ -146,7 +146,7 @@
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label for="quantity" class="form-label">Quantity</label>
+                            <label for="quantity" class="form-label">Quantity <span class="text-danger">*</span></label>
                             <input type="number" name="quantity" id="quantity" class="form-control" required
                                 min="0.01" step="any">
                         </div>

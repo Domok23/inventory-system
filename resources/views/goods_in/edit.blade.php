@@ -10,7 +10,7 @@
                     @method('PUT')
                     <div class="row">
                         <div class="col-md-12 mb-3">
-                            <label>Material</label>
+                            <label>Material <span class="text-danger">*</span></label>
                             <select name="inventory_id" class="form-control select2" placeholder="Select Material" required>
                                 @foreach ($inventories as $inventory)
                                     <option value="{{ $inventory->id }}" data-unit="{{ $inventory->unit }}"
@@ -21,7 +21,7 @@
                             </select>
                         </div>
                         <div class="col-md-12 mb-3">
-                            <label>Quantity</label>
+                            <label>Quantity <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <input type="number" name="quantity" class="form-control" value="{{ $goods_in->quantity }}"
                                     required>
@@ -44,7 +44,7 @@
                             </select>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label>Returned At</span></label>
+                            <label>Returned At <span class="text-danger">*</span></label>
                             <input type="datetime-local" name="returned_at" class="form-control"
                                 value="{{ \Carbon\Carbon::parse($goods_in->returned_at)->format('Y-m-d\TH:i') }}" required>
                             <small class="form-text text-muted">

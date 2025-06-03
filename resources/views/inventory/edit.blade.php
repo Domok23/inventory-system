@@ -30,7 +30,7 @@
                     <div class="row">
                         <!-- Name -->
                         <div class="col-md-12 mb-3">
-                            <label for="name" class="form-label">Material Name</label>
+                            <label for="name" class="form-label">Material Name <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" id="name" name="name"
                                 value="{{ old('name', $inventory->name) }}" required>
                             @error('name')
@@ -39,7 +39,7 @@
                         </div>
 
                         <div class="col-md-12 mb-3">
-                            <label for="category_id" class="form-label">Category</label>
+                            <label for="category_id" class="form-label">Category <span class="text-danger">*</span></label>
                             <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal"
                                 style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .55rem;"
                                 data-bs-target="#addCategoryModal">
@@ -60,7 +60,7 @@
                     <div class="row">
                         <!-- Quantity -->
                         <div class="col-md-6 mb-3">
-                            <label for="quantity" class="form-label">Quantity</label>
+                            <label for="quantity" class="form-label">Quantity <span class="text-danger">*</span></label>
                             <input type="number" class="form-control" id="quantity" name="quantity"
                                 value="{{ old('quantity', $inventory->quantity) }}" step="any" required>
                             @error('quantity')
@@ -70,7 +70,7 @@
 
                         <!-- Unit -->
                         <div class="col-md-6 mb-3">
-                            <label for="unit" class="form-label">Unit</label>
+                            <label for="unit" class="form-label">Unit <span class="text-danger">*</span></label>
                             <select id="unit-select" class="form-select select2" name="unit" required>
                                 <option value="">Select Unit</option>
                                 <option value="__new__">Add New Unit?</option>
@@ -182,7 +182,7 @@
                                 </div>
                                 <div class="modal-body">
                                     <div class="mb-3">
-                                        <label for="category_name" class="form-label">Category Name</label>
+                                        <label for="category_name" class="form-label">Category Name <span class="text-danger">*</span></label>
                                         <input type="text" id="category_name" name="name" class="form-control"
                                             required>
                                     </div>
@@ -208,12 +208,12 @@
                                 </div>
                                 <div class="modal-body">
                                     <div class="mb-3">
-                                        <label for="currency_name" class="form-label">Currency Name</label>
+                                        <label for="currency_name" class="form-label">Currency Name <span class="text-danger">*</span></label>
                                         <input type="text" id="currency_name" name="name" class="form-control"
                                             required>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="currency_exchange_rate" class="form-label">Exchange Rate</label>
+                                        <label for="currency_exchange_rate" class="form-label">Exchange Rate <span class="text-danger">*</span></label>
                                         <input type="number" id="currency_exchange_rate" name="exchange_rate"
                                             class="form-control" required>
                                     </div>

@@ -22,7 +22,7 @@
                     @csrf
                     <div class="row mb-2">
                         <div class="mb-3">
-                            <label>Username</label>
+                            <label>Username <span class="text-danger">*</span></label>
                             <input type="text" name="username" value="{{ old('username') }}" class="form-control"
                                 required>
                             @error('username')
@@ -31,7 +31,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="password" class="form-label">Password</label>
+                            <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <input type="password" id="password" name="password" class="form-control" required>
                                 <button type="button" class="btn btn-secondary toggle-password">
@@ -44,7 +44,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label>Role</label>
+                            <label>Role <span class="text-danger">*</span></label>
                             <select name="role" class="form-control" required>
                                 <option value="">Select Role</option>
                                 <option value="super_admin">Super Admin</option>

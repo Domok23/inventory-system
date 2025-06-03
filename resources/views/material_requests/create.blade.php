@@ -28,7 +28,7 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <div class="d-flex justify-content-between align-items-center mb-2">
-                                <label>Project</label>
+                                <label>Project <span class="text-danger">*</span></label>
                                 <button type="button" class="btn btn-sm btn-outline-success" data-bs-toggle="modal"
                                     data-bs-target="#addProjectModal">
                                     + Quick Add Project
@@ -46,7 +46,7 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <div class="d-flex justify-content-between align-items-center mb-2">
-                                <label>Material</label>
+                                <label>Material <span class="text-danger">*</span></label>
                                 <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
                                     data-bs-target="#addMaterialModal">
                                     + Quick Add Material
@@ -65,7 +65,7 @@
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label>Requested Quantity</label>
+                            <label>Requested Quantity <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <input type="number" name="qty" class="form-control" step="any" required>
                                 <span class="input-group-text unit-label">unit</span>
@@ -98,11 +98,11 @@
                                         aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <label>Name</label>
+                                    <label>Material Name <span class="text-danger">*</span></label>
                                     <input type="text" name="name" class="form-control" required>
-                                    <label class="mt-2">Quantity</label>
-                                    <input type="number" step="any" name="quantity" class="form-control">
-                                    <label class="mt-2">Unit</label>
+                                    <label class="mt-2">Quantity <span class="text-danger">*</span></label>
+                                    <input type="number" step="any" name="quantity" class="form-control" required>
+                                    <label class="mt-2">Unit <span class="text-danger">*</span></label>
                                     <input type="text" name="unit" class="form-control" required>
                                 </div>
                                 <div class="modal-footer">
@@ -125,11 +125,11 @@
                                         aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <label>Project Name</label>
+                                    <label>Project Name <span class="text-danger">*</span></label>
                                     <input type="text" name="name" class="form-control" required>
-                                    <label class="mt-2">Quantity</label>
-                                    <input type="number" step="any" name="qty" class="form-control">
-                                    <label class="mt-2">Department</label>
+                                    <label class="mt-2">Quantity <span class="text-danger">*</span></label>
+                                    <input type="number" step="any" name="qty" class="form-control" required>
+                                    <label class="mt-2">Department <span class="text-danger">*</span></label>
                                     <select name="department" class="form-select" required>
                                         <option value="mascot">Mascot</option>
                                         <option value="costume">Costume</option>

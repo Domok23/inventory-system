@@ -183,7 +183,7 @@
                                 </div>
                                 <div class="modal-body">
                                     <div class="mb-3">
-                                        <label for="xls_file" class="form-label">Upload XLS File</label>
+                                        <label for="xls_file" class="form-label">Upload XLS File <span class="text-danger">*</span></label>
                                         <input type="file" name="xls_file" id="xls_file" class="form-control"
                                             required accept=".xls,.xlsx">
                                     </div>

@@ -29,7 +29,7 @@
                     @method('PUT')
                     <div class="row mb-2">
                         <div class="mb-3">
-                            <label for="username" class="form-label">Username</label>
+                            <label for="username" class="form-label">Username <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" name="username"
                                 value="{{ old('username', $user->username) }}" required>
                             @error('username')
@@ -38,7 +38,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="password" class="form-label mb-0">New Password</label>
+                            <label for="password" class="form-label mb-0">New Password <span class="text-danger">*</span></label>
                             <small class="text-muted mb-2">(Leave blank to keep current password)</small>
                             <div class="input-group">
                                 <input type="password" id="password" name="password" class="form-control">
@@ -52,7 +52,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="role" class="form-label">Role</label>
+                            <label for="role" class="form-label">Role <span class="text-danger">*</span></label>
                             <select name="role" class="form-select" required>
                                 <option value="super_admin"
                                     {{ old('role', $user->role) == 'super_admin' ? 'selected' : '' }}>

@@ -17,7 +17,7 @@
                     @method('PUT')
                     <div class="row">
                         <div class="mb-3">
-                            <label>Material</label>
+                            <label>Material <span class="text-danger">*</span></label>
                             <select name="inventory_id" class="form-select select2" required>
                                 @foreach ($inventories as $inventory)
                                     <option value="{{ $inventory->id }}" data-unit="{{ $inventory->unit }}"
@@ -28,7 +28,7 @@
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label>Quantity</label>
+                            <label>Quantity <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <input type="number" name="quantity" class="form-control" value="{{ $goodsOut->quantity }}"
                                     step="any" required>
@@ -36,7 +36,7 @@
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label>Project</label>
+                            <label>Project <span class="text-danger">*</span></label>
                             <select name="project_id" class="form-select select2" required>
                                 @foreach ($projects as $project)
                                     <option value="{{ $project->id }}"
@@ -50,7 +50,7 @@
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label>Requested By</label>
+                            <label>Requested By <span class="text-danger">*</span></label>
                             <select name="user_id" class="form-select select2" required>
                                 @foreach ($users as $user)
                                     <option value="{{ $user->id }}" data-department="{{ $user->department }}"
@@ -73,7 +73,7 @@
                             <textarea name="remark" id="remark" class="form-control" rows="2">{{ old('remark', $goodsOut->remark ?? '') }}</textarea>
                         </div>
                     </div>
-                    
+
                     <a href="{{ route('goods_out.index') }}" class="btn btn-secondary">Cancel</a>
                     <button type="submit" class="btn btn-success">Update</button>
                 </form>

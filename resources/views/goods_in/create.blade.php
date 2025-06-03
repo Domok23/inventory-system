@@ -25,7 +25,7 @@
                             </div>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label>Quantity Returned (If Any)</label>
+                            <label>Quantity Returned <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <input type="number" name="quantity" class="form-control" step="any"
                                     max="{{ $goodsOut->quantity }}" value="{{ old('quantity', $goodsOut->quantity) }}"
@@ -38,7 +38,7 @@
                             <input type="text" class="form-control" value="{{ $goodsOut->project->name }}" disabled>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label>Returned At</label>
+                            <label>Returned At <span class="text-danger">*</span></label>
                             <input type="datetime-local" name="returned_at" class="form-control"
                                 value="{{ old('returned_at', \Carbon\Carbon::now()->format('Y-m-d\TH:i')) }}" required>
                         </div>

@@ -87,11 +87,11 @@
                     </div>
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label for="currency_name" class="form-label">Currency Name</label>
+                            <label for="currency_name" class="form-label">Currency Name <span class="text-danger">*</span></label>
                             <input type="text" id="currency_name" name="name" class="form-control" required>
                         </div>
                         <div class="mb-3">
-                            <label for="currency_exchange_rate" class="form-label">Exchange Rate</label>
+                            <label for="currency_exchange_rate" class="form-label">Exchange Rate <span class="text-danger">*</span></label>
                             <input type="number" id="currency_exchange_rate" name="exchange_rate" class="form-control"
                                 step="any" required>
                         </div>

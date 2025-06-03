@@ -261,7 +261,7 @@
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link btn btn-warning dropdown-toggle" href="#"
                                     role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    {{ Auth::user()->username }}
+                                    Hi, {{ ucfirst(Auth::user()->username) }}!
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                                     <a class="dropdown-item" href="{{ route('logout') }}"

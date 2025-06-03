@@ -35,9 +35,9 @@
                             style="min-width: 1000px;">
                             <thead class="table-light">
                                 <tr>
-                                    <th style="width: 25%;">Project</th>
-                                    <th style="width: 25%;">Material</th>
-                                    <th style="width: 15%;">Quantity</th>
+                                    <th style="width: 25%;">Project <span class="text-danger">*</span></th>
+                                    <th style="width: 25%;">Material <span class="text-danger">*</span></th>
+                                    <th style="width: 15%;">Quantity <span class="text-danger">*</span></th>
                                     <th style="width: 25%;">Remark (optional)</th>
                                     <th style="width: 10%;">Action</th>
                                 </tr>
@@ -121,11 +121,11 @@
                                     aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <label>Name</label>
+                                <label>Name <span class="text-danger">*</span></label>
                                 <input type="text" name="name" class="form-control" required>
-                                <label class="mt-2">Quantity</label>
-                                <input type="number" step="any" name="quantity" class="form-control">
-                                <label class="mt-2">Unit</label>
+                                <label class="mt-2">Quantity <span class="text-danger">*</span></label>
+                                <input type="number" step="any" name="quantity" class="form-control" required>
+                                <label class="mt-2">Unit <span class="text-danger">*</span></label>
                                 <input type="text" name="unit" class="form-control" required>
                             </div>
                             <div class="modal-footer">
@@ -148,11 +148,11 @@
                                     aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <label>Project Name</label>
+                                <label>Project Name <span class="text-danger">*</span></label>
                                 <input type="text" name="name" class="form-control" required>
-                                <label class="mt-2">Qty</label>
-                                <input type="number" step="any" name="qty" class="form-control">
-                                <label class="mt-2">Department</label>
+                                <label class="mt-2">Qty <span class="text-danger">*</span></label>
+                                <input type="number" step="any" name="qty" class="form-control" required>
+                                <label class="mt-2">Department <span class="text-danger">*</span></label>
                                 <select name="department" class="form-select" required>
                                     <option value="mascot">Mascot</option>
                                     <option value="costume">Costume</option>
