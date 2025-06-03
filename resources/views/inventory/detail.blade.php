@@ -62,8 +62,10 @@
             <div class="card-footer text-center">
                 <button type="button" class="btn btn-primary my-1" data-bs-toggle="modal"
                     data-bs-target="#goodsInModal">Goods In</button>
-                <button type="button" class="btn btn-success my-1" data-bs-toggle="modal"
-                    data-bs-target="#goodsOutModal">Goods Out</button>
+                @if (in_array(auth()->user()->role, ['admin_logistic', 'super_admin']))
+                    <button type="button" class="btn btn-success my-1" data-bs-toggle="modal"
+                        data-bs-target="#goodsOutModal">Goods Out</button>
+                @endif
                 <a href="#" class="btn btn-warning my-1" id="viewMaterialUsage">View Material Usage</a>
                 <br>
                 <a href="{{ route('inventory.index') }}" class="btn btn-secondary my-2">Back to Inventory</a>
@@ -83,9 +85,9 @@
                     <div class="modal-body">
                         <input type="hidden" name="inventory_id" value="{{ $inventory->id }}">
                         <div class="mb-3">
-                            <label for="project_id" class="form-label">Project (Optional)</label>
+                            <label for="project_id" class="form-label">Project</label>
                             <select name="project_id" id="project_id" class="form-select">
-                                <option value="" disabled selected>Select an option</option>
+                                <option value="" class="text-muted">No Project</option>
                                 @foreach ($projects as $project)
                                     <option value="{{ $project->id }}">{{ $project->name }}</option>
                                 @endforeach
@@ -97,7 +99,7 @@
                                 min="0.01" step="any">
                         </div>
                         <div class="mb-3">
-                            <label for="returned_at" class="form-label">Returned At</label>
+                            <label for="returned_at" class="form-label">Returned/In At</label>
                             <input type="date" name="returned_at" id="returned_at" class="form-control" required>
                         </div>
                         <div class="mb-3">
@@ -263,7 +265,6 @@
                     dropdownParent: $('#goodsInModal'), // Agar dropdown muncul di dalam modal
                     width: '100%', // Sesuaikan lebar dropdown
                     theme: 'bootstrap-5', // Gunakan tema Bootstrap 5
-                    placeholder: 'Select an option',
                     allowClear: true
                 });
             });

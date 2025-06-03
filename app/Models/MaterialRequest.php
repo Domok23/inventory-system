@@ -19,6 +19,10 @@ class MaterialRequest extends Model
         'remark',
     ];
 
+    protected $casts = [
+        'created_at' => 'datetime', // Pastikan created_at di-cast sebagai datetime
+    ];
+
     public function inventory()
     {
         return $this->belongsTo(Inventory::class);

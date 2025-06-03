@@ -27482,18 +27482,32 @@ function updateDataTable(materialRequest) {
   actionColumn += "\n            <form action=\"/material_requests/".concat(materialRequest.id, "\" method=\"POST\" class=\"delete-form\">\n                <input type=\"hidden\" name=\"_method\" value=\"DELETE\">\n                <input type=\"hidden\" name=\"_token\" value=\"").concat($('meta[name="csrf-token"]').attr("content"), "\">\n                <button type=\"button\" class=\"btn btn-sm btn-danger btn-delete\">Delete</button>\n            </form>\n        </div>\n    ");
   var formattedDate = moment__WEBPACK_IMPORTED_MODULE_0___default()(materialRequest.created_at).format("DD-MM-YYYY, HH:mm");
   var rowData = [checkboxColumn,
-  // Kolom untuk checkbox (kosong jika tidak digunakan)
-  ((_materialRequest$proj4 = materialRequest.project) === null || _materialRequest$proj4 === void 0 ? void 0 : _materialRequest$proj4.name) || "N/A", ((_materialRequest$inve4 = materialRequest.inventory) === null || _materialRequest$inve4 === void 0 ? void 0 : _materialRequest$inve4.name) || "N/A", "".concat(materialRequest.qty, " ").concat(((_materialRequest$inve5 = materialRequest.inventory) === null || _materialRequest$inve5 === void 0 ? void 0 : _materialRequest$inve5.unit) || ""), "".concat(materialRequest.requested_by, " (").concat(materialRequest.department, ")"), statusColumn,
-  // Kolom status dengan logika tambahan
-  materialRequest.remark || "-", formattedDate, actionColumn // Kolom action dengan tombol Edit, Goods Out, dan Delete
+  // Checkbox
+  ((_materialRequest$proj4 = materialRequest.project) === null || _materialRequest$proj4 === void 0 ? void 0 : _materialRequest$proj4.name) || "N/A",
+  // Project
+  ((_materialRequest$inve4 = materialRequest.inventory) === null || _materialRequest$inve4 === void 0 ? void 0 : _materialRequest$inve4.name) || "N/A", // Material
+  "".concat(materialRequest.qty, " ").concat(((_materialRequest$inve5 = materialRequest.inventory) === null || _materialRequest$inve5 === void 0 ? void 0 : _materialRequest$inve5.unit) || ""), // Requested Qty
+  "".concat(materialRequest.requested_by, " (").concat(materialRequest.department, ")"),
+  // Requested By
+  formattedDate,
+  // Requested At
+  statusColumn,
+  // Status
+  materialRequest.remark || "-",
+  // Remark
+  actionColumn // Action
   ];
+
+  // const table = $("#datatable").DataTable();
+  // const row = table.row(`#row-${materialRequest.id}`);
+
   if (!row.node()) {
     table.row.add(rowData).draw();
-    table.order([7, "desc"]).draw(); // Urutkan ulang tabel berdasarkan kolom `Requested At`
+    table.order([5, "desc"]).draw(); // Urutkan ulang tabel berdasarkan kolom `Requested At`
     return;
   }
   row.data(rowData).draw();
-  table.order([7, "desc"]).draw(); // Urutkan ulang tabel setelah pembaruan
+  table.order([5, "desc"]).draw(); // Urutkan ulang tabel setelah pembaruan
 }
 document.addEventListener("DOMContentLoaded", function () {
   initializeAudio();

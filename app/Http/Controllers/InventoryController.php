@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use PDF;
 use App\Models\Unit;
 use App\Models\User;
 use App\Models\Project;
@@ -10,7 +9,6 @@ use App\Models\Category;
 use App\Models\Currency;
 use App\Models\Inventory;
 use Illuminate\Http\Request;
-use App\Imports\InventoryImport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
@@ -29,6 +27,18 @@ class InventoryController extends Controller
             }
             return $next($request);
         });
+
+        // Batasi akses untuk fitur tertentu hanya untuk super_admin dan admin_logistic
+        $this->middleware(function ($request, $next) {
+            $restrictedRoles = ['super_admin', 'admin_logistic'];
+            if (
+                in_array($request->route()->getName(), ['inventory.create', 'inventory.import', 'inventory.edit', 'inventory.destroy']) &&
+                !in_array(auth()->user()->role, $restrictedRoles)
+            ) {
+                abort(403, 'Unauthorized');
+            }
+            return $next($request);
+        })->only(['create', 'import', 'edit', 'destroy']);
     }
 
     public function index(Request $request)

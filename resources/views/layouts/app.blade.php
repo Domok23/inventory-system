@@ -98,6 +98,11 @@
             #toast-container::-webkit-scrollbar-track {
                 background-color: #f1f1f1;
             }
+
+            .select2-results__option[aria-selected="false"].text-muted {
+                color: #6c757d !important;
+                /* Warna abu-abu Bootstrap */
+            }
         </style>
     @endpush
     @stack('styles')
@@ -120,7 +125,15 @@
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav me-auto">
                         @if (auth()->check())
-                        @if (in_array(auth()->user()->role, ['super_admin', 'admin_mascot', 'admin_costume', 'admin_logistic', 'admin_finance', 'admin_animatronic', 'general']))
+                            @if (in_array(auth()->user()->role, [
+                                    'super_admin',
+                                    'admin_mascot',
+                                    'admin_costume',
+                                    'admin_logistic',
+                                    'admin_finance',
+                                    'admin_animatronic',
+                                    'general',
+                                ]))
                                 <li class="nav-item">
                                     <a class="nav-link {{ request()->is('inventory*') ? 'active text-primary' : '' }}"
                                         href="{{ route('inventory.index') }}">
@@ -128,7 +141,15 @@
                                     </a>
                                 </li>
                             @endif
-                            @if (in_array(auth()->user()->role, ['super_admin', 'admin_mascot', 'admin_costume', 'admin_logistic', 'admin_finance', 'admin_animatronic', 'general']))
+                            @if (in_array(auth()->user()->role, [
+                                    'super_admin',
+                                    'admin_mascot',
+                                    'admin_costume',
+                                    'admin_logistic',
+                                    'admin_finance',
+                                    'admin_animatronic',
+                                    'general',
+                                ]))
                                 <li class="nav-item">
                                     <a class="nav-link {{ request()->is('projects*') ? 'active text-primary' : '' }}"
                                         href="{{ route('projects.index') }}">
@@ -136,7 +157,15 @@
                                     </a>
                                 </li>
                             @endif
-                            @if (in_array(auth()->user()->role, ['super_admin', 'admin_mascot', 'admin_costume', 'admin_logistic', 'admin_finance', 'admin_animatronic', 'general']))
+                            @if (in_array(auth()->user()->role, [
+                                    'super_admin',
+                                    'admin_mascot',
+                                    'admin_costume',
+                                    'admin_logistic',
+                                    'admin_finance',
+                                    'admin_animatronic',
+                                    'general',
+                                ]))
                                 <li class="nav-item">
                                     <a class="nav-link {{ request()->is('material_requests*') ? 'active text-primary' : '' }}"
                                         href="{{ route('material_requests.index') }}">
@@ -144,7 +173,15 @@
                                     </a>
                                 </li>
                             @endif
-                            @if (in_array(auth()->user()->role, ['super_admin', 'admin_logistic']))
+                            @if (in_array(auth()->user()->role, [
+                                    'super_admin',
+                                    'admin_mascot',
+                                    'admin_costume',
+                                    'admin_logistic',
+                                    'admin_finance',
+                                    'admin_animatronic',
+                                    'general',
+                                ]))
                                 <li class="nav-item">
                                     <a class="nav-link {{ request()->is('goods_out*') ? 'active text-primary' : '' }}"
                                         href="{{ route('goods_out.index') }}">
@@ -152,7 +189,15 @@
                                     </a>
                                 </li>
                             @endif
-                            @if (in_array(auth()->user()->role, ['super_admin', 'admin_mascot', 'admin_costume', 'admin_logistic', 'admin_finance', 'admin_animatronic', 'general']))
+                            @if (in_array(auth()->user()->role, [
+                                    'super_admin',
+                                    'admin_mascot',
+                                    'admin_costume',
+                                    'admin_logistic',
+                                    'admin_finance',
+                                    'admin_animatronic',
+                                    'general',
+                                ]))
                                 <li class="nav-item">
                                     <a class="nav-link {{ request()->is('goods_in*') ? 'active text-primary' : '' }}"
                                         href="{{ route('goods_in.index') }}">
@@ -223,7 +268,8 @@
                                         onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                         {{ __('Logout') }}
                                     </a>
-                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                    <form id="logout-form" action="{{ route('logout') }}" method="POST"
+                                        class="d-none">
                                         @csrf
                                     </form>
                                 </div>

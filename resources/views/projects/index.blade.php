@@ -11,9 +11,11 @@
 
                     <!-- Spacer untuk mendorong tombol ke kanan -->
                     <div class="ms-md-auto d-flex flex-wrap gap-2">
-                        <a href="{{ route('projects.create') }}" class="btn btn-primary btn-sm flex-shrink-0">
-                            + New Project
-                        </a>
+                        @if (auth()->user()->role !== 'admin_logistic')
+                            <a href="{{ route('projects.create') }}" class="btn btn-primary btn-sm flex-shrink-0">
+                                + New Project
+                            </a>
+                        @endif
                         <a href="{{ route('projects.export', request()->query()) }}"
                             class="btn btn-success btn-sm flex-shrink-0">
                             Export to Excel
@@ -113,13 +115,17 @@
                                             data-name="{{ $project->name }}">
                                             Show
                                         </button>
-                                        <a href="{{ route('projects.edit', $project) }}"
-                                            class="btn btn-sm btn-warning">Edit</a>
-                                        <form action="{{ route('projects.destroy', $project) }}" method="POST"
-                                            class="delete-form">
-                                            @csrf @method('DELETE')
-                                            <button type="button" class="btn btn-sm btn-danger btn-delete">Delete</button>
-                                        </form>
+                                        @if (auth()->user()->role !== 'admin_logistic')
+                                            <a href="{{ route('projects.edit', $project) }}"
+                                                class="btn btn-sm btn-warning">Edit</a>
+                                            <form action="{{ route('projects.destroy', $project) }}" method="POST"
+                                                class="delete-form">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="button"
+                                                    class="btn btn-sm btn-danger btn-delete">Delete</button>
+                                            </form>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>

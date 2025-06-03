@@ -12,9 +12,12 @@
 
                     <!-- Spacer untuk mendorong tombol ke kanan -->
                     <div class="ms-md-auto d-flex flex-wrap gap-2">
-                        <a href="{{ route('goods_out.create_independent') }}" class="btn btn-primary btn-sm flex-shrink-0">
-                            + New Goods Out
-                        </a>
+                        @if (in_array(auth()->user()->role, ['admin_logistic', 'super_admin']))
+                            <a href="{{ route('goods_out.create_independent') }}"
+                                class="btn btn-primary btn-sm flex-shrink-0">
+                                + New Goods Out
+                            </a>
+                        @endif
                         <button id="bulk-goods-in-btn" class="btn btn-info btn-sm flex-shrink-0">
                             Bulk Goods In
                         </button>
@@ -131,15 +134,16 @@
                                     {{ $goodsOut->inventory->unit ?? '-' }}</td>
                                 <td class="align-middle">{{ $goodsOut->project->name ?? '-' }}</td>
                                 <td class="align-middle">{{ ucfirst($goodsOut->requested_by) }}
-                                    ({{ ucfirst($goodsOut->department) }})</td>
-                                    <td class="align-middle">{{ $goodsOut->created_at->format('d-m-Y, H:i') }}</td>
-                                    <td class="align-middle">
-                                        @if ($goodsOut->remark)
-                                            {{ $goodsOut->remark }}
-                                        @else
-                                            <span class="text-danger">-</span>
-                                        @endif
-                                    </td>
+                                    ({{ ucfirst($goodsOut->department) }})
+                                </td>
+                                <td class="align-middle">{{ $goodsOut->created_at->format('d-m-Y, H:i') }}</td>
+                                <td class="align-middle">
+                                    @if ($goodsOut->remark)
+                                        {{ $goodsOut->remark }}
+                                    @else
+                                        <span class="text-danger">-</span>
+                                    @endif
+                                </td>
                                 <td>
                                     <div class="d-flex flex-wrap gap-1 align-items-center">
                                         @if ($goodsOut->quantity > 0)
@@ -148,22 +152,28 @@
                                                 Goods In
                                             </a>
                                         @endif
-                                        @if ($goodsOut->material_request_id && $goodsOut->materialRequest && $goodsOut->materialRequest->qty > 0)
+                                        @if (
+                                            $goodsOut->material_request_id &&
+                                                $goodsOut->materialRequest &&
+                                                $goodsOut->materialRequest->qty > 0 &&
+                                                in_array(auth()->user()->role, ['admin_logistic', 'super_admin']))
                                             <a href="{{ route('goods_out.create', $goodsOut->material_request_id) }}"
                                                 class="btn btn-sm btn-primary">
                                                 Process
                                             </a>
                                         @endif
-                                        <a href="{{ route('goods_out.edit', $goodsOut->id) }}"
-                                            class="btn btn-sm btn-warning">Edit</a>
-                                        @if ($goodsOut->goodsIns->isEmpty())
-                                            <form action="{{ route('goods_out.destroy', $goodsOut->id) }}" method="POST"
-                                                class="delete-form">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="button"
-                                                    class="btn btn-sm btn-danger btn-delete">Delete</button>
-                                            </form>
+                                        @if (in_array(auth()->user()->role, ['admin_logistic', 'super_admin']))
+                                            <a href="{{ route('goods_out.edit', $goodsOut->id) }}"
+                                                class="btn btn-sm btn-warning">Edit</a>
+                                            @if ($goodsOut->goodsIns->isEmpty())
+                                                <form action="{{ route('goods_out.destroy', $goodsOut->id) }}"
+                                                    method="POST" class="delete-form">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="button"
+                                                        class="btn btn-sm btn-danger btn-delete">Delete</button>
+                                                </form>
+                                            @endif
                                         @endif
                                     </div>
                                 </td>

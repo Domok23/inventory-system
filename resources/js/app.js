@@ -195,25 +195,28 @@ function updateDataTable(materialRequest) {
     );
 
     const rowData = [
-        checkboxColumn, // Kolom untuk checkbox (kosong jika tidak digunakan)
-        materialRequest.project?.name || "N/A",
-        materialRequest.inventory?.name || "N/A",
-        `${materialRequest.qty} ${materialRequest.inventory?.unit || ""}`,
-        `${materialRequest.requested_by} (${materialRequest.department})`,
-        statusColumn, // Kolom status dengan logika tambahan
-        materialRequest.remark || "-",
-        formattedDate,
-        actionColumn, // Kolom action dengan tombol Edit, Goods Out, dan Delete
+        checkboxColumn, // Checkbox
+        materialRequest.project?.name || "N/A", // Project
+        materialRequest.inventory?.name || "N/A", // Material
+        `${materialRequest.qty} ${materialRequest.inventory?.unit || ""}`, // Requested Qty
+        `${materialRequest.requested_by} (${materialRequest.department})`, // Requested By
+        formattedDate, // Requested At
+        statusColumn, // Status
+        materialRequest.remark || "-", // Remark
+        actionColumn, // Action
     ];
+
+    // const table = $("#datatable").DataTable();
+    // const row = table.row(`#row-${materialRequest.id}`);
 
     if (!row.node()) {
         table.row.add(rowData).draw();
-        table.order([7, "desc"]).draw(); // Urutkan ulang tabel berdasarkan kolom `Requested At`
+        table.order([5, "desc"]).draw(); // Urutkan ulang tabel berdasarkan kolom `Requested At`
         return;
     }
 
     row.data(rowData).draw();
-    table.order([7, "desc"]).draw(); // Urutkan ulang tabel setelah pembaruan
+    table.order([5, "desc"]).draw(); // Urutkan ulang tabel setelah pembaruan
 }
 
 document.addEventListener("DOMContentLoaded", () => {

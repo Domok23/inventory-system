@@ -12,16 +12,19 @@
 
                     <!-- Spacer untuk mendorong tombol ke kanan -->
                     <div class="ms-md-auto d-flex flex-wrap gap-2">
-                        <a href="{{ route('inventory.create') }}" class="btn btn-primary btn-sm flex-shrink-0">
-                            + New Inventory
-                        </a>
-                        <a href="{{ route('inventory.export', request()->query()) }}" class="btn btn-success btn-sm flex-shrink-0">
+                        @if (in_array(auth()->user()->role, ['super_admin', 'admin_logistic']))
+                            <a href="{{ route('inventory.create') }}" class="btn btn-primary btn-sm flex-shrink-0">
+                                + New Inventory
+                            </a>
+                            <button type="button" class="btn btn-outline-success btn-sm flex-shrink-0"
+                                data-bs-toggle="modal" data-bs-target="#importModal">
+                                Import Inventory via XLS
+                            </button>
+                        @endif
+                        <a href="{{ route('inventory.export', request()->query()) }}"
+                            class="btn btn-success btn-sm flex-shrink-0">
                             Export to XLS
                         </a>
-                        <button type="button" class="btn btn-outline-success btn-sm flex-shrink-0" data-bs-toggle="modal"
-                            data-bs-target="#importModal">
-                            Import Inventory via XLS
-                        </button>
                     </div>
                 </div>
 
@@ -121,8 +124,19 @@
                                 <td class="align-middle">{{ $inventory->location }}</td>
                                 <td>
                                     <div class="d-flex flex-wrap gap-1">
-                                        <a href="{{ route('inventory.edit', $inventory->id) }}" class="btn btn-warning btn-sm">Edit</a>
-                                        <a href="{{ route('inventory.detail', ['id' => $inventory->id]) }}" class="btn btn-sm btn-success">Detail</a>
+                                        @if (in_array(auth()->user()->role, ['super_admin', 'admin_logistic']))
+                                            <a href="{{ route('inventory.edit', $inventory->id) }}"
+                                                class="btn btn-warning btn-sm">Edit</a>
+                                            <form action="{{ route('inventory.destroy', $inventory->id) }}" method="POST"
+                                                class="delete-form">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="button"
+                                                    class="btn btn-sm btn-danger btn-delete">Delete</button>
+                                            </form>
+                                        @endif
+                                        <a href="{{ route('inventory.detail', ['id' => $inventory->id]) }}"
+                                            class="btn btn-sm btn-success">Detail</a>
                                         <button type="button" class="btn btn-sm btn-info btn-show-image"
                                             data-bs-toggle="modal" data-bs-target="#imageModal"
                                             data-img="{{ $inventory->img ? asset('storage/' . $inventory->img) : '' }}"
@@ -130,11 +144,6 @@
                                             data-name="{{ $inventory->name }}">
                                             Show
                                         </button>
-                                        <form action="{{ route('inventory.destroy', $inventory->id) }}" method="POST" class="delete-form">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="button" class="btn btn-sm btn-danger btn-delete">Delete</button>
-                                        </form>
                                     </div>
                                 </td>
                             </tr>

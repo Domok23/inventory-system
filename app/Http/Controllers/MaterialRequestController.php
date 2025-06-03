@@ -16,13 +16,17 @@ class MaterialRequestController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+
+        // Batasi akses untuk fitur tertentu agar tidak bisa diakses oleh admin_logistic
         $this->middleware(function ($request, $next) {
-            $rolesAllowed = ['super_admin', 'admin_logistic', 'admin_mascot', 'admin_costume', 'admin_animatronic', 'admin_finance', 'general'];
-            if (!in_array(auth()->user()->role, $rolesAllowed)) {
+            if (
+                in_array($request->route()->getName(), ['material_requests.create', 'material_requests.store', 'material_requests.bulk_create', 'material_requests.bulk_store', 'material_requests.destroy']) &&
+                auth()->user()->role === 'admin_logistic'
+            ) {
                 abort(403, 'Unauthorized');
             }
             return $next($request);
-        });
+        })->only(['create', 'store', 'bulkCreate', 'bulkStore', 'destroy']);
     }
 
     public function index(Request $request)

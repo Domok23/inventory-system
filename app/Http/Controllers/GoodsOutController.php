@@ -17,14 +17,28 @@ class GoodsOutController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+
+        // Batasi akses untuk fitur tertentu agar hanya bisa diakses oleh admin_logistic dan super_admin
         $this->middleware(function ($request, $next) {
-            $rolesAllowed = ['super_admin', 'admin_logistic'];
-            if (!in_array(auth()->user()->role, $rolesAllowed)) {
+            if (
+                in_array($request->route()->getName(), [
+                    'goods_out.create',
+                    'goods_out.store',
+                    'goods_out.create_independent',
+                    'goods_out.store_independent',
+                    'goods_out.bulk',
+                    'goods_out.edit',
+                    'goods_out.update',
+                    'goods_out.destroy'
+                ]) &&
+                !in_array(auth()->user()->role, ['admin_logistic', 'super_admin'])
+            ) {
                 abort(403, 'Unauthorized');
             }
             return $next($request);
-        });
+        })->only(['create', 'store', 'createIndependent', 'storeIndependent', 'bulkGoodsOut', 'edit', 'update', 'destroy']);
     }
+
     public function index(Request $request)
     {
         // Tambahkan eager loading untuk relasi goodsIns

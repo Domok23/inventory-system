@@ -13,7 +13,7 @@
                     @csrf
                     <div class="row">
                         <div class="col-md-12 mb-3">
-                            <label>Material</label>
+                            <label>Material <span class="text-danger">*</span></label>
                             <select name="inventory_id" class="form-select select2" required>
                                 <option value="">Select Material</option>
                                 @foreach ($inventories as $inventory)
@@ -24,7 +24,7 @@
                             </select>
                         </div>
                         <div class="col-md-12 mb-3">
-                            <label>Quantity</label>
+                            <label>Quantity <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <input type="number" name="quantity" class="form-control" step="any" required>
                                 <span class="input-group-text unit-label">unit</span>
@@ -33,14 +33,14 @@
                         <div class="col-md-12 mb-3">
                             <label>Project</label>
                             <select name="project_id" class="form-select select2">
-                                <option value="">No Project</option>
+                                <option value="" class="text-muted">No Project</option>
                                 @foreach ($projects as $project)
                                     <option value="{{ $project->id }}">{{ $project->name }}</option>
                                 @endforeach
                             </select>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label>Returned/In At</label>
+                            <label>Returned/In At <span class="text-danger">*</span></label>
                             <input type="datetime-local" name="returned_at" class="form-control"
                                 value="{{ old('returned_at', \Carbon\Carbon::now()->format('Y-m-d\TH:i')) }}" required>
                         </div>

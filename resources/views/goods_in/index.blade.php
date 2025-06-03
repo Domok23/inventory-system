@@ -6,7 +6,8 @@
             <div class="card-body">
                 <div class="d-flex flex-column flex-md-row align-items-md-center gap-2 mb-3">
                     <!-- Header -->
-                    <h2 class="mb-2 mb-md-0 flex-shrink-0" style="font-size:1.5rem;"><i class="bi bi-arrow-down-circle"></i> Goods In
+                    <h2 class="mb-2 mb-md-0 flex-shrink-0" style="font-size:1.5rem;"><i class="bi bi-arrow-down-circle"></i>
+                        Goods In
                         Records</h2>
 
                     <!-- Spacer untuk mendorong tombol ke kanan -->
@@ -49,7 +50,8 @@
                             <select id="filter-material" name="material" class="form-select select2">
                                 <option value="">All Materials</option>
                                 @foreach ($materials as $material)
-                                    <option value="{{ $material->id }}" {{ request('material') == $material->id ? 'selected' : '' }}>
+                                    <option value="{{ $material->id }}"
+                                        {{ request('material') == $material->id ? 'selected' : '' }}>
                                         {{ $material->name }}
                                     </option>
                                 @endforeach
@@ -59,7 +61,8 @@
                             <select id="filter-project" name="project" class="form-select select2">
                                 <option value="">All Projects</option>
                                 @foreach ($projects as $project)
-                                    <option value="{{ $project->id }}" {{ request('project') == $project->id ? 'selected' : '' }}>
+                                    <option value="{{ $project->id }}"
+                                        {{ request('project') == $project->id ? 'selected' : '' }}>
                                         {{ $project->name }}
                                     </option>
                                 @endforeach
@@ -79,7 +82,8 @@
                             <select id="filter-returned-by" name="returned_by" class="form-select select2">
                                 <option value="">All Returned By</option>
                                 @foreach ($users as $user)
-                                    <option value="{{ $user->username }}" {{ request('returned_by') == $user->username ? 'selected' : '' }}>
+                                    <option value="{{ $user->username }}"
+                                        {{ request('returned_by') == $user->username ? 'selected' : '' }}>
                                         {{ ucfirst($user->username) }}
                                     </option>
                                 @endforeach
@@ -154,9 +158,12 @@
                                 </td>
                                 <td class="align-middle">
                                     <div class="d-flex flex-wrap gap-1">
-                                        <a href="{{ route('goods_in.edit', $goodsIn->id) }}"
-                                            class="btn btn-sm btn-warning">Edit</a>
-                                        @if (!$goodsIn->goods_out_id)
+                                        @if (auth()->user()->username === $goodsIn->returned_by ||
+                                                in_array(auth()->user()->role, ['admin_logistic', 'super_admin']))
+                                            <a href="{{ route('goods_in.edit', $goodsIn->id) }}"
+                                                class="btn btn-sm btn-warning">Edit</a>
+                                        @endif
+                                        @if (!$goodsIn->goods_out_id && in_array(auth()->user()->role, ['admin_logistic', 'super_admin']))
                                             <form action="{{ route('goods_in.destroy', $goodsIn->id) }}" method="POST"
                                                 class="delete-form">
                                                 @csrf

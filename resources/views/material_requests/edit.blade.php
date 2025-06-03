@@ -88,31 +88,30 @@
                         </div>
                     </div>
 
-                    @if (in_array(auth()->user()->role, ['admin_logistic', 'super_admin']))
-                        <div class="row">
-                            <div class="col-md-12 mb-3">
-                                <label>Status</label>
-                                <select name="status" class="form-select">
-                                    <option value="pending" {{ $request->status === 'pending' ? 'selected' : '' }}>Pending
-                                    </option>
-                                    <option value="approved" {{ $request->status === 'approved' ? 'selected' : '' }}>
-                                        Approved
-                                    </option>
-                                </select>
-                            </div>
-                        </div>
-                    @endif
-
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label>Requested By</label>
-                            <input type="text" class="form-control" value="{{ $request->requested_by }}" disabled>
+                            <input type="text" class="form-control" value="{{ ucfirst($request->requested_by) }}"
+                                disabled>
                         </div>
 
                         <div class="col-md-6 mb-3">
                             <label>Department</label>
                             <input type="text" class="form-control" value="{{ ucfirst($request->department) }}"
                                 disabled>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label>Status</label>
+                            <select name="status" class="form-select"
+                                {{ !in_array(auth()->user()->role, ['admin_logistic', 'super_admin']) ? 'disabled' : '' }}>
+                                <option value="pending" {{ $request->status === 'pending' ? 'selected' : '' }}>Pending
+                                </option>
+                                <option value="approved" {{ $request->status === 'approved' ? 'selected' : '' }}>Approved
+                                </option>
+                            </select>
                         </div>
                     </div>
 

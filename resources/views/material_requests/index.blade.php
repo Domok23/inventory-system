@@ -11,17 +11,21 @@
 
                     <!-- Spacer untuk mendorong tombol ke kanan -->
                     <div class="ms-md-auto d-flex flex-wrap gap-2">
-                        <a href="{{ route('material_requests.create') }}"
-                            class="btn btn-primary btn-sm flex-shrink-0">
-                            + Request Material
-                        </a>
-                        <a href="{{ route('material_requests.bulk_create') }}" class="btn btn-warning btn-sm flex-shrink-0">
-                            + Bulk Request
-                        </a>
-                        <button id="bulk-goods-out-btn" class="btn btn-info btn-sm flex-shrink-0">
-                            Bulk Goods Out
-                        </button>
-                        <a href="{{ route('material_requests.export', request()->query()) }}" class="btn btn-success btn-sm flex-shrink-0">
+                        @if (auth()->user()->role !== 'admin_logistic')
+                            <a href="{{ route('material_requests.create') }}" class="btn btn-primary btn-sm flex-shrink-0">
+                                + New Material Request
+                            </a>
+                            <a href="{{ route('material_requests.bulk_create') }}" class="btn btn-info btn-sm flex-shrink-0">
+                                + Bulk Material Request
+                            </a>
+                        @endif
+                        @if (in_array(auth()->user()->role, ['admin_logistic', 'super_admin']))
+                            <button id="bulk-goods-out-btn" class="btn btn-warning btn-sm flex-shrink-0">
+                                Bulk Goods Out
+                            </button>
+                        @endif
+                        <a href="{{ route('material_requests.export', request()->query()) }}"
+                            class="btn btn-outline-success btn-sm flex-shrink-0">
                             Export to Excel
                         </a>
                     </div>
@@ -162,19 +166,24 @@
                                 <td class="align-middle">{{ $req->remark }}</td>
                                 <td>
                                     <div class="d-flex flex-wrap gap-1">
-                                        <a href="{{ route('material_requests.edit', $req->id) }}"
-                                            class="btn btn-sm btn-primary">Edit</a>
-                                        @if ($req->status === 'approved')
-                                            <a href="{{ route('goods_out.create', $req->id) }}"
-                                                class="btn btn-sm btn-success">Goods
-                                                Out</a>
+                                        @if (auth()->user()->username === $req->requested_by ||
+                                                in_array(auth()->user()->role, ['admin_logistic', 'super_admin']))
+                                            <a href="{{ route('material_requests.edit', $req->id) }}"
+                                                class="btn btn-sm btn-primary">Edit</a>
                                         @endif
-                                        <form action="{{ route('material_requests.destroy', $req->id) }}" method="POST"
-                                            class="delete-form">
-                                            @csrf @method('DELETE')
-                                            <button type="button"
-                                                class="btn btn-sm btn-danger btn-delete">Delete</button>
-                                        </form>
+                                        @if ($req->status === 'approved' && in_array(auth()->user()->role, ['admin_logistic', 'super_admin']))
+                                            <a href="{{ route('goods_out.create', $req->id) }}"
+                                                class="btn btn-sm btn-success">Goods Out</a>
+                                        @endif
+                                        @if (auth()->user()->username === $req->requested_by || auth()->user()->role === 'super_admin')
+                                            <form action="{{ route('material_requests.destroy', $req->id) }}"
+                                                method="POST" class="delete-form">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="button"
+                                                    class="btn btn-sm btn-danger btn-delete">Delete</button>
+                                            </form>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>
@@ -190,7 +199,7 @@
         $(document).ready(function() {
             $('#datatable').DataTable({
                 responsive: true,
-                desytroy: true,
+                destroy: true,
                 columnDefs: [{
                         orderable: false,
                         targets: 0

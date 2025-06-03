@@ -11,7 +11,7 @@
                     <div class="row">
                         <div class="col-md-12 mb-3">
                             <label>Material</label>
-                            <select name="inventory_id" class="form-control select2" required>
+                            <select name="inventory_id" class="form-control select2" placeholder="Select Material" required>
                                 @foreach ($inventories as $inventory)
                                     <option value="{{ $inventory->id }}" data-unit="{{ $inventory->unit }}"
                                         {{ $goods_in->inventory_id == $inventory->id ? 'selected' : '' }}>
@@ -33,7 +33,8 @@
                         <div class="col-md-12 mb-3">
                             <label>Project</label>
                             <select name="project_id" class="form-control select2">
-                                <option value="">No Project</option>
+                                <option value="" {{ empty($goods_in->project_id) ? 'selected' : '' }} class="text-muted">No Project
+                                </option>
                                 @foreach ($projects as $project)
                                     <option value="{{ $project->id }}"
                                         {{ $goods_in->project_id == $project->id ? 'selected' : '' }}>
@@ -71,7 +72,6 @@
         $(document).ready(function() {
             $('.select2').select2({
                 theme: 'bootstrap-5',
-                placeholder: 'Select an option',
                 allowClear: true
             }).on('select2:open', function() {
                 setTimeout(function() {
