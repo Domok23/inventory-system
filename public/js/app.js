@@ -27366,6 +27366,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_0__);
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
+function ucfirst(string) {
+  if (!string) return ""; // Pastikan string tidak null atau undefined
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
 window.Echo.channel("material-requests").listen("MaterialRequestUpdated", function (e) {
   if (Array.isArray(e.materialRequest)) {
     // Jika menerima array material request (bulk create)
@@ -27480,17 +27484,17 @@ function updateDataTable(materialRequest) {
     actionColumn += "\n            <a href=\"/goods_out/create/".concat(materialRequest.id, "\" class=\"btn btn-sm btn-success\">Goods Out</a>\n        ");
   }
   actionColumn += "\n            <form action=\"/material_requests/".concat(materialRequest.id, "\" method=\"POST\" class=\"delete-form\">\n                <input type=\"hidden\" name=\"_method\" value=\"DELETE\">\n                <input type=\"hidden\" name=\"_token\" value=\"").concat($('meta[name="csrf-token"]').attr("content"), "\">\n                <button type=\"button\" class=\"btn btn-sm btn-danger btn-delete\">Delete</button>\n            </form>\n        </div>\n    ");
-  var formattedDate = moment__WEBPACK_IMPORTED_MODULE_0___default()(materialRequest.created_at).format("DD-MM-YYYY, HH:mm");
+  var formattedDate = moment__WEBPACK_IMPORTED_MODULE_0___default()(materialRequest.created_at).format("YYYY-MM-DD, HH:mm");
   var rowData = [checkboxColumn,
   // Checkbox
   ((_materialRequest$proj4 = materialRequest.project) === null || _materialRequest$proj4 === void 0 ? void 0 : _materialRequest$proj4.name) || "N/A",
   // Project
   ((_materialRequest$inve4 = materialRequest.inventory) === null || _materialRequest$inve4 === void 0 ? void 0 : _materialRequest$inve4.name) || "N/A", // Material
   "".concat(materialRequest.qty, " ").concat(((_materialRequest$inve5 = materialRequest.inventory) === null || _materialRequest$inve5 === void 0 ? void 0 : _materialRequest$inve5.unit) || ""), // Requested Qty
-  "".concat(materialRequest.requested_by, " (").concat(materialRequest.department, ")"),
+  "".concat(ucfirst(materialRequest.requested_by), " (").concat(ucfirst(materialRequest.department), ")"),
   // Requested By
   formattedDate,
-  // Requested At
+  // Requested At (format lokal)
   statusColumn,
   // Status
   materialRequest.remark || "-",

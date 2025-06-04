@@ -2,6 +2,11 @@ require("./bootstrap");
 
 import moment from "moment";
 
+function ucfirst(string) {
+    if (!string) return ""; // Pastikan string tidak null atau undefined
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 window.Echo.channel("material-requests").listen(
     "MaterialRequestUpdated",
     (e) => {
@@ -191,7 +196,7 @@ function updateDataTable(materialRequest) {
     `;
 
     const formattedDate = moment(materialRequest.created_at).format(
-        "DD-MM-YYYY, HH:mm"
+        "YYYY-MM-DD, HH:mm"
     );
 
     const rowData = [
@@ -199,8 +204,10 @@ function updateDataTable(materialRequest) {
         materialRequest.project?.name || "N/A", // Project
         materialRequest.inventory?.name || "N/A", // Material
         `${materialRequest.qty} ${materialRequest.inventory?.unit || ""}`, // Requested Qty
-        `${materialRequest.requested_by} (${materialRequest.department})`, // Requested By
-        formattedDate, // Requested At
+        `${ucfirst(materialRequest.requested_by)} (${ucfirst(
+            materialRequest.department
+        )})`, // Requested By
+        formattedDate, // Requested At (format lokal)
         statusColumn, // Status
         materialRequest.remark || "-", // Remark
         actionColumn, // Action

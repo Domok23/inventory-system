@@ -140,7 +140,7 @@
                                 <td class="align-middle">{{ ucfirst($req->requested_by) }}
                                     ({{ ucfirst($req->department) }})
                                 </td>
-                                <td class="align-middle">{{ $req->created_at->format('d-m-Y, H:i') }}</td>
+                                <td class="align-middle">{{ $req->created_at?->format('Y-m-d, H:i') }}</td>
                                 <td class="align-middle">
                                     @if (in_array(auth()->user()->role, ['admin_logistic', 'super_admin']))
                                         <form method="POST" action="{{ route('material_requests.update', $req->id) }}">

@@ -54,7 +54,10 @@ class MaterialRequestController extends Controller
             $query->whereDate('created_at', $request->requested_at);
         }
 
-        $requests = $query->orderBy('created_at', 'desc')->get();
+        $requests = $query->orderBy('created_at', 'desc')->get()->map(function ($request) {
+            $request->created_at = $request->created_at->format('Y-m-d, H:i'); // Format lokal
+            return $request;
+        });
 
         // Pass data for filters
         $projects = Project::orderBy('name')->get();
