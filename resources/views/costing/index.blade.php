@@ -25,7 +25,7 @@
                     </form>
                 </div>
                 <table class="table table-hover table-bordered" id="datatable">
-                    <thead>
+                    <thead class="align-middle">
                         <tr>
                             <th></th>
                             <th>Project Name</th>
@@ -33,13 +33,13 @@
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="align-middle">
                         @foreach ($projects as $project)
                             <tr>
-                                <td class="text-center align-middle">{{ $loop->iteration }}</td>
-                                <td class="align-middle">{{ $project->name }}</td>
-                                <td class="align-middle">{{ ucfirst($project->department) ?? '-' }}</td>
-                                <td class="align-middle">
+                                <td class="text-center">{{ $loop->iteration }}</td>
+                                <td>{{ $project->name }}</td>
+                                <td>{{ ucfirst($project->department) ?? '-' }}</td>
+                                <td>
                                     <button class="btn btn-primary btn-sm"
                                         onclick="viewCosting('{{ $project->id }}')">View</button>
                                     <a href="{{ route('costing.export', $project->id) }}"

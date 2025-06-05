@@ -108,7 +108,7 @@
 
                 <!-- Table -->
                 <table class="table table-hover table-bordered" id="datatable">
-                    <thead>
+                    <thead class="align-middle">
                         <tr>
                             <th></th>
                             <th>Name</th>
@@ -122,23 +122,23 @@
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="align-middle">
                         @foreach ($inventories as $inventory)
                             <tr>
-                                <td class="text-center align-middle">{{ $loop->iteration }}</td>
-                                <td class="align-middle">{{ $inventory->name }}</td>
-                                <td class="align-middle">
+                                <td class="text-center">{{ $loop->iteration }}</td>
+                                <td>{{ $inventory->name }}</td>
+                                <td>
                                     {{ $inventory->category ? $inventory->category->name : '-' }}
                                 </td>
-                                <td class="align-middle">{{ $inventory->quantity }} {{ $inventory->unit }}</td>
+                                <td>{{ $inventory->quantity }} {{ $inventory->unit }}</td>
                                 @if (in_array(auth()->user()->role, ['super_admin', 'admin_logistic', 'admin_finance']))
-                                    <td class="align-middle">
+                                    <td>
                                         {{ $inventory->currency ? $inventory->currency->name : '' }}
                                         {{ number_format($inventory->price, 2, ',', '.') }}
                                     </td>
                                 @endif
-                                <td class="align-middle">{{ $inventory->supplier ?? '-' }}</td>
-                                <td class="align-middle">{{ $inventory->location }}</td>
+                                <td>{{ $inventory->supplier ?? '-' }}</td>
+                                <td>{{ $inventory->location }}</td>
                                 <td>
                                     <div class="d-flex flex-wrap gap-1">
                                         @if (in_array(auth()->user()->role, ['super_admin', 'admin_logistic']))

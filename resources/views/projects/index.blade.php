@@ -86,7 +86,7 @@
 
                 <!-- Table -->
                 <table class="table table-bordered table-hover" id="datatable">
-                    <thead>
+                    <thead class="align-middle">
                         <tr>
                             <th></th>
                             <th>Name</th>
@@ -96,16 +96,16 @@
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="align-middle">
                         @foreach ($projects as $project)
                             <tr>
-                                <td class="text-center align-middle">{{ $loop->iteration }}</td>
-                                <td class="align-middle">{{ $project->name }}</td>
-                                <td class="align-middle">{{ $project->qty }}</td>
-                                <td class="align-middle">
+                                <td class="text-center">{{ $loop->iteration }}</td>
+                                <td>{{ $project->name }}</td>
+                                <td>{{ $project->qty }}</td>
+                                <td>
                                     {{ ucwords(str_replace('&', ' & ', $project->department)) }}
                                 </td>
-                                <td class="align-middle">
+                                <td>
                                     {{ \Carbon\Carbon::parse($project->deadline)->translatedFormat('d F Y') }}</td>
                                 <td>
                                     <div class="d-flex flex-wrap gap-1">

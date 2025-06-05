@@ -70,7 +70,7 @@
 
                 <!-- Table -->
                 <table class="table table-bordered table-hover" id="datatable">
-                    <thead>
+                    <thead class="align-middle">
                         <tr>
                             <th></th>
                             <th>Material</th>
@@ -81,13 +81,13 @@
                             @endif
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="align-middle">
                         @foreach ($usages as $usage)
                             <tr>
-                                <td class="text-center align-middle">{{ $loop->iteration }}</td>
-                                <td class="align-middle">{{ $usage->inventory->name ?? '-' }}</td>
-                                <td class="align-middle">{{ $usage->project->name ?? '-' }}</td>
-                                <td class="align-middle" style="font-weight: bold;">{{ $usage->used_quantity }}
+                                <td class="text-center">{{ $loop->iteration }}</td>
+                                <td>{{ $usage->inventory->name ?? '-' }}</td>
+                                <td>{{ $usage->project->name ?? '-' }}</td>
+                                <td style="font-weight: bold;">{{ $usage->used_quantity }}
                                     {{ $usage->inventory->unit ?? '-' }}</td>
                                 @if (auth()->user()->role === 'super_admin')
                                     <td>

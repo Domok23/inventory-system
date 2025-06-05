@@ -50,7 +50,7 @@
         ] as $var => $label)
                     <h5 class="mt-4">{{ $label }}</h5>
                     <table class="table table-bordered table-sm align-middle" id="table-{{ $var }}">
-                        <thead>
+                        <thead class="table-light align-middle">
                             <tr>
                                 <th><input type="checkbox" class="select-all"></th>
                                 <th>ID</th>
@@ -59,7 +59,7 @@
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="align-middle">
                             @foreach ($$var as $item)
                                 <tr>
                                     <td>

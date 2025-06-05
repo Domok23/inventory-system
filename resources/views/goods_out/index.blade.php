@@ -105,7 +105,7 @@
 
                 <!-- Tabel Data -->
                 <table class="table table-bordered table-hover" id="datatable">
-                    <thead>
+                    <thead class="align-middle">
                         <tr>
                             <th></th>
                             <th>Material</th>
@@ -118,7 +118,7 @@
                             <th>Action</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="align-middle">
                         @foreach ($goodsOuts as $goodsOut)
                             <tr>
                                 <td>
@@ -127,17 +127,17 @@
                                             value="{{ $goodsOut->id }}">
                                     @endif
                                 </td>
-                                <td class="align-middle">{{ $goodsOut->inventory->name ?? '-' }}</td>
-                                <td class="align-middle">{{ $goodsOut->quantity }} {{ $goodsOut->inventory->unit ?? '-' }}
+                                <td>{{ $goodsOut->inventory->name ?? '-' }}</td>
+                                <td>{{ $goodsOut->quantity }} {{ $goodsOut->inventory->unit ?? '-' }}
                                 </td>
-                                <td class="align-middle">{{ $goodsOut->remaining_quantity }}
+                                <td>{{ $goodsOut->remaining_quantity }}
                                     {{ $goodsOut->inventory->unit ?? '-' }}</td>
-                                <td class="align-middle">{{ $goodsOut->project->name ?? '-' }}</td>
-                                <td class="align-middle">{{ ucfirst($goodsOut->requested_by) }}
+                                <td>{{ $goodsOut->project->name ?? '-' }}</td>
+                                <td>{{ ucfirst($goodsOut->requested_by) }}
                                     ({{ ucfirst($goodsOut->department) }})
                                 </td>
-                                <td class="align-middle">{{ $goodsOut->created_at->format('d-m-Y, H:i') }}</td>
-                                <td class="align-middle">
+                                <td>{{ $goodsOut->created_at->format('d-m-Y, H:i') }}</td>
+                                <td>
                                     @if ($goodsOut->remark)
                                         {{ $goodsOut->remark }}
                                     @else

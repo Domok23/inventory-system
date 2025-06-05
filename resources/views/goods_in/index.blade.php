@@ -102,7 +102,7 @@
 
                 <!-- Table -->
                 <table class="table table-hover table-bordered" id="datatable">
-                    <thead>
+                    <thead class="align-middle">
                         <tr>
                             <th></th>
                             <th>Material</th>
@@ -114,11 +114,11 @@
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="align-middle">
                         @foreach ($goodsIns as $goodsIn)
                             <tr>
-                                <td class="text-center align-middle">{{ $loop->iteration }}</td>
-                                <td class="align-middle">
+                                <td class="text-center">{{ $loop->iteration }}</td>
+                                <td>
                                     @if ($goodsIn->goodsOut && $goodsIn->goodsOut->inventory)
                                         {{ $goodsIn->goodsOut->inventory->name }}
                                     @elseif($goodsIn->inventory)
@@ -127,7 +127,7 @@
                                         <span class="text-danger">-</span>
                                     @endif
                                 </td>
-                                <td class="align-middle">
+                                <td>
                                     @if ($goodsIn->goodsOut && $goodsIn->goodsOut->inventory)
                                         {{ $goodsIn->quantity }} {{ $goodsIn->goodsOut->inventory->unit }}
                                     @elseif($goodsIn->inventory)
@@ -136,7 +136,7 @@
                                         {{ $goodsIn->quantity }}
                                     @endif
                                 </td>
-                                <td class="align-middle">
+                                <td>
                                     @if ($goodsIn->goodsOut && $goodsIn->goodsOut->project)
                                         {{ $goodsIn->goodsOut->project->name }}
                                     @elseif($goodsIn->project)
@@ -145,18 +145,18 @@
                                         <span class="text-secondary">No Project (Restock/Supplier)</span>
                                     @endif
                                 </td>
-                                <td class="align-middle">{{ ucfirst($goodsIn->returned_by) }}</td>
-                                <td class="align-middle">
+                                <td>{{ ucfirst($goodsIn->returned_by) }}</td>
+                                <td>
                                     {{ \Carbon\Carbon::parse($goodsIn->returned_at)->format('d-m-Y, H:i') }}
                                 </td>
-                                <td class="align-middle">
+                                <td>
                                     @if ($goodsIn->remark)
                                         {{ $goodsIn->remark }}
                                     @else
                                         <span class="text-danger">-</span>
                                     @endif
                                 </td>
-                                <td class="align-middle">
+                                <td>
                                     <div class="d-flex flex-wrap gap-1">
                                         @if (auth()->user()->username === $goodsIn->returned_by ||
                                                 in_array(auth()->user()->role, ['admin_logistic', 'super_admin']))

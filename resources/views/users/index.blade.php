@@ -33,20 +33,20 @@
                 @endif
                 <!-- Table -->
                 <table class="table table-bordered table-striped table-hover" id="datatable">
-                    <thead>
+                    <thead class="text-center align-middle">
                         <tr>
-                            <th class="text-center align-middle">ID</th>
-                            <th class="text-center align-middle">Username</th>
-                            <th class="text-center align-middle">Role</th>
-                            <th class="text-center align-middle">Actions</th>
+                            <th>ID</th>
+                            <th>Username</th>
+                            <th>Role</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="align-middle">
                         @foreach ($users as $user)
                             <tr>
-                                <td class="text-center align-middle">{{ $user->id }}</td>
-                                <td class="align-middle">{{ $user->username }}</td>
-                                <td class="align-middle">{{ ucwords(str_replace('_', ' ', $user->role)) }}</td>
+                                <td class="text-center">{{ $user->id }}</td>
+                                <td>{{ $user->username }}</td>
+                                <td>{{ ucwords(str_replace('_', ' ', $user->role)) }}</td>
                                 <td>
                                     <div class="d-flex flex-wrap gap-1">
                                         <a href="{{ route('users.edit', $user->id) }}"

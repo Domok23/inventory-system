@@ -37,7 +37,7 @@
                 @endif
 
                 <table class="table table-hover table-bordered table-striped" id="datatable">
-                    <thead>
+                    <thead class="align-middle">
                         <tr>
                             <th></th>
                             <th>Name</th>
@@ -45,12 +45,12 @@
                             <th>Action</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="align-middle">
                         @foreach ($currencies as $currency)
                             <tr>
-                                <td class="text-center align-middle">{{ $loop->iteration }}</td>
-                                <td class="align-middle">{{ $currency->name }}</td>
-                                <td class="align-middle">{{ number_format($currency->exchange_rate, 2, ',', '.') }}</td>
+                                <td class="text-center">{{ $loop->iteration }}</td>
+                                <td>{{ $currency->name }}</td>
+                                <td>{{ number_format($currency->exchange_rate, 2, ',', '.') }}</td>
                                 <td>
                                     <div class="d-flex flex-wrap gap-1">
                                         <button type="button" class="btn btn-sm btn-primary edit-currency-btn"

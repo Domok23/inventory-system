@@ -199,7 +199,6 @@
                 width: '100%',
                 theme: 'bootstrap-5',
                 dropdownAutoWidth: true,
-                placeholder: 'Select...'
             }).on('select2:open', function() {
                 setTimeout(function() {
                     document.querySelector('.select2-container--open .select2-search__field')
