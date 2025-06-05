@@ -27371,14 +27371,13 @@ function ucfirst(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 window.Echo.channel("material-requests").listen("MaterialRequestUpdated", function (e) {
+  console.log("MaterialRequestUpdated event received:", e); // Debug log
   if (Array.isArray(e.materialRequest)) {
-    // Jika menerima array material request (bulk create)
     e.materialRequest.forEach(function (request) {
       updateDataTable(request);
       showToast(request, e.action);
     });
   } else {
-    // Jika menerima single material request
     updateDataTable(e.materialRequest);
     showToast(e.materialRequest, e.action);
   }
@@ -27430,7 +27429,7 @@ function showToast(materialRequest, action) {
   var message = "";
   if (action === "created") {
     var _materialRequest$inve, _materialRequest$proj;
-    message = "\n            <strong>".concat(ucfirst(materialRequest.requested_by), " (").concat(ucfirst(materialRequest.department), ")</strong><br>\n            New Material Request: <strong>").concat(((_materialRequest$inve = materialRequest.inventory) === null || _materialRequest$inve === void 0 ? void 0 : _materialRequest$inve.name) || "N/A", "</strong>\n            for <strong>").concat(((_materialRequest$proj = materialRequest.project) === null || _materialRequest$proj === void 0 ? void 0 : _materialRequest$proj.name) || "N/A", "</strong><br>\n            <a href=\"/material_requests/").concat(materialRequest.id, "/edit\" class=\"text-primary\">View More...</a>\n        ");
+    message = "\n            <strong>".concat(ucfirst(materialRequest.requested_by), " (").concat(ucfirst(materialRequest.department), ")</strong><br>\n            New Request: <strong>").concat(((_materialRequest$inve = materialRequest.inventory) === null || _materialRequest$inve === void 0 ? void 0 : _materialRequest$inve.name) || "N/A", "</strong>\n            for <strong>").concat(((_materialRequest$proj = materialRequest.project) === null || _materialRequest$proj === void 0 ? void 0 : _materialRequest$proj.name) || "N/A", "</strong><br>\n            <a href=\"/material_requests/").concat(materialRequest.id, "/edit\" class=\"text-primary\">View More...</a>\n        ");
   } else if (action === "updated") {
     var _materialRequest$inve2, _materialRequest$proj2;
     message = "\n            <strong>".concat(ucfirst(materialRequest.requested_by), " (").concat(ucfirst(materialRequest.department), ")</strong><br>\n            Material Request: <strong>").concat(((_materialRequest$inve2 = materialRequest.inventory) === null || _materialRequest$inve2 === void 0 ? void 0 : _materialRequest$inve2.name) || "N/A", "</strong>\n            for <strong>").concat(((_materialRequest$proj2 = materialRequest.project) === null || _materialRequest$proj2 === void 0 ? void 0 : _materialRequest$proj2.name) || "N/A", "</strong> has been updated.<br>\n            <a href=\"/material_requests/").concat(materialRequest.id, "/edit\" class=\"text-primary\">View More...</a>\n        ");
@@ -27460,6 +27459,35 @@ function showToast(materialRequest, action) {
     toastElement.remove();
   });
 }
+function updateSelectColor(selectElement) {
+  console.log("Updating color for:", selectElement); // Debug log
+  selectElement.classList.remove("status-pending", "status-approved", "status-delivered", "status-canceled");
+  var selectedValue = selectElement.value;
+  if (selectedValue === "pending") {
+    selectElement.classList.add("status-pending");
+  } else if (selectedValue === "approved") {
+    selectElement.classList.add("status-approved");
+  } else if (selectedValue === "delivered") {
+    selectElement.classList.add("status-delivered");
+  } else if (selectedValue === "canceled") {
+    selectElement.classList.add("status-canceled");
+  }
+  console.log("Added class:", selectElement.className); // Debug log
+}
+
+// Terapkan fungsi ke semua elemen <select> dengan kelas .status-select
+document.addEventListener("DOMContentLoaded", function () {
+  var statusSelectElements = document.querySelectorAll(".status-select");
+  statusSelectElements.forEach(function (selectElement) {
+    // Perbarui warna saat halaman dimuat
+    updateSelectColor(selectElement);
+
+    // Perbarui warna saat nilai berubah
+    selectElement.addEventListener("change", function () {
+      updateSelectColor(selectElement);
+    });
+  });
+});
 function updateDataTable(materialRequest) {
   var _materialRequest$proj4, _materialRequest$inve4, _materialRequest$inve5;
   console.log("Updating datatable with:", materialRequest);
@@ -27469,7 +27497,10 @@ function updateDataTable(materialRequest) {
   // Logika untuk kolom status
   var statusColumn = materialRequest.status;
   if (["admin_logistic", "super_admin"].includes(authUserRole)) {
-    statusColumn = "\n           <form method=\"POST\" action=\"/material_requests/".concat(materialRequest.id, "\">\n               <input type=\"hidden\" name=\"_token\" value=\"").concat($('meta[name="csrf-token"]').attr("content"), "\">\n               <input type=\"hidden\" name=\"_method\" value=\"PUT\">\n               <select name=\"status\" class=\"form-select form-select-sm\" onchange=\"this.form.submit()\">\n                   <option value=\"pending\" ").concat(materialRequest.status === "pending" ? "selected" : "", ">Pending</option>\n                   <option value=\"approved\" ").concat(materialRequest.status === "approved" ? "selected" : "", ">Approved</option>\n                   <option value=\"delivered\" ").concat(materialRequest.status === "delivered" ? "selected" : "", ">Delivered</option>\n               </select>\n           </form>\n       ");
+    statusColumn = "\n           <form method=\"POST\" action=\"/material_requests/".concat(materialRequest.id, "\">\n               <input type=\"hidden\" name=\"_token\" value=\"").concat($('meta[name="csrf-token"]').attr("content"), "\">\n               <input type=\"hidden\" name=\"_method\" value=\"PUT\">\n               <select name=\"status\" class=\"form-select form-select-sm status-select\" onchange=\"this.form.submit()\">\n                   <option value=\"pending\" ").concat(materialRequest.status === "pending" ? "selected" : "", ">Pending</option>\n                   <option value=\"approved\" ").concat(materialRequest.status === "approved" ? "selected" : "", ">Approved</option>\n                   <option value=\"delivered\" ").concat(materialRequest.status === "delivered" ? "selected" : "", ">Delivered</option>\n                   <option value=\"canceled\" ").concat(materialRequest.status === "canceled" ? "selected" : "", ">Canceled</option>\n               </select>\n           </form>\n       ");
+  } else {
+    var badgeClass = materialRequest.status === "pending" ? "text-bg-warning" : materialRequest.status === "approved" ? "text-bg-primary" : materialRequest.status === "delivered" ? "text-bg-success" : materialRequest.status === "canceled" ? "text-bg-danger" : "";
+    statusColumn = "<span class=\"badge ".concat(badgeClass, "\">").concat(ucfirst(materialRequest.status), "</span>");
   }
 
   // Logika untuk checkbox
@@ -27482,6 +27513,9 @@ function updateDataTable(materialRequest) {
   var actionColumn = "\n        <div class=\"d-flex flex-wrap gap-1\">\n            <a href=\"/material_requests/".concat(materialRequest.id, "/edit\" class=\"btn btn-sm btn-primary\">Edit</a>\n    ");
   if (materialRequest.status === "approved") {
     actionColumn += "\n            <a href=\"/goods_out/create/".concat(materialRequest.id, "\" class=\"btn btn-sm btn-success\">Goods Out</a>\n        ");
+  }
+  if (materialRequest.status === "canceled") {
+    actionColumn = "<span class=\"text-muted\">No actions available</span>";
   }
   actionColumn += "\n            <form action=\"/material_requests/".concat(materialRequest.id, "\" method=\"POST\" class=\"delete-form\">\n                <input type=\"hidden\" name=\"_method\" value=\"DELETE\">\n                <input type=\"hidden\" name=\"_token\" value=\"").concat($('meta[name="csrf-token"]').attr("content"), "\">\n                <button type=\"button\" class=\"btn btn-sm btn-danger btn-delete\">Delete</button>\n            </form>\n        </div>\n    ");
   var formattedDate = moment__WEBPACK_IMPORTED_MODULE_0___default()(materialRequest.created_at).format("YYYY-MM-DD, HH:mm");
@@ -27501,10 +27535,6 @@ function updateDataTable(materialRequest) {
   // Remark
   actionColumn // Action
   ];
-
-  // const table = $("#datatable").DataTable();
-  // const row = table.row(`#row-${materialRequest.id}`);
-
   if (!row.node()) {
     table.row.add(rowData).draw();
     table.order([5, "desc"]).draw(); // Urutkan ulang tabel berdasarkan kolom `Requested At`
@@ -27512,9 +27542,24 @@ function updateDataTable(materialRequest) {
   }
   row.data(rowData).draw();
   table.order([5, "desc"]).draw(); // Urutkan ulang tabel setelah pembaruan
+
+  // Perbarui warna elemen <select> setelah elemen ditambahkan
+  var selectElement = row.node().querySelector(".status-select");
+  if (selectElement) {
+    console.log("Select element found:", selectElement); // Debug log
+    updateSelectColor(selectElement);
+  } else {
+    console.error("Select element not found in row:", row.node()); // Debug log
+  }
 }
 document.addEventListener("DOMContentLoaded", function () {
   initializeAudio();
+});
+$("#datatable").on("draw.dt", function () {
+  var statusSelectElements = document.querySelectorAll(".status-select");
+  statusSelectElements.forEach(function (selectElement) {
+    updateSelectColor(selectElement);
+  });
 });
 
 /***/ }),

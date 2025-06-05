@@ -103,6 +103,62 @@
                 color: #6c757d !important;
                 /* Warna abu-abu Bootstrap */
             }
+
+            .status-select option[value="pending"] {
+                background-color: #ffffff;
+                /* Warna kuning */
+                color: #000000;
+                /* Warna teks hitam */
+            }
+
+            .status-select option[value="approved"] {
+                background-color: #ffffff;
+                /* Warna biru */
+                color: #000000;
+                /* Warna teks putih */
+            }
+
+            .status-select option[value="delivered"] {
+                background-color: #ffffff;
+                /* Warna hijau */
+                color: #000000;
+                /* Warna teks putih */
+            }
+
+            .status-select option[value="canceled"] {
+                background-color: #ffffff;
+                /* Warna merah */
+                color: #000000;
+                /* Warna teks putih */
+            }
+
+            .status-pending {
+                background-color: #ffc107 !important;
+                /* Warna kuning */
+                color: #000 !important;
+                /* Warna teks hitam */
+            }
+
+            .status-approved {
+                background-color: #0d6efd !important;
+                /* Warna biru */
+                color: #fff !important;
+                /* Warna teks putih */
+            }
+
+            .status-delivered {
+                background-color: #198754 !important;
+                /* Warna hijau */
+                color: #fff !important;
+                /* Warna teks putih */
+            }
+
+            .status-canceled {
+                background-color: #dc3545 !important;
+                /* Warna merah */
+                color: #fff !important;
+                /* Warna teks putih */
+            }
         </style>
     @endpush
     @stack('styles')
@@ -309,6 +365,7 @@
     </div>
 
     <!-- Scripts -->
+
     <!-- jQuery (required by DataTables & SweetAlert) -->
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 
@@ -336,6 +393,38 @@
     <script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>
     <script>
         const authUserRole = "{{ auth()->check() ? auth()->user()->role : '' }}";
+    </script>
+    <script>
+        function updateSelectColor(selectElement) {
+            // Hapus semua kelas status dari elemen <select>
+            selectElement.classList.remove("status-pending", "status-approved", "status-delivered", "status-canceled");
+
+            // Tambahkan kelas berdasarkan nilai yang dipilih
+            const selectedValue = selectElement.value;
+            if (selectedValue === "pending") {
+                selectElement.classList.add("status-pending");
+            } else if (selectedValue === "approved") {
+                selectElement.classList.add("status-approved");
+            } else if (selectedValue === "delivered") {
+                selectElement.classList.add("status-delivered");
+            } else if (selectedValue === "canceled") {
+                selectElement.classList.add("status-canceled");
+            }
+        }
+
+        // Terapkan fungsi ke semua elemen <select> dengan kelas .status-select
+        document.addEventListener("DOMContentLoaded", () => {
+            const statusSelectElements = document.querySelectorAll(".status-select");
+            statusSelectElements.forEach((selectElement) => {
+                // Perbarui warna saat halaman dimuat
+                updateSelectColor(selectElement);
+
+                // Perbarui warna saat nilai berubah
+                selectElement.addEventListener("change", () => {
+                    updateSelectColor(selectElement);
+                });
+            });
+        });
     </script>
     @stack('scripts')
 

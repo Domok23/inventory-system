@@ -111,6 +111,8 @@
                                 </option>
                                 <option value="approved" {{ $request->status === 'approved' ? 'selected' : '' }}>Approved
                                 </option>
+                                <option value="canceled" {{ $request->status === 'canceled' ? 'selected' : '' }}>Canceled
+                                </option>
                             </select>
                         </div>
                     </div>

@@ -248,6 +248,10 @@ class MaterialRequestController extends Controller
             return redirect()->route('material_requests.index')->with('error', 'Only pending requests can be edited.');
         }
 
+        if ($request->status === 'canceled') {
+            return redirect()->route('material_requests.index')->with('error', 'Canceled requests cannot be edited.');
+        }
+
         // Validasi: Pastikan inventory dan project terkait masih ada
         if (!$request->inventory || !$request->project) {
             return redirect()->route('material_requests.index')->with('error', 'The associated inventory or project no longer exists.');
@@ -272,7 +276,7 @@ class MaterialRequestController extends Controller
         // Jika hanya status yang diperbarui
         if ($request->has('status') && $request->keys() === ['_token', '_method', 'status']) {
             $request->validate([
-                'status' => 'required|in:pending,approved,delivered',
+                'status' => 'required|in:pending,approved,delivered,canceled',
             ]);
 
             $materialRequest->update([
@@ -290,7 +294,7 @@ class MaterialRequestController extends Controller
             'inventory_id' => 'required|exists:inventories,id',
             'project_id' => 'required|exists:projects,id',
             'qty' => 'required|numeric|min:0.01',
-            'status' => 'required|in:pending,approved,delivered',
+            'status' => 'required|in:pending,approved,delivered,canceled',
             'remark' => 'nullable|string',
         ]);
 
@@ -299,6 +303,10 @@ class MaterialRequestController extends Controller
         // Validasi: Pastikan qty tidak melebihi stok yang tersedia
         if ($request->qty > $inventory->quantity) {
             return back()->withInput()->withErrors(['qty' => 'Requested quantity cannot exceed available inventory quantity.']);
+        }
+
+        if ($materialRequest->status === 'canceled') {
+            return redirect()->route('material_requests.index')->with('error', 'Canceled requests cannot be updated.');
         }
 
         $materialRequest->update([
@@ -319,11 +327,15 @@ class MaterialRequestController extends Controller
     {
         $materialRequest = MaterialRequest::findOrFail($id);
 
+        if ($materialRequest->status === 'canceled') {
+            return redirect()->route('material_requests.index')->with('error', 'Canceled requests cannot be deleted.');
+        }
+
         // Trigger event
         event(new MaterialRequestUpdated($materialRequest, 'deleted'));
 
         $materialRequest->delete();
 
-        return back()->with('success', 'Deleted');
+        return back()->with('success', 'Material Request deleted successfully.');
     }
 }

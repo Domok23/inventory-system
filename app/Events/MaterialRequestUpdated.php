@@ -22,10 +22,6 @@ class MaterialRequestUpdated implements ShouldBroadcast
             ? collect($materialRequest)->map->load('inventory', 'project')
             : $materialRequest->load('inventory', 'project');
         $this->action = $action;
-        Log::info('MaterialRequestUpdated Event Data:', [
-            'materialRequest' => $this->materialRequest->toArray(),
-            'action' => $this->action,
-        ]);
     }
 
     public function broadcastOn()

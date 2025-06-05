@@ -86,6 +86,8 @@
                                 </option>
                                 <option value="delivered" {{ request('status') == 'delivered' ? 'selected' : '' }}>
                                     Delivered</option>
+                                <option value="canceled" {{ request('status') == 'canceled' ? 'selected' : '' }}>
+                                    Canceled</option>
                             </select>
                         </div>
                         <div class="col-md-2">
@@ -112,7 +114,7 @@
 
                 <!-- Table -->
                 <table class="table table-bordered table-hover" id="datatable">
-                    <thead>
+                    <thead class="align-middle">
                         <tr>
                             <th></th>
                             <th>Project</th>
@@ -125,7 +127,7 @@
                             <th>Action</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="align-middle">
                         @foreach ($requests as $req)
                             <tr id="row-{{ $req->id }}">
                                 <td>
@@ -134,48 +136,61 @@
                                             value="{{ $req->id }}">
                                     @endif
                                 </td>
-                                <td class="align-middle">{{ $req->project->name ?? '-' }}</td>
-                                <td class="align-middle">{{ $req->inventory->name ?? '-' }}</td>
-                                <td class="align-middle">{{ $req->qty }} {{ $req->inventory->unit ?? '-' }}</td>
-                                <td class="align-middle">{{ ucfirst($req->requested_by) }}
+                                <td>{{ $req->project->name ?? '-' }}</td>
+                                <td>{{ $req->inventory->name ?? '-' }}</td>
+                                <td>{{ $req->qty }} {{ $req->inventory->unit ?? '-' }}</td>
+                                <td>{{ ucfirst($req->requested_by) }}
                                     ({{ ucfirst($req->department) }})
                                 </td>
-                                <td class="align-middle">{{ $req->created_at?->format('Y-m-d, H:i') }}</td>
-                                <td class="align-middle">
+                                <td>{{ $req->created_at?->format('Y-m-d, H:i') }}</td>
+                                <td>
                                     @if (in_array(auth()->user()->role, ['admin_logistic', 'super_admin']))
                                         <form method="POST" action="{{ route('material_requests.update', $req->id) }}">
                                             @csrf
                                             @method('PUT')
-                                            <select name="status" class="form-select form-select-sm"
+                                            <select name="status" class="form-select form-select-sm status-select"
                                                 onchange="this.form.submit()">
                                                 <option value="pending" {{ $req->status === 'pending' ? 'selected' : '' }}>
-                                                    Pending
-                                                </option>
+                                                    Pending</option>
                                                 <option value="approved"
-                                                    {{ $req->status === 'approved' ? 'selected' : '' }}>
-                                                    Approved</option>
+                                                    {{ $req->status === 'approved' ? 'selected' : '' }}>Approved</option>
                                                 <option value="delivered"
-                                                    {{ $req->status === 'delivered' ? 'selected' : '' }}>
-                                                    Delivered</option>
+                                                    {{ $req->status === 'delivered' ? 'selected' : '' }}>Delivered</option>
+                                                <option value="canceled"
+                                                    {{ $req->status === 'canceled' ? 'selected' : '' }}>Canceled</option>
                                             </select>
                                         </form>
                                     @else
-                                        {{ ucfirst($req->status) }}
+                                        <span
+                                            class="badge
+                                    {{ $req->status === 'pending' ? 'text-bg-warning' : '' }}
+                                    {{ $req->status === 'approved' ? 'text-bg-primary' : '' }}
+                                    {{ $req->status === 'delivered' ? 'text-bg-success' : '' }}
+                                    {{ $req->status === 'canceled' ? 'text-bg-danger' : '' }}">
+                                            {{ ucfirst($req->status) }}
+                                        </span>
                                     @endif
                                 </td>
-                                <td class="align-middle">{{ $req->remark }}</td>
+                                <td>{{ $req->remark }}</td>
                                 <td>
                                     <div class="d-flex flex-wrap gap-1">
-                                        @if (auth()->user()->username === $req->requested_by ||
-                                                in_array(auth()->user()->role, ['admin_logistic', 'super_admin']))
+                                        @if (
+                                            $req->status !== 'canceled' &&
+                                                (auth()->user()->username === $req->requested_by ||
+                                                    in_array(auth()->user()->role, ['admin_logistic', 'super_admin'])))
                                             <a href="{{ route('material_requests.edit', $req->id) }}"
                                                 class="btn btn-sm btn-primary">Edit</a>
                                         @endif
-                                        @if ($req->status === 'approved' && in_array(auth()->user()->role, ['admin_logistic', 'super_admin']))
+                                        @if (
+                                            $req->status === 'approved' &&
+                                                $req->status !== 'canceled' &&
+                                                in_array(auth()->user()->role, ['admin_logistic', 'super_admin']))
                                             <a href="{{ route('goods_out.create', $req->id) }}"
                                                 class="btn btn-sm btn-success">Goods Out</a>
                                         @endif
-                                        @if (auth()->user()->username === $req->requested_by || auth()->user()->role === 'super_admin')
+                                        @if (
+                                            $req->status !== 'canceled' &&
+                                                (auth()->user()->username === $req->requested_by || auth()->user()->role === 'super_admin'))
                                             <form action="{{ route('material_requests.destroy', $req->id) }}"
                                                 method="POST" class="delete-form">
                                                 @csrf

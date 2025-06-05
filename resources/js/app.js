@@ -10,14 +10,13 @@ function ucfirst(string) {
 window.Echo.channel("material-requests").listen(
     "MaterialRequestUpdated",
     (e) => {
+        console.log("MaterialRequestUpdated event received:", e); // Debug log
         if (Array.isArray(e.materialRequest)) {
-            // Jika menerima array material request (bulk create)
             e.materialRequest.forEach((request) => {
                 updateDataTable(request);
                 showToast(request, e.action);
             });
         } else {
-            // Jika menerima single material request
             updateDataTable(e.materialRequest);
             showToast(e.materialRequest, e.action);
         }
@@ -79,7 +78,7 @@ function showToast(materialRequest, action) {
             <strong>${ucfirst(materialRequest.requested_by)} (${ucfirst(
             materialRequest.department
         )})</strong><br>
-            New Material Request: <strong>${
+            New Request: <strong>${
                 materialRequest.inventory?.name || "N/A"
             }</strong>
             for <strong>${materialRequest.project?.name || "N/A"}</strong><br>
@@ -140,6 +139,33 @@ function showToast(materialRequest, action) {
     });
 }
 
+function updateSelectColor(selectElement) {
+    const selectedValue = selectElement.value;
+    if (selectedValue === "pending") {
+        selectElement.classList.add("status-pending");
+    } else if (selectedValue === "approved") {
+        selectElement.classList.add("status-approved");
+    } else if (selectedValue === "delivered") {
+        selectElement.classList.add("status-delivered");
+    } else if (selectedValue === "canceled") {
+        selectElement.classList.add("status-canceled");
+    }
+}
+
+// Terapkan fungsi ke semua elemen <select> dengan kelas .status-select
+document.addEventListener("DOMContentLoaded", () => {
+    const statusSelectElements = document.querySelectorAll(".status-select");
+    statusSelectElements.forEach((selectElement) => {
+        // Perbarui warna saat halaman dimuat
+        updateSelectColor(selectElement);
+
+        // Perbarui warna saat nilai berubah
+        selectElement.addEventListener("change", () => {
+            updateSelectColor(selectElement);
+        });
+    });
+});
+
 function updateDataTable(materialRequest) {
     console.log("Updating datatable with:", materialRequest);
 
@@ -157,7 +183,7 @@ function updateDataTable(materialRequest) {
                    'meta[name="csrf-token"]'
                ).attr("content")}">
                <input type="hidden" name="_method" value="PUT">
-               <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+               <select name="status" class="form-select form-select-sm status-select" onchange="this.form.submit()">
                    <option value="pending" ${
                        materialRequest.status === "pending" ? "selected" : ""
                    }>Pending</option>
@@ -167,9 +193,27 @@ function updateDataTable(materialRequest) {
                    <option value="delivered" ${
                        materialRequest.status === "delivered" ? "selected" : ""
                    }>Delivered</option>
+                   <option value="canceled" ${
+                       materialRequest.status === "canceled" ? "selected" : ""
+                   }>Canceled</option>
                </select>
            </form>
        `;
+    } else {
+        const badgeClass =
+            materialRequest.status === "pending"
+                ? "text-bg-warning"
+                : materialRequest.status === "approved"
+                ? "text-bg-primary"
+                : materialRequest.status === "delivered"
+                ? "text-bg-success"
+                : materialRequest.status === "canceled"
+                ? "text-bg-danger"
+                : "";
+
+        statusColumn = `<span class="badge ${badgeClass}">${ucfirst(
+            materialRequest.status
+        )}</span>`;
     }
 
     // Logika untuk checkbox
@@ -187,6 +231,9 @@ function updateDataTable(materialRequest) {
         actionColumn += `
             <a href="/goods_out/create/${materialRequest.id}" class="btn btn-sm btn-success">Goods Out</a>
         `;
+    }
+    if (materialRequest.status === "canceled") {
+        actionColumn = `<span class="text-muted">No actions available</span>`;
     }
     actionColumn += `
             <form action="/material_requests/${
@@ -219,9 +266,6 @@ function updateDataTable(materialRequest) {
         actionColumn, // Action
     ];
 
-    // const table = $("#datatable").DataTable();
-    // const row = table.row(`#row-${materialRequest.id}`);
-
     if (!row.node()) {
         table.row.add(rowData).draw();
         table.order([5, "desc"]).draw(); // Urutkan ulang tabel berdasarkan kolom `Requested At`
@@ -230,8 +274,24 @@ function updateDataTable(materialRequest) {
 
     row.data(rowData).draw();
     table.order([5, "desc"]).draw(); // Urutkan ulang tabel setelah pembaruan
+
+    // Perbarui warna elemen <select> setelah elemen ditambahkan
+    const selectElement = row.node().querySelector(".status-select");
+    if (selectElement) {
+        console.log("Select element found:", selectElement); // Debug log
+        updateSelectColor(selectElement);
+    } else {
+        console.error("Select element not found in row:", row.node()); // Debug log
+    }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
     initializeAudio();
+});
+
+$("#datatable").on("draw.dt", function () {
+    const statusSelectElements = document.querySelectorAll(".status-select");
+    statusSelectElements.forEach((selectElement) => {
+        updateSelectColor(selectElement);
+    });
 });
