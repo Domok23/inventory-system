@@ -87,9 +87,15 @@ class ProjectController extends Controller
             'name' => 'required|string|max:255|unique:projects,name',
             'qty' => 'required|integer|min:1',
             'img' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'start_date' => 'nullable|date',
             'deadline' => 'nullable|date',
             'department' => 'required|in:mascot,costume,mascot&costume,animatronic,plustoys,it,facility,bag'
         ]);
+
+        // Validasi: start_date tidak boleh melebihi deadline
+        if ($request->start_date && $request->deadline && $request->start_date > $request->deadline) {
+            return back()->withErrors(['start_date' => 'Start Date cannot be later than Deadline.'])->withInput();
+        }
 
         if ($request->hasFile('img')) {
             $validated['img'] = $request->file('img')->store('projects', 'public');
@@ -139,9 +145,15 @@ class ProjectController extends Controller
             'name' => 'required|string|max:255|unique:projects,name,' . $project->id,
             'qty' => 'required|integer|min:1',
             'img' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'start_date' => 'nullable|date',
             'deadline' => 'nullable|date',
             'department' => 'required|in:mascot,costume,mascot&costume,animatronic,plustoys,it,facility,bag'
         ]);
+
+        // Validasi: start_date tidak boleh melebihi deadline
+        if ($request->start_date && $request->deadline && $request->start_date > $request->deadline) {
+            return back()->withErrors(['start_date' => 'Start Date cannot be later than Deadline.'])->withInput();
+        }
 
         if ($request->hasFile('img')) {
             $validated['img'] = $request->file('img')->store('projects', 'public');

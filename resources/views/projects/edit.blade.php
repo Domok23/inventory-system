@@ -27,18 +27,18 @@
                     @endif
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="name">Project Name <span class="text-danger">*</span></label>
-                            <input type="text" name="name" value="{{ old('name', $project->name ?? '') }}"
-                                class="form-control" required>
+                            <label for="name" class="form-label">Project Name <span class="text-danger">*</span></label>
+                            <input type="text" name="name" id="name"
+                                value="{{ old('name', $project->name ?? '') }}" class="form-control" required>
                             @error('name')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
                         </div>
 
                         <div class="col-md-6 mb-3">
-                            <label for="qty">Quantity <span class="text-danger">*</span></label>
-                            <input type="number" name="qty" value="{{ old('qty', $project->qty ?? '') }}"
-                                class="form-control" required>
+                            <label for="qty" class="form-label">Quantity <span class="text-danger">*</span></label>
+                            <input type="number" name="qty" id="qty"
+                                value="{{ old('qty', $project->qty ?? '') }}" class="form-control" required>
                             @error('qty')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
@@ -46,19 +46,9 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="deadline">Deadline (optional)</label>
-                            <input type="date" name="deadline"
-                                value="{{ old('deadline', isset($project) ? $project->deadline : '') }}"
-                                class="form-control">
-                            @error('deadline')
-                                <small class="text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label for="department">Department <span class="text-danger">*</span></label>
-                            <select name="department" class="form-select" required>
+                        <div class="col-md-4 mb-3">
+                            <label for="department" class="form-label">Department <span class="text-danger">*</span></label>
+                            <select name="department" id="department" class="form-select" required>
                                 <option value="mascot"
                                     {{ old('department', $project->department ?? '') == 'mascot' ? 'selected' : '' }}>Mascot
                                 </option>
@@ -90,17 +80,35 @@
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
                         </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="start_date" class="form-label">Start Date (optional)</label>
+                            <input type="date" name="start_date" id="start_date"
+                                value="{{ old('start_date', isset($project) ? $project->start_date : '') }}"
+                                class="form-control">
+                            @error('start_date')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="deadline" class="form-label">Deadline (optional)</label>
+                            <input type="date" name="deadline" id="deadline"
+                                value="{{ old('deadline', isset($project) ? $project->deadline : '') }}"
+                                class="form-control">
+                            @error('deadline')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
                     </div>
 
                     <div class="row">
                         <div class="col-md-12 mb-3">
-                            <label for="img">Image (optional)</label>
+                            <label for="img" class="form-label">Image (optional)</label>
                             <input type="file" name="img" class="form-control" id="img" accept="image/*"
                                 onchange="previewImage(event)">
                             <img id="img-preview"
-                                src="{{ isset($project) && $project->img ? asset('storage/' . $project->img) : '' }}"
+                                src="{{ old('img', isset($project) && $project->img ? asset('storage/' . $project->img) : '') }}"
                                 alt="Image Preview" class="mt-2 rounded"
-                                style="max-width: 200px; display: {{ isset($project) && $project->img ? 'block' : 'none' }};">
+                                style="max-width: 200px; display: {{ old('img', isset($project) && $project->img ? 'block' : 'none') }};">
                             @error('img')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror

@@ -92,6 +92,7 @@
                             <th>Name</th>
                             <th>Quantity</th>
                             <th>Department</th>
+                            <th>Start Date</th>
                             <th>Deadline</th>
                             <th>Actions</th>
                         </tr>
@@ -105,8 +106,11 @@
                                 <td>
                                     {{ ucwords(str_replace('&', ' & ', $project->department)) }}
                                 </td>
+                                <td>{{ $project->start_date ? \Carbon\Carbon::parse($project->start_date)->translatedFormat('d F Y') : '-' }}
+                                </td>
                                 <td>
-                                    {{ \Carbon\Carbon::parse($project->deadline)->translatedFormat('d F Y') }}</td>
+                                    {{ $project->deadline ? \Carbon\Carbon::parse($project->deadline)->translatedFormat('d F Y') : '-' }}
+                                </td>
                                 <td>
                                     <div class="d-flex flex-wrap gap-1">
                                         <button type="button" class="btn btn-info btn-sm btn-show-image"
