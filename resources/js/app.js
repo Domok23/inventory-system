@@ -76,7 +76,9 @@ function showToast(materialRequest, action) {
     let message = "";
     if (action === "created") {
         message = `
-            <strong>${materialRequest.requested_by}</strong><br>
+            <strong>${ucfirst(materialRequest.requested_by)} (${ucfirst(
+            materialRequest.department
+        )})</strong><br>
             New Material Request: <strong>${
                 materialRequest.inventory?.name || "N/A"
             }</strong>
@@ -87,7 +89,9 @@ function showToast(materialRequest, action) {
         `;
     } else if (action === "updated") {
         message = `
-            <strong>${materialRequest.requested_by}</strong><br>
+            <strong>${ucfirst(materialRequest.requested_by)} (${ucfirst(
+            materialRequest.department
+        )})</strong><br>
             Material Request: <strong>${
                 materialRequest.inventory?.name || "N/A"
             }</strong>
@@ -100,7 +104,9 @@ function showToast(materialRequest, action) {
         `;
     } else if (action === "deleted") {
         message = `
-            <strong>${materialRequest.requested_by}</strong><br>
+            <strong>${ucfirst(materialRequest.requested_by)} (${ucfirst(
+            materialRequest.department
+        )})</strong><br>
             Material Request: <strong>${
                 materialRequest.inventory?.name || "N/A"
             }</strong>

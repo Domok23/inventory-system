@@ -24,7 +24,7 @@ class MaterialUsageController extends Controller
             return $next($request);
         });
     }
-    
+
     public function index(Request $request)
     {
         $query = MaterialUsage::with('inventory', 'project');
@@ -87,18 +87,19 @@ class MaterialUsageController extends Controller
         $inventory_id = $request->query('inventory_id');
 
         $usages = MaterialUsage::where('inventory_id', $inventory_id)
-            ->with('project')
+            ->with('project', 'inventory') // Pastikan relasi inventory tersedia
             ->get()
             ->map(function ($usage) {
+                $unit = $usage->inventory->unit ?? ''; // Ambil unit dari relasi inventory
                 return [
                     'project_name' => $usage->project->name ?? 'N/A',
                     'goods_out_quantity' => GoodsOut::where('inventory_id', $usage->inventory_id)
                         ->where('project_id', $usage->project_id)
-                        ->sum('quantity'),
+                        ->sum('quantity') . ' ' . $unit,
                     'goods_in_quantity' => GoodsIn::where('inventory_id', $usage->inventory_id)
                         ->where('project_id', $usage->project_id)
-                        ->sum('quantity'),
-                    'used_quantity' => $usage->used_quantity,
+                        ->sum('quantity') . ' ' . $unit,
+                    'used_quantity' => $usage->used_quantity . ' ' . $unit,
                 ];
             });
 

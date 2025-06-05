@@ -99,7 +99,8 @@
                                 min="0.01" step="any">
                         </div>
                         <div class="mb-3">
-                            <label for="returned_at" class="form-label">Returned/In At <span class="text-danger">*</span></label>
+                            <label for="returned_at" class="form-label">Returned/In At <span
+                                    class="text-danger">*</span></label>
                             <input type="date" name="returned_at" id="returned_at" class="form-control" required>
                         </div>
                         <div class="mb-3">
@@ -218,13 +219,13 @@
                     if (Array.isArray(response)) {
                         response.forEach(function(usage) {
                             $('#materialUsageTable').append(`
-                                <tr>
-                                    <td>${usage.project_name}</td>
-                                    <td>${usage.goods_out_quantity}</td>
-                                    <td>${usage.goods_in_quantity}</td>
-                                    <td>${usage.used_quantity}</td>
-                                </tr>
-                            `);
+                <tr>
+                    <td>${usage.project_name}</td>
+                    <td>${usage.goods_out_quantity}</td>
+                    <td>${usage.goods_in_quantity}</td>
+                    <td>${usage.used_quantity}</td>
+                </tr>
+            `);
                         });
 
                         // Inisialisasi DataTables setelah data dimuat
