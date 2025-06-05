@@ -12,7 +12,7 @@ class InventoryTemplateExport implements FromArray, WithHeadings, WithStyles, Wi
 {
     public function headings(): array
     {
-        return ['name', 'quantity', 'unit', 'currency', 'price', 'location'];
+        return ['name', 'quantity', 'unit', 'currency', 'price', 'supplier', 'location'];
     }
 
     public function array(): array
@@ -41,7 +41,8 @@ class InventoryTemplateExport implements FromArray, WithHeadings, WithStyles, Wi
             'C' => 15, // Lebar kolom 'unit'
             'D' => 15, // Lebar kolom 'currency'
             'E' => 15, // Lebar kolom 'price'
-            'F' => 25, // Lebar kolom 'location'
+            'F' => 20, // Lebar kolom 'supplier'
+            'G' => 25, // Lebar kolom 'location'
         ];
     }
 }

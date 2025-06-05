@@ -29,6 +29,7 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-6">
+                        <h5>{{ $inventory->name }}</h5>
                         <table class="table table-bordered table-striped">
                             <tr>
                                 <th>Name</th>
@@ -39,17 +40,30 @@
                                 <td>{{ $inventory->quantity }} {{ $inventory->unit }}</td>
                             </tr>
                             <tr>
-                                <th>Unit Price</th>
-                                <td>{{ number_format($inventory->price, 2, ',', '.') }}</td>
+                                <th>Category</th>
+                                <td>{{ $inventory->category ? $inventory->category->name : '-' }}</td>
+                            </tr>
+                            @if (in_array(auth()->user()->role, ['super_admin', 'admin_logistic', 'admin_finance']))
+                                <tr>
+                                    <th>Unit Price</th>
+                                    <td>
+                                        {{ $inventory->currency ? $inventory->currency->name : '' }}
+                                        {{ number_format($inventory->price, 2, ',', '.') }}
+                                    </td>
+                                </tr>
+                            @endif
+                            <tr>
+                                <th>Supplier</th>
+                                <td>{{ $inventory->supplier ?? '-' }}</td>
                             </tr>
                             <tr>
                                 <th>Location</th>
-                                <td>{{ $inventory->location }}</td>
+                                <td>{{ $inventory->location ?? '-' }}</td>
                             </tr>
                         </table>
                     </div>
                     <div class="col-md-6 text-center">
-                        <h5>Image</h5>
+                        <h5>Material Image</h5>
                         @if ($inventory->img)
                             <img src="{{ asset('storage/' . $inventory->img) }}" alt="Image" class="img-fluid rounded"
                                 style="max-height: 300px;">

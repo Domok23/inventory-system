@@ -64,13 +64,26 @@
                                 @endforeach
                             </select>
                         </div>
+                        @if (in_array(auth()->user()->role, ['super_admin', 'admin_logistic', 'admin_finance']))
+                            <div class="col-md-2">
+                                <select name="currency" id="currency" class="form-select select2">
+                                    <option value="">All Currencies</option>
+                                    @foreach ($currencies as $currency)
+                                        <option value="{{ $currency->id }}"
+                                            {{ request('currency') == $currency->id ? 'selected' : '' }}>
+                                            {{ $currency->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        @endif
                         <div class="col-md-2">
-                            <select name="currency" id="currency" class="form-select select2">
-                                <option value="">All Currencies</option>
-                                @foreach ($currencies as $currency)
-                                    <option value="{{ $currency->id }}"
-                                        {{ request('currency') == $currency->id ? 'selected' : '' }}>
-                                        {{ $currency->name }}
+                            <select name="supplier" id="supplier" class="form-select select2">
+                                <option value="">All Suppliers</option>
+                                @foreach ($suppliers as $supplier)
+                                    <option value="{{ $supplier }}"
+                                        {{ request('supplier') == $supplier ? 'selected' : '' }}>
+                                        {{ $supplier }}
                                     </option>
                                 @endforeach
                             </select>
@@ -101,7 +114,10 @@
                             <th>Name</th>
                             <th>Category</th>
                             <th>Quantity</th>
-                            <th>Unit Price</th>
+                            @if (in_array(auth()->user()->role, ['super_admin', 'admin_logistic', 'admin_finance']))
+                                <th>Unit Price</th>
+                            @endif
+                            <th>Supplier</th>
                             <th>Location</th>
                             <th>Actions</th>
                         </tr>
@@ -115,12 +131,13 @@
                                     {{ $inventory->category ? $inventory->category->name : '-' }}
                                 </td>
                                 <td class="align-middle">{{ $inventory->quantity }} {{ $inventory->unit }}</td>
-                                <td class="align-middle">
-                                    @if ($inventory->currency)
-                                        {{ $inventory->currency->name }}
-                                    @endif
-                                    {{ number_format($inventory->price, 2, ',', '.') }}
-                                </td>
+                                @if (in_array(auth()->user()->role, ['super_admin', 'admin_logistic', 'admin_finance']))
+                                    <td class="align-middle">
+                                        {{ $inventory->currency ? $inventory->currency->name : '' }}
+                                        {{ number_format($inventory->price, 2, ',', '.') }}
+                                    </td>
+                                @endif
+                                <td class="align-middle">{{ $inventory->supplier ?? '-' }}</td>
                                 <td class="align-middle">{{ $inventory->location }}</td>
                                 <td>
                                     <div class="d-flex flex-wrap gap-1">
@@ -183,7 +200,8 @@
                                 </div>
                                 <div class="modal-body">
                                     <div class="mb-3">
-                                        <label for="xls_file" class="form-label">Upload XLS File <span class="text-danger">*</span></label>
+                                        <label for="xls_file" class="form-label">Upload XLS File <span
+                                                class="text-danger">*</span></label>
                                         <input type="file" name="xls_file" id="xls_file" class="form-control"
                                             required accept=".xls,.xlsx">
                                     </div>

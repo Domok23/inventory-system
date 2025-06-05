@@ -14,7 +14,8 @@ class InventoryImport implements ToModel
             'quantity' => $row[1],
             'unit' => $row[2],
             'price' => $row[3],
-            'location' => $row[4],
+            'supplier' => $row[4],
+            'location' => $row[5],
         ]);
     }
 }

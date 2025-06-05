@@ -30,7 +30,8 @@
                     <div class="row">
                         <!-- Name -->
                         <div class="col-md-12 mb-3">
-                            <label for="name" class="form-label">Material Name <span class="text-danger">*</span></label>
+                            <label for="name" class="form-label">Material Name <span
+                                    class="text-danger">*</span></label>
                             <input type="text" class="form-control" id="name" name="name"
                                 value="{{ old('name', $inventory->name) }}" required>
                             @error('name')
@@ -89,7 +90,7 @@
                         </div>
                     </div>
 
-                    <div class="row">
+                    <div class="row mb-3">
                         <!-- Currency -->
                         <div class="col-md-6 mb-3">
                             <label for="currency_id" class="form-label">Currency</label>
@@ -124,8 +125,17 @@
                     </div>
 
                     <div class="row">
+                        <!-- Supplier -->
+                        <div class="col-md-6 mb-3">
+                            <label for="supplier" class="form-label">Supplier (Optional)</label>
+                            <input type="text" class="form-control" id="supplier" name="supplier"
+                                value="{{ old('supplier', $inventory->supplier) }}">
+                            @error('supplier')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
                         <!-- Location -->
-                        <div class="col-md-12 mb-3">
+                        <div class="col-md-6 mb-3">
                             <label for="location" class="form-label">Location (optional)</label>
                             <input type="text" class="form-control" id="location" name="location"
                                 value="{{ old('location', $inventory->location) }}">
@@ -141,7 +151,7 @@
                                 onchange="previewImage(event)">
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="row mb-3">
                         <!-- Image Preview -->
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Image Preview</label><br>
@@ -162,10 +172,11 @@
                         @endif
                     </div>
 
-
                     <!-- Submit -->
-                    <a href="{{ route('inventory.index') }}" class="btn btn-secondary">Cancel</a>
-                    <button type="submit" class="btn btn-primary">Update</button>
+                    <div class="col-md-12">
+                        <a href="{{ route('inventory.index') }}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Update</button>
+                    </div>
                 </form>
 
                 <!-- Add Category Modal -->
@@ -182,7 +193,8 @@
                                 </div>
                                 <div class="modal-body">
                                     <div class="mb-3">
-                                        <label for="category_name" class="form-label">Category Name <span class="text-danger">*</span></label>
+                                        <label for="category_name" class="form-label">Category Name <span
+                                                class="text-danger">*</span></label>
                                         <input type="text" id="category_name" name="name" class="form-control"
                                             required>
                                     </div>
@@ -208,12 +220,14 @@
                                 </div>
                                 <div class="modal-body">
                                     <div class="mb-3">
-                                        <label for="currency_name" class="form-label">Currency Name <span class="text-danger">*</span></label>
+                                        <label for="currency_name" class="form-label">Currency Name <span
+                                                class="text-danger">*</span></label>
                                         <input type="text" id="currency_name" name="name" class="form-control"
                                             required>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="currency_exchange_rate" class="form-label">Exchange Rate <span class="text-danger">*</span></label>
+                                        <label for="currency_exchange_rate" class="form-label">Exchange Rate <span
+                                                class="text-danger">*</span></label>
                                         <input type="number" id="currency_exchange_rate" name="exchange_rate"
                                             class="form-control" required>
                                     </div>

@@ -6,8 +6,11 @@
             <th>Category</th>
             <th>Quantity</th>
             <th>Unit</th>
-            <th>Currency</th>
-            <th>Unit Price</th>
+            @if ($showCurrencyAndPrice)
+                <th>Currency</th>
+                <th>Unit Price</th>
+            @endif
+            <th>Supplier</th>
             <th>Location</th>
         </tr>
     </thead>
@@ -18,8 +21,11 @@
                 <td>{{ $inventory->category ? $inventory->category->name : '-' }}</td>
                 <td>{{ $inventory->quantity }}</td>
                 <td>{{ $inventory->unit }}</td>
-                <td>{{ $inventory->currency ? $inventory->currency->name : '-' }}</td>
-                <td>{{ number_format($inventory->price, 2, ',', '.') }}</td>
+                @if ($showCurrencyAndPrice)
+                    <td>{{ $inventory->currency ? $inventory->currency->name : '' }}</td>
+                    <td>{{ number_format($inventory->price, 2, ',', '.') }}</td>
+                @endif
+                <td>{{ $inventory->supplier }}</td>
                 <td>{{ $inventory->location }}</td>
             </tr>
         @endforeach

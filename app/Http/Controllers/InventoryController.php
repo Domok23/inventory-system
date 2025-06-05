@@ -56,6 +56,10 @@ class InventoryController extends Controller
             $query->where('currency_id', $request->currency);
         }
 
+        if ($request->has('supplier') && $request->supplier) {
+            $query->where('supplier', 'like', '%' . $request->supplier . '%');
+        }
+
         // Filter berdasarkan Location
         if ($request->has('location') && $request->location) {
             $query->where('location', $request->location);
@@ -64,9 +68,10 @@ class InventoryController extends Controller
         $inventories = $query->orderBy('created_at', 'desc')->get();
         $categories = Category::orderBy('name')->get();
         $currencies = Currency::orderBy('name')->get();
+        $suppliers = Inventory::select('supplier')->distinct()->whereNotNull('supplier')->orderBy('supplier')->pluck('supplier');
         $locations = Inventory::select('location')->distinct()->whereNotNull('location')->orderBy('location')->pluck('location');
 
-        return view('inventory.index', compact('inventories', 'categories', 'currencies', 'locations'));
+        return view('inventory.index', compact('inventories', 'categories', 'currencies', 'suppliers', 'locations'));
     }
 
     public function export(Request $request)
@@ -74,6 +79,7 @@ class InventoryController extends Controller
         // Ambil filter dari request
         $category = $request->category;
         $currency = $request->currency;
+        $supplier = $request->supplier;
         $location = $request->location;
 
         // Filter data berdasarkan request
@@ -85,6 +91,10 @@ class InventoryController extends Controller
 
         if ($currency) {
             $query->where('currency_id', $currency);
+        }
+
+        if ($supplier) {
+            $query->where('supplier', 'like', '%' . $supplier . '%');
         }
 
         if ($location) {
@@ -102,6 +112,9 @@ class InventoryController extends Controller
         if ($currency) {
             $currencyName = Currency::find($currency)->name ?? 'Unknown Currency';
             $fileName .= '_currency-' . str_replace(' ', '-', strtolower($currencyName));
+        }
+        if ($supplier) {
+            $fileName .= '_supplier-' . str_replace(' ', '-', strtolower($supplier));
         }
         if ($location) {
             $fileName .= '_location-' . str_replace(' ', '-', strtolower($location));
@@ -196,6 +209,7 @@ class InventoryController extends Controller
             'unit' => 'required|string',
             'new_unit' => 'required_if:unit,__new__|nullable|string|max:255',
             'price' => 'nullable|numeric',
+            'supplier' => 'nullable|string|max:255',
             'location' => 'nullable|string',
             'img' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'category_id' => 'required|exists:categories,id',
@@ -206,6 +220,7 @@ class InventoryController extends Controller
         $inventory->quantity = $request->quantity;
         $inventory->unit = $request->unit;
         $inventory->price = $request->price;
+        $inventory->supplier = $request->supplier;
         $inventory->currency_id = $request->currency_id;
         $inventory->location = $request->location;
         $inventory->category_id = $request->category_id;
@@ -289,6 +304,7 @@ class InventoryController extends Controller
             'unit' => 'required|string',
             'new_unit' => 'required_if:unit,__new__|nullable|string|max:255',
             'price' => 'nullable|numeric',
+            'supplier' => 'nullable|string|max:255',
             'currency_id' => 'nullable|exists:currencies,id',
             'location' => 'nullable|string',
             'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -300,6 +316,7 @@ class InventoryController extends Controller
         $inventory->quantity = $request->quantity;
         $inventory->unit = $request->unit;
         $inventory->price = $request->price;
+        $inventory->supplier = $request->supplier;
         $inventory->currency_id = $request->currency_id;
         $inventory->location = $request->location;
         $inventory->category_id = $request->category_id;
