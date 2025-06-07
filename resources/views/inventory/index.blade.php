@@ -35,17 +35,15 @@
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
-
+                @if (session('warning'))
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    {{ session('warning') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                @endif
                 @if (session('error'))
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        {{ session('error') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                @endif
-
-                @if (session('warning'))
-                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                        {{ session('warning') }}
+                        {!! session('error') !!}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
@@ -138,7 +136,7 @@
                                     </td>
                                 @endif
                                 <td>{{ $inventory->supplier ?? '-' }}</td>
-                                <td>{{ $inventory->location }}</td>
+                                <td>{{ $inventory->location ?? '-' }}</td>
                                 <td>
                                     <div class="d-flex flex-wrap gap-1">
                                         @if (in_array(auth()->user()->role, ['super_admin', 'admin_logistic']))
@@ -206,8 +204,7 @@
                                             required accept=".xls,.xlsx">
                                     </div>
                                     <p class="text-muted">
-                                        Template kolom: <code>name, quantity, unit, currency, price, location
-                                            (opsional)</code>
+                                        Template kolom: <code>Name, Quantity, Unit, Currency, Price, Supplier, Location</code>
                                     </p>
                                     <a href="{{ route('inventory.template') }}" class="btn btn-outline-secondary btn-sm">
                                         Download Template

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Log;
 use App\Models\Unit;
 use App\Models\User;
 use App\Models\Project;
@@ -12,7 +13,7 @@ use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
-use App\Exports\InventoryTemplateExport;
+use App\Exports\ImportInventoryTemplate;
 use App\Exports\InventoryExport;
 
 class InventoryController extends Controller
@@ -142,63 +143,84 @@ class InventoryController extends Controller
         $path = $request->file('xls_file')->getRealPath();
         $data = Excel::toArray([], $path)[0];
 
+        $errors = []; // Array untuk menyimpan kesalahan
+        $successCount = 0; // Counter untuk data yang berhasil diimpor
+
         foreach ($data as $index => $row) {
             if ($index === 0) continue; // Skip header row
 
-            $currency = Currency::where('name', $row[3] ?? '')->first(); // Cari currency berdasarkan nama
-            if (!$currency) {
-                continue; // Skip jika currency tidak ditemukan
+            // Bersihkan data harga
+            $price = str_replace([',', '$'], '', $row[4] ?? null);
+            $price = is_numeric($price) ? $price : 0; // Jika harga kosong atau tidak valid, set ke 0
+
+            // Validasi currency
+            $currencyName = $row[3] ?? '-';
+            $currency = Currency::where('name', $currencyName)->first();
+            if (!$currency && $currencyName !== '-') {
+                $errors[] = "Row {$index} Error: Invalid currency '{$currencyName}'.";
+                continue; // Skip jika currency tidak valid
+            }
+
+            // Validasi unit
+            $unitName = $row[2] ?? '-';
+            $unit = Unit::firstOrCreate(['name' => $unitName]); // Tambahkan unit baru jika belum ada
+
+            // Validasi nama inventory
+            $inventoryName = $row[0] ?? null;
+            if (!$inventoryName) {
+                $errors[] = "Row {$index} Error: Inventory name is required.";
+                continue; // Skip jika nama inventory kosong
             }
 
             $inventory = new Inventory();
-            $inventory->name = $row[0] ?? null;
-            $inventory->quantity = $row[1] ?? 0;
-            $inventory->unit = $row[2] ?? '-';
-            $inventory->currency_id = $currency->id;
-            $inventory->price = $row[3] ?? 0;
-            $inventory->location = $row[4] ?? null;
-            $inventory->save(); // Simpan data inventory terlebih dahulu untuk mendapatkan ID
-
-            if (!$inventory->name || !$inventory->quantity || !$inventory->unit || !$inventory->price) {
-                continue; // Skip invalid rows
-            }
+            $inventory->name = $inventoryName;
+            $inventory->quantity = is_numeric($row[1]) ? $row[1] : 0; // Jika quantity kosong, set ke 0
+            $inventory->unit = $unit->name; // Gunakan nama unit yang sudah divalidasi
+            $inventory->currency_id = $currency ? $currency->id : null; // Set currency ID jika valid
+            $inventory->price = $price;
+            $inventory->supplier = $row[5] ?? null;
+            $inventory->location = $row[6] ?? null;
 
             // Cek jika inventory sudah ada
             $existingInventory = Inventory::where('name', $inventory->name)->first();
             if ($existingInventory) {
+                $errors[] = "Row {$index} Error: Duplicate inventory '{$inventory->name}'.";
                 continue; // Skip jika sudah ada
             }
 
-            // **Point 5: Generate QR Code**
-            $qrContent = route('inventory.scan', ['id' => $inventory->id]); // Gunakan URL lengkap
+            // Simpan inventory
+            $inventory->save();
+            $successCount++; // Tambahkan jumlah data yang berhasil diimpor
+
+            // Generate QR Code untuk inventory yang baru disimpan
+            $qrContent = route('inventory.scan', ['id' => $inventory->id]); // URL lengkap
             $qrFileName = 'qr_' . uniqid() . '.svg';
             $qrImage = QrCode::format('svg')->size(200)->generate($qrContent);
             Storage::disk('public')->put('qrcodes/' . $qrFileName, $qrImage);
 
             // Simpan path QR Code ke database
             $inventory->qrcode_path = 'qrcodes/' . $qrFileName;
-            $inventory->save();
-
-            // Simpan unit baru jika belum ada
-            $inventory->unitModel = Unit::firstOrCreate(['name' => $inventory->unit]);
-
-            // Simpan inventory
-            Inventory::create([
-                'name' => $inventory->name,
-                'quantity' => $inventory->quantity,
-                'unit' => $inventory->unitModel->name,
-                'currency_id' => $inventory->currency_id,
-                'price' => $inventory->price,
-                'location' => $inventory->location,
-            ]);
+            $inventory->save(); // Simpan lagi untuk memperbarui path QR code
         }
 
-        return redirect()->route('inventory.index')->with('success', 'Inventory imported successfully!');
+        // Kirim kesalahan ke session
+        if (!empty($errors)) {
+            session()->flash('error', implode('<br>', $errors));
+        }
+
+        // Kirim jumlah data yang berhasil dan gagal ke session
+        $totalRows = count($data) - 1; // Total baris dikurangi header
+        $failedCount = $totalRows - $successCount;
+
+        return redirect()->route('inventory.index')->with([
+            'success' => "{$successCount} rows imported successfully.",
+            'warning' => "{$failedCount} rows failed to import.",
+        ]);
     }
 
     public function downloadTemplate()
     {
-        return Excel::download(new InventoryTemplateExport, 'inventory_template.xlsx');
+        return Excel::download(new ImportInventoryTemplate, 'inventory_template.xlsx');
     }
 
     public function store(Request $request)

@@ -8,11 +8,12 @@ use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class InventoryTemplateExport implements FromArray, WithHeadings, WithStyles, WithColumnWidths
+class ImportInventoryTemplate implements FromArray, WithHeadings, WithStyles, WithColumnWidths
 {
     public function headings(): array
     {
-        return ['name', 'quantity', 'unit', 'currency', 'price', 'supplier', 'location'];
+        $headings = ['name', 'quantity', 'unit', 'currency', 'price', 'supplier', 'location'];
+        return array_map('ucwords', $headings);
     }
 
     public function array(): array
