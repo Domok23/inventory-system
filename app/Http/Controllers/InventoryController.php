@@ -212,10 +212,15 @@ class InventoryController extends Controller
         $totalRows = count($data) - 1; // Total baris dikurangi header
         $failedCount = $totalRows - $successCount;
 
-        return redirect()->route('inventory.index')->with([
+        $redirectData = [
             'success' => "{$successCount} rows imported successfully.",
-            'warning' => "{$failedCount} rows failed to import.",
-        ]);
+        ];
+
+        if ($failedCount > 0) {
+            $redirectData['warning'] = "{$failedCount} rows failed to import.";
+        }
+
+        return redirect()->route('inventory.index')->with($redirectData);
     }
 
     public function downloadTemplate()

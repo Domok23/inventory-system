@@ -47,8 +47,8 @@
                                 <tr>
                                     <th>Unit Price</th>
                                     <td>
-                                        {{ $inventory->currency ? $inventory->currency->name : '' }}
                                         {{ number_format($inventory->price, 2, ',', '.') }}
+                                        {{ $inventory->currency ? $inventory->currency->name : '' }}
                                     </td>
                                 </tr>
                             @endif

@@ -404,7 +404,7 @@ class GoodsOutController extends Controller
                 'requested_by' => $materialRequest->requested_by,
                 'department' => $materialRequest->department,
                 'quantity' => $materialRequest->qty,
-                'remark' => $materialRequest->remark,
+                'remark' => 'Bulk Goods Out',
             ]);
 
             // Update status material request

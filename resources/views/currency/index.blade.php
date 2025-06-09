@@ -12,9 +12,17 @@
                         + New Currency
                     </button>
                 </div>
+                <p class="text-muted mb-3">All currencies listed here are converted to Indonesian Rupiah (IDR) for
+                    consistency.</p>
                 @if (session('success'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         {{ session('success') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
+                @if (session('warning'))
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        {{ session('warning') }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
@@ -29,12 +37,6 @@
                         </ul>
                     </div>
                 @endif
-                @if (session('warning'))
-                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                        {{ session('warning') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                @endif
 
                 <table class="table table-hover table-bordered table-striped" id="datatable">
                     <thead class="align-middle">
@@ -42,6 +44,7 @@
                             <th></th>
                             <th>Name</th>
                             <th>Exchange Rate</th>
+                            <th>Updated At</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -50,7 +53,8 @@
                             <tr>
                                 <td class="text-center">{{ $loop->iteration }}</td>
                                 <td>{{ $currency->name }}</td>
-                                <td>{{ number_format($currency->exchange_rate, 2, ',', '.') }}</td>
+                                <td>Rp {{ number_format($currency->exchange_rate, 2, ',', '.') }}</td>
+                                <td>{{ \Carbon\Carbon::parse($currency->updated_at)->translatedFormat('d F Y, H:i') }}</td>
                                 <td>
                                     <div class="d-flex flex-wrap gap-1">
                                         <button type="button" class="btn btn-sm btn-primary edit-currency-btn"
@@ -87,11 +91,13 @@
                     </div>
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label for="currency_name" class="form-label">Currency Name <span class="text-danger">*</span></label>
+                            <label for="currency_name" class="form-label">Currency Name <span
+                                    class="text-danger">*</span></label>
                             <input type="text" id="currency_name" name="name" class="form-control" required>
                         </div>
                         <div class="mb-3">
-                            <label for="currency_exchange_rate" class="form-label">Exchange Rate <span class="text-danger">*</span></label>
+                            <label for="currency_exchange_rate" class="form-label">Exchange Rate <span
+                                    class="text-danger">*</span></label>
                             <input type="number" id="currency_exchange_rate" name="exchange_rate" class="form-control"
                                 step="any" required>
                         </div>

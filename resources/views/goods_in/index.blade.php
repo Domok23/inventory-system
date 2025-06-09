@@ -9,7 +9,6 @@
                     <h2 class="mb-2 mb-md-0 flex-shrink-0" style="font-size:1.5rem;"><i class="bi bi-arrow-down-circle"></i>
                         Goods In
                         Records</h2>
-
                     <!-- Spacer untuk mendorong tombol ke kanan -->
                     <div class="ms-md-auto d-flex flex-wrap gap-2">
                         <a href="{{ route('goods_in.create_independent') }}" class="btn btn-primary btn-sm flex-shrink-0">
@@ -29,17 +28,15 @@
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
-
-                @if (session('error'))
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        {{ session('error') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                @endif
-
                 @if (session('warning'))
                     <div class="alert alert-warning alert-dismissible fade show" role="alert">
                         {{ session('warning') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
+                @if (session('error'))
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        {{ session('error') }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
@@ -147,7 +144,7 @@
                                 </td>
                                 <td>{{ ucfirst($goodsIn->returned_by) }}</td>
                                 <td>
-                                    {{ \Carbon\Carbon::parse($goodsIn->returned_at)->format('d-m-Y, H:i') }}
+                                    {{ \Carbon\Carbon::parse($goodsIn->returned_at)->translatedFormat('d F Y, H:i') }}
                                 </td>
                                 <td>
                                     @if ($goodsIn->remark)

@@ -91,6 +91,15 @@
                     </div>
 
                     <div class="row mb-3">
+                        <!-- Price -->
+                        <div class="col-md-6 mb-3">
+                            <label for="price" class="form-label">Unit Price</label>
+                            <input type="number" class="form-control" step="any" id="price" name="price"
+                                value="{{ old('price', $inventory->price) }}">
+                            @error('price')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
                         <!-- Currency -->
                         <div class="col-md-6 mb-3">
                             <label for="currency_id" class="form-label">Currency</label>
@@ -113,15 +122,6 @@
                             @enderror
                         </div>
 
-                        <!-- Price -->
-                        <div class="col-md-6 mb-3">
-                            <label for="price" class="form-label">Unit Price</label>
-                            <input type="number" class="form-control" step="any" id="price" name="price"
-                                value="{{ old('price', $inventory->price) }}">
-                            @error('price')
-                                <small class="text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
                     </div>
 
                     <div class="row">

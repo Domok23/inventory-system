@@ -82,6 +82,14 @@
 
                     <div class="row mb-3">
                         <div class="col-md-6 mb-3">
+                            <label for="price" class="form-label">Unit Price</label>
+                            <input type="number" step="any" class="form-control" id="price" name="price"
+                                value="{{ old('price', $inventory->price ?? '') }}">
+                            @error('price')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
+                        <div class="col-md-6 mb-3">
                             <label for="currency_id" class="form-label">Currency</label>
                             <button type="button" class="btn btn-outline-primary"
                                 style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .55rem;"
@@ -98,15 +106,6 @@
                                 @endforeach
                             </select>
                             @error('currency_id')
-                                <small class="text-danger">{{ $message }}</small>
-                            @enderror
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label for="price" class="form-label">Unit Price</label>
-                            <input type="number" step="any" class="form-control" id="price" name="price"
-                                value="{{ old('price', $inventory->price ?? '') }}">
-                            @error('price')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
                         </div>
@@ -144,7 +143,7 @@
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
                     </div>
-                    
+
                     <div class="col-md-6">
                         <a href="{{ route('inventory.index') }}" class="btn btn-secondary">Cancel</a>
                         <button type="submit" class="btn btn-primary">Save</button>

@@ -123,8 +123,11 @@
                             <tr>
                                 <td>
                                     @if ($goodsOut->quantity > 0)
-                                        <input type="checkbox" class="select-row" id="checkbox-{{ $goodsOut->id }}"
-                                            value="{{ $goodsOut->id }}">
+                                        @if (auth()->user()->username === $goodsOut->requested_by ||
+                                                in_array(auth()->user()->role, ['super_admin', 'admin_logistic']))
+                                            <input type="checkbox" class="select-row" id="checkbox-{{ $goodsOut->id }}"
+                                                value="{{ $goodsOut->id }}">
+                                        @endif
                                     @endif
                                 </td>
                                 <td>{{ $goodsOut->inventory->name ?? '-' }}</td>
@@ -136,7 +139,7 @@
                                 <td>{{ ucfirst($goodsOut->requested_by) }}
                                     ({{ ucfirst($goodsOut->department) }})
                                 </td>
-                                <td>{{ $goodsOut->created_at->format('d-m-Y, H:i') }}</td>
+                                <td>{{ \Carbon\Carbon::parse($goodsOut->created_at)->translatedFormat('d F Y, H:i') }}</td>
                                 <td>
                                     @if ($goodsOut->remark)
                                         {{ $goodsOut->remark }}
@@ -147,10 +150,13 @@
                                 <td>
                                     <div class="d-flex flex-wrap gap-1 align-items-center">
                                         @if ($goodsOut->quantity > 0)
-                                            <a href="{{ route('goods_in.create', ['goods_out_id' => $goodsOut->id]) }}"
-                                                class="btn btn-sm btn-success">
-                                                Goods In
-                                            </a>
+                                            @if (auth()->user()->username === $goodsOut->requested_by ||
+                                                    in_array(auth()->user()->role, ['super_admin', 'admin_logistic']))
+                                                <a href="{{ route('goods_in.create', ['goods_out_id' => $goodsOut->id]) }}"
+                                                    class="btn btn-sm btn-success">
+                                                    Goods In
+                                                </a>
+                                            @endif
                                         @endif
                                         @if (
                                             $goodsOut->material_request_id &&

@@ -131,8 +131,8 @@
                                 <td>{{ $inventory->quantity }} {{ $inventory->unit }}</td>
                                 @if (in_array(auth()->user()->role, ['super_admin', 'admin_logistic', 'admin_finance']))
                                     <td>
-                                        {{ $inventory->currency ? $inventory->currency->name : '' }}
                                         {{ number_format($inventory->price, 2, ',', '.') }}
+                                        {{ $inventory->currency ? $inventory->currency->name : '' }}
                                     </td>
                                 @endif
                                 <td>{{ $inventory->supplier ?? '-' }}</td>
