@@ -12,7 +12,7 @@ class ImportInventoryTemplate implements FromArray, WithHeadings, WithStyles, Wi
 {
     public function headings(): array
     {
-        $headings = ['name', 'quantity', 'unit', 'currency', 'price', 'supplier', 'location'];
+        $headings = ['name', 'category', 'quantity', 'unit', 'price', 'currency', 'supplier', 'location', 'remark'];
         return array_map('ucwords', $headings);
     }
 
@@ -37,13 +37,15 @@ class ImportInventoryTemplate implements FromArray, WithHeadings, WithStyles, Wi
     public function columnWidths(): array
     {
         return [
-            'A' => 20, // Lebar kolom 'name'
-            'B' => 15, // Lebar kolom 'quantity'
-            'C' => 15, // Lebar kolom 'unit'
-            'D' => 15, // Lebar kolom 'currency'
+            'A' => 25, // Lebar kolom 'name'
+            'B' => 15, // Lebar kolom 'category'
+            'C' => 15, // Lebar kolom 'quantity'
+            'D' => 10, // Lebar kolom 'unit'
             'E' => 15, // Lebar kolom 'price'
-            'F' => 20, // Lebar kolom 'supplier'
-            'G' => 25, // Lebar kolom 'location'
+            'F' => 10, // Lebar kolom 'currency'
+            'G' => 20, // Lebar kolom 'supplier'
+            'H' => 15, // Lebar kolom 'location'
+            'I' => 25, // Lebar kolom 'remark'
         ];
     }
 }

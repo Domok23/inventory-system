@@ -131,6 +131,16 @@
                         </div>
                     </div>
 
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label for="remark" class="form-label">Remark (Optional)</label>
+                            <textarea class="form-control" id="remark" name="remark" rows="2">{{ old('remark') }}</textarea>
+                            @error('remark')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
+                    </div>
+
                     <div class="col-md-6 mb-4">
                         <label for="img" class="form-label">Upload Image (optional)</label>
                         <input class="form-control" type="file" id="img" name="img" accept="image/*"

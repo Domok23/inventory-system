@@ -149,22 +149,6 @@ class InventoryController extends Controller
         foreach ($data as $index => $row) {
             if ($index === 0) continue; // Skip header row
 
-            // Bersihkan data harga
-            $price = str_replace([',', '$'], '', $row[4] ?? null);
-            $price = is_numeric($price) ? $price : 0; // Jika harga kosong atau tidak valid, set ke 0
-
-            // Validasi currency
-            $currencyName = $row[3] ?? '-';
-            $currency = Currency::where('name', $currencyName)->first();
-            if (!$currency && $currencyName !== '-') {
-                $errors[] = "Row {$index} Error: Invalid currency '{$currencyName}'.";
-                continue; // Skip jika currency tidak valid
-            }
-
-            // Validasi unit
-            $unitName = $row[2] ?? '-';
-            $unit = Unit::firstOrCreate(['name' => $unitName]); // Tambahkan unit baru jika belum ada
-
             // Validasi nama inventory
             $inventoryName = $row[0] ?? null;
             if (!$inventoryName) {
@@ -172,14 +156,43 @@ class InventoryController extends Controller
                 continue; // Skip jika nama inventory kosong
             }
 
+            // Validasi category
+            $categoryName = $row[1] ?? null; // Ambil category dari kolom kedua
+            $category = null;
+            if ($categoryName) {
+                $category = Category::whereRaw('LOWER(name) = ?', [strtolower($categoryName)])->first();
+                if (!$category) {
+                    // Tambahkan kategori baru jika tidak ditemukan
+                    $category = Category::create(['name' => $categoryName]);
+                }
+            }
+
+            // Validasi unit
+            $unitName = $row[3] ?? '-';
+            $unit = Unit::firstOrCreate(['name' => $unitName]); // Tambahkan unit baru jika belum ada
+
+            // Bersihkan data harga
+            $price = str_replace([',', '$'], '', $row[4] ?? null);
+            $price = is_numeric($price) ? $price : 0; // Jika harga kosong atau tidak valid, set ke 0
+
+            // Validasi currency
+            $currencyName = $row[5] ?? '-';
+            $currency = Currency::where('name', $currencyName)->first();
+            if (!$currency && $currencyName !== '-') {
+                $errors[] = "Row {$index} Error: Invalid currency '{$currencyName}'.";
+                continue; // Skip jika currency tidak valid
+            }
+
             $inventory = new Inventory();
             $inventory->name = $inventoryName;
-            $inventory->quantity = is_numeric($row[1]) ? $row[1] : 0; // Jika quantity kosong, set ke 0
+            $inventory->category_id = $category ? $category->id : null; // Set category ID jika valid
+            $inventory->quantity = is_numeric($row[2]) ? $row[2] : 0; // Jika quantity kosong, set ke 0
             $inventory->unit = $unit->name; // Gunakan nama unit yang sudah divalidasi
-            $inventory->currency_id = $currency ? $currency->id : null; // Set currency ID jika valid
             $inventory->price = $price;
-            $inventory->supplier = $row[5] ?? null;
-            $inventory->location = $row[6] ?? null;
+            $inventory->currency_id = $currency ? $currency->id : null; // Set currency ID jika valid
+            $inventory->supplier = $row[6] ?? null;
+            $inventory->location = $row[7] ?? null;
+            $inventory->remark = $row[8] ?? null;
 
             // Cek jika inventory sudah ada
             $existingInventory = Inventory::where('name', $inventory->name)->first();
@@ -250,6 +263,7 @@ class InventoryController extends Controller
         $inventory->supplier = $request->supplier;
         $inventory->currency_id = $request->currency_id;
         $inventory->location = $request->location;
+        $inventory->remark = $request->remark;
         $inventory->category_id = $request->category_id;
 
         // Simpan unit baru jika ada
@@ -346,6 +360,7 @@ class InventoryController extends Controller
         $inventory->supplier = $request->supplier;
         $inventory->currency_id = $request->currency_id;
         $inventory->location = $request->location;
+        $inventory->remark = $request->remark;
         $inventory->category_id = $request->category_id;
 
         // Simpan unit baru jika ada

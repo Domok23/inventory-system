@@ -117,6 +117,7 @@
                             @endif
                             <th>Supplier</th>
                             <th>Location</th>
+                            <th>Remark</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -137,6 +138,7 @@
                                 @endif
                                 <td>{{ $inventory->supplier ?? '-' }}</td>
                                 <td>{{ $inventory->location ?? '-' }}</td>
+                                <td>{{ $inventory->remark ?? '-' }}</td>
                                 <td>
                                     <div class="d-flex flex-wrap gap-1">
                                         @if (in_array(auth()->user()->role, ['super_admin', 'admin_logistic']))
@@ -204,7 +206,7 @@
                                             required accept=".xls,.xlsx">
                                     </div>
                                     <p class="text-muted">
-                                        Template kolom: <code>Name, Quantity, Unit, Currency, Price, Supplier, Location</code>
+                                        Template kolom: <code>Name, Category, Quantity, Unit, Price, Currency, Supplier, Location</code>
                                     </p>
                                     <a href="{{ route('inventory.template') }}" class="btn btn-outline-secondary btn-sm">
                                         Download Template

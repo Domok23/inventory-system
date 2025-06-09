@@ -12,6 +12,7 @@
             @endif
             <th>Supplier</th>
             <th>Location</th>
+            <th>Remark</th>
         </tr>
     </thead>
     <tbody>
@@ -27,6 +28,7 @@
                 @endif
                 <td>{{ $inventory->supplier }}</td>
                 <td>{{ $inventory->location }}</td>
+                <td>{{ $inventory->remark ?? '-' }}</td>
             </tr>
         @endforeach
     </tbody>

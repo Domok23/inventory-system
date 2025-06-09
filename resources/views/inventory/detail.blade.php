@@ -60,6 +60,10 @@
                                 <th>Location</th>
                                 <td>{{ $inventory->location ?? '-' }}</td>
                             </tr>
+                            <tr>
+                                <th>Remark</th>
+                                <td>{{ $inventory->remark ?? '-' }}</td>
+                            </tr>
                         </table>
                     </div>
                     <div class="col-md-6 text-center">

@@ -9,17 +9,16 @@ class InventoryImport implements ToModel
 {
     public function model(array $row)
     {
-        if (!is_numeric($row[3])) {
-            return null; // Skip baris jika harga tidak valid
-        }
-        
         return new Inventory([
             'name' => $row[0],
-            'quantity' => $row[1],
-            'unit' => $row[2],
-            'price' => $row[3],
-            'supplier' => $row[4],
-            'location' => $row[5],
+            'category_id' => $row[1],
+            'quantity' => $row[2],
+            'unit' => $row[3],
+            'price' => $row[4],
+            'currency_id' => $row[5],
+            'supplier' => $row[6],
+            'location' => $row[7],
+            'remark' => $row[8],
         ]);
     }
 }
