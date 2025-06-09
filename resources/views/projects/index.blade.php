@@ -171,7 +171,7 @@
             });
 
             // SweetAlert for delete confirmation
-            $('.btn-delete').on('click', function(e) {
+            $(document).on('click', '.btn-delete', function(e) {
                 e.preventDefault();
                 let form = $(this).closest('form');
                 Swal.fire({
@@ -182,7 +182,7 @@
                     confirmButtonColor: '#3085d6',
                     cancelButtonColor: '#d33',
                     confirmButtonText: 'Yes, delete it!',
-                    reverseButtons: true
+                    reverseButtons: true,
                 }).then((result) => {
                     if (result.isConfirmed) {
                         form.submit();

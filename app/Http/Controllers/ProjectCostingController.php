@@ -56,18 +56,20 @@ class ProjectCostingController extends Controller
                 $item->inventory = (object) [
                     'name' => 'N/A',
                     'price' => 0,
-                    'currency' => (object) ['name' => 'N/A']
+                    'unit' => 'N/A',
+                    'currency' => (object) ['name' => 'N/A', 'exchange_rate' => 1]
                 ]; // Default jika inventory null
             }
 
             $price = $item->inventory->price ?? 0; // Harga per unit
             $quantity = $item->quantity ?? 0; // Jumlah material
-            $exchangeRate = $item->inventory->currency->exchange_rate_to_idr ?? 1; // Kurs ke IDR (default 1 jika tidak ada)
+            $exchangeRate = $item->inventory->currency->exchange_rate ?? 1; // Kurs ke IDR (default 1 jika tidak ada)
 
             $totalCost = $price * $quantity; // Total biaya sebelum konversi
             $totalCostInIDR = $totalCost * $exchangeRate; // Konversi ke IDR
 
-            $item->total_cost = $totalCostInIDR; // Simpan total cost dalam IDR
+            $item->total_price = $totalCost; // Simpan Total Price (Price x Quantity)
+            $item->total_cost = $totalCostInIDR; // Simpan Total Cost dalam IDR
             return $item;
         });
 

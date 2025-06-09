@@ -24,7 +24,7 @@ class ProjectCostingExport implements FromCollection, WithHeadings
         return $this->materials->map(function ($item) {
             $pricePerUnit = $item->inventory->price ?? 0; // Harga per unit
             $quantity = $item->quantity ?? 0; // Jumlah material
-            $exchangeRate = $item->inventory->currency->exchange_rate_to_idr ?? 1; // Kurs ke IDR (default 1 jika tidak ada)
+            $exchangeRate = $item->inventory->currency->exchange_rate ?? 1; // Kurs ke IDR (default 1 jika tidak ada)
 
             $totalCost = $pricePerUnit * $quantity; // Total biaya sebelum konversi
             $totalCostInIDR = $totalCost * $exchangeRate; // Konversi ke IDR
@@ -32,13 +32,14 @@ class ProjectCostingExport implements FromCollection, WithHeadings
             return [
                 'Material' => $item->inventory->name ?? 'N/A',
                 'Quantity' => $quantity,
-                'Price per Unit' => $pricePerUnit,
+                'Unit Price' => $pricePerUnit,
+                'Total Price' => $totalCost,
                 'Total Cost (IDR)' => $totalCostInIDR,
             ];
         });
     }
     public function headings(): array
     {
-        return ['Material', 'Quantity', 'Price per Unit', 'Total Cost (IDR)'];
+        return ['Material', 'Quantity', 'Unit Price', 'Total Price', 'Total Cost (IDR)'];
     }
 }

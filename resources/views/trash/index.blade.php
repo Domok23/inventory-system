@@ -40,13 +40,13 @@
                 <!-- Trash Tables -->
                 @foreach ([
             'inventories' => 'Inventory',
-            'goodsIns' => 'Goods In',
-            'goodsOuts' => 'Goods Out',
             'projects' => 'Project',
-            'users' => 'User',
-            'materialUsages' => 'Material Usage',
             'materialRequests' => 'Material Request',
+            'goodsOuts' => 'Goods Out',
+            'goodsIns' => 'Goods In',
+            'materialUsages' => 'Material Usage',
             'currencies' => 'Currency',
+            'users' => 'User',
         ] as $var => $label)
                     <h5 class="mt-4">{{ $label }}</h5>
                     <table class="table table-bordered table-sm align-middle" id="table-{{ $var }}">
@@ -68,18 +68,23 @@
                                         <input type="hidden" name="model_map[{{ $item->id }}]"
                                             value="{{ [
                                                 'inventories' => 'inventory',
-                                                'goodsIns' => 'goods_in',
-                                                'goodsOuts' => 'goods_out',
                                                 'projects' => 'project',
-                                                'users' => 'user',
-                                                'materialUsages' => 'material_usage',
                                                 'materialRequests' => 'material_request',
+                                                'goodsOuts' => 'goods_out',
+                                                'goodsIns' => 'goods_in',
+                                                'materialUsages' => 'material_usage',
                                                 'currencies' => 'currency',
+                                                'users' => 'user',
                                             ][$var] }}">
                                     </td>
                                     <td>{{ $item->id }}</td>
                                     <td>
-                                        @if (isset($item->name))
+                                        @if ($var === 'materialRequests' || $var === 'materialUsages' || $var === 'goodsOuts' || $var === 'goodsIns')
+                                            {{ $item->inventory->name ?? '(no material)' }}
+                                            @if ($item->project)
+                                                ({{ $item->project->name ?? '(no project)' }})
+                                            @endif
+                                        @elseif(isset($item->name))
                                             {{ $item->name }}
                                         @elseif(isset($item->username))
                                             {{ $item->username }}
@@ -98,13 +103,13 @@
                                                 <input type="hidden" name="model"
                                                     value="{{ [
                                                         'inventories' => 'inventory',
-                                                        'goodsIns' => 'goods_in',
-                                                        'goodsOuts' => 'goods_out',
                                                         'projects' => 'project',
-                                                        'users' => 'user',
-                                                        'materialUsages' => 'material_usage',
                                                         'materialRequests' => 'material_request',
+                                                        'goodsOuts' => 'goods_out',
+                                                        'goodsIns' => 'goods_in',
+                                                        'materialUsages' => 'material_usage',
                                                         'currencies' => 'currency',
+                                                        'users' => 'user',
                                                     ][$var] }}">
                                                 <input type="hidden" name="id" value="{{ $item->id }}">
                                                 <button class="btn btn-success btn-sm restore-btn"
@@ -117,13 +122,13 @@
                                                 <input type="hidden" name="model"
                                                     value="{{ [
                                                         'inventories' => 'inventory',
-                                                        'goodsIns' => 'goods_in',
-                                                        'goodsOuts' => 'goods_out',
                                                         'projects' => 'project',
-                                                        'users' => 'user',
-                                                        'materialUsages' => 'material_usage',
                                                         'materialRequests' => 'material_request',
+                                                        'goodsOuts' => 'goods_out',
+                                                        'goodsIns' => 'goods_in',
+                                                        'materialUsages' => 'material_usage',
                                                         'currencies' => 'currency',
+                                                        'users' => 'user',
                                                     ][$var] }}">
                                                 <input type="hidden" name="id" value="{{ $item->id }}">
                                                 <button class="btn btn-danger btn-sm delete-btn" type="button">Delete
@@ -143,7 +148,7 @@
 @push('scripts')
     <script>
         $(document).ready(function() {
-            @foreach (['inventories', 'goodsIns', 'goodsOuts', 'projects', 'users', 'materialUsages', 'materialRequests', 'categories', 'currencies'] as $var)
+            @foreach (['inventories', 'projects', 'materialRequests', 'goodsOuts', 'goodsIns', 'materialUsages', 'currencies', 'users', 'categories'] as $var)
                 $('#table-{{ $var }}').DataTable({
                     responsive: true,
                     order: [],
@@ -178,11 +183,9 @@
                     $('#bulk-action-form').submit();
                 }
             });
-        });
 
-        $(document).ready(function() {
-            // SweetAlert2 for Restore
-            $('.restore-btn').on('click', function(e) {
+            // Event delegation for Restore button SweetAlert2
+            $(document).on('click', '.restore-btn', function(e) {
                 e.preventDefault();
                 const form = $(this).closest('form');
                 Swal.fire({
@@ -201,8 +204,8 @@
                 });
             });
 
-            // SweetAlert2 for Delete Permanently
-            $('.delete-btn').on('click', function(e) {
+            // Event delegation for Delete Permanently button SweetAlert2
+            $(document).on('click', '.delete-btn', function(e) {
                 e.preventDefault();
                 const form = $(this).closest('form');
                 Swal.fire({

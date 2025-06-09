@@ -4,13 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Inventory;
-use App\Models\GoodsIn;
-use App\Models\GoodsOut;
 use App\Models\Project;
-use App\Models\User;
 use App\Models\MaterialUsage;
+use App\Models\GoodsOut;
+use App\Models\GoodsIn;
 use App\Models\MaterialRequest;
 use App\Models\Currency;
+use App\Models\User;
 
 class TrashController extends Controller
 {
@@ -29,13 +29,13 @@ class TrashController extends Controller
     {
         return view('trash.index', [
             'inventories'      => Inventory::onlyTrashed()->get(),
-            'goodsIns'         => GoodsIn::onlyTrashed()->get(),
-            'goodsOuts'        => GoodsOut::onlyTrashed()->get(),
             'projects'         => Project::onlyTrashed()->get(),
-            'users'            => User::onlyTrashed()->get(),
-            'materialUsages'   => MaterialUsage::onlyTrashed()->get(),
-            'materialRequests' => MaterialRequest::onlyTrashed()->get(),
+            'materialRequests' => MaterialRequest::onlyTrashed()->with(['inventory', 'project'])->get(),
+            'goodsOuts'        => GoodsOut::onlyTrashed()->with(['inventory', 'project'])->get(),
+            'goodsIns'         => GoodsIn::onlyTrashed()->with(['inventory', 'project'])->get(),
+            'materialUsages'   => MaterialUsage::onlyTrashed()->with(['inventory', 'project'])->get(),
             'currencies'       => Currency::onlyTrashed()->get(),
+            'users'            => User::onlyTrashed()->get(),
         ]);
     }
 
@@ -67,13 +67,13 @@ class TrashController extends Controller
     {
         return match ($model) {
             'inventory'        => Inventory::class,
-            'goods_in'         => GoodsIn::class,
-            'goods_out'        => GoodsOut::class,
             'project'          => Project::class,
-            'user'             => User::class,
-            'material_usage'   => MaterialUsage::class,
             'material_request' => MaterialRequest::class,
+            'goods_out'        => GoodsOut::class,
+            'goods_in'         => GoodsIn::class,
+            'material_usage'   => MaterialUsage::class,
             'currency'         => Currency::class,
+            'user'             => User::class,
             default            => null,
         };
     }

@@ -12,7 +12,8 @@
                             <select id="filter-department" name="department" class="form-select select2">
                                 <option value="">All Departments</option>
                                 @foreach ($departments as $department)
-                                    <option value="{{ $department }}" {{ request('department') == $department ? 'selected' : '' }}>
+                                    <option value="{{ $department }}"
+                                        {{ request('department') == $department ? 'selected' : '' }}>
                                         {{ ucfirst($department) }}
                                     </option>
                                 @endforeach
@@ -67,7 +68,8 @@
                             <tr>
                                 <th>Material</th>
                                 <th>Quantity</th>
-                                <th>Price per Unit</th>
+                                <th>Unit Price</th>
+                                <th>Total Price</th>
                                 <th>Total Cost (IDR)</th>
                             </tr>
                         </thead>
@@ -75,7 +77,7 @@
                             <!-- Data akan dimuat melalui AJAX -->
                         </tbody>
                     </table>
-                    <h5 class="text-end" id="grandTotal">Grand Total: IDR 0</h5>
+                    <h5 class="text-end" id="grandTotal">Grand Total: Rp 0</h5>
                 </div>
             </div>
         </div>
@@ -91,12 +93,12 @@
 
         // Initialize Select2
         $('.select2').select2({
-                theme: 'bootstrap-5',
-                placeholder: function() {
-                    return $(this).data('placeholder');
-                },
-                allowClear: true
-            });
+            theme: 'bootstrap-5',
+            placeholder: function() {
+                return $(this).data('placeholder');
+            },
+            allowClear: true
+        });
 
         function formatCurrency(value) {
             return new Intl.NumberFormat('id-ID', {
@@ -124,19 +126,24 @@
                                 name: 'N/A'
                             }
                         }; // Default jika inventory null
+
+                        const totalPrice = (inventory.price || 0) * (material.quantity ||
+                        0); // Hitung Price x Quantity
+
                         const row = `
-                    <tr>
-                        <td>${inventory.name}</td>
-                        <td>${material.quantity || 0} ${inventory.unit || ''}</td>
-                        <td>${inventory.currency.name || 'N/A'} ${formatCurrency(inventory.price || 0)}</td>
-                        <td>${formatCurrency(material.total_cost || 0)}</td>
-                    </tr>
-                `;
+                                        <tr>
+                                            <td>${inventory.name}</td>
+                                            <td>${material.quantity || 0} ${inventory.unit || ''}</td>
+                                            <td>${formatCurrency(inventory.price || 0)} ${inventory.currency.name || 'N/A'}</td>
+                                            <td>${formatCurrency(totalPrice)} ${inventory.currency.name || 'N/A'}</td> <!-- Kolom baru -->
+                                            <td>${formatCurrency(material.total_cost || 0)} IDR</td>
+                                        </tr>
+                                    `;
                         tableBody.innerHTML += row;
                     });
 
-                    document.getElementById('grandTotal').innerText =
-                        `Grand Total: IDR ${formatCurrency(data.grand_total_idr)}`;
+                    document.getElementById('grandTotal').innerHTML =
+                        `Grand Total: <span class="text-success fw-bold">${formatCurrency(data.grand_total_idr)} IDR</span>`;
                     const modal = new bootstrap.Modal(document.getElementById('costingModal'));
                     modal.show();
                 })
