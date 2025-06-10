@@ -151,6 +151,7 @@
             @foreach (['inventories', 'projects', 'materialRequests', 'goodsOuts', 'goodsIns', 'materialUsages', 'currencies', 'users', 'categories'] as $var)
                 $('#table-{{ $var }}').DataTable({
                     responsive: true,
+                    stateSave: true,
                     order: [],
                     pageLength: 10
                 });

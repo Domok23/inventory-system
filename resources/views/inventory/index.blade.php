@@ -228,7 +228,8 @@
         $(document).ready(function() {
             $('#datatable').DataTable({
                 responsive: true,
-                fixedHeader: true
+                fixedHeader: true,
+                stateSave: true,
             });
 
             // Initialize Select2
@@ -260,8 +261,9 @@
                 });
             });
 
-            // Gunakan event delegation agar tetap berfungsi di semua pagination
             let currentInventoryName = 'qr-code';
+
+            // Gunakan event delegation agar tetap berfungsi di semua pagination
             $(document).on('click', '.btn-show-image', function() {
                 // Reset modal content
                 $('#img-container').html('');

@@ -160,7 +160,8 @@
         });
         $(document).ready(function() {
             $('#datatable').DataTable({
-                responsive: true
+                responsive: true,
+                stateSave: true,
             });
 
             // SweetAlert for delete confirmation

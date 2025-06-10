@@ -114,7 +114,8 @@
     <script>
         $(document).ready(function() {
             $('#datatable').DataTable({
-                responsive: true
+                responsive: true,
+                stateSave: true,
             });
 
             // Initialize Select2

@@ -215,6 +215,7 @@
             $('#datatable').DataTable({
                 responsive: true,
                 destroy: true,
+                stateSave: true,
                 columnDefs: [{
                         orderable: false,
                         targets: 0

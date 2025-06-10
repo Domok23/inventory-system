@@ -69,11 +69,12 @@
         <script>
             $(document).ready(function() {
                 $('#datatable').DataTable({
-                    responsive: true
+                    responsive: true,
+                    stateSave: true,
                 });
 
-                // SweetAlert for delete confirmation
-                $('.btn-delete').on('click', function(e) {
+                // SweetAlert for delete confirmation (use event delegation)
+                $(document).on('click', '.btn-delete', function(e) {
                     e.preventDefault();
                     let form = $(this).closest('form');
                     Swal.fire({

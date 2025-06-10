@@ -196,6 +196,7 @@
         $(document).ready(function() {
             $('#datatable').DataTable({
                 responsive: true,
+                stateSave: true,
                 columnDefs: [{
                         orderable: false,
                         targets: 0
