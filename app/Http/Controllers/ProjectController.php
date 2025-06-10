@@ -101,9 +101,9 @@ class ProjectController extends Controller
             $validated['img'] = $request->file('img')->store('projects', 'public');
         }
 
-        Project::create($validated);
+        $project = Project::create($validated);
 
-        return redirect()->route('projects.index')->with('success', 'Project created successfully.');
+        return redirect()->route('projects.index')->with('success', "Project '{$project->name}' added successfully!");
     }
 
     public function storeQuick(Request $request)
@@ -126,7 +126,7 @@ class ProjectController extends Controller
         }
 
         // Jika bukan AJAX, redirect biasa
-        return back()->with('success', 'Project added');
+        return back()->with('success', 'Project added successfully!');
     }
 
     public function json()
@@ -161,12 +161,14 @@ class ProjectController extends Controller
 
         $project->update($validated);
 
-        return redirect()->route('projects.index')->with('success', 'Project updated successfully.');
+        return redirect()->route('projects.index')->with('success', "Project '{$project->name}' updated successfully!");
     }
 
     public function destroy(Project $project)
     {
+        $projectName = $project->name;
         $project->delete();
-        return redirect()->route('projects.index')->with('success', 'Project deleted successfully.');
+
+        return redirect()->route('projects.index')->with('success', "Project '{$projectName}' deleted successfully!");
     }
 }

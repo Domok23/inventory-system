@@ -25,7 +25,7 @@ class GoodsInController extends Controller
             return $next($request);
         });
     }
-    
+
     public function index(Request $request)
     {
         $query = GoodsIn::with(['goodsOut.inventory', 'goodsOut.project', 'inventory', 'project']);
@@ -173,7 +173,9 @@ class GoodsInController extends Controller
         // Sinkronkan data penggunaan material
         MaterialUsageHelper::sync($inventory->id, $goodsOut->project_id);
 
-        return redirect()->route('goods_in.index')->with('success', 'Goods In recorded successfully.');
+        $projectName = $goodsOut->project ? $goodsOut->project->name : 'No Project';
+
+        return redirect()->route('goods_in.index')->with('success', "Goods In '{$inventory->name}' for '{$projectName}' added successfully!");
     }
 
     public function createIndependent()
@@ -219,7 +221,7 @@ class GoodsInController extends Controller
             MaterialUsageHelper::sync($request->inventory_id, $request->project_id);
         }
 
-        return redirect()->route('goods_in.index')->with('success', 'Goods In created successfully.');
+        return redirect()->route('goods_in.index')->with('success', "Goods In created successfully.");
     }
 
     public function bulkGoodsIn(Request $request)
@@ -250,7 +252,7 @@ class GoodsInController extends Controller
             ]);
         }
 
-        return redirect()->route('goods_out.index')->with('success', 'Bulk Goods In processed successfully.');
+        return redirect()->route('goods_out.index')->with('success', "Bulk Goods In processed successfully.");
     }
 
     public function edit(GoodsIn $goods_in)
@@ -282,14 +284,17 @@ class GoodsInController extends Controller
             MaterialUsageHelper::sync($request->inventory_id, $request->project_id);
         }
 
-        return redirect()->route('goods_in.index')->with('success', 'Goods In updated successfully.');
+        $inventory = Inventory::findOrFail($request->inventory_id);
+        $projectName = $request->project_id ? Project::findOrFail($request->project_id)->name : 'No Project';
+
+        return redirect()->route('goods_in.index')->with('success', "Goods In '{$inventory->name}' from '{$projectName}' updated successfully!");
     }
 
     public function destroy(GoodsIn $goods_in)
     {
         // Cek apakah Goods In terkait dengan Goods Out
         if ($goods_in->goods_out_id) {
-            return redirect()->route('goods_in.index')->with('error', 'Cannot delete Goods In that is linked to a Goods Out.');
+            return redirect()->route('goods_in.index')->with('error', "Cannot delete Goods In that is linked to a Goods Out.");
         }
 
         // Hapus Goods In
@@ -298,6 +303,9 @@ class GoodsInController extends Controller
         // Sinkronkan Material Usage
         MaterialUsageHelper::sync($goods_in->inventory_id, $goods_in->project_id);
 
-        return redirect()->route('goods_in.index')->with('success', 'Goods In deleted successfully.');
+        $inventoryName = $goods_in->inventory ? $goods_in->inventory->name : 'Unknown Material';
+        $projectName = $goods_in->project ? $goods_in->project->name : 'No Project';
+
+        return redirect()->route('goods_in.index')->with('success', "Goods In '{$inventoryName}' for '{$projectName}' deleted successfully!");
     }
 }

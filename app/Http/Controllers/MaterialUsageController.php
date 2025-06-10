@@ -109,10 +109,10 @@ class MaterialUsageController extends Controller
     public function destroy(MaterialUsage $material_usage)
     {
         if (auth()->user()->role !== 'super_admin') {
-            return redirect()->route('material_usage.index')->with('error', 'You are not authorized to delete this data.');
+            return redirect()->route('material_usage.index')->with('error', "You are not authorized to delete this data.");
         }
 
         $material_usage->delete();
-        return redirect()->route('material_usage.index')->with('success', 'Material usage deleted successfully.');
+        return redirect()->route('material_usage.index')->with('success', "Material usage deleted successfully.");
     }
 }

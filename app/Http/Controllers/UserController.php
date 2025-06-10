@@ -76,18 +76,18 @@ class UserController extends Controller
 
         $user->save();
 
-        return redirect()->route('users.index')->with('success', 'User updated successfully.');
+        return redirect()->route('users.index')->with('success', "User updated successfully.");
     }
 
     public function destroy(User $user)
     {
         // Hindari menghapus super admin atau user aktif sendiri
         if (auth()->id() === $user->id) {
-            return redirect()->route('users.index')->with('error', 'You cannot delete your own account.');
+            return redirect()->route('users.index')->with('error', "You cannot delete your own account.");
         }
 
         $user->delete();
 
-        return redirect()->route('users.index')->with('success', 'User deleted successfully.');
+        return redirect()->route('users.index')->with('success', "User deleted successfully.");
     }
 }

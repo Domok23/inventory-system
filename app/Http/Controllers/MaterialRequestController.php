@@ -170,7 +170,7 @@ class MaterialRequestController extends Controller
         // Trigger event
         event(new MaterialRequestUpdated($materialRequest, 'created'));
 
-        return redirect()->route('material_requests.index')->with('success', 'Material Request Created');
+        return redirect()->route('material_requests.index')->with('success', "Material Request Created Successfully");
     }
 
     public function bulkCreate()
@@ -235,7 +235,7 @@ class MaterialRequestController extends Controller
         }
 
         // Jika bukan AJAX, redirect ke halaman daftar material request
-        return redirect()->route('material_requests.index')->with('success', 'Bulk material requests submitted successfully!');
+        return redirect()->route('material_requests.index')->with('success', "Bulk material requests submitted successfully!");
     }
 
     public function edit($id)
@@ -245,16 +245,16 @@ class MaterialRequestController extends Controller
 
         // Validasi: Pastikan hanya Material Request dengan status tertentu yang bisa diedit
         if ($request->status !== 'pending') {
-            return redirect()->route('material_requests.index')->with('error', 'Only pending requests can be edited.');
+            return redirect()->route('material_requests.index')->with('error', "Only pending requests can be edited.");
         }
 
         if ($request->status === 'canceled') {
-            return redirect()->route('material_requests.index')->with('error', 'Canceled requests cannot be edited.');
+            return redirect()->route('material_requests.index')->with('error', "Canceled requests cannot be edited.");
         }
 
         // Validasi: Pastikan inventory dan project terkait masih ada
         if (!$request->inventory || !$request->project) {
-            return redirect()->route('material_requests.index')->with('error', 'The associated inventory or project no longer exists.');
+            return redirect()->route('material_requests.index')->with('error', "The associated inventory or project no longer exists.");
         }
 
         // Ambil data tambahan untuk dropdown
@@ -286,7 +286,7 @@ class MaterialRequestController extends Controller
             // Trigger event
             event(new MaterialRequestUpdated($materialRequest, 'updated'));
 
-            return redirect()->route('material_requests.index')->with('success', 'Status updated successfully.');
+            return redirect()->route('material_requests.index')->with('success', "Status updated successfully.");
         }
 
         // Validasi untuk pembaruan lengkap
@@ -306,7 +306,7 @@ class MaterialRequestController extends Controller
         }
 
         if ($materialRequest->status === 'canceled') {
-            return redirect()->route('material_requests.index')->with('error', 'Canceled requests cannot be updated.');
+            return redirect()->route('material_requests.index')->with('error', "Canceled requests cannot be updated.");
         }
 
         $materialRequest->update([
@@ -320,7 +320,7 @@ class MaterialRequestController extends Controller
         // Trigger event
         event(new MaterialRequestUpdated($materialRequest, 'updated'));
 
-        return redirect()->route('material_requests.index')->with('success', 'Material Request updated successfully.');
+        return redirect()->route('material_requests.index')->with('success', "Material Request updated successfully.");
     }
 
     public function destroy($id)
@@ -328,7 +328,7 @@ class MaterialRequestController extends Controller
         $materialRequest = MaterialRequest::findOrFail($id);
 
         if ($materialRequest->status === 'canceled') {
-            return redirect()->route('material_requests.index')->with('error', 'Canceled requests cannot be deleted.');
+            return redirect()->route('material_requests.index')->with('error', "Canceled requests cannot be deleted.");
         }
 
         // Trigger event
@@ -336,6 +336,6 @@ class MaterialRequestController extends Controller
 
         $materialRequest->delete();
 
-        return back()->with('success', 'Material Request deleted successfully.');
+        return back()->with('success', "Material Request deleted successfully.");
     }
 }

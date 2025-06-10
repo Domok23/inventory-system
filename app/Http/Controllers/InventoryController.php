@@ -311,7 +311,7 @@ class InventoryController extends Controller
         }
 
         return redirect()->route('inventory.index')->with([
-            'success' => 'Inventory added successfully!',
+            'success' => "Inventory '{$inventory->name}' added successfully!",
             'warning' => $warningMessage,
         ]);
     }
@@ -417,7 +417,7 @@ class InventoryController extends Controller
         }
 
         return redirect()->route('inventory.index')->with([
-            'success' => 'Inventory added successfully!',
+            'success' => "Inventory '{$inventory->name}' edited successfully!",
             'warning' => $warningMessage,
         ]);
     }
@@ -462,6 +462,6 @@ class InventoryController extends Controller
         $inventory = Inventory::findOrFail($id);
         $inventory->delete();
 
-        return redirect()->route('inventory.index')->with('success', 'Inventory deleted successfully.');
+        return redirect()->route('inventory.index')->with('success', "Inventory '{$inventory->name}' deleted successfully.");
     }
 }
