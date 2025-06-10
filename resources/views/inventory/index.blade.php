@@ -36,10 +36,10 @@
                     </div>
                 @endif
                 @if (session('warning'))
-                <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                    {{ session('warning') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        {{ session('warning') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
                 @endif
                 @if (session('error'))
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -206,7 +206,8 @@
                                             required accept=".xls,.xlsx">
                                     </div>
                                     <p class="text-muted">
-                                        Template kolom: <code>Name, Category, Quantity, Unit, Price, Currency, Supplier, Location</code>
+                                        Template kolom: <code>Name, Category, Quantity, Unit, Price, Currency, Supplier,
+                                            Location</code>
                                     </p>
                                     <a href="{{ route('inventory.template') }}" class="btn btn-outline-secondary btn-sm">
                                         Download Template
@@ -229,7 +230,27 @@
             $('#datatable').DataTable({
                 responsive: true,
                 fixedHeader: true,
+                select: true,
                 stateSave: true,
+                createdRow: function(row, data, dataIndex) {
+                    // Ambil nilai quantity dari kolom ke-4 (index 3)
+                    const quantity = parseFloat(data[3]); // Pastikan kolom quantity berada di index 3
+                    if (quantity === 0) {
+                        // Tambahkan gaya untuk quantity = 0
+                        $('td', row).eq(3).css({
+                            'color': '#ef4444', // Warna merah (Bootstrap text-danger)
+                            // 'background-color': '#f8d7da',
+                            'font-weight': 'bold'
+                        });
+                    } else if (quantity < 3) {
+                        // Tambahkan gaya untuk quantity < 3
+                        $('td', row).eq(3).css({
+                            'color': '#f97316',
+                            // 'background-color': '#fff3cd',
+                            'font-weight': 'bold'
+                        });
+                    }
+                }
             });
 
             // Initialize Select2

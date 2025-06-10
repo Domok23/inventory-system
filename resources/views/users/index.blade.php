@@ -70,6 +70,7 @@
             $(document).ready(function() {
                 $('#datatable').DataTable({
                     responsive: true,
+                    select: true,
                     stateSave: true,
                 });
 
