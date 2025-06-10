@@ -11,6 +11,7 @@ use App\Models\GoodsIn;
 use App\Models\MaterialRequest;
 use App\Models\Currency;
 use App\Models\User;
+use Illuminate\Support\Facades\Storage;
 
 class TrashController extends Controller
 {
@@ -56,10 +57,31 @@ class TrashController extends Controller
         $model = $request->input('model');
         $id = $request->input('id');
         $modelClass = $this->getModelClass($model);
+
         if ($modelClass) {
-            $modelClass::onlyTrashed()->findOrFail($id)->forceDelete();
+            $item = $modelClass::onlyTrashed()->findOrFail($id);
+
+            // Hapus file gambar dan QR code jika ada
+            if ($model === 'inventory') {
+                // Hapus inventory image
+                if ($item->img && Storage::disk('public')->exists($item->img)) {
+                    Storage::disk('public')->delete($item->img);
+                }
+                // Hapus inventory QR code
+                if ($item->qrcode_path && Storage::disk('public')->exists($item->qrcode_path)) {
+                    Storage::disk('public')->delete($item->qrcode_path);
+                }
+            } elseif ($model === 'project') {
+                // Hapus project image
+                if ($item->img && Storage::disk('public')->exists($item->img)) {
+                    Storage::disk('public')->delete($item->img);
+                }
+            }
+
+            $item->forceDelete(); // Hapus permanen dari database
             return back()->with('success', ucfirst($model) . ' permanently deleted!');
         }
+
         return back()->with('error', 'Invalid model');
     }
 

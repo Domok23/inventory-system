@@ -144,6 +144,7 @@ class InventoryController extends Controller
         $data = Excel::toArray([], $path)[0];
 
         $errors = []; // Array untuk menyimpan kesalahan
+        $warnings = []; // Array untuk menyimpan peringatan
         $successCount = 0; // Counter untuk data yang berhasil diimpor
 
         foreach ($data as $index => $row) {
@@ -214,11 +215,21 @@ class InventoryController extends Controller
             // Simpan path QR Code ke database
             $inventory->qrcode_path = 'qrcodes/' . $qrFileName;
             $inventory->save(); // Simpan lagi untuk memperbarui path QR code
+
+            // Tambahkan warning jika currency atau price kosong
+            if (!$inventory->currency_id || !$inventory->price) {
+                $warnings[] = "Price or Currency is empty for '{$inventory->name}'. Please update it as soon as possible, as it will affect the cost calculation!";
+            }
         }
 
         // Kirim kesalahan ke session
         if (!empty($errors)) {
             session()->flash('error', implode('<br>', $errors));
+        }
+
+        // Kirim peringatan ke session
+        if (!empty($warnings)) {
+            session()->flash('warning', implode('<br>', $warnings));
         }
 
         // Kirim jumlah data yang berhasil dan gagal ke session
@@ -274,7 +285,7 @@ class InventoryController extends Controller
 
         // Upload Image if exists
         if ($request->hasFile('img')) {
-            $imagePath = $request->file('img')->store('images', 'public');
+            $imagePath = $request->file('img')->store('inventory_images', 'public');
             if ($imagePath) {
                 $inventory->img = $imagePath;
             }
@@ -283,7 +294,7 @@ class InventoryController extends Controller
         // Simpan inventory terlebih dahulu
         $inventory->save();
 
-        // **Point 5: Generate QR Code**
+        // Generate QR Code
         $qrContent = route('inventory.scan', ['id' => $inventory->id]); // URL lengkap
         $qrFileName = 'qr_' . uniqid() . '.svg';
         $qrImage = QrCode::format('svg')->size(200)->generate($qrContent);
@@ -296,7 +307,7 @@ class InventoryController extends Controller
         // Buat pesan peringatan jika currency atau price kosong
         $warningMessage = null;
         if (!$inventory->currency_id || !$inventory->price) {
-            $warningMessage = "Currency or Price is empty for '{$inventory->name}'. Please update it as soon as possible!";
+            $warningMessage = "Price or Currency is empty for '{$inventory->name}'. Please update it as soon as possible, as it will affect the cost calculation!";
         }
 
         return redirect()->route('inventory.index')->with([
@@ -373,6 +384,12 @@ class InventoryController extends Controller
 
         // Upload image jika ada
         if ($request->hasFile('img')) {
+            // Hapus gambar lama jika ada
+            if ($inventory->img && Storage::disk('public')->exists($inventory->img)) {
+                Storage::disk('public')->delete($inventory->img);
+            }
+
+            // Simpan gambar baru
             $imgPath = $request->file('img')->store('inventory_images', 'public');
             $inventory->img = $imgPath;
         }
@@ -396,7 +413,7 @@ class InventoryController extends Controller
         // Buat pesan peringatan jika currency atau price kosong
         $warningMessage = null;
         if (!$inventory->currency_id || !$inventory->price) {
-            $warningMessage = "Currency or Price is empty for '{$inventory->name}'. Please update it as soon as possible!";
+            $warningMessage = "Price or Currency is empty for '{$inventory->name}'. Please update it as soon as possible, as it will affect the cost calculation!";
         }
 
         return redirect()->route('inventory.index')->with([
