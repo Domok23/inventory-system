@@ -47,8 +47,8 @@
             }
 
             /* body {
-                        font-family: Inter, Nunito, Roboto, Poppins,  "Helvetica Neue", Arial, sans-serif;
-                    } */
+                                            font-family: Inter, Nunito, Roboto, Poppins,  "Helvetica Neue", Arial, sans-serif;
+                                        } */
 
             #app {
                 min-height: 100%;
@@ -181,6 +181,87 @@
                 /* Warna merah */
                 color: #fff !important;
                 /* Warna teks putih */
+            }
+
+            .img-hover {
+                cursor: zoom-in;
+                /* Ubah cursor menjadi kaca pembesar saat hover */
+            }
+
+            #fullscreenImage {
+                object-fit: contain;
+                /* Menjaga proporsi gambar */
+                max-width: 98%;
+                /* Membatasi lebar gambar */
+                max-height: 98%;
+                /* Membatasi tinggi gambar */
+                display: block;
+                /* Menghilangkan margin default */
+                margin: auto;
+                /* Memposisikan gambar di tengah */
+                border-radius: 0.5rem;
+            }
+
+            #fullscreenImageModal .modal-content {
+                background-color: transparent;
+                /* Membuat background transparan */
+                border: none;
+                /* Menghilangkan border */
+                box-shadow: none;
+                /* Menghilangkan bayangan */
+            }
+
+            #fullscreenImageModal .modal-body {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100%;
+                /* Pastikan modal memenuhi layar */
+                padding: 0;
+                /* Hilangkan padding default */
+            }
+
+            #fullscreenImageModal .btn-close {
+                background-color: rgb(255, 255, 255);
+                /* Warna hitam transparan */
+                color: #fff;
+                /* Warna teks putih */
+                border: none;
+                /* Hilangkan border */
+                width: 32px;
+                /* Ukuran tombol */
+                height: 32px;
+                /* Ukuran tombol */
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                border-radius: 50%;
+                /* Membuat tombol berbentuk lingkaran */
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+                /* Tambahkan bayangan */
+                cursor: pointer;
+                /* Ubah kursor menjadi pointer */
+            }
+
+            #fullscreenImageModal .btn-close:hover {
+                background-color: rgba(255, 0, 0, 0.8);
+                /* Warna merah transparan saat hover */
+                color: #fff;
+                /* Warna teks tetap putih */
+            }
+
+            #fullscreenImageTitle {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                /* Warna latar belakang transparan */
+                color: #fff;
+                /* Padding untuk teks */
+                z-index: 1050;
+                /* Pastikan berada di atas gambar */
+                text-align: center;
+                /* Teks berada di tengah */
             }
         </style>
     @endpush

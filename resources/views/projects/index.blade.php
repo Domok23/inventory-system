@@ -140,15 +140,14 @@
         </div>
     </div>
     <!-- Modal Show Image -->
-    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
+    <div class="modal fade" id="fullscreenImageModal" tabindex="-1" aria-labelledby="fullscreenImageModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-fullscreen">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="imageModalLabel">Project Image</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body text-center">
-                    <div id="img-container"></div>
+                <div class="modal-body d-flex justify-content-center align-items-center p-0">
+                    <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                    <img id="fullscreenImage" src="" alt="Fullscreen Image">
                 </div>
             </div>
         </div>
@@ -193,16 +192,9 @@
 
             // Show Image Modal
             $(document).on('click', '.btn-show-image', function() {
-                // Reset modal content
-                $('#img-container').html('');
-                let img = $(this).data('img');
-                let name = $(this).data('name');
-                $('#imageModalLabel').html(
-                    `<i class="bi bi-image" style="margin-right: 5px; color: cornflowerblue;"></i> ${name}`
-                    );
-                $('#img-container').html(img ?
-                    `<img src="${img}" alt="Image" class="img-fluid mb-2 rounded" style="max-width:100%;">` :
-                    '<span class="text-muted">No Image</span>');
+                const imgSrc = $(this).data('img'); // Ambil URL gambar
+                $('#fullscreenImage').attr('src', imgSrc); // Set gambar ke modal
+                $('#fullscreenImageModal').modal('show'); // Tampilkan modal
             });
         });
     </script>

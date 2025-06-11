@@ -69,8 +69,8 @@
                     <div class="col-lg-6 text-center">
                         <h5>Material Image</h5>
                         @if ($inventory->img)
-                            <img src="{{ asset('storage/' . $inventory->img) }}" alt="Image" class="img-fluid rounded"
-                                style="max-height: 300px;">
+                            <img src="{{ asset('storage/' . $inventory->img) }}" alt="Image" class="img-fluid img-hover rounded"
+                                style="max-height: 290px;">
                         @else
                             <p class="text-muted">No Image</p>
                         @endif
@@ -212,6 +212,19 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="fullscreenImageModal" tabindex="-1" aria-labelledby="fullscreenImageModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-body d-flex justify-content-center align-items-center p-0">
+                    <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                    <img id="fullscreenImage" src="" alt="Fullscreen Image">
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 @push('scripts')
     <script>
@@ -285,6 +298,13 @@
                     theme: 'bootstrap-5', // Gunakan tema Bootstrap 5
                     allowClear: true
                 });
+            });
+        });
+        $(document).ready(function() {
+            $(document).on('click', '.img-fluid', function() {
+                const imgSrc = $(this).attr('src'); // Ambil URL gambar
+                $('#fullscreenImage').attr('src', imgSrc); // Set gambar ke modal
+                $('#fullscreenImageModal').modal('show'); // Tampilkan modal
             });
         });
     </script>

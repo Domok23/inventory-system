@@ -155,7 +155,7 @@
                                         <a href="{{ route('inventory.detail', ['id' => $inventory->id]) }}"
                                             class="btn btn-sm btn-success" title="More Detail"><i
                                                 class="bi bi-info-circle"></i></a>
-                                        <button type="button" class="btn btn-sm btn-info btn-show-image"
+                                        <button type="button" class="btn btn-sm btn-secondary btn-show-image"
                                             title="View Image & QR Code" data-bs-toggle="modal" data-bs-target="#imageModal"
                                             data-img="{{ $inventory->img ? asset('storage/' . $inventory->img) : '' }}"
                                             data-qrcode="{{ $inventory->qrcode_path ? asset('storage/' . $inventory->qrcode_path) : '' }}"
