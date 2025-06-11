@@ -8,7 +8,7 @@
                 <p class="card-text">You are logged in as: <strong>{{ ucwords(str_replace('_', ' ', $user->role)) }}</strong>
                 </p>
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-lg-4">
                         <div class="card text-white bg-primary mb-3">
                             <div class="card-body">
                                 <h5 class="card-title">Total Inventory</h5>
@@ -16,7 +16,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-lg-4">
                         <div class="card text-white bg-success mb-3">
                             <div class="card-body">
                                 <h5 class="card-title">Projects</h5>
@@ -24,7 +24,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-lg-4">
                         <div class="card text-white bg-danger mb-3">
                             <div class="card-body">
                                 <h5 class="card-title">Pending Requests</h5>

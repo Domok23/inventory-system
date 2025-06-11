@@ -26,7 +26,7 @@
                 <form method="POST" action="{{ route('material_requests.store') }}">
                     @csrf
                     <div class="row">
-                        <div class="col-md-6 mb-3">
+                        <div class="col-lg-6 mb-3">
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <label>Project <span class="text-danger">*</span></label>
                                 <button type="button" class="btn btn-sm btn-outline-success" data-bs-toggle="modal"
@@ -44,7 +44,7 @@
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-lg-6 mb-3">
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <label>Material <span class="text-danger">*</span></label>
                                 <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
@@ -64,7 +64,7 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-md-6 mb-3">
+                        <div class="col-lg-6 mb-3">
                             <label>Requested Quantity <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <input type="number" name="qty" class="form-control" step="any" required>
@@ -74,7 +74,7 @@
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-lg-6 mb-3">
                             <label>Remark (Optional)</label>
                             <textarea name="remark" class="form-control" value="{{ old('remark') }}"></textarea>
                             @error('remark')

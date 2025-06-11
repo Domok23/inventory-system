@@ -5,12 +5,12 @@
         <div class="card shadow rounded">
             <div class="card-body">
                 <!-- Header -->
-                <div class="d-flex flex-column flex-md-row align-items-md-center gap-2 mb-3">
+                <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-2 mb-3">
                     <!-- Header -->
-                    <h2 class="mb-2 mb-md-0 flex-shrink-0" style="font-size:1.5rem;">Material Requests</h2>
+                    <h2 class="mb-2 mb-lg-0 flex-shrink-0" style="font-size:1.5rem;">Material Requests</h2>
 
                     <!-- Spacer untuk mendorong tombol ke kanan -->
-                    <div class="ms-md-auto d-flex flex-wrap gap-2">
+                    <div class="ms-lg-auto d-flex flex-wrap gap-2">
                         @if (auth()->user()->role !== 'admin_logistic')
                             <a href="{{ route('material_requests.create') }}" class="btn btn-primary btn-sm flex-shrink-0">
                                 <i class="bi bi-plus-circle"></i> Create Request
@@ -56,7 +56,7 @@
 
                 <div class="mb-3">
                     <form id="filter-form" method="GET" action="{{ route('material_requests.index') }}" class="row g-2">
-                        <div class="col-md-2">
+                        <div class="col-lg-2">
                             <select id="filter-project" name="project" class="form-select select2">
                                 <option value="">All Projects</option>
                                 @foreach ($projects as $project)
@@ -67,7 +67,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-lg-2">
                             <select id="filter-material" name="material" class="form-select select2">
                                 <option value="">All Materials</option>
                                 @foreach ($materials as $material)
@@ -78,7 +78,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-lg-2">
                             <select id="filter-status" name="status" class="form-select select2">
                                 <option value="">All Status</option>
                                 <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending
@@ -91,7 +91,7 @@
                                     Canceled</option>
                             </select>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-lg-2">
                             <select id="filter-requested-by" name="requested_by" class="form-select select2">
                                 <option value="">All Requested By</option>
                                 @foreach ($users as $user)
@@ -102,11 +102,11 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-lg-2">
                             <input type="date" id="filter-requested-at" name="requested_at" class="form-control"
                                 value="{{ request('requested_at') }}" placeholder="Requested At Date">
                         </div>
-                        <div class="col-md-2 align-self-end">
+                        <div class="col-lg-2 align-self-end">
                             <button type="submit" class="btn btn-primary">Filter</button>
                             <a href="{{ route('material_requests.index') }}" class="btn btn-secondary">Reset</a>
                         </div>

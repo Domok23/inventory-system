@@ -29,7 +29,7 @@
                     @method('PUT')
                     <div class="row">
                         <!-- Name -->
-                        <div class="col-md-12 mb-3">
+                        <div class="col-lg-12 mb-3">
                             <label for="name" class="form-label">Material Name <span
                                     class="text-danger">*</span></label>
                             <input type="text" class="form-control" id="name" name="name"
@@ -39,7 +39,7 @@
                             @enderror
                         </div>
 
-                        <div class="col-md-12 mb-3">
+                        <div class="col-lg-12 mb-3">
                             <label for="category_id" class="form-label">Category <span class="text-danger">*</span></label>
                             <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal"
                                 style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .55rem;"
@@ -60,7 +60,7 @@
 
                     <div class="row">
                         <!-- Quantity -->
-                        <div class="col-md-6 mb-3">
+                        <div class="col-lg-6 mb-3">
                             <label for="quantity" class="form-label">Quantity <span class="text-danger">*</span></label>
                             <input type="number" class="form-control" id="quantity" name="quantity"
                                 value="{{ old('quantity', $inventory->quantity) }}" step="any" required>
@@ -70,7 +70,7 @@
                         </div>
 
                         <!-- Unit -->
-                        <div class="col-md-6 mb-3">
+                        <div class="col-lg-6 mb-3">
                             <label for="unit" class="form-label">Unit <span class="text-danger">*</span></label>
                             <select id="unit-select" class="form-select select2" name="unit" required>
                                 <option value="">Select Unit</option>
@@ -92,7 +92,7 @@
 
                     <div class="row mb-3">
                         <!-- Price -->
-                        <div class="col-md-6 mb-3">
+                        <div class="col-lg-6 mb-3">
                             <label for="price" class="form-label">Unit Price</label>
                             <input type="number" class="form-control" step="any" id="price" name="price"
                                 value="{{ old('price', $inventory->price) }}">
@@ -101,7 +101,7 @@
                             @enderror
                         </div>
                         <!-- Currency -->
-                        <div class="col-md-6 mb-3">
+                        <div class="col-lg-6 mb-3">
                             <label for="currency_id" class="form-label">Currency</label>
                             <button type="button" class="btn btn-outline-primary"
                                 style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .55rem;"
@@ -126,7 +126,7 @@
 
                     <div class="row">
                         <!-- Supplier -->
-                        <div class="col-md-6 mb-3">
+                        <div class="col-lg-6 mb-3">
                             <label for="supplier" class="form-label">Supplier (Optional)</label>
                             <input type="text" class="form-control" id="supplier" name="supplier"
                                 value="{{ old('supplier', $inventory->supplier) }}">
@@ -135,7 +135,7 @@
                             @enderror
                         </div>
                         <!-- Location -->
-                        <div class="col-md-6 mb-3">
+                        <div class="col-lg-6 mb-3">
                             <label for="location" class="form-label">Location (optional)</label>
                             <input type="text" class="form-control" id="location" name="location"
                                 value="{{ old('location', $inventory->location) }}">
@@ -143,7 +143,7 @@
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
                         </div>
-                        <div class="col-md-12 mb-3">
+                        <div class="col-lg-12 mb-3">
                             <label for="remark" class="form-label">Remark (Optional)</label>
                             <textarea class="form-control" id="remark" name="remark" rows="2">{{ old('remark', $inventory->remark) }}</textarea>
                             @error('remark')
@@ -151,7 +151,7 @@
                             @enderror
                         </div>
                         <!-- Image -->
-                        <div class="col-md-6 mb-3">
+                        <div class="col-lg-6 mb-3">
                             <label for="img" class="form-label">Upload Image (optional)</label>
                             <input class="form-control" type="file" id="img" name="img" accept="image/*"
                                 onchange="previewImage(event)">
@@ -159,7 +159,7 @@
                     </div>
                     <div class="row mb-3">
                         <!-- Image Preview -->
-                        <div class="col-md-6 mb-3">
+                        <div class="col-lg-6 mb-3">
                             <label class="form-label">Image Preview</label><br>
                             <img id="img-preview"
                                 src="{{ isset($inventory) && $inventory->img ? asset('storage/' . $inventory->img) : asset('images/default-image.png') }}"
@@ -170,7 +170,7 @@
                         </div>
                         <!-- QR Code -->
                         @if ($inventory->qrcode_path)
-                            <div class="col-md-6 mb-3">
+                            <div class="col-lg-6 mb-3">
                                 <label class="form-label">QR Code</label><br>
                                 <img src="{{ asset('storage/' . $inventory->qrcode_path) }}" alt="QR Code"
                                     width="150">
@@ -179,7 +179,7 @@
                     </div>
 
                     <!-- Submit -->
-                    <div class="col-md-12">
+                    <div class="col-lg-12">
                         <a href="{{ route('inventory.index') }}" class="btn btn-secondary">Cancel</a>
                         <button type="submit" class="btn btn-primary">Update</button>
                     </div>

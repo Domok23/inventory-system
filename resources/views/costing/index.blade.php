@@ -8,7 +8,7 @@
                 <hr>
                 <div class="mb-3">
                     <form id="filter-form" method="GET" action="{{ route('costing.report') }}" class="row g-2">
-                        <div class="col-md-3">
+                        <div class="col-lg-3">
                             <select id="filter-department" name="department" class="form-select select2">
                                 <option value="">All Departments</option>
                                 @foreach ($departments as $department)
@@ -19,7 +19,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-2 align-self-end">
+                        <div class="col-lg-2 align-self-end">
                             <button type="submit" class="btn btn-primary">Filter</button>
                             <a href="{{ route('costing.report') }}" class="btn btn-secondary">Reset</a>
                         </div>
@@ -129,7 +129,7 @@
                         }; // Default jika inventory null
 
                         const totalPrice = (inventory.price || 0) * (material.quantity ||
-                        0); // Hitung Price x Quantity
+                            0); // Hitung Price x Quantity
 
                         const row = `
                                         <tr>

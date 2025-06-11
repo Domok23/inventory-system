@@ -9,7 +9,7 @@
                     @csrf
                     @method('PUT')
                     <div class="row">
-                        <div class="col-md-12 mb-3">
+                        <div class="col-lg-12 mb-3">
                             <label>Material <span class="text-danger">*</span></label>
                             <select name="inventory_id" class="form-control select2" placeholder="Select Material" required>
                                 @foreach ($inventories as $inventory)
@@ -20,7 +20,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-12 mb-3">
+                        <div class="col-lg-12 mb-3">
                             <label>Quantity <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <input type="number" name="quantity" class="form-control" value="{{ $goods_in->quantity }}"
@@ -30,10 +30,11 @@
                                 </span>
                             </div>
                         </div>
-                        <div class="col-md-12 mb-3">
+                        <div class="col-lg-12 mb-3">
                             <label>Project</label>
                             <select name="project_id" class="form-control select2">
-                                <option value="" {{ empty($goods_in->project_id) ? 'selected' : '' }} class="text-muted">No Project
+                                <option value="" {{ empty($goods_in->project_id) ? 'selected' : '' }}
+                                    class="text-muted">No Project
                                 </option>
                                 @foreach ($projects as $project)
                                     <option value="{{ $project->id }}"
@@ -43,7 +44,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-lg-6 mb-3">
                             <label>Returned At <span class="text-danger">*</span></label>
                             <input type="datetime-local" name="returned_at" class="form-control"
                                 value="{{ \Carbon\Carbon::parse($goods_in->returned_at)->format('Y-m-d\TH:i') }}" required>
@@ -51,11 +52,11 @@
                                 Current: {{ \Carbon\Carbon::parse($goods_in->returned_at)->format('m/d/Y, H:i') }}
                             </small>
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-lg-6 mb-3">
                             <label>Returned By</label>
                             <input type="text" class="form-control" value="{{ $goods_in->returned_by }}" disabled>
                         </div>
-                        <div class="col-md-12 mb-3">
+                        <div class="col-lg-12 mb-3">
                             <label for="remark" class="form-label">Remark</label>
                             <textarea name="remark" id="remark" class="form-control">{{ old('remark', $goodsIn->remark ?? '') }}</textarea>
                         </div>

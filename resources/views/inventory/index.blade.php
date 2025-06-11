@@ -6,18 +6,18 @@
         <div class="card shadow rounded">
             <div class="card-body">
                 <!-- Header -->
-                <div class="d-flex flex-column flex-md-row align-items-md-center gap-2 mb-3">
+                <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-2 mb-3">
                     <!-- Header -->
-                    <h2 class="mb-2 mb-md-0 flex-shrink-0" style="font-size:1.5rem;">Inventory List</h2>
+                    <h2 class="mb-2 mb-lg-0 flex-shrink-0" style="font-size:1.5rem;">Inventory List</h2>
 
                     <!-- Spacer untuk mendorong tombol ke kanan -->
-                    <div class="ms-md-auto d-flex flex-wrap gap-2">
+                    <div class="ms-lg-auto d-flex flex-wrap gap-2">
                         @if (in_array(auth()->user()->role, ['super_admin', 'admin_logistic']))
                             <a href="{{ route('inventory.create') }}" class="btn btn-primary btn-sm flex-shrink-0">
                                 <i class="bi bi-plus-circle"></i> Create Inventory
                             </a>
-                            <button type="button" class="btn btn-success btn-sm flex-shrink-0"
-                                data-bs-toggle="modal" data-bs-target="#importModal">
+                            <button type="button" class="btn btn-success btn-sm flex-shrink-0" data-bs-toggle="modal"
+                                data-bs-target="#importModal">
                                 <i class="bi bi-filetype-xls"></i> Import
                             </button>
                         @endif
@@ -51,7 +51,7 @@
 
                 <div class="mb-3">
                     <form method="GET" action="{{ route('inventory.index') }}" class="row g-2">
-                        <div class="col-md-2">
+                        <div class="col-lg-2">
                             <select name="category" id="category" class="form-select select2">
                                 <option value="">All Categories</option>
                                 @foreach ($categories as $category)
@@ -63,7 +63,7 @@
                             </select>
                         </div>
                         @if (in_array(auth()->user()->role, ['super_admin', 'admin_logistic', 'admin_finance']))
-                            <div class="col-md-2">
+                            <div class="col-lg-2">
                                 <select name="currency" id="currency" class="form-select select2">
                                     <option value="">All Currencies</option>
                                     @foreach ($currencies as $currency)
@@ -75,7 +75,7 @@
                                 </select>
                             </div>
                         @endif
-                        <div class="col-md-2">
+                        <div class="col-lg-2">
                             <select name="supplier" id="supplier" class="form-select select2">
                                 <option value="">All Suppliers</option>
                                 @foreach ($suppliers as $supplier)
@@ -86,7 +86,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-lg-2">
                             <select name="location" id="location" class="form-select select2">
                                 <option value="">All Locations</option>
                                 @foreach ($locations as $location)
@@ -97,7 +97,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-2 d-flex align-items-end gap-2">
+                        <div class="col-lg-2 d-flex align-items-end gap-2">
                             <button type="submit" class="btn btn-primary">Filter</button>
                             <a href="{{ route('inventory.index') }}" class="btn btn-secondary">Reset</a>
                         </div>
@@ -305,7 +305,7 @@
                 currentInventoryName = name || 'qr-code';
                 $('#imageModalLabel').html(
                     `<i class="bi bi-image" style="margin-right: 5px; color: cornflowerblue;"></i> ${name}`
-                    );
+                );
                 $('#img-container').html(img ?
                     `<img src="${img}" alt="Image" class="img-fluid mb-2 rounded" style="max-width:100%;">` :
                     '<span class="text-muted">No Image</span>');

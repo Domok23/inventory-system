@@ -17,7 +17,7 @@
                     @csrf
                     <input type="hidden" name="material_request_id" value="{{ $materialRequest->id }}">
                     <div class="row">
-                        <div class="col-md-6 mb-3">
+                        <div class="col-lg-6 mb-3">
                             <label>Material <span class="text-danger">*</span></label>
                             <select name="inventory_id" class="form-select select2" required>
                                 @foreach ($inventories as $inventory)
@@ -28,7 +28,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-lg-6 mb-3">
                             <label>Project</label>
                             <input type="text" class="form-control" value="{{ $materialRequest->project->name }}"
                                 disabled>
@@ -36,12 +36,12 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-md-6 mb-3">
+                        <div class="col-lg-6 mb-3">
                             <label>Quantity Requested</label>
                             <input type="text" class="form-control"
                                 value="{{ $materialRequest->qty }} {{ $materialRequest->inventory->unit }}" disabled>
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-lg-6 mb-3">
                             <label>Quantity to Goods Out <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <input type="number" name="quantity" class="form-control"
@@ -57,12 +57,12 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-md-6 mb-3">
+                        <div class="col-lg-6 mb-3">
                             <label>Requested By</label>
                             <input type="text" class="form-control"
                                 value="{{ ucwords($materialRequest->requested_by) }}" disabled>
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-lg-6 mb-3">
                             <label>Department</label>
                             <input type="text" class="form-control" value="{{ ucfirst($materialRequest->department) }}"
                                 disabled>
@@ -70,7 +70,7 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-md-12 mb-3">
+                        <div class="col-lg-12 mb-3">
                             <label for="remark" class="form-label">Remark</label>
                             <textarea name="remark" id="remark" class="form-control" rows="2">{{ old('remark') }}</textarea>
                             @error('remark')

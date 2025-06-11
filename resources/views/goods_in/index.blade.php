@@ -4,13 +4,13 @@
     <div class="container-fluid mt-4">
         <div class="card shadow rounded">
             <div class="card-body">
-                <div class="d-flex flex-column flex-md-row align-items-md-center gap-2 mb-3">
+                <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-2 mb-3">
                     <!-- Header -->
-                    <h2 class="mb-2 mb-md-0 flex-shrink-0" style="font-size:1.5rem;"><i class="bi bi-arrow-down-circle"></i>
+                    <h2 class="mb-2 mb-lg-0 flex-shrink-0" style="font-size:1.5rem;"><i class="bi bi-arrow-down-circle"></i>
                         Goods In
                         Records</h2>
                     <!-- Spacer untuk mendorong tombol ke kanan -->
-                    <div class="ms-md-auto d-flex flex-wrap gap-2">
+                    <div class="ms-lg-auto d-flex flex-wrap gap-2">
                         <a href="{{ route('goods_in.create_independent') }}" class="btn btn-primary btn-sm flex-shrink-0">
                             <i class="bi bi-plus-circle"></i> Create Goods In
                         </a>
@@ -43,7 +43,7 @@
 
                 <div class="mb-3">
                     <form id="filter-form" method="GET" action="{{ route('goods_in.index') }}" class="row g-2">
-                        <div class="col-md-2">
+                        <div class="col-lg-2">
                             <select id="filter-material" name="material" class="form-select select2">
                                 <option value="">All Materials</option>
                                 @foreach ($materials as $material)
@@ -54,7 +54,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-lg-2">
                             <select id="filter-project" name="project" class="form-select select2">
                                 <option value="">All Projects</option>
                                 @foreach ($projects as $project)
@@ -65,7 +65,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-lg-2">
                             <select id="filter-qty" name="qty" class="form-select select2">
                                 <option value="">All Quantities</option>
                                 @foreach ($quantities as $qty)
@@ -75,7 +75,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-lg-2">
                             <select id="filter-returned-by" name="returned_by" class="form-select select2">
                                 <option value="">All Returned By</option>
                                 @foreach ($users as $user)
@@ -86,11 +86,11 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-lg-2">
                             <input type="date" id="filter-returned-at" name="returned_at" class="form-control"
                                 value="{{ request('returned_at') }}" placeholder="Returned At Date">
                         </div>
-                        <div class="col-md-2 align-self-end">
+                        <div class="col-lg-2 align-self-end">
                             <button type="submit" class="btn btn-primary">Filter</button>
                             <a href="{{ route('goods_in.index') }}" class="btn btn-secondary">Reset</a>
                         </div>

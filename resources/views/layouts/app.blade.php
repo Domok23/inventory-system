@@ -47,8 +47,8 @@
             }
 
             /* body {
-                    font-family: Inter, Nunito, Roboto, Poppins,  "Helvetica Neue", Arial, sans-serif;
-                } */
+                        font-family: Inter, Nunito, Roboto, Poppins,  "Helvetica Neue", Arial, sans-serif;
+                    } */
 
             #app {
                 min-height: 100%;
@@ -457,7 +457,7 @@
         <div class="container-fluid">
             <div class="row">
                 <!-- About Section -->
-                <div class="bg-white col-lg-12 col-md-12 mb-2 mb-md-0">
+                <div class="bg-white col-lg-12 col-lg-12 mb-2 mb-lg-0">
                     <h5 class="text-uppercase mt-2">About:</h5>
                     <p class="mb-3">
                         This is an inventory management system designed to streamline your operations and improve

@@ -5,12 +5,12 @@
         <div class="card shadow rounded">
             <div class="card-body">
                 <!-- Header -->
-                <div class="d-flex flex-column flex-md-row align-items-md-center gap-2 mb-3">
+                <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-2 mb-3">
                     <!-- Header -->
-                    <h2 class="mb-2 mb-md-0 flex-shrink-0" style="font-size:1.5rem;">Projects</h2>
+                    <h2 class="mb-2 mb-lg-0 flex-shrink-0" style="font-size:1.5rem;">Projects</h2>
 
                     <!-- Spacer untuk mendorong tombol ke kanan -->
-                    <div class="ms-md-auto d-flex flex-wrap gap-2">
+                    <div class="ms-lg-auto d-flex flex-wrap gap-2">
                         @if (auth()->user()->role !== 'admin_logistic')
                             <a href="{{ route('projects.create') }}" class="btn btn-primary btn-sm flex-shrink-0">
                                 <i class="bi bi-plus-circle"></i> Create Project
@@ -47,7 +47,7 @@
 
                 <div class="mb-3">
                     <form id="filter-form" method="GET" action="{{ route('projects.index') }}" class="row g-2">
-                        <div class="col-md-2">
+                        <div class="col-lg-2">
                             <select id="filter-quantity" name="quantity" class="form-select select2">
                                 <option value="">All Quantity</option>
                                 @foreach ($projects->pluck('qty')->unique() as $qty)
@@ -57,7 +57,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-lg-2">
                             <select id="filter-department" name="department" class="form-select select2">
                                 <option value="">All Department</option>
                                 <option value="mascot" {{ request('department') == 'mascot' ? 'selected' : '' }}>Mascot
@@ -77,7 +77,7 @@
                                 <option value="bag" {{ request('department') == 'bag' ? 'selected' : '' }}>Bag</option>
                             </select>
                         </div>
-                        <div class="col-md-2 align-self-end">
+                        <div class="col-lg-2 align-self-end">
                             <button type="submit" class="btn btn-primary">Filter</button>
                             <a href="{{ route('projects.index') }}" class="btn btn-secondary">Reset</a>
                         </div>
@@ -197,7 +197,9 @@
                 $('#img-container').html('');
                 let img = $(this).data('img');
                 let name = $(this).data('name');
-                $('#imageModalLabel').html(`<i class="bi bi-image" style="margin-right: 5px; color: cornflowerblue;"></i> ${name}`);
+                $('#imageModalLabel').html(
+                    `<i class="bi bi-image" style="margin-right: 5px; color: cornflowerblue;"></i> ${name}`
+                    );
                 $('#img-container').html(img ?
                     `<img src="${img}" alt="Image" class="img-fluid mb-2 rounded" style="max-width:100%;">` :
                     '<span class="text-muted">No Image</span>');

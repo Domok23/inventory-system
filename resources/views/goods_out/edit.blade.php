@@ -49,7 +49,7 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-md-6 mb-3">
+                        <div class="col-lg-6 mb-3">
                             <label>Requested By <span class="text-danger">*</span></label>
                             <select name="user_id" class="form-select select2" required>
                                 @foreach ($users as $user)
@@ -60,7 +60,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-lg-6 mb-3">
                             <label>Department</label>
                             <input type="text" class="form-control" id="department" value="{{ $goodsOut->department }}"
                                 disabled>

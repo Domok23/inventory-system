@@ -28,7 +28,7 @@
             @endif
             <div class="card-body">
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-lg-6">
                         <h5>{{ $inventory->name }}</h5>
                         <table class="table table-bordered table-striped table-hover">
                             <tr>
@@ -66,7 +66,7 @@
                             </tr>
                         </table>
                     </div>
-                    <div class="col-md-6 text-center">
+                    <div class="col-lg-6 text-center">
                         <h5>Material Image</h5>
                         @if ($inventory->img)
                             <img src="{{ asset('storage/' . $inventory->img) }}" alt="Image" class="img-fluid rounded"
@@ -86,7 +86,8 @@
                 @endif
                 <a href="#" class="btn btn-warning my-1" id="viewMaterialUsage">View Material Usage</a>
                 <br>
-                <a href="{{ route('inventory.index') }}" class="btn btn-secondary my-2"><i class="bi bi-arrow-left-short"></i> Back to Inventory</a>
+                <a href="{{ route('inventory.index') }}" class="btn btn-secondary my-2"><i
+                        class="bi bi-arrow-left-short"></i> Back to Inventory</a>
             </div>
         </div>
     </div>

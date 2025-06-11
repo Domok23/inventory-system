@@ -12,7 +12,7 @@
                 <form method="POST" action="{{ route('goods_in.store_independent') }}">
                     @csrf
                     <div class="row">
-                        <div class="col-md-12 mb-3">
+                        <div class="col-lg-12 mb-3">
                             <label>Material <span class="text-danger">*</span></label>
                             <select name="inventory_id" class="form-select select2" required>
                                 <option value="">Select Material</option>
@@ -23,14 +23,14 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-12 mb-3">
+                        <div class="col-lg-12 mb-3">
                             <label>Quantity <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <input type="number" name="quantity" class="form-control" step="any" required>
                                 <span class="input-group-text unit-label">unit</span>
                             </div>
                         </div>
-                        <div class="col-md-12 mb-3">
+                        <div class="col-lg-12 mb-3">
                             <label>Project</label>
                             <select name="project_id" class="form-select select2">
                                 <option value="" class="text-muted">No Project</option>
@@ -39,16 +39,16 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-lg-6 mb-3">
                             <label>Returned/In At <span class="text-danger">*</span></label>
                             <input type="datetime-local" name="returned_at" class="form-control"
                                 value="{{ old('returned_at', \Carbon\Carbon::now()->format('Y-m-d\TH:i')) }}" required>
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-lg-6 mb-3">
                             <label>Returned/In By</label>
                             <input type="text" class="form-control" value="{{ auth()->user()->username }}" disabled>
                         </div>
-                        <div class="col-md-12 mb-3">
+                        <div class="col-lg-12 mb-3">
                             <label>Remark</label>
                             <textarea name="remark" class="form-control" rows="3">{{ old('remark') }}</textarea>
                         </div>

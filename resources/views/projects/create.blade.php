@@ -27,7 +27,7 @@
                     @endif
 
                     <div class="row">
-                        <div class="col-md-6 mb-3">
+                        <div class="col-lg-6 mb-3">
                             <label for="name" class="form-label">Project Name <span class="text-danger">*</span></label>
                             <input type="text" name="name" id="name"
                                 value="{{ old('name', $project->name ?? '') }}" class="form-control" required>
@@ -36,7 +36,7 @@
                             @enderror
                         </div>
 
-                        <div class="col-md-6 mb-3">
+                        <div class="col-lg-6 mb-3">
                             <label for="qty" class="form-label">Quantity <span class="text-danger">*</span></label>
                             <input type="number" name="qty" id="qty"
                                 value="{{ old('qty', $project->qty ?? '') }}" class="form-control" required>
@@ -47,7 +47,7 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-md-4 mb-3">
+                        <div class="col-lg-4 mb-3">
                             <label for="department" class="form-label">Department <span class="text-danger">*</span></label>
                             <select name="department" id="department" class="form-select" required>
                                 <option value="">Select Department</option>
@@ -82,7 +82,7 @@
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
                         </div>
-                        <div class="col-md-4 mb-3">
+                        <div class="col-lg-4 mb-3">
                             <label for="start_date" class="form-label">Start Date (optional)</label>
                             <input type="date" name="start_date" id="start_date"
                                 value="{{ old('start_date', isset($project) ? $project->start_date : '') }}"
@@ -91,7 +91,7 @@
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
                         </div>
-                        <div class="col-md-4 mb-3">
+                        <div class="col-lg-4 mb-3">
                             <label for="deadline" class="form-label">Deadline (optional)</label>
                             <input type="date" name="deadline" id="deadline"
                                 value="{{ old('deadline', isset($project) ? $project->deadline : '') }}"
@@ -103,7 +103,7 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-md-6 mb-3">
+                        <div class="col-lg-6 mb-3">
                             <label for="img" class="form-label">Image (optional)</label>
                             <input type="file" name="img" class="form-control" id="img" accept="image/*"
                                 onchange="previewImage(event)">

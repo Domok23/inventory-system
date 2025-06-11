@@ -5,13 +5,13 @@
         <div class="card shadow rounded">
             <div class="card-body">
                 <!-- Header -->
-                <div class="d-flex flex-column flex-md-row align-items-md-center gap-2 mb-3">
+                <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-2 mb-3">
                     <!-- Header -->
-                    <h2 class="mb-md-0 flex-shrink-0" style="font-size:1.5rem;"><i class="bi bi-arrow-up-circle"></i> Goods Out
+                    <h2 class="mb-lg-0 flex-shrink-0" style="font-size:1.5rem;"><i class="bi bi-arrow-up-circle"></i> Goods Out
                         Records</h2>
 
                     <!-- Spacer untuk mendorong tombol ke kanan -->
-                    <div class="ms-md-auto d-flex flex-wrap gap-2">
+                    <div class="ms-lg-auto d-flex flex-wrap gap-2">
                         @if (in_array(auth()->user()->role, ['admin_logistic', 'super_admin']))
                             <a href="{{ route('goods_out.create_independent') }}"
                                 class="btn btn-primary btn-sm flex-shrink-0">
@@ -49,7 +49,7 @@
 
                 <div class="mb-3">
                     <form id="filter-form" method="GET" action="{{ route('goods_out.index') }}" class="row g-2">
-                        <div class="col-md-2">
+                        <div class="col-lg-2">
                             <select id="filter-material" name="material" class="form-select select2">
                                 <option value="">All Materials</option>
                                 @foreach ($materials as $material)
@@ -60,7 +60,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-lg-2">
                             <select id="filter-qty" name="qty" class="form-select select2">
                                 <option value="">All Quantities</option>
                                 @foreach ($quantities as $qty)
@@ -70,7 +70,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-lg-2">
                             <select id="filter-project" name="project" class="form-select select2">
                                 <option value="">All Projects</option>
                                 @foreach ($projects as $project)
@@ -81,7 +81,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-lg-2">
                             <select id="filter-requested-by" name="requested_by" class="form-select select2">
                                 <option value="">All Requested By</option>
                                 @foreach ($users as $user)
@@ -92,11 +92,11 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-lg-2">
                             <input type="date" id="filter-requested-at" name="requested_at" class="form-control"
                                 value="{{ request('requested_at') }}" placeholder="Proceed At Date">
                         </div>
-                        <div class="col-md-2 align-self-end">
+                        <div class="col-lg-2 align-self-end">
                             <button type="submit" class="btn btn-primary">Filter</button>
                             <a href="{{ route('goods_out.index') }}" class="btn btn-secondary">Reset</a>
                         </div>

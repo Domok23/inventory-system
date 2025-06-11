@@ -15,7 +15,7 @@
                 <form method="POST" action="{{ route('goods_out.store_independent') }}">
                     @csrf
                     <div class="row">
-                        <div class="col-md-12 mb-3">
+                        <div class="col-lg-12 mb-3">
                             <label>Material <span class="text-danger">*</span></label>
                             <select name="inventory_id" class="form-select select2" required>
                                 <option value="">Select an option</option>
@@ -27,7 +27,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-12 mb-3">
+                        <div class="col-lg-12 mb-3">
                             <label>Quantity <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <input type="number" name="quantity" class="form-control" step="any"
@@ -39,7 +39,7 @@
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
                         </div>
-                        <div class="col-md-12 mb-3">
+                        <div class="col-lg-12 mb-3">
                             <label>Project <span class="text-danger">*</span></label>
                             <select name="project_id" class="form-select select2" required>
                                 <option value="">Select an option</option>
@@ -53,7 +53,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-6 mb-3">
+                        <div class="col-lg-6 mb-3">
                             <label>Requested By <span class="text-danger">*</span></label>
                             <select name="user_id" class="form-select select2" required>
                                 <option value="">Select an option</option>
@@ -65,7 +65,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-lg-6 mb-3">
                             <label>Department</label>
                             <input type="text" class="form-control" id="department" value="{{ old('department') }}"
                                 disabled>
@@ -73,7 +73,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-12 mb-3">
+                        <div class="col-lg-12 mb-3">
                             <label for="remark" class="form-label">Remark</label>
                             <textarea name="remark" id="remark" class="form-control" rows="2">{{ old('remark') }}</textarea>
                             @error('remark')
