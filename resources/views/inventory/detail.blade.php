@@ -30,7 +30,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <h5>{{ $inventory->name }}</h5>
-                        <table class="table table-bordered table-striped">
+                        <table class="table table-bordered table-striped table-hover">
                             <tr>
                                 <th>Name</th>
                                 <td>{{ $inventory->name }}</td>
@@ -72,7 +72,7 @@
                             <img src="{{ asset('storage/' . $inventory->img) }}" alt="Image" class="img-fluid rounded"
                                 style="max-height: 300px;">
                         @else
-                            <p class="text-muted">No Project Image</p>
+                            <p class="text-muted">No Image</p>
                         @endif
                     </div>
                 </div>
@@ -86,7 +86,7 @@
                 @endif
                 <a href="#" class="btn btn-warning my-1" id="viewMaterialUsage">View Material Usage</a>
                 <br>
-                <a href="{{ route('inventory.index') }}" class="btn btn-secondary my-2">Back to Inventory</a>
+                <a href="{{ route('inventory.index') }}" class="btn btn-secondary my-2"><i class="bi bi-arrow-left-short"></i> Back to Inventory</a>
             </div>
         </div>
     </div>
@@ -229,8 +229,6 @@
                     inventory_id: inventoryId
                 },
                 success: function(response) {
-                    console.log(response); // Log respons dari server
-
                     // Kosongkan tabel sebelum memuat data baru
                     $('#materialUsageTable').empty();
 

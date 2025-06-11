@@ -27460,8 +27460,6 @@ function showToast(materialRequest, action) {
   });
 }
 function updateSelectColor(selectElement) {
-  console.log("Updating color for:", selectElement); // Debug log
-  selectElement.classList.remove("status-pending", "status-approved", "status-delivered", "status-canceled");
   var selectedValue = selectElement.value;
   if (selectedValue === "pending") {
     selectElement.classList.add("status-pending");
@@ -27472,7 +27470,6 @@ function updateSelectColor(selectElement) {
   } else if (selectedValue === "canceled") {
     selectElement.classList.add("status-canceled");
   }
-  console.log("Added class:", selectElement.className); // Debug log
 }
 
 // Terapkan fungsi ke semua elemen <select> dengan kelas .status-select

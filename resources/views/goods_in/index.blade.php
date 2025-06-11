@@ -12,11 +12,11 @@
                     <!-- Spacer untuk mendorong tombol ke kanan -->
                     <div class="ms-md-auto d-flex flex-wrap gap-2">
                         <a href="{{ route('goods_in.create_independent') }}" class="btn btn-primary btn-sm flex-shrink-0">
-                            + New Goods In
+                            <i class="bi bi-plus-circle"></i> Create Goods In
                         </a>
                         <a href="{{ route('goods_in.export', request()->query()) }}"
-                            class="btn btn-success btn-sm flex-shrink-0">
-                            Export to Excel
+                            class="btn btn-outline-success btn-sm flex-shrink-0">
+                            <i class="bi bi-file-earmark-excel"></i> Export
                         </a>
                     </div>
                 </div>

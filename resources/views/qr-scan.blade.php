@@ -55,9 +55,6 @@
                 // Hentikan scanner setelah berhasil
                 html5QrCode.stop();
             },
-            (errorMessage) => {
-                console.log(errorMessage); // Log error (opsional)
-            }
         ).catch((err) => {
             console.error("Unable to start scanning.", err);
         });

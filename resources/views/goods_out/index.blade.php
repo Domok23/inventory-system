@@ -15,15 +15,15 @@
                         @if (in_array(auth()->user()->role, ['admin_logistic', 'super_admin']))
                             <a href="{{ route('goods_out.create_independent') }}"
                                 class="btn btn-primary btn-sm flex-shrink-0">
-                                + New Goods Out
+                                <i class="bi bi-plus-circle"></i> Create Goods Out
                             </a>
                         @endif
                         <button id="bulk-goods-in-btn" class="btn btn-info btn-sm flex-shrink-0">
-                            Bulk Goods In
+                            <i class="bi bi-box-arrow-in-right"></i> Bulk Goods In
                         </button>
                         <a href="{{ route('goods_out.export', request()->query()) }}"
-                            class="btn btn-success btn-sm flex-shrink-0">
-                            Export to Excel
+                            class="btn btn-outline-success btn-sm flex-shrink-0">
+                            <i class="bi bi-file-earmark-excel"></i> Export
                         </a>
                     </div>
                 </div>
@@ -149,25 +149,6 @@
                                 </td>
                                 <td>
                                     <div class="d-flex flex-wrap gap-1 align-items-center">
-                                        @if ($goodsOut->quantity > 0)
-                                            @if (auth()->user()->username === $goodsOut->requested_by ||
-                                                    in_array(auth()->user()->role, ['super_admin', 'admin_logistic']))
-                                                <a href="{{ route('goods_in.create', ['goods_out_id' => $goodsOut->id]) }}"
-                                                    class="btn btn-sm btn-success">
-                                                    Goods In
-                                                </a>
-                                            @endif
-                                        @endif
-                                        @if (
-                                            $goodsOut->material_request_id &&
-                                                $goodsOut->materialRequest &&
-                                                $goodsOut->materialRequest->qty > 0 &&
-                                                in_array(auth()->user()->role, ['admin_logistic', 'super_admin']))
-                                            <a href="{{ route('goods_out.create', $goodsOut->material_request_id) }}"
-                                                class="btn btn-sm btn-primary">
-                                                Process
-                                            </a>
-                                        @endif
                                         @if (in_array(auth()->user()->role, ['admin_logistic', 'super_admin']))
                                             <a href="{{ route('goods_out.edit', $goodsOut->id) }}"
                                                 class="btn btn-sm btn-warning">Edit</a>
@@ -180,6 +161,25 @@
                                                         class="btn btn-sm btn-danger btn-delete">Delete</button>
                                                 </form>
                                             @endif
+                                        @endif
+                                        @if ($goodsOut->quantity > 0)
+                                            @if (auth()->user()->username === $goodsOut->requested_by ||
+                                                    in_array(auth()->user()->role, ['super_admin', 'admin_logistic']))
+                                                <a href="{{ route('goods_in.create', ['goods_out_id' => $goodsOut->id]) }}"
+                                                    class="btn btn-sm btn-info">
+                                                    Goods In
+                                                </a>
+                                            @endif
+                                        @endif
+                                        @if (
+                                            $goodsOut->material_request_id &&
+                                                $goodsOut->materialRequest &&
+                                                $goodsOut->materialRequest->qty > 0 &&
+                                                in_array(auth()->user()->role, ['admin_logistic', 'super_admin']))
+                                            <a href="{{ route('goods_out.create', $goodsOut->material_request_id) }}"
+                                                class="btn btn-sm btn-outline-primary">
+                                                Process
+                                            </a>
                                         @endif
                                     </div>
                                 </td>

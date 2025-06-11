@@ -14,16 +14,16 @@
                     <div class="ms-md-auto d-flex flex-wrap gap-2">
                         @if (in_array(auth()->user()->role, ['super_admin', 'admin_logistic']))
                             <a href="{{ route('inventory.create') }}" class="btn btn-primary btn-sm flex-shrink-0">
-                                + New Inventory
+                                <i class="bi bi-plus-circle"></i> Create Inventory
                             </a>
-                            <button type="button" class="btn btn-outline-success btn-sm flex-shrink-0"
+                            <button type="button" class="btn btn-success btn-sm flex-shrink-0"
                                 data-bs-toggle="modal" data-bs-target="#importModal">
-                                Import Inventory via XLS
+                                <i class="bi bi-filetype-xls"></i> Import
                             </button>
                         @endif
                         <a href="{{ route('inventory.export', request()->query()) }}"
-                            class="btn btn-success btn-sm flex-shrink-0">
-                            Export to XLS
+                            class="btn btn-outline-success btn-sm flex-shrink-0">
+                            <i class="bi bi-file-earmark-excel"></i> Export
                         </a>
                     </div>
                 </div>
@@ -105,7 +105,7 @@
                 </div>
 
                 <!-- Table -->
-                <table class="table table-hover table-bordered" id="datatable">
+                <table class="table table-striped table-hover table-bordered" id="datatable">
                     <thead class="align-middle">
                         <tr>
                             <th></th>
@@ -153,13 +153,14 @@
                                             </form>
                                         @endif
                                         <a href="{{ route('inventory.detail', ['id' => $inventory->id]) }}"
-                                            class="btn btn-sm btn-success">Detail</a>
+                                            class="btn btn-sm btn-success" title="More Detail"><i
+                                                class="bi bi-info-circle"></i></a>
                                         <button type="button" class="btn btn-sm btn-info btn-show-image"
-                                            data-bs-toggle="modal" data-bs-target="#imageModal"
+                                            title="View Image & QR Code" data-bs-toggle="modal" data-bs-target="#imageModal"
                                             data-img="{{ $inventory->img ? asset('storage/' . $inventory->img) : '' }}"
                                             data-qrcode="{{ $inventory->qrcode_path ? asset('storage/' . $inventory->qrcode_path) : '' }}"
                                             data-name="{{ $inventory->name }}">
-                                            Show
+                                            <i class="bi bi-file-earmark-image"></i>
                                         </button>
                                     </div>
                                 </td>
@@ -173,7 +174,7 @@
                     <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="imageModalLabel">Inventory Image & QR Code </h5>
+                                <h5 class="modal-title" id="imageModalLabel"></h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                             </div>
                             <div class="modal-body text-center">
@@ -195,7 +196,8 @@
                             @csrf
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="importModalLabel">Import Inventory</h5>
+                                    <h5 class="modal-title" id="importModalLabel"><i class="bi bi-filetype-xls"
+                                            style="color: rgb(0, 129, 65);"></i> Import Inventory</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                 </div>
                                 <div class="modal-body">
@@ -206,11 +208,17 @@
                                             required accept=".xls,.xlsx">
                                     </div>
                                     <p class="text-muted">
-                                        Template kolom: <code>Name, Category, Quantity, Unit, Price, Currency, Supplier,
-                                            Location</code>
+                                        You can Import Inventories via Excel file. Please ensure the file is formatted
+                                        correctly.
+                                        <br>
+                                        <strong>Note:</strong> The file must be in XLS or XLSX format.
+                                        <br>
+                                        <strong>Column Template:</strong>
+                                        <br>
+                                        <code>Name, Category, Quantity, Unit, Price, Currency, Supplier, Location</code>
                                     </p>
                                     <a href="{{ route('inventory.template') }}" class="btn btn-outline-secondary btn-sm">
-                                        Download Template
+                                        <i class="bi bi-download"></i> Download Template
                                     </a>
                                 </div>
                                 <div class="modal-footer">
@@ -295,10 +303,12 @@
                 let qrcode = $(this).data('qrcode');
                 let name = $(this).data('name');
                 currentInventoryName = name || 'qr-code';
-                $('#imageModalLabel').text(name + ' - Image & QR Code');
+                $('#imageModalLabel').html(
+                    `<i class="bi bi-image" style="margin-right: 5px; color: cornflowerblue;"></i> ${name}`
+                    );
                 $('#img-container').html(img ?
                     `<img src="${img}" alt="Image" class="img-fluid mb-2 rounded" style="max-width:100%;">` :
-                    '<span class="text-muted">No Project Image</span>');
+                    '<span class="text-muted">No Image</span>');
                 if (qrcode) {
                     $('#qr-container').html(
                         `<img id="qr-svg" src="${qrcode}" alt="QR Code" style="max-width:200px;">`);
@@ -324,6 +334,10 @@
                     link.click();
                 });
             });
+        });
+        $(document).ready(function() {
+            // Initialize Bootstrap Tooltip
+            $('[data-bs-toggle="tooltip"]').tooltip();
         });
     </script>
 @endpush

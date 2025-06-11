@@ -25,7 +25,7 @@
                         </div>
                     </form>
                 </div>
-                <table class="table table-hover table-bordered" id="datatable">
+                <table class="table table-hover table-bordered table-striped" id="datatable">
                     <thead class="align-middle">
                         <tr>
                             <th></th>

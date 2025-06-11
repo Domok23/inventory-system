@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('content')
-    <div class="container-fluid mt-4">
+    <div class="container mt-4">
         <div class="card shadow rounded">
             <div class="card-body">
                 <div class="d-flex flex-column flex-md-row align-items-md-center gap-2 mb-3">
@@ -10,8 +10,8 @@
                     <!-- Spacer untuk mendorong tombol ke kanan -->
                     <div class="ms-md-auto d-flex flex-wrap gap-2">
                         <a href="{{ route('material_usage.export', request()->query()) }}"
-                            class="btn btn-success btn-sm flex-shrink-0">
-                            Export to Excel
+                            class="btn btn-outline-success btn-sm flex-shrink-0">
+                            <i class="bi bi-file-earmark-excel"></i> Export
                         </a>
                     </div>
                 </div>
@@ -69,7 +69,7 @@
                 </div>
 
                 <!-- Table -->
-                <table class="table table-bordered table-hover" id="datatable">
+                <table class="table table-bordered table-hover table-striped" id="datatable">
                     <thead class="align-middle">
                         <tr>
                             <th></th>

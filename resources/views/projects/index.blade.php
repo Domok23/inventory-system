@@ -13,12 +13,12 @@
                     <div class="ms-md-auto d-flex flex-wrap gap-2">
                         @if (auth()->user()->role !== 'admin_logistic')
                             <a href="{{ route('projects.create') }}" class="btn btn-primary btn-sm flex-shrink-0">
-                                + New Project
+                                <i class="bi bi-plus-circle"></i> Create Project
                             </a>
                         @endif
                         <a href="{{ route('projects.export', request()->query()) }}"
-                            class="btn btn-success btn-sm flex-shrink-0">
-                            Export to Excel
+                            class="btn btn-outline-success btn-sm flex-shrink-0">
+                            <i class="bi bi-file-earmark-excel"></i> Export
                         </a>
                     </div>
                 </div>
@@ -85,7 +85,7 @@
                 </div>
 
                 <!-- Table -->
-                <table class="table table-bordered table-hover" id="datatable">
+                <table class="table table-bordered table-striped table-hover" id="datatable">
                     <thead class="align-middle">
                         <tr>
                             <th></th>
@@ -113,12 +113,6 @@
                                 </td>
                                 <td>
                                     <div class="d-flex flex-wrap gap-1">
-                                        <button type="button" class="btn btn-info btn-sm btn-show-image"
-                                            data-bs-toggle="modal" data-bs-target="#imageModal"
-                                            data-img="{{ $project->img ? asset('storage/' . $project->img) : '' }}"
-                                            data-name="{{ $project->name }}">
-                                            Show
-                                        </button>
                                         @if (auth()->user()->role !== 'admin_logistic')
                                             <a href="{{ route('projects.edit', $project) }}"
                                                 class="btn btn-sm btn-warning">Edit</a>
@@ -130,6 +124,12 @@
                                                     class="btn btn-sm btn-danger btn-delete">Delete</button>
                                             </form>
                                         @endif
+                                        <button type="button" class="btn btn-info btn-sm btn-show-image" title="View Image"
+                                            data-bs-toggle="modal" data-bs-target="#imageModal"
+                                            data-img="{{ $project->img ? asset('storage/' . $project->img) : '' }}"
+                                            data-name="{{ $project->name }}">
+                                            <i class="bi bi-file-earmark-image"></i>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -197,7 +197,7 @@
                 $('#img-container').html('');
                 let img = $(this).data('img');
                 let name = $(this).data('name');
-                $('#imageModalLabel').text(name + ' - Image');
+                $('#imageModalLabel').html(`<i class="bi bi-image" style="margin-right: 5px; color: cornflowerblue;"></i> ${name}`);
                 $('#img-container').html(img ?
                     `<img src="${img}" alt="Image" class="img-fluid mb-2 rounded" style="max-width:100%;">` :
                     '<span class="text-muted">No Image</span>');
