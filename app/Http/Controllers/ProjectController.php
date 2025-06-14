@@ -12,17 +12,6 @@ class ProjectController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-
-        // Batasi akses untuk fitur tertentu agar tidak bisa diakses oleh admin_logistic
-        $this->middleware(function ($request, $next) {
-            if (
-                in_array($request->route()->getName(), ['projects.store', 'projects.create', 'projects.store.quick', 'projects.edit', 'projects.update', 'projects.destroy']) &&
-                auth()->user()->role === 'admin_logistic'
-            ) {
-                abort(403, 'Unauthorized');
-            }
-            return $next($request);
-        })->only(['create', 'store', 'storeQuick', 'edit', 'update', 'destroy']);
     }
 
     public function index(Request $request)
@@ -101,7 +90,9 @@ class ProjectController extends Controller
             $validated['img'] = $request->file('img')->store('projects', 'public');
         }
 
-        $project = Project::create($validated);
+        $project = Project::create(array_merge($validated, [
+            'created_by' => auth()->user()->username, // Simpan username pembuat
+        ]));
 
         return redirect()->route('projects.index')->with('success', "Project '{$project->name}' added successfully!");
     }
@@ -118,6 +109,7 @@ class ProjectController extends Controller
             'name'       => $request->name,
             'qty'        => $request->qty,
             'department' => $request->department,
+            'created_by' => auth()->user()->username,
         ]);
 
         // Jika request AJAX, kembalikan JSON
@@ -166,6 +158,11 @@ class ProjectController extends Controller
 
     public function destroy(Project $project)
     {
+        // Validasi: Hanya pembuat proyek atau super_admin yang dapat menghapus
+        if (auth()->user()->username !== $project->created_by && auth()->user()->role !== 'super_admin') {
+            return redirect()->route('projects.index')->with('error', "You are not authorized to delete this project.");
+        }
+
         $projectName = $project->name;
         $project->delete();
 

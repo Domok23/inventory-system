@@ -16,17 +16,6 @@ class MaterialRequestController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-
-        // Batasi akses untuk fitur tertentu agar tidak bisa diakses oleh admin_logistic
-        $this->middleware(function ($request, $next) {
-            if (
-                in_array($request->route()->getName(), ['material_requests.create', 'material_requests.store', 'material_requests.bulk_create', 'material_requests.bulk_store', 'material_requests.destroy']) &&
-                auth()->user()->role === 'admin_logistic'
-            ) {
-                abort(403, 'Unauthorized');
-            }
-            return $next($request);
-        })->only(['create', 'store', 'bulkCreate', 'bulkStore', 'destroy']);
     }
 
     public function index(Request $request)
@@ -126,11 +115,18 @@ class MaterialRequestController extends Controller
         return Excel::download(new MaterialRequestExport($requests), $fileName);
     }
 
-    public function create()
+    public function create(Request $request)
     {
         $inventories = Inventory::orderBy('name')->get();
         $projects = Project::orderBy('name')->get();
-        return view('material_requests.create', compact('inventories', 'projects'));
+
+        // Periksa apakah parameter material_id ada
+        $selectedMaterial = null;
+        if ($request->has('material_id')) {
+            $selectedMaterial = Inventory::find($request->material_id);
+        }
+
+        return view('material_requests.create', compact('inventories', 'projects', 'selectedMaterial'));
     }
 
     public function store(Request $request)

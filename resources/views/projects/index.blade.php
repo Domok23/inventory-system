@@ -11,11 +11,9 @@
 
                     <!-- Spacer untuk mendorong tombol ke kanan -->
                     <div class="ms-lg-auto d-flex flex-wrap gap-2">
-                        @if (auth()->user()->role !== 'admin_logistic')
-                            <a href="{{ route('projects.create') }}" class="btn btn-primary btn-sm flex-shrink-0">
-                                <i class="bi bi-plus-circle"></i> Create Project
-                            </a>
-                        @endif
+                        <a href="{{ route('projects.create') }}" class="btn btn-primary btn-sm flex-shrink-0">
+                            <i class="bi bi-plus-circle"></i> Create Project
+                        </a>
                         <a href="{{ route('projects.export', request()->query()) }}"
                             class="btn btn-outline-success btn-sm flex-shrink-0">
                             <i class="bi bi-file-earmark-excel"></i> Export
@@ -113,9 +111,9 @@
                                 </td>
                                 <td>
                                     <div class="d-flex flex-wrap gap-1">
-                                        @if (auth()->user()->role !== 'admin_logistic')
-                                            <a href="{{ route('projects.edit', $project) }}"
-                                                class="btn btn-sm btn-warning">Edit</a>
+                                        <a href="{{ route('projects.edit', $project) }}"
+                                            class="btn btn-sm btn-warning">Edit</a>
+                                        @if (auth()->user()->username === $project->created_by || auth()->user()->role === 'super_admin')
                                             <form action="{{ route('projects.destroy', $project) }}" method="POST"
                                                 class="delete-form">
                                                 @csrf

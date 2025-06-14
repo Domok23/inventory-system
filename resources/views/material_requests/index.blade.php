@@ -11,15 +11,12 @@
 
                     <!-- Spacer untuk mendorong tombol ke kanan -->
                     <div class="ms-lg-auto d-flex flex-wrap gap-2">
-                        @if (auth()->user()->role !== 'admin_logistic')
-                            <a href="{{ route('material_requests.create') }}" class="btn btn-primary btn-sm flex-shrink-0">
-                                <i class="bi bi-plus-circle"></i> Create Request
-                            </a>
-                            <a href="{{ route('material_requests.bulk_create') }}"
-                                class="btn btn-info btn-sm flex-shrink-0">
-                                <i class="bi bi-plus-circle"></i> Bulk Material Request
-                            </a>
-                        @endif
+                        <a href="{{ route('material_requests.create') }}" class="btn btn-primary btn-sm flex-shrink-0">
+                            <i class="bi bi-plus-circle"></i> Create Request
+                        </a>
+                        <a href="{{ route('material_requests.bulk_create') }}" class="btn btn-info btn-sm flex-shrink-0">
+                            <i class="bi bi-plus-circle"></i> Bulk Material Request
+                        </a>
                         @if (in_array(auth()->user()->role, ['admin_logistic', 'super_admin']))
                             <button id="bulk-goods-out-btn" class="btn btn-success btn-sm flex-shrink-0">
                                 <i class="bi bi-box-arrow-in-right"></i> Bulk Goods Out

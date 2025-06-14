@@ -81,6 +81,10 @@
                 </div>
             </div>
             <div class="card-footer text-center">
+                <a href="{{ route('material_requests.create', ['material_id' => $inventory->id]) }}"
+                    class="btn btn-info my-1">
+                    Request this Material
+                </a>
                 <button type="button" class="btn btn-primary my-1" data-bs-toggle="modal"
                     data-bs-target="#goodsInModal">Goods In</button>
                 @if (in_array(auth()->user()->role, ['admin_logistic', 'super_admin']))
