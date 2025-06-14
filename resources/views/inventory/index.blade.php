@@ -307,7 +307,11 @@
                     `<i class="bi bi-image" style="margin-right: 5px; color: cornflowerblue;"></i> ${name}`
                 );
                 $('#img-container').html(img ?
-                    `<img src="${img}" alt="Image" class="img-fluid mb-2 rounded" style="max-width:100%;">` :
+                    ` <a href="${img}" data-fancybox="gallery"
+                            data-caption="${name}">
+                            <img src="${img}" alt="Image"
+                                class="img-fluid img-hover rounded" style="max-width:100%;">
+                        </a>` :
                     '<span class="text-muted">No Image</span>');
                 if (qrcode) {
                     $('#qr-container').html(
@@ -338,6 +342,25 @@
         $(document).ready(function() {
             // Initialize Bootstrap Tooltip
             $('[data-bs-toggle="tooltip"]').tooltip();
+        });
+        document.addEventListener('DOMContentLoaded', function() {
+            Fancybox.bind("[data-fancybox='gallery']", {
+                Toolbar: {
+                    display: [{
+                            id: "counter",
+                            position: "center"
+                        }, // Menampilkan penghitung gambar
+                        "zoom", // Tombol zoom
+                        "download", // Tombol download
+                        "close" // Tombol close
+                    ],
+                },
+                Thumbs: false, // Nonaktifkan thumbnail jika tidak diperlukan
+                Image: {
+                    zoom: true, // Aktifkan fitur zoom
+                },
+                Hash: false, // Nonaktifkan fitur History API
+            });
         });
     </script>
 @endpush

@@ -125,7 +125,6 @@
                                             </form>
                                         @endif
                                         <button type="button" class="btn btn-info btn-sm btn-show-image" title="View Image"
-                                            data-bs-toggle="modal" data-bs-target="#imageModal"
                                             data-img="{{ $project->img ? asset('storage/' . $project->img) : '' }}"
                                             data-name="{{ $project->name }}">
                                             <i class="bi bi-file-earmark-image"></i>
@@ -136,19 +135,6 @@
                         @endforeach
                     </tbody>
                 </table>
-            </div>
-        </div>
-    </div>
-    <!-- Modal Show Image -->
-    <div class="modal fade" id="fullscreenImageModal" tabindex="-1" aria-labelledby="fullscreenImageModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-fullscreen">
-            <div class="modal-content">
-                <div class="modal-body d-flex justify-content-center align-items-center p-0">
-                    <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
-                    <img id="fullscreenImage" src="" alt="Fullscreen Image">
-                </div>
             </div>
         </div>
     </div>
@@ -190,11 +176,34 @@
                 });
             });
 
-            // Show Image Modal
             $(document).on('click', '.btn-show-image', function() {
                 const imgSrc = $(this).data('img'); // Ambil URL gambar
-                $('#fullscreenImage').attr('src', imgSrc); // Set gambar ke modal
-                $('#fullscreenImageModal').modal('show'); // Tampilkan modal
+                const imgName = $(this).data('name'); // Ambil nama gambar
+
+                if (imgSrc) {
+                    // Buat elemen Fancybox secara dinamis
+                    Fancybox.show([{
+                        src: imgSrc,
+                        type: "image",
+                        caption: imgName, // Tambahkan caption
+                        downloadSrc: imgSrc, // URL untuk tombol download
+                    }], {
+                        Toolbar: {
+                            display: [
+                                "zoom", // Tombol zoom
+                                "fullscreen", // Tombol fullscreen
+                                "download", // Tombol download
+                                "close", // Tombol close
+                            ],
+                        },
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'No image available!',
+                    });
+                }
             });
         });
     </script>

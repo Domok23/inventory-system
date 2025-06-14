@@ -69,10 +69,13 @@
                     <div class="col-lg-6 text-center">
                         <h5>Material Image</h5>
                         @if ($inventory->img)
-                            <img src="{{ asset('storage/' . $inventory->img) }}" alt="Image" class="img-fluid img-hover rounded"
-                                style="max-height: 290px;">
+                            <a href="{{ asset('storage/' . $inventory->img) }}" data-fancybox="gallery"
+                                data-caption="{{ $inventory->name }}">
+                                <img src="{{ asset('storage/' . $inventory->img) }}" alt="Image"
+                                    class="img-fluid img-hover rounded" style="max-height: 290px;">
+                            </a>
                         @else
-                            <p class="text-muted">No Image</p>
+                            <span class="text-muted">No Image</span>
                         @endif
                     </div>
                 </div>
@@ -212,19 +215,6 @@
             </div>
         </div>
     </div>
-
-    <div class="modal fade" id="fullscreenImageModal" tabindex="-1" aria-labelledby="fullscreenImageModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-fullscreen">
-            <div class="modal-content">
-                <div class="modal-body d-flex justify-content-center align-items-center p-0">
-                    <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
-                    <img id="fullscreenImage" src="" alt="Fullscreen Image">
-                </div>
-            </div>
-        </div>
-    </div>
 @endsection
 @push('scripts')
     <script>
@@ -300,11 +290,23 @@
                 });
             });
         });
-        $(document).ready(function() {
-            $(document).on('click', '.img-fluid', function() {
-                const imgSrc = $(this).attr('src'); // Ambil URL gambar
-                $('#fullscreenImage').attr('src', imgSrc); // Set gambar ke modal
-                $('#fullscreenImageModal').modal('show'); // Tampilkan modal
+        document.addEventListener('DOMContentLoaded', function() {
+            Fancybox.bind("[data-fancybox='gallery']", {
+                Toolbar: {
+                    display: [{
+                            id: "counter",
+                            position: "center"
+                        }, // Menampilkan penghitung gambar
+                        "zoom", // Tombol zoom
+                        "download", // Tombol download
+                        "close" // Tombol close
+                    ],
+                },
+                Thumbs: false, // Nonaktifkan thumbnail jika tidak diperlukan
+                Image: {
+                    zoom: true, // Aktifkan fitur zoom
+                },
+                Hash: false, // Nonaktifkan fitur History API
             });
         });
     </script>

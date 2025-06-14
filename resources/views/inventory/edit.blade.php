@@ -161,9 +161,17 @@
                         <!-- Image Preview -->
                         <div class="col-lg-6 mb-3">
                             <label class="form-label">Image Preview</label><br>
-                            <img id="img-preview"
-                                src="{{ isset($inventory) && $inventory->img ? asset('storage/' . $inventory->img) : asset('images/default-image.png') }}"
-                                alt="Image Preview" class="rounded" style="max-width: 200px;">
+                            <div id="img-preview-container">
+                                @if (isset($inventory) && $inventory->img)
+                                    <a id="img-preview-link" href="{{ asset('storage/' . $inventory->img) }}"
+                                        data-fancybox="gallery">
+                                        <img id="img-preview" src="{{ asset('storage/' . $inventory->img) }}"
+                                            alt="Image Preview" class="rounded" style="max-width: 200px;">
+                                    </a>
+                                @else
+                                    <span id="no-image-text" class="text-muted">No Image</span>
+                                @endif
+                            </div>
                             @error('img')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
@@ -405,20 +413,45 @@
         function previewImage(event) {
             const input = event.target;
             const preview = document.getElementById('img-preview');
+            const previewLink = document.getElementById('img-preview-link');
+            const noImageText = document.getElementById('no-image-text');
 
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
 
                 reader.onload = function(e) {
-                    preview.src = e.target.result;
+                    preview.src = e.target.result; // Set src untuk gambar preview
+                    previewLink.href = e.target.result; // Set href untuk Fancybox
                     preview.style.display = 'block';
+                    previewLink.style.display = 'block';
+                    noImageText.style.display = 'none'; // Sembunyikan teks "No Image"
                 };
 
                 reader.readAsDataURL(input.files[0]);
             } else {
                 preview.src = '';
+                previewLink.href = '#';
                 preview.style.display = 'none';
+                previewLink.style.display = 'none';
+                noImageText.style.display = 'block'; // Tampilkan teks "No Image"
             }
         }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            Fancybox.bind("[data-fancybox='gallery']", {
+                Toolbar: {
+                    display: [
+                        "zoom", // Tombol zoom
+                        "download", // Tombol download
+                        "close" // Tombol close
+                    ],
+                },
+                Thumbs: false, // Nonaktifkan thumbnail jika tidak diperlukan
+                Image: {
+                    zoom: true, // Aktifkan fitur zoom
+                },
+                Hash: false,
+            });
+        });
     </script>
 @endpush

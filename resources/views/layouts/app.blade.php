@@ -38,6 +38,9 @@
 
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Fancybox CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css" />
     @push('styles')
         <style>
             html,
@@ -47,8 +50,8 @@
             }
 
             /* body {
-                                            font-family: Inter, Nunito, Roboto, Poppins,  "Helvetica Neue", Arial, sans-serif;
-                                        } */
+                                                        font-family: Inter, Nunito, Roboto, Poppins,  "Helvetica Neue", Arial, sans-serif;
+                                                    } */
 
             #app {
                 min-height: 100%;
@@ -188,80 +191,16 @@
                 /* Ubah cursor menjadi kaca pembesar saat hover */
             }
 
-            #fullscreenImage {
-                object-fit: contain;
-                /* Menjaga proporsi gambar */
-                max-width: 98%;
-                /* Membatasi lebar gambar */
-                max-height: 98%;
-                /* Membatasi tinggi gambar */
-                display: block;
-                /* Menghilangkan margin default */
-                margin: auto;
-                /* Memposisikan gambar di tengah */
-                border-radius: 0.5rem;
+            .img-hover:hover {
+                transform: scale(1.02);
+                /* Perbesar gambar saat hover */
+                transition: transform 0.3s ease;
+                /* Tambahkan transisi halus */
             }
 
-            #fullscreenImageModal .modal-content {
-                background-color: transparent;
-                /* Membuat background transparan */
-                border: none;
-                /* Menghilangkan border */
-                box-shadow: none;
-                /* Menghilangkan bayangan */
-            }
-
-            #fullscreenImageModal .modal-body {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                height: 100%;
-                /* Pastikan modal memenuhi layar */
-                padding: 0;
-                /* Hilangkan padding default */
-            }
-
-            #fullscreenImageModal .btn-close {
-                background-color: rgb(255, 255, 255);
-                /* Warna hitam transparan */
-                color: #fff;
-                /* Warna teks putih */
-                border: none;
-                /* Hilangkan border */
-                width: 32px;
-                /* Ukuran tombol */
-                height: 32px;
-                /* Ukuran tombol */
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                border-radius: 50%;
-                /* Membuat tombol berbentuk lingkaran */
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-                /* Tambahkan bayangan */
-                cursor: pointer;
-                /* Ubah kursor menjadi pointer */
-            }
-
-            #fullscreenImageModal .btn-close:hover {
-                background-color: rgba(255, 0, 0, 0.8);
-                /* Warna merah transparan saat hover */
-                color: #fff;
-                /* Warna teks tetap putih */
-            }
-
-            #fullscreenImageTitle {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                /* Warna latar belakang transparan */
-                color: #fff;
-                /* Padding untuk teks */
-                z-index: 1050;
-                /* Pastikan berada di atas gambar */
-                text-align: center;
-                /* Teks berada di tengah */
+            .fancybox__container {
+                z-index: 1060 !important;
+                /* Pastikan lebih tinggi dari modal Bootstrap */
             }
         </style>
     @endpush
@@ -497,6 +436,9 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>
+
+    <!-- Fancybox JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script>
     <script>
         const authUserRole = "{{ auth()->check() ? auth()->user()->role : '' }}";
     </script>

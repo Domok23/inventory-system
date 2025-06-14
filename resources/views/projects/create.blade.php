@@ -107,10 +107,10 @@
                             <label for="img" class="form-label">Image (optional)</label>
                             <input type="file" name="img" class="form-control" id="img" accept="image/*"
                                 onchange="previewImage(event)">
-                            <img id="img-preview"
-                                src="{{ old('img', isset($project) && $project->img ? asset('storage/' . $project->img) : '') }}"
-                                alt="Image Preview" class="mt-2 rounded"
-                                style="max-width: 200px; display: {{ old('img', isset($project) && $project->img ? 'block' : 'none') }};">
+                            <a id="img-preview-link" href="#" data-fancybox="gallery" style="display: none;">
+                                <img id="img-preview" src="#" alt="Image Preview" class="mt-2 rounded"
+                                    style="max-width: 200px;">
+                            </a>
                             @error('img')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
@@ -129,20 +129,41 @@
         function previewImage(event) {
             const input = event.target;
             const preview = document.getElementById('img-preview');
+            const previewLink = document.getElementById('img-preview-link');
 
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
 
                 reader.onload = function(e) {
-                    preview.src = e.target.result;
+                    preview.src = e.target.result; // Set src untuk gambar preview
+                    previewLink.href = e.target.result; // Set href untuk Fancybox
                     preview.style.display = 'block';
+                    previewLink.style.display = 'block';
                 };
 
                 reader.readAsDataURL(input.files[0]);
             } else {
                 preview.src = '';
+                previewLink.href = '#';
                 preview.style.display = 'none';
+                previewLink.style.display = 'none';
             }
         }
+        document.addEventListener('DOMContentLoaded', function() {
+            Fancybox.bind("[data-fancybox='gallery']", {
+                Toolbar: {
+                    display: [
+                        "zoom", // Tombol zoom
+                        "download", // Tombol download
+                        "close" // Tombol close
+                    ],
+                },
+                Thumbs: false, // Nonaktifkan thumbnail jika tidak diperlukan
+                Image: {
+                    zoom: true, // Aktifkan fitur zoom
+                },
+                Hash: false,
+            });
+        });
     </script>
 @endpush
