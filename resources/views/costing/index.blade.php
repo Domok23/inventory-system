@@ -42,9 +42,9 @@
                                 <td>{{ ucfirst($project->department) ?? '-' }}</td>
                                 <td>
                                     <button class="btn btn-primary btn-sm"
-                                        onclick="viewCosting('{{ $project->id }}')">View</button>
+                                        onclick="viewCosting('{{ $project->id }}')" title="View Report"><i class="bi bi-eye"></i></button>
                                     <a href="{{ route('costing.export', $project->id) }}"
-                                        class="btn btn-success btn-sm">Export to Excel</a>
+                                        class="btn btn-success btn-sm" title="Export to Excel"><i class="bi bi-file-earmark-excel"></i></a>
                                 </td>
                             </tr>
                         @endforeach

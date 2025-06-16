@@ -50,11 +50,11 @@
                                 <td>
                                     <div class="d-flex flex-wrap gap-1">
                                         <a href="{{ route('users.edit', $user->id) }}"
-                                            class="btn btn-sm btn-warning">Edit</a>
+                                            class="btn btn-sm btn-warning" title="Edit"><i class="bi bi-pencil-square"></i></a>
                                         <form action="{{ route('users.destroy', $user->id) }}" method="POST"
                                             class="delete-form">
                                             @csrf @method('DELETE')
-                                            <button type="button" class="btn btn-sm btn-danger btn-delete">Delete</button>
+                                            <button type="button" class="btn btn-sm btn-danger btn-delete" title="Delete"><i class="bi bi-trash"></i></button>
                                         </form>
                                     </div>
                                 </td>

@@ -173,18 +173,18 @@
                                 <td>
                                     <div class="d-flex flex-wrap gap-1">
                                         @if (
-                                            $req->status !== 'canceled' &&
-                                                (auth()->user()->username === $req->requested_by ||
-                                                    in_array(auth()->user()->role, ['admin_logistic', 'super_admin'])))
-                                            <a href="{{ route('material_requests.edit', $req->id) }}"
-                                                class="btn btn-sm btn-warning">Edit</a>
-                                        @endif
-                                        @if (
                                             $req->status === 'approved' &&
                                                 $req->status !== 'canceled' &&
                                                 in_array(auth()->user()->role, ['admin_logistic', 'super_admin']))
                                             <a href="{{ route('goods_out.create', $req->id) }}"
-                                                class="btn btn-sm btn-success">Goods Out</a>
+                                                class="btn btn-sm btn-success" title="Goods Out">Goods Out</i></a>
+                                        @endif
+                                        @if (
+                                            $req->status !== 'canceled' &&
+                                                (auth()->user()->username === $req->requested_by ||
+                                                    in_array(auth()->user()->role, ['admin_logistic', 'super_admin'])))
+                                            <a href="{{ route('material_requests.edit', $req->id) }}"
+                                                class="btn btn-sm btn-warning" title="Edit"><i class="bi bi-pencil-square"></i></a>
                                         @endif
                                         @if (
                                             $req->status !== 'canceled' &&
@@ -194,7 +194,7 @@
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="button"
-                                                    class="btn btn-sm btn-danger btn-delete">Delete</button>
+                                                    class="btn btn-sm btn-danger btn-delete" title="Delete"><i class="bi bi-trash"></i></button>
                                             </form>
                                         @endif
                                     </div>

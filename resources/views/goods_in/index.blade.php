@@ -158,7 +158,7 @@
                                         @if (auth()->user()->username === $goodsIn->returned_by ||
                                                 in_array(auth()->user()->role, ['admin_logistic', 'super_admin']))
                                             <a href="{{ route('goods_in.edit', $goodsIn->id) }}"
-                                                class="btn btn-sm btn-warning">Edit</a>
+                                                class="btn btn-sm btn-warning" title="Edit"><i class="bi bi-pencil-square"></i></a>
                                         @endif
                                         @if (!$goodsIn->goods_out_id && in_array(auth()->user()->role, ['admin_logistic', 'super_admin']))
                                             <form action="{{ route('goods_in.destroy', $goodsIn->id) }}" method="POST"
@@ -166,7 +166,7 @@
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="button"
-                                                    class="btn btn-sm btn-danger btn-delete">Delete</button>
+                                                    class="btn btn-sm btn-danger btn-delete" title="Delete"><i class="bi bi-trash"></i></button>
                                             </form>
                                         @endif
                                     </div>

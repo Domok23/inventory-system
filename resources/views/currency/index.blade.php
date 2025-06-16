@@ -60,13 +60,13 @@
                                         <button type="button" class="btn btn-sm btn-primary edit-currency-btn"
                                             data-id="{{ $currency->id }}" data-name="{{ $currency->name }}"
                                             data-exchange-rate="{{ $currency->exchange_rate }}" data-bs-toggle="modal"
-                                            data-bs-target="#currencyModal">
-                                            Edit
+                                            data-bs-target="#currencyModal" title="Edit Currency">
+                                            <i class="bi bi-pencil-square"></i>
                                         </button>
                                         <form action="{{ route('currencies.destroy', $currency->id) }}" method="POST"
                                             class="delete-form">
                                             @csrf @method('DELETE')
-                                            <button type="button" class="btn btn-sm btn-danger btn-delete">Delete</button>
+                                            <button type="button" class="btn btn-sm btn-danger btn-delete" title="Delete"><i class="bi bi-trash"></i></button>
                                         </form>
                                     </div>
                                 </td>

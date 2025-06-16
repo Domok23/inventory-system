@@ -140,18 +140,7 @@
                                 <td>{{ $inventory->location ?? '-' }}</td>
                                 <td>{{ $inventory->remark ?? '-' }}</td>
                                 <td>
-                                    <div class="d-flex flex-wrap gap-1">
-                                        @if (in_array(auth()->user()->role, ['super_admin', 'admin_logistic']))
-                                            <a href="{{ route('inventory.edit', $inventory->id) }}"
-                                                class="btn btn-warning btn-sm">Edit</a>
-                                            <form action="{{ route('inventory.destroy', $inventory->id) }}" method="POST"
-                                                class="delete-form">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="button"
-                                                    class="btn btn-sm btn-danger btn-delete">Delete</button>
-                                            </form>
-                                        @endif
+                                    <div class="d-flex flex-nowrap gap-1">
                                         <a href="{{ route('inventory.detail', ['id' => $inventory->id]) }}"
                                             class="btn btn-sm btn-success" title="More Detail"><i
                                                 class="bi bi-info-circle"></i></a>
@@ -162,6 +151,17 @@
                                             data-name="{{ $inventory->name }}">
                                             <i class="bi bi-file-earmark-image"></i>
                                         </button>
+                                        @if (in_array(auth()->user()->role, ['super_admin', 'admin_logistic']))
+                                            <a href="{{ route('inventory.edit', $inventory->id) }}"
+                                                class="btn btn-warning btn-sm" title="Edit"><i class="bi bi-pencil-square"></i></a>
+                                            <form action="{{ route('inventory.destroy', $inventory->id) }}" method="POST"
+                                                class="delete-form">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="button"
+                                                    class="btn btn-sm btn-danger btn-delete" title="Delete"><i class="bi bi-trash"></i></button>
+                                            </form>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>
