@@ -66,7 +66,8 @@
                                         <form action="{{ route('currencies.destroy', $currency->id) }}" method="POST"
                                             class="delete-form">
                                             @csrf @method('DELETE')
-                                            <button type="button" class="btn btn-sm btn-danger btn-delete" title="Delete"><i class="bi bi-trash"></i></button>
+                                            <button type="button" class="btn btn-sm btn-danger btn-delete"
+                                                title="Delete"><i class="bi bi-trash3-fill"></i></button>
                                         </form>
                                     </div>
                                 </td>

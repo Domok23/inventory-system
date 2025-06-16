@@ -151,14 +151,15 @@
                                     <div class="d-flex flex-wrap gap-1 align-items-center">
                                         @if (in_array(auth()->user()->role, ['admin_logistic', 'super_admin']))
                                             <a href="{{ route('goods_out.edit', $goodsOut->id) }}"
-                                                class="btn btn-sm btn-warning" title="Edit"><i class="bi bi-pencil-square"></i></a>
+                                                class="btn btn-sm btn-warning" title="Edit"><i
+                                                    class="bi bi-pencil-square"></i></a>
                                             @if ($goodsOut->goodsIns->isEmpty())
                                                 <form action="{{ route('goods_out.destroy', $goodsOut->id) }}"
                                                     method="POST" class="delete-form">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="button"
-                                                        class="btn btn-sm btn-danger btn-delete" title="Delete"><i class="bi bi-trash"></i></button>
+                                                    <button type="button" class="btn btn-sm btn-danger btn-delete"
+                                                        title="Delete"><i class="bi bi-trash3"></i></button>
                                                 </form>
                                             @endif
                                         @endif

@@ -322,15 +322,20 @@ class InventoryController extends Controller
             'name' => 'required|string|max:255|unique:inventories,name',
             'quantity' => 'required|numeric|min:0',
             'unit' => 'required|string',
+            'remark' => 'nullable|string|max:255',
         ]);
+
         $unit = Unit::firstOrCreate(['name' => $request->unit]);
+
         $material = Inventory::create([
             'name'     => $request->name,
             'quantity' => $request->quantity,
             'unit'     => $unit->name,
             'price'    => $request->price ?? 0,
+            'remark'   => $request->remark ? $request->remark . ' <span style="color: orange;">(From Quick Add)</span>' : '<span style="color: orange;">(From Quick Add)</span>',
             'status'   => 'pending',
         ]);
+
         return response()->json(['success' => true, 'material' => $material]);
     }
 
@@ -350,7 +355,7 @@ class InventoryController extends Controller
 
     public function update(Request $request, Inventory $inventory)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255|unique:inventories,name,' . $inventory->id,
             'quantity' => 'required|numeric',
             'unit' => 'required|string',
@@ -359,9 +364,14 @@ class InventoryController extends Controller
             'supplier' => 'nullable|string|max:255',
             'currency_id' => 'nullable|exists:currencies,id',
             'location' => 'nullable|string',
+            'remark' => 'nullable|string|max:255',
             'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'category_id' => 'required|exists:categories,id',
         ]);
+
+        $inventory->update(array_merge($validated, [
+            'remark' => $validated['remark'], // Simpan remark asli tanpa tag tambahan
+        ]));
 
         // Update data inventory
         $inventory->name = $request->name;

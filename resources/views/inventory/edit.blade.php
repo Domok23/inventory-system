@@ -145,7 +145,7 @@
                         </div>
                         <div class="col-lg-12 mb-3">
                             <label for="remark" class="form-label">Remark (Optional)</label>
-                            <textarea class="form-control" id="remark" name="remark" rows="2">{{ old('remark', $inventory->remark) }}</textarea>
+                            <textarea class="form-control" id="remark" name="remark" rows="2">{{ old('remark', strip_tags($inventory->remark)) }}</textarea>
                             @error('remark')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror

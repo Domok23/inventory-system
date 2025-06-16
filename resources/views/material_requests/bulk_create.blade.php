@@ -127,6 +127,8 @@
                                 <input type="number" step="any" name="quantity" class="form-control" required>
                                 <label class="mt-2">Unit <span class="text-danger">*</span></label>
                                 <input type="text" name="unit" class="form-control" required>
+                                <label class="mt-2">Remark (optional)</label>
+                                <textarea name="remark" class="form-control" rows="2"></textarea>
                             </div>
                             <div class="modal-footer">
                                 <button type="submit" class="btn btn-primary">Add Material</button>

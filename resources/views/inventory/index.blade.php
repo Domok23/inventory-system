@@ -138,7 +138,7 @@
                                 @endif
                                 <td>{{ $inventory->supplier ?? '-' }}</td>
                                 <td>{{ $inventory->location ?? '-' }}</td>
-                                <td>{{ $inventory->remark ?? '-' }}</td>
+                                <td>{!! $inventory->remark ?? '-' !!}</td>
                                 <td>
                                     <div class="d-flex flex-nowrap gap-1">
                                         <a href="{{ route('inventory.detail', ['id' => $inventory->id]) }}"
@@ -153,13 +153,14 @@
                                         </button>
                                         @if (in_array(auth()->user()->role, ['super_admin', 'admin_logistic']))
                                             <a href="{{ route('inventory.edit', $inventory->id) }}"
-                                                class="btn btn-warning btn-sm" title="Edit"><i class="bi bi-pencil-square"></i></a>
+                                                class="btn btn-warning btn-sm" title="Edit"><i
+                                                    class="bi bi-pencil-square"></i></a>
                                             <form action="{{ route('inventory.destroy', $inventory->id) }}" method="POST"
                                                 class="delete-form">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="button"
-                                                    class="btn btn-sm btn-danger btn-delete" title="Delete"><i class="bi bi-trash"></i></button>
+                                                <button type="button" class="btn btn-sm btn-danger btn-delete"
+                                                    title="Delete"><i class="bi bi-trash3"></i></button>
                                             </form>
                                         @endif
                                     </div>
@@ -170,7 +171,8 @@
                 </table>
 
                 <!-- Modal Show Image -->
-                <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+                <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel"
+                    aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
                             <div class="modal-header">

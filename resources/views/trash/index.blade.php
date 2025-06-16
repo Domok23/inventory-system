@@ -112,8 +112,8 @@
                                                         'users' => 'user',
                                                     ][$var] }}">
                                                 <input type="hidden" name="id" value="{{ $item->id }}">
-                                                <button class="btn btn-success btn-sm restore-btn"
-                                                    type="button">Restore</button>
+                                                <button class="btn btn-success btn-sm restore-btn" type="button"
+                                                    title="Restore"><i class="bi bi-bootstrap-reboot"></i></button>
                                             </form>
                                             <form action="{{ route('trash.forceDelete') }}" method="POST"
                                                 class="delete-form">
@@ -131,8 +131,8 @@
                                                         'users' => 'user',
                                                     ][$var] }}">
                                                 <input type="hidden" name="id" value="{{ $item->id }}">
-                                                <button class="btn btn-danger btn-sm delete-btn" type="button">Delete
-                                                    Permanently</button>
+                                                <button class="btn btn-danger btn-sm delete-btn" type="button"
+                                                    title="Delete Permanently"><i class="bi bi-trash3"></i></button>
                                             </form>
                                         </div>
                                     </td>

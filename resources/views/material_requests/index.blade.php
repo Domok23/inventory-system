@@ -184,7 +184,8 @@
                                                 (auth()->user()->username === $req->requested_by ||
                                                     in_array(auth()->user()->role, ['admin_logistic', 'super_admin'])))
                                             <a href="{{ route('material_requests.edit', $req->id) }}"
-                                                class="btn btn-sm btn-warning" title="Edit"><i class="bi bi-pencil-square"></i></a>
+                                                class="btn btn-sm btn-warning" title="Edit"><i
+                                                    class="bi bi-pencil-square"></i></a>
                                         @endif
                                         @if (
                                             $req->status !== 'canceled' &&
@@ -193,8 +194,8 @@
                                                 method="POST" class="delete-form">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="button"
-                                                    class="btn btn-sm btn-danger btn-delete" title="Delete"><i class="bi bi-trash"></i></button>
+                                                <button type="button" class="btn btn-sm btn-danger btn-delete"
+                                                    title="Delete"><i class="bi bi-trash3"></i></button>
                                             </form>
                                         @endif
                                     </div>

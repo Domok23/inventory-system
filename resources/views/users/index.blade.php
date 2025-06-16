@@ -54,7 +54,7 @@
                                         <form action="{{ route('users.destroy', $user->id) }}" method="POST"
                                             class="delete-form">
                                             @csrf @method('DELETE')
-                                            <button type="button" class="btn btn-sm btn-danger btn-delete" title="Delete"><i class="bi bi-trash"></i></button>
+                                            <button type="button" class="btn btn-sm btn-danger btn-delete" title="Delete"><i class="bi bi-x-circle"></i></button>
                                         </form>
                                     </div>
                                 </td>
