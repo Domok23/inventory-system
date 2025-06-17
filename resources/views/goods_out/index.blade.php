@@ -109,8 +109,13 @@
                         <tr>
                             <th></th>
                             <th>Material</th>
-                            <th>Qty</th>
-                            <th>Remaining Qty</th>
+                            <th>Qty (Goods Out)</th>
+                            <th>
+                                Remaining Qty
+                                <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="top"
+                                    title="Remaining Qty column serves as an indicator to monitor the quantity of goods that have not been returned (Goods In) to inventory after the Goods Out process."
+                                    style="font-size: 0.8rem;"></i>
+                            </th>
                             <th>For Project</th>
                             <th>Requested By</th>
                             <th>Proceed At</th>
@@ -191,6 +196,39 @@
             </div>
         </div>
     </div>
+    <!-- Modal for Bulk Goods In -->
+    <div class="modal fade" id="bulkGoodsInModal" tabindex="-1" aria-labelledby="bulkGoodsInModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="bulkGoodsInModalLabel">Bulk Goods In</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="bulk-goods-in-form">
+                        @csrf
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Material</th>
+                                    <th>Goods Out Quantity</th>
+                                    <th>Goods In Quantity</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bulk-goods-in-table-body">
+                                <!-- Rows will be dynamically added here -->
+                            </tbody>
+                        </table>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" id="submit-bulk-goods-in" class="btn btn-primary">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 @push('scripts')
     <script>
@@ -256,37 +294,83 @@
                     return;
                 }
 
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: "You are about to process bulk goods in.",
-                    icon: "question",
-                    showCancelButton: true,
-                    confirmButtonText: 'Yes, proceed!',
-                    cancelButtonText: 'Cancel',
-                    reverseButtons: true,
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            url: "{{ route('goods_in.bulk') }}",
-                            method: 'POST',
-                            data: {
-                                _token: "{{ csrf_token() }}",
-                                selected_ids: selectedIds,
-                            },
-                            success: function(response) {
-                                Swal.fire('Success',
-                                        'Bulk Goods In processed successfully.',
-                                        'success')
-                                    .then(() => location.reload());
-                            },
-                            error: function(xhr) {
-                                Swal.fire('Error',
-                                    'An error occurred while processing.', 'error');
-                            }
-                        });
+                // Clear the modal table body
+                $('#bulk-goods-in-table-body').empty();
+
+                // Fetch data for selected goods out
+                $.ajax({
+                    url: "{{ route('goods_out.details') }}", // Gunakan endpoint yang benar
+                    method: 'GET',
+                    data: {
+                        selected_ids: selectedIds
+                    },
+                    success: function(response) {
+                        if (Array.isArray(response)) {
+                            response.forEach(item => {
+                                $('#bulk-goods-in-table-body').append(`
+                        <tr>
+                            <td>${item.material_name}</td>
+                            <td>${item.goods_out_quantity}</td>
+                            <td>
+                                <input type="number" name="goods_in_quantities[${item.id}]" class="form-control"
+                                    max="${item.goods_out_quantity}" min="0" required>
+                            </td>
+                        </tr>
+                    `);
+                            });
+
+                            // Show the modal
+                            $('#bulkGoodsInModal').modal('show');
+                        } else {
+                            Swal.fire('Error', 'Unexpected response format.', 'error');
+                        }
+                    },
+                    error: function(xhr) {
+                        Swal.fire('Error', 'Failed to fetch goods out details.', 'error');
                     }
                 });
             });
+
+            // Submit Bulk Goods In
+            $('#submit-bulk-goods-in').on('click', function() {
+                let isValid = true;
+
+                // Validasi setiap input quantity
+                $('#bulk-goods-in-table-body input[type="number"]').each(function() {
+                    const value = parseFloat($(this).val());
+                    if (isNaN(value) || value <= 0) {
+                        isValid = false;
+                        $(this).addClass('is-invalid'); // Tambahkan kelas untuk menandai error
+                    } else {
+                        $(this).removeClass('is-invalid'); // Hapus kelas jika valid
+                    }
+                });
+
+                if (!isValid) {
+                    Swal.fire('Error', 'Quantity must be greater than 0.', 'error');
+                    return;
+                }
+
+                // Jika valid, kirim data ke server
+                const formData = $('#bulk-goods-in-form').serialize();
+
+                $.ajax({
+                    url: "{{ route('goods_in.bulk') }}",
+                    method: 'POST',
+                    data: formData,
+                    success: function(response) {
+                        Swal.fire('Success', 'Bulk Goods In processed successfully.', 'success')
+                            .then(() => location.reload());
+                    },
+                    error: function(xhr) {
+                        Swal.fire('Error', 'An error occurred while processing.', 'error');
+                    }
+                });
+            });
+        });
+        $(document).ready(function() {
+            // Inisialisasi Bootstrap Tooltip
+            $('[data-bs-toggle="tooltip"]').tooltip();
         });
     </script>
 @endpush

@@ -99,6 +99,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/goods_out/create_independent', [GoodsOutController::class, 'createIndependent'])->name('goods_out.create_independent');
     Route::post('/goods_out/store_independent', [GoodsOutController::class, 'storeIndependent'])->name('goods_out.store_independent');
     Route::post('/material-requests/bulk-goods-out', [GoodsOutController::class, 'bulkGoodsOut'])->name('goods_out.bulk');
+    Route::get('/goods_out/details', [GoodsOutController::class, 'getDetails'])->name('goods_out.details');
 
     // Goods In
     Route::get('/goods_in/export', [GoodsInController::class, 'export'])->name('goods_in.export');

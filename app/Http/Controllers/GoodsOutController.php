@@ -414,6 +414,27 @@ class GoodsOutController extends Controller
         return redirect()->route('material_requests.index')->with('success', "Bulk Goods Out processed successfully.");
     }
 
+    public function getDetails(Request $request)
+    {
+        $request->validate([
+            'selected_ids' => 'required|array',
+            'selected_ids.*' => 'exists:goods_out,id',
+        ]);
+
+        $goodsOuts = GoodsOut::whereIn('id', $request->selected_ids)
+            ->with('inventory')
+            ->get()
+            ->map(function ($goodsOut) {
+                return [
+                    'id' => $goodsOut->id,
+                    'material_name' => $goodsOut->inventory->name,
+                    'goods_out_quantity' => $goodsOut->quantity,
+                ];
+            });
+
+        return response()->json($goodsOuts);
+    }
+
     public function destroy($id)
     {
         $goodsOut = GoodsOut::findOrFail($id);

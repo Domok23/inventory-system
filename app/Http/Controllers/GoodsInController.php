@@ -227,32 +227,36 @@ class GoodsInController extends Controller
     public function bulkGoodsIn(Request $request)
     {
         $request->validate([
-            'selected_ids' => 'required|array',
-            'selected_ids.*' => 'exists:goods_out,id',
+            'goods_in_quantities' => 'required|array',
+            'goods_in_quantities.*' => 'numeric|min:0.01',
         ]);
 
-        $goodsOuts = GoodsOut::whereIn('id', $request->selected_ids)->get();
+        foreach ($request->goods_in_quantities as $goodsOutId => $quantity) {
+            $goodsOut = GoodsOut::findOrFail($goodsOutId);
 
-        foreach ($goodsOuts as $goodsOut) {
+            if ($quantity > $goodsOut->remaining_quantity) {
+                return response()->json(['error' => "Quantity for Goods Out ID {$goodsOutId} exceeds remaining quantity."], 422);
+            }
+
             $inventory = $goodsOut->inventory;
 
-            // Tambahkan stok ke inventory
-            $inventory->quantity += $goodsOut->quantity;
+            // Update inventory stock
+            $inventory->quantity += $quantity;
             $inventory->save();
 
-            // Buat Goods In
+            // Create Goods In record
             GoodsIn::create([
                 'goods_out_id' => $goodsOut->id,
                 'inventory_id' => $goodsOut->inventory_id,
                 'project_id' => $goodsOut->project_id,
-                'quantity' => $goodsOut->quantity,
+                'quantity' => $quantity,
                 'returned_by' => auth()->user()->username,
                 'returned_at' => now(),
                 'remark' => 'Bulk Goods In',
             ]);
         }
 
-        return redirect()->route('goods_out.index')->with('success', "Bulk Goods In processed successfully.");
+        return response()->json(['success' => 'Bulk Goods In processed successfully.']);
     }
 
     public function edit(GoodsIn $goods_in)
