@@ -27371,15 +27371,16 @@ function ucfirst(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 window.Echo.channel("material-requests").listen("MaterialRequestUpdated", function (e) {
-  console.log("MaterialRequestUpdated event received:", e); // Debug log
   if (Array.isArray(e.materialRequest)) {
     e.materialRequest.forEach(function (request) {
       updateDataTable(request);
       showToast(request, e.action);
+      playNotificationSound();
     });
   } else {
     updateDataTable(e.materialRequest);
     showToast(e.materialRequest, e.action);
+    playNotificationSound();
   }
 });
 var audioContext;
@@ -27486,8 +27487,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 function updateDataTable(materialRequest) {
-  var _materialRequest$proj4, _materialRequest$inve4, _materialRequest$inve5;
-  console.log("Updating datatable with:", materialRequest);
+  var _materialRequest$proj4, _materialRequest$inve4, _materialRequest$inve5, _materialRequest$inve6, _materialRequest$inve7;
   var table = $("#datatable").DataTable();
   var row = table.row("#row-".concat(materialRequest.id));
 
@@ -27522,6 +27522,8 @@ function updateDataTable(materialRequest) {
   // Project
   ((_materialRequest$inve4 = materialRequest.inventory) === null || _materialRequest$inve4 === void 0 ? void 0 : _materialRequest$inve4.name) || "N/A", // Material
   "".concat(materialRequest.qty, " ").concat(((_materialRequest$inve5 = materialRequest.inventory) === null || _materialRequest$inve5 === void 0 ? void 0 : _materialRequest$inve5.unit) || ""), // Requested Qty
+  "".concat(materialRequest.processed_qty, " ").concat(((_materialRequest$inve6 = materialRequest.inventory) === null || _materialRequest$inve6 === void 0 ? void 0 : _materialRequest$inve6.unit) || ""), // Processed Qty
+  "".concat(materialRequest.qty - materialRequest.processed_qty, " ").concat(((_materialRequest$inve7 = materialRequest.inventory) === null || _materialRequest$inve7 === void 0 ? void 0 : _materialRequest$inve7.unit) || ""), // Remaining Qty
   "".concat(ucfirst(materialRequest.requested_by), " (").concat(ucfirst(materialRequest.department), ")"),
   // Requested By
   formattedDate,
@@ -27534,16 +27536,15 @@ function updateDataTable(materialRequest) {
   ];
   if (!row.node()) {
     table.row.add(rowData).draw();
-    table.order([5, "desc"]).draw(); // Urutkan ulang tabel berdasarkan kolom `Requested At`
+    table.order([7, "desc"]).draw(); // Urutkan ulang tabel berdasarkan kolom `Requested At`
     return;
   }
   row.data(rowData).draw();
-  table.order([5, "desc"]).draw(); // Urutkan ulang tabel setelah pembaruan
+  table.order([7, "desc"]).draw(); // Urutkan ulang tabel setelah pembaruan
 
   // Perbarui warna elemen <select> setelah elemen ditambahkan
   var selectElement = row.node().querySelector(".status-select");
   if (selectElement) {
-    console.log("Select element found:", selectElement); // Debug log
     updateSelectColor(selectElement);
   } else {
     console.error("Select element not found in row:", row.node()); // Debug log

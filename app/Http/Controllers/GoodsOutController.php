@@ -164,13 +164,13 @@ class GoodsOutController extends Controller
         }
 
         // Kurangi stok di inventory
-        $inventory->quantity -= $request->quantity;
-        $inventory->save();
+        $materialRequest->processed_qty += $request->quantity;
 
-        // Perbarui status material request jika quantity habis
-        if ($materialRequest->qty == 0) {
+        if ($materialRequest->processed_qty >= $materialRequest->qty) {
             $materialRequest->status = 'delivered';
         }
+
+        $materialRequest->save();
 
         // Simpan Goods Out
         $goodsOut = GoodsOut::create([

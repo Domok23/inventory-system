@@ -118,6 +118,8 @@
                             <th>Project</th>
                             <th>Material</th>
                             <th>Requested Qty</th>
+                            <th>Processed Qty</th>
+                            <th>Remaining Qty</th>
                             <th>Requested By</th>
                             <th>Requested At</th>
                             <th>Status</th>
@@ -137,6 +139,8 @@
                                 <td>{{ $req->project->name ?? '-' }}</td>
                                 <td>{{ $req->inventory->name ?? '-' }}</td>
                                 <td>{{ $req->qty }} {{ $req->inventory->unit ?? '-' }}</td>
+                                <td>{{ $req->processed_qty }} {{ $req->inventory->unit ?? '-' }}</td>
+                                <td>{{ $req->qty - $req->processed_qty }} {{ $req->inventory->unit ?? '-' }}</td>
                                 <td>{{ ucfirst($req->requested_by) }}
                                     ({{ ucfirst($req->department) }})
                                 </td>

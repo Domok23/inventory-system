@@ -17,7 +17,10 @@ class MaterialRequestExport implements FromView
     public function view(): View
     {
         return view('material_requests.export', [
-            'requests' => $this->requests
+            'requests' => $this->requests->map(function ($req) {
+                $req->remaining_qty = $req->qty - $req->processed_qty;
+                return $req;
+            }),
         ]);
     }
 }

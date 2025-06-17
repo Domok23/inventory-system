@@ -10,15 +10,16 @@ function ucfirst(string) {
 window.Echo.channel("material-requests").listen(
     "MaterialRequestUpdated",
     (e) => {
-        console.log("MaterialRequestUpdated event received:", e); // Debug log
         if (Array.isArray(e.materialRequest)) {
             e.materialRequest.forEach((request) => {
                 updateDataTable(request);
                 showToast(request, e.action);
+                playNotificationSound();
             });
         } else {
             updateDataTable(e.materialRequest);
             showToast(e.materialRequest, e.action);
+            playNotificationSound();
         }
     }
 );
@@ -167,8 +168,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function updateDataTable(materialRequest) {
-    console.log("Updating datatable with:", materialRequest);
-
     const table = $("#datatable").DataTable();
     const row = table.row(`#row-${materialRequest.id}`);
 
@@ -257,6 +256,12 @@ function updateDataTable(materialRequest) {
         materialRequest.project?.name || "N/A", // Project
         materialRequest.inventory?.name || "N/A", // Material
         `${materialRequest.qty} ${materialRequest.inventory?.unit || ""}`, // Requested Qty
+        `${materialRequest.processed_qty} ${
+            materialRequest.inventory?.unit || ""
+        }`, // Processed Qty
+        `${materialRequest.qty - materialRequest.processed_qty} ${
+            materialRequest.inventory?.unit || ""
+        }`, // Remaining Qty
         `${ucfirst(materialRequest.requested_by)} (${ucfirst(
             materialRequest.department
         )})`, // Requested By
@@ -268,17 +273,16 @@ function updateDataTable(materialRequest) {
 
     if (!row.node()) {
         table.row.add(rowData).draw();
-        table.order([5, "desc"]).draw(); // Urutkan ulang tabel berdasarkan kolom `Requested At`
+        table.order([7, "desc"]).draw(); // Urutkan ulang tabel berdasarkan kolom `Requested At`
         return;
     }
 
     row.data(rowData).draw();
-    table.order([5, "desc"]).draw(); // Urutkan ulang tabel setelah pembaruan
+    table.order([7, "desc"]).draw(); // Urutkan ulang tabel setelah pembaruan
 
     // Perbarui warna elemen <select> setelah elemen ditambahkan
     const selectElement = row.node().querySelector(".status-select");
     if (selectElement) {
-        console.log("Select element found:", selectElement); // Debug log
         updateSelectColor(selectElement);
     } else {
         console.error("Select element not found in row:", row.node()); // Debug log
