@@ -177,11 +177,12 @@
                             @enderror
                         </div>
                         <!-- QR Code -->
-                        @if ($inventory->qrcode_path)
+                        @if (isset($inventory) && $inventory->qr_code)
                             <div class="col-lg-6 mb-3">
                                 <label class="form-label">QR Code</label><br>
-                                <img src="{{ asset('storage/' . $inventory->qrcode_path) }}" alt="QR Code"
-                                    width="150">
+                                <div>
+                                    <img src="{{ $inventory->qr_code }}" alt="QR Code" style="max-width: 150px;">
+                                </div>
                             </div>
                         @endif
                     </div>

@@ -72,6 +72,13 @@ class InventoryController extends Controller
         $suppliers = Inventory::select('supplier')->distinct()->whereNotNull('supplier')->orderBy('supplier')->pluck('supplier');
         $locations = Inventory::select('location')->distinct()->whereNotNull('location')->orderBy('location')->pluck('location');
 
+        // Generate QR codes dynamically
+        foreach ($inventories as $inventory) {
+            $qrCodePath = 'storage/qrcodes/' . $inventory->id . '.svg';
+            QrCode::format('svg')->size(200)->generate(url('/inventory/detail/' . $inventory->id), public_path($qrCodePath));
+            $inventory->qr_code = asset($qrCodePath); // Simpan URL gambar QR Code
+        }
+
         return view('inventory.index', compact('inventories', 'categories', 'currencies', 'suppliers', 'locations'));
     }
 
@@ -206,16 +213,6 @@ class InventoryController extends Controller
             $inventory->save();
             $successCount++; // Tambahkan jumlah data yang berhasil diimpor
 
-            // Generate QR Code untuk inventory yang baru disimpan
-            $qrContent = route('inventory.scan', ['id' => $inventory->id]); // URL lengkap
-            $qrFileName = 'qr_' . uniqid() . '.svg';
-            $qrImage = QrCode::format('svg')->size(200)->generate($qrContent);
-            Storage::disk('public')->put('qrcodes/' . $qrFileName, $qrImage);
-
-            // Simpan path QR Code ke database
-            $inventory->qrcode_path = 'qrcodes/' . $qrFileName;
-            $inventory->save(); // Simpan lagi untuk memperbarui path QR code
-
             // Tambahkan warning jika currency atau price kosong
             if (!$inventory->currency_id || !$inventory->price) {
                 $warnings[] = "Price or Currency is empty for '{$inventory->name}'. Please update it as soon as possible, as it will affect the cost calculation!";
@@ -293,16 +290,6 @@ class InventoryController extends Controller
 
         // Simpan inventory terlebih dahulu
         $inventory->save();
-
-        // Generate QR Code
-        $qrContent = route('inventory.scan', ['id' => $inventory->id]); // URL lengkap
-        $qrFileName = 'qr_' . uniqid() . '.svg';
-        $qrImage = QrCode::format('svg')->size(200)->generate($qrContent);
-        Storage::disk('public')->put('qrcodes/' . $qrFileName, $qrImage);
-
-        // Simpan path-nya ke database
-        $inventory->qrcode_path = 'qrcodes/' . $qrFileName;
-        $inventory->save(); // Simpan lagi untuk memperbarui path QR code
 
         // Buat pesan peringatan jika currency atau price kosong
         $warningMessage = null;
@@ -404,20 +391,6 @@ class InventoryController extends Controller
             $inventory->img = $imgPath;
         }
 
-        // Generate ulang QR code dengan URL detail material
-        $qrContent = route('inventory.scan', ['id' => $inventory->id]);
-        $qrFileName = 'qr_' . uniqid() . '.svg';
-        $qrImage = QrCode::format('svg')->size(200)->generate($qrContent);
-        Storage::disk('public')->put('qrcodes/' . $qrFileName, $qrImage);
-
-        // Hapus QR code lama jika ada
-        if ($inventory->qrcode_path && Storage::disk('public')->exists($inventory->qrcode_path)) {
-            Storage::disk('public')->delete($inventory->qrcode_path);
-        }
-
-        // Simpan QR path baru
-        $inventory->qrcode_path = 'qrcodes/' . $qrFileName;
-
         $inventory->save();
 
         // Buat pesan peringatan jika currency atau price kosong
@@ -432,26 +405,6 @@ class InventoryController extends Controller
         ]);
     }
 
-    public function processQr(Request $request)
-    {
-        $qrData = $request->input('qrData');
-
-        // Cari inventory berdasarkan ID
-        $inventoryItem = Inventory::find($qrData);
-
-        if ($inventoryItem) {
-            return response()->json([
-                'success' => true,
-                'url' => route('inventory.detail', ['id' => $inventoryItem->id])
-            ]);
-        }
-
-        return response()->json([
-            'success' => false,
-            'message' => 'Item not found'
-        ]);
-    }
-
     public function detail($id)
     {
         $inventory = Inventory::findOrFail($id);
@@ -459,12 +412,6 @@ class InventoryController extends Controller
         $users = User::orderBy('username')->get();
 
         return view('inventory.detail', compact('inventory', 'projects', 'users'));
-    }
-
-    public function scanQr($id)
-    {
-        // Redirect ke detail inventory di domain saat ini
-        return redirect()->route('inventory.detail', ['id' => $id]);
     }
 
     public function destroy($id)

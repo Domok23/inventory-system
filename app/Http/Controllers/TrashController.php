@@ -61,15 +61,11 @@ class TrashController extends Controller
         if ($modelClass) {
             $item = $modelClass::onlyTrashed()->findOrFail($id);
 
-            // Hapus file gambar dan QR code jika ada
+            // Hapus file gambar
             if ($model === 'inventory') {
                 // Hapus inventory image
                 if ($item->img && Storage::disk('public')->exists($item->img)) {
                     Storage::disk('public')->delete($item->img);
-                }
-                // Hapus inventory QR code
-                if ($item->qrcode_path && Storage::disk('public')->exists($item->qrcode_path)) {
-                    Storage::disk('public')->delete($item->qrcode_path);
                 }
             } elseif ($model === 'project') {
                 // Hapus project image

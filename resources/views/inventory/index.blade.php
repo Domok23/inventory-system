@@ -147,8 +147,7 @@
                                         <button type="button" class="btn btn-sm btn-secondary btn-show-image"
                                             title="View Image & QR Code" data-bs-toggle="modal" data-bs-target="#imageModal"
                                             data-img="{{ $inventory->img ? asset('storage/' . $inventory->img) : '' }}"
-                                            data-qrcode="{{ $inventory->qrcode_path ? asset('storage/' . $inventory->qrcode_path) : '' }}"
-                                            data-name="{{ $inventory->name }}">
+                                            data-qrcode="{{ $inventory->qr_code }}" data-name="{{ $inventory->name }}">
                                             <i class="bi bi-file-earmark-image"></i>
                                         </button>
                                         @if (in_array(auth()->user()->role, ['super_admin', 'admin_logistic']))
@@ -181,10 +180,11 @@
                             </div>
                             <div class="modal-body text-center">
                                 <div id="img-container" class="mb-3"></div>
-                                <div id="qr-container" class="mb-3"></div>
-                                <button id="download-qr-btn" class="btn btn-outline-primary btn-sm mb-3"
-                                    style="display:none;">Download
-                                    QR</button>
+                                <div id="qr-code-container" class="mb-3"></div>
+                                <a id="download-qr-code" class="btn btn-outline-primary btn-sm" href="#"
+                                    download="qr-code.png" style="display: none;">
+                                    <i class="bi bi-download"></i> Download QR Code
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -292,59 +292,53 @@
                 });
             });
 
-            let currentInventoryName = 'qr-code';
-
             // Gunakan event delegation agar tetap berfungsi di semua pagination
             $(document).on('click', '.btn-show-image', function() {
                 // Reset modal content
                 $('#img-container').html('');
-                $('#qr-container').html('');
-                $('#download-qr-btn').hide();
+                $('#qr-code-container').html('');
+                $('#download-qr-code').hide(); // Sembunyikan tombol download
 
                 let img = $(this).data('img');
-                let qrcode = $(this).data('qrcode');
+                let qrcode = $(this).data('qrcode'); // Ambil QR Code dari atribut data
                 let name = $(this).data('name');
-                currentInventoryName = name || 'qr-code';
+
+                // Debugging untuk memeriksa nilai atribut
+                console.log('Image URL:', img);
+                console.log('QR Code:', qrcode);
+                console.log('Name:', name);
+
                 $('#imageModalLabel').html(
                     `<i class="bi bi-image" style="margin-right: 5px; color: cornflowerblue;"></i> ${name}`
                 );
+
+                // Tampilkan gambar jika ada
                 $('#img-container').html(img ?
-                    ` <a href="${img}" data-fancybox="gallery"
-                            data-caption="${name}">
-                            <img src="${img}" alt="Image"
-                                class="img-fluid img-hover rounded" style="max-width:100%;">
-                        </a>` :
-                    '<span class="text-muted">No Image</span>');
+                    `<a href="${img}" data-fancybox="gallery" data-caption="${name}">
+                        <img src="${img}" alt="Image" class="img-fluid img-hover rounded" style="max-width:100%;">
+                    </a>` :
+                    '<span class="text-muted">No Image</span>'
+                );
+
+                // Tampilkan QR Code jika ada
+                $('#qr-code-container').html(qrcode ?
+                    `<div>
+                        <img src="${qrcode}" alt="QR Code" class="img-fluid" style="max-width:100%;">
+                    </div>` :
+                    '<span class="text-muted">No QR Code</span>'
+                );
+
                 if (qrcode) {
-                    $('#qr-container').html(
-                        `<img id="qr-svg" src="${qrcode}" alt="QR Code" style="max-width:200px;">`);
-                    $('#download-qr-btn').show();
-                } else {
-                    $('#qr-container').html('<span class="text-muted">No QR Code</span>');
-                    $('#download-qr-btn').hide();
+                    $('#download-qr-code').attr('href', qrcode).show();
                 }
             });
-
-            // Download QR as PNG
-            $('#download-qr-btn').on('click', function() {
-                let qrImg = document.getElementById('qr-svg');
-                if (!qrImg) return;
-                html2canvas(qrImg, {
-                    backgroundColor: null
-                }).then(function(canvas) {
-                    let link = document.createElement('a');
-                    let filename = (currentInventoryName || 'qr-code').replace(/\s+/g, '-')
-                        .toLowerCase() + '-qrcode.png';
-                    link.download = filename;
-                    link.href = canvas.toDataURL('image/png');
-                    link.click();
-                });
-            });
         });
+
         $(document).ready(function() {
             // Initialize Bootstrap Tooltip
             $('[data-bs-toggle="tooltip"]').tooltip();
         });
+
         document.addEventListener('DOMContentLoaded', function() {
             Fancybox.bind("[data-fancybox='gallery']", {
                 Toolbar: {

@@ -59,13 +59,6 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/inventories/quick-add', [InventoryController::class, 'storeQuick'])->name('inventories.store.quick');
     Route::get('/inventories/json', [InventoryController::class, 'json'])->name('inventories.json');
 
-    // QR Code
-    Route::get('/qr-scan', function () {
-        return view('qr-scan');
-    })->name('qr.scan');
-    Route::post('/process-qr', [InventoryController::class, 'processQr'])->name('qr.process');
-    Route::get('/scan/{id}', [InventoryController::class, 'scanQr'])->name('inventory.scan');
-
     // Projects
     Route::get('/projects/export', [ProjectController::class, 'export'])->name('projects.export');
     Route::resource('projects', ProjectController::class);
