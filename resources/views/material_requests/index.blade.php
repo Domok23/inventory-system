@@ -180,7 +180,7 @@
                                             $req->status === 'approved' &&
                                                 $req->status !== 'canceled' &&
                                                 in_array(auth()->user()->role, ['admin_logistic', 'super_admin']))
-                                            <a href="{{ route('goods_out.create', $req->id) }}"
+                                            <a href="{{ route('goods_out.create_with_id', $req->id) }}"
                                                 class="btn btn-sm btn-success" title="Goods Out">Goods Out</i></a>
                                         @endif
                                         @if (

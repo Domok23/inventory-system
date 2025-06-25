@@ -15,6 +15,7 @@ use App\Http\Controllers\MaterialUsageController;
 use App\Http\Controllers\ProjectCostingController;
 use App\Http\Controllers\MaterialRequestController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 
 /*
 |--------------------------------------------------------------------------
@@ -88,7 +89,7 @@ Route::middleware(['auth'])->group(function () {
     // Goods Out
     Route::get('/goods_out/export', [GoodsOutController::class, 'export'])->name('goods_out.export');
     Route::resource('goods_out', GoodsOutController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
-    Route::get('/goods_out/create/{materialRequestId}', [GoodsOutController::class, 'create'])->name('goods_out.create');
+    Route::get('/goods_out/create/{materialRequestId}', [GoodsOutController::class, 'create'])->name('goods_out.create_with_id');
     Route::get('/goods_out/create_independent', [GoodsOutController::class, 'createIndependent'])->name('goods_out.create_independent');
     Route::post('/goods_out/store_independent', [GoodsOutController::class, 'storeIndependent'])->name('goods_out.store_independent');
     Route::post('/material-requests/bulk-goods-out', [GoodsOutController::class, 'bulkGoodsOut'])->name('goods_out.bulk');
@@ -99,7 +100,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/goods_in', [GoodsInController::class, 'index'])->name('goods_in.index');
     Route::get('/goods_in/create', [GoodsInController::class, 'create'])->name('goods_in.create');
     Route::post('/goods_in', [GoodsInController::class, 'store'])->name('goods_in.store');
-    Route::get('/goods_in/create/{goods_out_id}', [GoodsInController::class, 'create'])->name('goods_in.create');
+    Route::get('/goods_in/create/{goods_out_id}', [GoodsInController::class, 'create'])->name('goods_in.create_with_id');
     Route::get('/goods_in/create_independent', [GoodsInController::class, 'createIndependent'])->name('goods_in.create_independent');
     Route::post('/goods_in/store_independent', [GoodsInController::class, 'storeIndependent'])->name('goods_in.store_independent');
     Route::get('goods_in/{goods_in}/edit', [GoodsInController::class, 'edit'])->name('goods_in.edit');
@@ -124,4 +125,39 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/trash/force-delete', [TrashController::class, 'forceDelete'])->name('trash.forceDelete');
     Route::post('/trash/bulk-action', [TrashController::class, 'bulkAction'])->name('trash.bulkAction');
     Route::get('/trash/{id}/details', [TrashController::class, 'show'])->name('trash.show');
+});
+
+Route::get('/storage-link', function () {
+    Artisan::call('storage:link');
+    return 'Storage link created successfully.';
+});
+
+Route::get('/clear-cache', function () {
+    Artisan::call('cache:clear');
+    return 'Cache cleared successfully.';
+});
+
+Route::get('/config-cache', function () {
+    Artisan::call('config:cache');
+    return 'Configuration cache cleared successfully.';
+});
+
+Route::get('/route-cache', function () {
+    Artisan::call('route:cache');
+    return 'Route cache cleared successfully.';
+});
+
+Route::get('/view-cache', function () {
+    Artisan::call('view:clear');
+    return 'View cache cleared successfully.';
+});
+
+Route::get('/optimize', function () {
+    Artisan::call('optimize');
+    return 'Application optimized successfully.';
+});
+
+Route::get('/optimize-clear', function () {
+    Artisan::call('optimize:clear');
+    return 'Application optimized and cache cleared successfully.';
 });

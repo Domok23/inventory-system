@@ -22,7 +22,7 @@ class GoodsOutController extends Controller
         $this->middleware(function ($request, $next) {
             if (
                 in_array($request->route()->getName(), [
-                    'goods_out.create',
+                    'goods_out.create_with_id',
                     'goods_out.store',
                     'goods_out.create_independent',
                     'goods_out.store_independent',
