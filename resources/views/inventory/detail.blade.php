@@ -87,7 +87,7 @@
                 </a>
                 <button type="button" class="btn btn-primary my-1" data-bs-toggle="modal"
                     data-bs-target="#goodsInModal">Goods In</button>
-                @if (in_array(auth()->user()->role, ['admin_logistic', 'super_admin']))
+                @if (auth()->user()->isLogisticAdmin())
                     <button type="button" class="btn btn-success my-1" data-bs-toggle="modal"
                         data-bs-target="#goodsOutModal">Goods Out</button>
                 @endif

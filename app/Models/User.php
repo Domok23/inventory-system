@@ -23,8 +23,18 @@ class User extends Authenticatable
         return $this->role === $role;
     }
 
+    public function isLogisticAdmin()
+    {
+        return in_array($this->role, ['admin_logistic', 'super_admin']);
+    }
+
     public function isSuperAdmin()
     {
         return $this->role === 'super_admin';
+    }
+
+    public function isRequestOwner($username)
+    {
+        return $this->username === $username;
     }
 }

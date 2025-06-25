@@ -17,7 +17,7 @@
                         <a href="{{ route('material_requests.bulk_create') }}" class="btn btn-info btn-sm flex-shrink-0">
                             <i class="bi bi-plus-circle"></i> Bulk Material Request
                         </a>
-                        @if (in_array(auth()->user()->role, ['admin_logistic', 'super_admin']))
+                        @if (auth()->user()->isLogisticAdmin())
                             <button id="bulk-goods-out-btn" class="btn btn-success btn-sm flex-shrink-0">
                                 <i class="bi bi-box-arrow-in-right"></i> Bulk Goods Out
                             </button>
@@ -146,7 +146,7 @@
                                 </td>
                                 <td>{{ $req->created_at?->format('Y-m-d, H:i') }}</td>
                                 <td>
-                                    @if (in_array(auth()->user()->role, ['admin_logistic', 'super_admin']))
+                                    @if (auth()->user()->isLogisticAdmin())
                                         <form method="POST" action="{{ route('material_requests.update', $req->id) }}">
                                             @csrf
                                             @method('PUT')
@@ -164,36 +164,27 @@
                                         </form>
                                     @else
                                         <span
-                                            class="badge
-                                    {{ $req->status === 'pending' ? 'text-bg-warning' : '' }}
-                                    {{ $req->status === 'approved' ? 'text-bg-primary' : '' }}
-                                    {{ $req->status === 'delivered' ? 'text-bg-success' : '' }}
-                                    {{ $req->status === 'canceled' ? 'text-bg-danger' : '' }}">
-                                            {{ ucfirst($req->status) }}
-                                        </span>
+                                            class="badge {{ $req->getStatusBadgeClass() }}">{{ ucfirst($req->status) }}</span>
                                     @endif
                                 </td>
                                 <td>{{ $req->remark }}</td>
                                 <td>
                                     <div class="d-flex flex-nowrap gap-1">
-                                        @if (
-                                            $req->status === 'approved' &&
-                                                $req->status !== 'canceled' &&
-                                                in_array(auth()->user()->role, ['admin_logistic', 'super_admin']))
+                                        @if ($req->status === 'approved' && $req->status !== 'canceled' && auth()->user()->isLogisticAdmin())
                                             <a href="{{ route('goods_out.create_with_id', $req->id) }}"
-                                                class="btn btn-sm btn-success" title="Goods Out"><i class="bi bi-box-arrow-right"></i></a>
+                                                class="btn btn-sm btn-success" title="Goods Out"><i
+                                                    class="bi bi-box-arrow-right"></i></a>
                                         @endif
                                         @if (
                                             $req->status !== 'canceled' &&
-                                                (auth()->user()->username === $req->requested_by ||
-                                                    in_array(auth()->user()->role, ['admin_logistic', 'super_admin'])))
+                                                (auth()->user()->username === $req->requested_by || auth()->user()->isLogisticAdmin()))
                                             <a href="{{ route('material_requests.edit', $req->id) }}"
                                                 class="btn btn-sm btn-warning" title="Edit"><i
                                                     class="bi bi-pencil-square"></i></a>
                                         @endif
                                         @if (
                                             $req->status !== 'canceled' &&
-                                                (auth()->user()->username === $req->requested_by || auth()->user()->role === 'super_admin'))
+                                                (auth()->user()->isRequestOwner($req->requested_by) || auth()->user()->isSuperAdmin()))
                                             <form action="{{ route('material_requests.destroy', $req->id) }}"
                                                 method="POST" class="delete-form">
                                                 @csrf

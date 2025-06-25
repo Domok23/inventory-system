@@ -37,4 +37,15 @@ class MaterialRequest extends Model
     {
         return $this->hasMany(GoodsOut::class);
     }
+
+    public function getStatusBadgeClass()
+    {
+        return match ($this->status) {
+            'pending' => 'text-bg-warning',
+            'approved' => 'text-bg-primary',
+            'delivered' => 'text-bg-success',
+            'canceled' => 'text-bg-danger',
+            default => '',
+        };
+    }
 }

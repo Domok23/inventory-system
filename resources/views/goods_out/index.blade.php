@@ -12,7 +12,7 @@
 
                     <!-- Spacer untuk mendorong tombol ke kanan -->
                     <div class="ms-lg-auto d-flex flex-wrap gap-2">
-                        @if (in_array(auth()->user()->role, ['admin_logistic', 'super_admin']))
+                        @if (auth()->user()->isLogisticAdmin())
                             <a href="{{ route('goods_out.create_independent') }}"
                                 class="btn btn-primary btn-sm flex-shrink-0">
                                 <i class="bi bi-plus-circle"></i> Create Goods Out
@@ -154,7 +154,7 @@
                                 </td>
                                 <td>
                                     <div class="d-flex flex-wrap gap-1 align-items-center">
-                                        @if (in_array(auth()->user()->role, ['admin_logistic', 'super_admin']))
+                                        @if (auth()->user()->isLogisticAdmin())
                                             <a href="{{ route('goods_out.edit', $goodsOut->id) }}"
                                                 class="btn btn-sm btn-warning" title="Edit"><i
                                                     class="bi bi-pencil-square"></i></a>
