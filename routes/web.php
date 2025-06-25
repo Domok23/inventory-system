@@ -127,37 +127,50 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/trash/{id}/details', [TrashController::class, 'show'])->name('trash.show');
 });
 
-Route::get('/storage-link', function () {
-    Artisan::call('storage:link');
-    return 'Storage link created successfully.';
-});
-
-Route::get('/clear-cache', function () {
-    Artisan::call('cache:clear');
-    return 'Cache cleared successfully.';
-});
-
-Route::get('/config-cache', function () {
-    Artisan::call('config:cache');
-    return 'Configuration cache cleared successfully.';
-});
-
-Route::get('/route-cache', function () {
-    Artisan::call('route:cache');
-    return 'Route cache cleared successfully.';
-});
-
-Route::get('/view-cache', function () {
-    Artisan::call('view:clear');
-    return 'View cache cleared successfully.';
-});
-
-Route::get('/optimize', function () {
-    Artisan::call('optimize');
-    return 'Application optimized successfully.';
-});
-
-Route::get('/optimize-clear', function () {
-    Artisan::call('optimize:clear');
-    return 'Application optimized and cache cleared successfully.';
-});
+Route::get('/artisan/{action}', function ($action) {
+    try {
+        switch ($action) {
+            case 'storage-link':
+                Artisan::call('storage:link');
+                $message = 'Storage link created successfully.';
+                break;
+            case 'clear-cache':
+                Artisan::call('cache:clear');
+                $message = 'Cache cleared successfully.';
+                break;
+            case 'config-clear':
+                Artisan::call('config:clear');
+                $message = 'Configuration cleared successfully.';
+                break;
+            case 'config-cache':
+                Artisan::call('config:cache');
+                $message = 'Configuration cache cleared successfully.';
+                break;
+            case 'route-clear':
+                Artisan::call('route:clear');
+                $message = 'Route cache cleared successfully.';
+                break;
+            case 'route-cache':
+                Artisan::call('route:cache');
+                $message = 'Route cache created successfully.';
+                break;
+            case 'view-cache':
+                Artisan::call('view:clear');
+                $message = 'View cache cleared successfully.';
+                break;
+            case 'optimize':
+                Artisan::call('optimize');
+                $message = 'Application optimized successfully.';
+                break;
+            case 'optimize-clear':
+                Artisan::call('optimize:clear');
+                $message = 'Application optimized and cache cleared successfully.';
+                break;
+            default:
+                throw new Exception('Invalid action.');
+        }
+        return response()->json(['status' => 'success', 'message' => $message]);
+    } catch (Exception $e) {
+        return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
+    }
+})->name('artisan.action');

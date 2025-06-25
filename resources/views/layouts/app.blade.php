@@ -50,11 +50,11 @@
             }
 
             /* body {
-                                                        font-family: Inter, Nunito, Roboto, Poppins,  "Helvetica Neue", Arial, sans-serif;
-                                                    } */
+                        font-family: Inter, Nunito, Roboto, Poppins,  "Helvetica Neue", Arial, sans-serif;
+                        } */
 
             #app {
-                min-height: 100%;
+                min-height: 100vh;
                 display: flex;
                 flex-direction: column;
             }
@@ -471,6 +471,18 @@
                 selectElement.addEventListener("change", () => {
                     updateSelectColor(selectElement);
                 });
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tambahkan padding pada body saat SweetAlert aktif
+            Swal.mixin({
+                didOpen: () => {
+                    document.body.style.paddingRight = '15px'; // Sesuaikan dengan scrollbar
+                },
+                didClose: () => {
+                    document.body.style.paddingRight = ''; // Hapus padding setelah modal ditutup
+                }
             });
         });
     </script>

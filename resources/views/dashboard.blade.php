@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container mt-4">
+    <div class="container-fluid mt-4">
         <div class="card shadow-sm rounded">
             <div class="card-body">
                 <h3 class="card-title">Welcome, {{ ucwords($user->username) }}</h3>
@@ -61,7 +61,97 @@
                         <a href="{{ route('users.index') }}" class="btn btn-primary mb-2">Manage Users</a>
                     @endif
                 </div>
+
+                <!-- Super Admin Actions -->
+                @if ($user->role === 'super_admin')
+                    <div class="mt-4">
+                        <h4>Super Admin Actions</h4>
+                        <div class="d-flex flex-wrap gap-2">
+                            <button class="btn btn-outline-primary artisan-action" data-action="storage-link">
+                                <i class="bi bi-link"></i> Create Storage Link
+                            </button>
+                            <button class="btn btn-outline-danger artisan-action" data-action="clear-cache">
+                                <i class="bi bi-trash"></i> Clear Cache
+                            </button>
+                            <button class="btn btn-outline-warning artisan-action" data-action="config-clear">
+                                <i class="bi bi-gear"></i> Clear Config
+                            </button>
+                            <button class="btn btn-outline-success artisan-action" data-action="config-cache">
+                                <i class="bi bi-gear-fill"></i> Cache Config
+                            </button>
+                            <button class="btn btn-outline-info artisan-action" data-action="route-clear">
+                                <i class="bi bi-signpost"></i> Clear Routes
+                            </button>
+                            <button class="btn btn-outline-secondary artisan-action" data-action="route-cache">
+                                <i class="bi bi-signpost-2"></i> Cache Routes
+                            </button>
+                            <button class="btn btn-outline-dark artisan-action" data-action="view-cache">
+                                <i class="bi bi-eye"></i> Clear Views
+                            </button>
+                            <button class="btn btn-outline-primary artisan-action" data-action="optimize">
+                                <i class="bi bi-lightning"></i> Optimize
+                            </button>
+                            <button class="btn btn-outline-danger artisan-action" data-action="optimize-clear">
+                                <i class="bi bi-lightning-fill"></i> Optimize Clear
+                            </button>
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
 @endsection
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Event listener untuk tombol Artisan Actions
+            document.querySelectorAll('.artisan-action').forEach(button => {
+                button.addEventListener('click', function() {
+                    const action = this.dataset.action;
+
+                    // Tampilkan loading SweetAlert
+                    Swal.fire({
+                        title: 'Processing...',
+                        text: `Executing ${action}...`,
+                        icon: 'info',
+                        scrollbarPadding: false,
+                        allowOutsideClick: false,
+                        showConfirmButton: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    // Kirim AJAX request ke server
+                    fetch(`/artisan/${action}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 'success') {
+                                Swal.fire({
+                                    title: 'Success!',
+                                    text: data.message,
+                                    icon: 'success',
+                                    confirmButtonText: 'OK'
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: data.message,
+                                    icon: 'error',
+                                    confirmButtonText: 'OK'
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            Swal.fire({
+                                title: 'Error!',
+                                text: 'An unexpected error occurred.',
+                                icon: 'error',
+                                confirmButtonText: 'OK'
+                            });
+                        });
+                });
+            });
+        });
+    </script>
+@endpush

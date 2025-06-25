@@ -175,13 +175,13 @@
                                 </td>
                                 <td>{{ $req->remark }}</td>
                                 <td>
-                                    <div class="d-flex flex-wrap gap-1">
+                                    <div class="d-flex flex-nowrap gap-1">
                                         @if (
                                             $req->status === 'approved' &&
                                                 $req->status !== 'canceled' &&
                                                 in_array(auth()->user()->role, ['admin_logistic', 'super_admin']))
                                             <a href="{{ route('goods_out.create_with_id', $req->id) }}"
-                                                class="btn btn-sm btn-success" title="Goods Out">Goods Out</i></a>
+                                                class="btn btn-sm btn-success" title="Goods Out"><i class="bi bi-box-arrow-right"></i></a>
                                         @endif
                                         @if (
                                             $req->status !== 'canceled' &&
