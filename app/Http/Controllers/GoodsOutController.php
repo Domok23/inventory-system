@@ -154,8 +154,9 @@ class GoodsOutController extends Controller
         $inventory = $materialRequest->inventory;
 
         // Validasi quantity
-        if ($request->quantity > $materialRequest->qty) {
-            return back()->withInput()->with('error', 'Quantity cannot exceed the requested quantity.');
+        $remainingQty = $materialRequest->qty - $materialRequest->processed_qty;
+        if ($request->quantity > $remainingQty) {
+            return back()->withInput()->with('error', 'Quantity cannot exceed the remaining requested quantity.');
         }
 
         // Validasi tambahan: Pastikan stok inventory tidak menjadi negatif
@@ -163,9 +164,10 @@ class GoodsOutController extends Controller
             return back()->withInput()->with('error', 'Quantity cannot exceed the available inventory.');
         }
 
-        // Kurangi stok di inventory
+        // Tambahkan ke processed_qty
         $materialRequest->processed_qty += $request->quantity;
 
+        // Update status jika sudah selesai
         if ($materialRequest->processed_qty >= $materialRequest->qty) {
             $materialRequest->status = 'delivered';
         }
@@ -173,7 +175,7 @@ class GoodsOutController extends Controller
         $materialRequest->save();
 
         // Simpan Goods Out
-        $goodsOut = GoodsOut::create([
+        GoodsOut::create([
             'material_request_id' => $materialRequest->id,
             'inventory_id' => $inventory->id,
             'project_id' => $materialRequest->project_id,
@@ -183,14 +185,11 @@ class GoodsOutController extends Controller
             'remark' => $request->remark,
         ]);
 
-        // Update status material request jika selesai
-        $materialRequest->qty -= $request->quantity;
-        if ($materialRequest->qty == 0) {
-            $materialRequest->status = 'delivered';
-        }
-        $materialRequest->save();
+        // Kurangi stok inventory
+        $inventory->quantity -= $request->quantity;
+        $inventory->save();
 
-        MaterialUsageHelper::sync($goodsOut->inventory_id, $goodsOut->project_id);
+        MaterialUsageHelper::sync($inventory->id, $materialRequest->project_id);
 
         return redirect()->route('goods_out.index')->with('success', "Goods Out processed successfully.");
     }

@@ -48,4 +48,9 @@ class MaterialRequest extends Model
             default => '',
         };
     }
+
+    public function getRemainingQtyAttribute()
+    {
+        return $this->qty - $this->processed_qty;
+    }
 }

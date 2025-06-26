@@ -256,12 +256,12 @@ function updateDataTable(materialRequest) {
         materialRequest.project?.name || "N/A", // Project
         materialRequest.inventory?.name || "N/A", // Material
         `${materialRequest.qty} ${materialRequest.inventory?.unit || ""}`, // Requested Qty
-        `${materialRequest.processed_qty} ${
-            materialRequest.inventory?.unit || ""
-        }`, // Processed Qty
         `${materialRequest.qty - materialRequest.processed_qty} ${
             materialRequest.inventory?.unit || ""
         }`, // Remaining Qty
+        `${materialRequest.processed_qty} ${
+            materialRequest.inventory?.unit || ""
+        }`, // Processed Qty
         `${ucfirst(materialRequest.requested_by)} (${ucfirst(
             materialRequest.department
         )})`, // Requested By

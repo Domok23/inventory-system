@@ -118,8 +118,16 @@
                             <th>Project</th>
                             <th>Material</th>
                             <th>Requested Qty</th>
-                            <th>Processed Qty</th>
-                            <th>Remaining Qty</th>
+                            <th>Remaining Qty
+                                <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="top"
+                                    title="The quantity of material requests that have not yet been processed for goods out."
+                                    style="font-size: 0.8rem; cursor: pointer;"></i>
+                            </th>
+                            <th>Processed Qty
+                                <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="top"
+                                    title="The quantity of material requests that have already been processed and issued as goods out."
+                                    style="font-size: 0.8rem; cursor: pointer;"></i>
+                            </th>
                             <th>Requested By</th>
                             <th>Requested At</th>
                             <th>Status</th>
@@ -139,8 +147,8 @@
                                 <td>{{ $req->project->name ?? '-' }}</td>
                                 <td>{{ $req->inventory->name ?? '-' }}</td>
                                 <td>{{ $req->qty }} {{ $req->inventory->unit ?? '-' }}</td>
+                                <td>{{ $req->remaining_qty }} {{ $req->inventory->unit ?? '-' }}</td>
                                 <td>{{ $req->processed_qty }} {{ $req->inventory->unit ?? '-' }}</td>
-                                <td>{{ $req->qty - $req->processed_qty }} {{ $req->inventory->unit ?? '-' }}</td>
                                 <td>{{ ucfirst($req->requested_by) }}
                                     ({{ ucfirst($req->department) }})
                                 </td>
@@ -152,7 +160,8 @@
                                             @method('PUT')
                                             <select name="status" class="form-select form-select-sm status-select"
                                                 onchange="this.form.submit()">
-                                                <option value="pending" {{ $req->status === 'pending' ? 'selected' : '' }}>
+                                                <option value="pending"
+                                                    {{ $req->status === 'pending' ? 'selected' : '' }}>
                                                     Pending</option>
                                                 <option value="approved"
                                                     {{ $req->status === 'approved' ? 'selected' : '' }}>Approved</option>
@@ -304,6 +313,12 @@
                         });
                     }
                 });
+            });
+        });
+        document.addEventListener("DOMContentLoaded", function() {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.forEach(function(tooltipTriggerEl) {
+                new bootstrap.Tooltip(tooltipTriggerEl);
             });
         });
     </script>
