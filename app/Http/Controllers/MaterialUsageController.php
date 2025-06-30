@@ -10,6 +10,7 @@ use App\Models\Inventory;
 use App\Models\Project;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\MaterialUsageExport;
+use Illuminate\Support\Facades\Auth;
 
 class MaterialUsageController extends Controller
 {
@@ -18,7 +19,7 @@ class MaterialUsageController extends Controller
         $this->middleware('auth');
         $this->middleware(function ($request, $next) {
             $rolesAllowed = ['super_admin', 'admin_logistic', 'admin_mascot', 'admin_costume', 'admin_animatronic', 'admin_finance', 'general'];
-            if (!in_array(auth()->user()->role, $rolesAllowed)) {
+            if (!in_array(Auth::user()->role, $rolesAllowed)) {
                 abort(403, 'Unauthorized');
             }
             return $next($request);
@@ -108,7 +109,7 @@ class MaterialUsageController extends Controller
 
     public function destroy(MaterialUsage $material_usage)
     {
-        if (auth()->user()->role !== 'super_admin') {
+        if (Auth::user()->role !== 'super_admin') {
             return redirect()->route('material_usage.index')->with('error', "You are not authorized to delete this data.");
         }
 

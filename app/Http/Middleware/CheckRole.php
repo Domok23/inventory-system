@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 class CheckRole
@@ -16,7 +17,7 @@ class CheckRole
      */
     public function handle($request, Closure $next, ...$roles)
     {
-        if (auth()->check() && in_array(auth()->user()->role, $roles)) {
+        if (Auth::check() && in_array(Auth::user()->role, $roles)) {
             return $next($request);
         }
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -12,7 +13,7 @@ class UserController extends Controller
         $this->middleware('auth');
         $this->middleware(function ($request, $next) {
             $rolesAllowed = ['super_admin'];
-            if (!in_array(auth()->user()->role, $rolesAllowed)) {
+            if (!in_array(Auth::user()->role, $rolesAllowed)) {
                 abort(403, 'Unauthorized');
             }
             return $next($request);
@@ -82,7 +83,7 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         // Hindari menghapus super admin atau user aktif sendiri
-        if (auth()->id() === $user->id) {
+        if (Auth::id() === $user->id) {
             return redirect()->route('users.index')->with('error', "You cannot delete your own account.");
         }
 

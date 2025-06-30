@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\Storage;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Exports\ImportInventoryTemplate;
 use App\Exports\InventoryExport;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class InventoryController extends Controller
 {
@@ -23,7 +25,7 @@ class InventoryController extends Controller
         $this->middleware('auth');
         $this->middleware(function ($request, $next) {
             $rolesAllowed = ['super_admin', 'admin_logistic', 'admin_mascot', 'admin_costume', 'admin_animatronic', 'admin_finance', 'general'];
-            if (!in_array(auth()->user()->role, $rolesAllowed)) {
+            if (!in_array(Auth::user()->role, $rolesAllowed)) {
                 abort(403, 'Unauthorized');
             }
             return $next($request);
@@ -34,7 +36,7 @@ class InventoryController extends Controller
             $restrictedRoles = ['super_admin', 'admin_logistic'];
             if (
                 in_array($request->route()->getName(), ['inventory.create', 'inventory.import', 'inventory.edit', 'inventory.destroy']) &&
-                !in_array(auth()->user()->role, $restrictedRoles)
+                !in_array(Auth::user()->role, $restrictedRoles)
             ) {
                 abort(403, 'Unauthorized');
             }
@@ -127,7 +129,7 @@ class InventoryController extends Controller
         if ($location) {
             $fileName .= '_location-' . str_replace(' ', '-', strtolower($location));
         }
-        $fileName .= '_' . now()->format('Y-m-d') . '.xlsx';
+        $fileName .= '_' . Carbon::now()->format('Y-m-d') . '.xlsx';
 
         // Ekspor data menggunakan kelas InventoryExport
         return Excel::download(new InventoryExport($inventories), $fileName);
@@ -147,8 +149,7 @@ class InventoryController extends Controller
             'xls_file' => 'required|mimes:xls,xlsx',
         ]);
 
-        $path = $request->file('xls_file')->getRealPath();
-        $data = Excel::toArray([], $path)[0];
+        $data = Excel::toArray([], $request->file('xls_file'))[0];
 
         $errors = []; // Array untuk menyimpan kesalahan
         $warnings = []; // Array untuk menyimpan peringatan

@@ -11,6 +11,7 @@ use App\Helpers\MaterialUsageHelper;
 use App\Models\User;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\GoodsInExport;
+use Illuminate\Support\Facades\Auth;
 
 class GoodsInController extends Controller
 {
@@ -19,7 +20,7 @@ class GoodsInController extends Controller
         $this->middleware('auth');
         $this->middleware(function ($request, $next) {
             $rolesAllowed = ['super_admin', 'admin_logistic', 'admin_mascot', 'admin_costume', 'admin_animatronic', 'admin_finance', 'general'];
-            if (!in_array(auth()->user()->role, $rolesAllowed)) {
+            if (!in_array(Auth::user()->role, $rolesAllowed)) {
                 abort(403, 'Unauthorized');
             }
             return $next($request);
@@ -165,7 +166,7 @@ class GoodsInController extends Controller
             'inventory_id' => $goodsOut->inventory_id,
             'project_id' => $goodsOut->project_id,
             'quantity' => $request->quantity,
-            'returned_by' => auth()->user()->username,
+            'returned_by' => Auth::user()->username,
             'returned_at' => $request->returned_at,
             'remark' => $request->remark,
         ]);
@@ -212,7 +213,7 @@ class GoodsInController extends Controller
             'inventory_id' => $request->inventory_id,
             'project_id' => $request->project_id,
             'quantity' => $request->quantity,
-            'returned_by' => auth()->user()->username,
+            'returned_by' => Auth::user()->username,
             'returned_at' => $request->returned_at,
             'remark' => $request->remark,
         ]);
@@ -250,7 +251,7 @@ class GoodsInController extends Controller
                 'inventory_id' => $goodsOut->inventory_id,
                 'project_id' => $goodsOut->project_id,
                 'quantity' => $quantity,
-                'returned_by' => auth()->user()->username,
+                'returned_by' => Auth::user()->username,
                 'returned_at' => now(),
                 'remark' => 'Bulk Goods In',
             ]);

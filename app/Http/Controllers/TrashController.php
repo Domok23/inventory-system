@@ -12,6 +12,7 @@ use App\Models\MaterialRequest;
 use App\Models\Currency;
 use App\Models\User;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class TrashController extends Controller
 {
@@ -20,7 +21,7 @@ class TrashController extends Controller
         $this->middleware('auth');
         $this->middleware(function ($request, $next) {
             $rolesAllowed = ['super_admin'];
-            if (!in_array(auth()->user()->role, $rolesAllowed)) {
+            if (!in_array(Auth::user()->role, $rolesAllowed)) {
                 abort(403, 'Unauthorized');
             }
             return $next($request);

@@ -10,6 +10,7 @@ use App\Events\MaterialRequestUpdated;
 use App\Models\User;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\MaterialRequestExport;
+use Illuminate\Support\Facades\Auth;
 
 class MaterialRequestController extends Controller
 {
@@ -144,7 +145,7 @@ class MaterialRequestController extends Controller
             return back()->withInput()->withErrors(['qty' => 'Requested quantity cannot exceed available inventory quantity.']);
         }
 
-        $user = auth()->user();
+        $user = Auth::user();
         $department = match ($user->role) {
             'admin_mascot' => 'mascot',
             'admin_costume' => 'costume',
@@ -184,7 +185,7 @@ class MaterialRequestController extends Controller
             'requests.*.qty' => 'required|numeric|min:0.01',
         ]);
 
-        $user = auth()->user();
+        $user = Auth::user();
         $department = match ($user->role) {
             'admin_mascot' => 'mascot',
             'admin_costume' => 'costume',

@@ -4,6 +4,7 @@ namespace App\Exports;
 
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
+use Illuminate\Support\Facades\Auth;
 
 class InventoryExport implements FromView
 {
@@ -16,7 +17,7 @@ class InventoryExport implements FromView
 
     public function view(): View
     {
-        $userRole = auth()->user()->role;
+        $userRole = Auth::user()->role;
         $allowedRoles = ['super_admin', 'admin_logistic', 'admin_finance'];
 
         return view('inventory.export', [

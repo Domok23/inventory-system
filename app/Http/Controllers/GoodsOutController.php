@@ -11,6 +11,7 @@ use App\Models\MaterialRequest;
 use App\Helpers\MaterialUsageHelper;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\GoodsOutExport;
+use Illuminate\Support\Facades\Auth;
 
 class GoodsOutController extends Controller
 {
@@ -31,7 +32,7 @@ class GoodsOutController extends Controller
                     'goods_out.update',
                     'goods_out.destroy'
                 ]) &&
-                !in_array(auth()->user()->role, ['admin_logistic', 'super_admin'])
+                !in_array(Auth::user()->role, ['admin_logistic', 'super_admin'])
             ) {
                 abort(403, 'Unauthorized');
             }

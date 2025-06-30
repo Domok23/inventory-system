@@ -6,6 +6,7 @@ use App\Models\Project;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ProjectExport;
+use Illuminate\Support\Facades\Auth;
 
 class ProjectController extends Controller
 {
@@ -91,7 +92,7 @@ class ProjectController extends Controller
         }
 
         $project = Project::create(array_merge($validated, [
-            'created_by' => auth()->user()->username, // Simpan username pembuat
+            'created_by' => Auth::user()->username, // Simpan username pembuat
         ]));
 
         return redirect()->route('projects.index')->with('success', "Project '{$project->name}' added successfully!");
@@ -109,7 +110,7 @@ class ProjectController extends Controller
             'name'       => $request->name,
             'qty'        => $request->qty,
             'department' => $request->department,
-            'created_by' => auth()->user()->username,
+            'created_by' => Auth::user()->username,
         ]);
 
         // Jika request AJAX, kembalikan JSON
@@ -159,7 +160,7 @@ class ProjectController extends Controller
     public function destroy(Project $project)
     {
         // Validasi: Hanya pembuat proyek atau super_admin yang dapat menghapus
-        if (auth()->user()->username !== $project->created_by && auth()->user()->role !== 'super_admin') {
+        if (Auth::user()->username !== $project->created_by && Auth::user()->role !== 'super_admin') {
             return redirect()->route('projects.index')->with('error', "You are not authorized to delete this project.");
         }
 

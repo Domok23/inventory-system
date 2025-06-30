@@ -8,6 +8,7 @@ use App\Models\GoodsOut;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ProjectCostingExport;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 
 class ProjectCostingController extends Controller
@@ -17,7 +18,7 @@ class ProjectCostingController extends Controller
         $this->middleware('auth');
         $this->middleware(function ($request, $next) {
             $rolesAllowed = ['super_admin', 'admin_finance'];
-            if (!in_array(auth()->user()->role, $rolesAllowed)) {
+            if (!in_array(Auth::user()->role, $rolesAllowed)) {
                 abort(403, 'Unauthorized');
             }
             return $next($request);
