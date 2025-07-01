@@ -50,8 +50,8 @@
             }
 
             /* body {
-                        font-family: Inter, Nunito, Roboto, Poppins,  "Helvetica Neue", Arial, sans-serif;
-                        } */
+                                            font-family: Inter, Nunito, Roboto, Poppins,  "Helvetica Neue", Arial, sans-serif;
+                                            } */
 
             #app {
                 min-height: 100vh;
@@ -80,8 +80,33 @@
                 /* Panjang garis mengikuti elemen */
                 height: 2px;
                 /* Ketebalan garis */
-                background-color: var(--bs-primary);
+                background: linear-gradient(45deg, #8F12FE, #4A25AA);
                 /* Warna garis sesuai tema Bootstrap */
+            }
+
+            .navbar-brand {
+                background: linear-gradient(45deg, #8F12FE, #4A25AA);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                color: transparent !important;
+                font-weight: bold;
+                transition: background 0.3s, color 0.3s;
+            }
+
+            /* (Opsional) Saat hover, tetap gunakan gradasi yang sama atau tambahkan efek lain */
+            .navbar-brand:hover,
+            .navbar-brand:focus {
+                filter: brightness(1.2);
+            }
+
+            .navbar-nav .nav-link:hover,
+            .navbar-nav .nav-link:focus {
+                background: linear-gradient(45deg, #8F12FE, #4A25AA);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                transition: background 0.3s, color 0.3s;
             }
 
             td .btn {
@@ -212,7 +237,7 @@
         <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm rounded-4 rounded-top-0">
             <div class="container-fluid">
                 <a class="navbar-brand" style="font-weight: bold;" href="{{ url('/') }}">
-                    {{ config('app.name', 'Laravel') }}
+                    {{ config('app.name', 'DCM-app') }}
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
@@ -358,7 +383,7 @@
                             @endif
                         @else
                             <li class="nav-item dropdown">
-                                <a id="navbarDropdown" class="nav-link btn btn-warning dropdown-toggle" href="#"
+                                <a id="navbarDropdown" class="nav-link btn dropdown-toggle" href="#"
                                     role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     Hi, {{ ucfirst(Auth::user()->username) }}!
                                 </a>

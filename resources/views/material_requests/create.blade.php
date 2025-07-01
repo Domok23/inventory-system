@@ -258,11 +258,11 @@
                             $('#addMaterialModal').modal('hide');
                             form[0].reset();
                         } else {
-                            alert('Failed to add material');
+                            alert('Failed to add material!');
                         }
                     },
                     error: function() {
-                        alert('Failed to add material');
+                        alert('Failed to add material. Material already exist.');
                     }
                 });
             });
