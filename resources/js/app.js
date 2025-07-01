@@ -221,31 +221,66 @@ function updateDataTable(materialRequest) {
         checkboxColumn = `<input type="checkbox" class="select-row" value="${materialRequest.id}">`;
     }
 
-    // Logika untuk tombol Goods Out
-    let actionColumn = `
-        <div class="d-flex flex-wrap gap-1">
-            <a href="/material_requests/${materialRequest.id}/edit" class="btn btn-sm btn-primary">Edit</a>
-    `;
-    if (materialRequest.status === "approved") {
+    // Logika untuk tombol Goods Out, Edit, Delete
+    // Ambil data user yang sedang login (pastikan variabel ini sudah di-set di window, misal: window.authUser)
+    const authUser = window.authUser || {};
+    const isLogisticAdmin = !!authUser.is_logistic_admin;
+    const isSuperAdmin = !!authUser.is_super_admin;
+    const isRequestOwner = authUser.username === materialRequest.requested_by;
+
+    let actionColumn = `<div class="d-flex flex-nowrap gap-1">`;
+
+    // Goods Out
+    if (
+        materialRequest.status === "approved" &&
+        materialRequest.status !== "canceled" &&
+        isLogisticAdmin
+    ) {
         actionColumn += `
-            <a href="/goods_out/create/${materialRequest.id}" class="btn btn-sm btn-success">Goods Out</a>
+            <a href="/goods_out/create/${materialRequest.id}" class="btn btn-sm btn-success" title="Goods Out">
+                <i class="bi bi-box-arrow-right"></i>
+            </a>
         `;
     }
-    if (materialRequest.status === "canceled") {
-        actionColumn = `<span class="text-muted">No actions available</span>`;
+
+    // Edit
+    if (
+        materialRequest.status !== "canceled" &&
+        (isRequestOwner || isLogisticAdmin)
+    ) {
+        actionColumn += `
+            <a href="/material_requests/${materialRequest.id}/edit" class="btn btn-sm btn-warning" title="Edit">
+                <i class="bi bi-pencil-square"></i>
+            </a>
+        `;
     }
-    actionColumn += `
+
+    // Delete
+    if (
+        materialRequest.status !== "canceled" &&
+        (isRequestOwner || isSuperAdmin)
+    ) {
+        actionColumn += `
             <form action="/material_requests/${
                 materialRequest.id
-            }" method="POST" class="delete-form">
+            }" method="POST" class="delete-form" style="display:inline;">
                 <input type="hidden" name="_method" value="DELETE">
                 <input type="hidden" name="_token" value="${$(
                     'meta[name="csrf-token"]'
                 ).attr("content")}">
-                <button type="button" class="btn btn-sm btn-danger btn-delete">Delete</button>
+                <button type="button" class="btn btn-sm btn-danger btn-delete" title="Delete">
+                    <i class="bi bi-trash3"></i>
+                </button>
             </form>
-        </div>
-    `;
+        `;
+    }
+
+    // Jika status canceled, tampilkan info
+    if (materialRequest.status === "canceled") {
+        actionColumn = `<span class="text-muted">No actions available</span>`;
+    } else {
+        actionColumn += `</div>`;
+    }
 
     const formattedDate = moment(materialRequest.created_at).format(
         "YYYY-MM-DD, HH:mm"

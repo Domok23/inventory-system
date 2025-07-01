@@ -53,7 +53,7 @@
                             <tr>
                                 <td class="text-center">{{ $loop->iteration }}</td>
                                 <td>{{ $currency->name }}</td>
-                                <td>{{ number_format($currency->exchange_rate, 2, ',', '.') }} IDR</td>
+                                <td>{{ number_format($currency->exchange_rate ?? 0, 2, ',', '.') }} IDR</td>
                                 <td>{{ \Carbon\Carbon::parse($currency->updated_at)->translatedFormat('d F Y, H:i') }}</td>
                                 <td>
                                     <div class="d-flex flex-wrap gap-1">

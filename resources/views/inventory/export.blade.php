@@ -23,7 +23,7 @@
                 <td>{{ $inventory->quantity }}</td>
                 <td>{{ $inventory->unit }}</td>
                 @if ($showCurrencyAndPrice)
-                    <td>{{ number_format($inventory->price, 2, ',', '.') }}</td>
+                    <td>{{ number_format($inventory->price ?? 0, 2, ',', '.') }}</td>
                     <td>{{ $inventory->currency ? $inventory->currency->name : '' }}</td>
                 @endif
                 <td>{{ $inventory->supplier }}</td>

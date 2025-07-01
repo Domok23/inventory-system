@@ -321,5 +321,11 @@
                 new bootstrap.Tooltip(tooltipTriggerEl);
             });
         });
+
+        window.authUser = {
+            username: "{{ auth()->user()->username }}",
+            is_logistic_admin: {{ auth()->user()->isLogisticAdmin() ? 'true' : 'false' }},
+            is_super_admin: {{ auth()->user()->isSuperAdmin() ? 'true' : 'false' }}
+        };
     </script>
 @endpush
