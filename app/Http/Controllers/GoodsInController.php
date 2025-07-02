@@ -255,6 +255,8 @@ class GoodsInController extends Controller
                 'returned_at' => now(),
                 'remark' => 'Bulk Goods In',
             ]);
+
+            MaterialUsageHelper::sync($goodsOut->inventory_id, $goodsOut->project_id);
         }
 
         return response()->json(['success' => 'Bulk Goods In processed successfully.']);

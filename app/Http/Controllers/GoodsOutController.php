@@ -246,7 +246,7 @@ class GoodsOutController extends Controller
         $inventory->save();
 
         // Simpan Goods Out
-        $goodsOut = GoodsOut::create([
+        GoodsOut::create([
             'inventory_id' => $request->inventory_id,
             'project_id' => $request->project_id,
             'requested_by' => $user->username,
@@ -258,6 +258,70 @@ class GoodsOutController extends Controller
         MaterialUsageHelper::sync($request->inventory_id, $request->project_id);
 
         return redirect()->route('goods_out.index')->with('success', "Goods Out created successfully.");
+    }
+
+    public function bulkGoodsOut(Request $request)
+    {
+        $request->validate([
+            'selected_ids' => 'required|array',
+            'selected_ids.*' => 'exists:material_requests,id',
+        ]);
+
+        $materialRequests = MaterialRequest::whereIn('id', $request->selected_ids)
+            ->where('status', 'approved') // Hanya proses yang sudah disetujui
+            ->get();
+
+        foreach ($materialRequests as $materialRequest) {
+            $inventory = $materialRequest->inventory;
+
+            // Validasi stok
+            if ($materialRequest->qty > $inventory->quantity) {
+                return back()->with('error', "Insufficient stock for {$inventory->name}.");
+            }
+
+            // Kurangi stok inventory
+            $inventory->quantity -= $materialRequest->qty;
+            $inventory->save();
+
+            // Buat Goods Out
+            GoodsOut::create([
+                'material_request_id' => $materialRequest->id,
+                'inventory_id' => $inventory->id,
+                'project_id' => $materialRequest->project_id,
+                'requested_by' => $materialRequest->requested_by,
+                'department' => $materialRequest->department,
+                'quantity' => $materialRequest->qty,
+                'remark' => 'Bulk Goods Out',
+            ]);
+
+            // Update status material request
+            $materialRequest->update(['status' => 'delivered']);
+
+            MaterialUsageHelper::sync($inventory->id, $materialRequest->project_id);
+        }
+
+        return redirect()->route('material_requests.index')->with('success', "Bulk Goods Out processed successfully.");
+    }
+
+    public function getDetails(Request $request)
+    {
+        $request->validate([
+            'selected_ids' => 'required|array',
+            'selected_ids.*' => 'exists:goods_out,id',
+        ]);
+
+        $goodsOuts = GoodsOut::whereIn('id', $request->selected_ids)
+            ->with('inventory')
+            ->get()
+            ->map(function ($goodsOut) {
+                return [
+                    'id' => $goodsOut->id,
+                    'material_name' => $goodsOut->inventory->name,
+                    'goods_out_quantity' => $goodsOut->quantity,
+                ];
+            });
+
+        return response()->json($goodsOuts);
     }
 
     public function edit($id)
@@ -371,68 +435,6 @@ class GoodsOutController extends Controller
         MaterialUsageHelper::sync($goodsOut->inventory_id, $goodsOut->project_id);
 
         return redirect()->route('goods_out.index')->with('success', "Goods Out restored successfully.");
-    }
-
-    public function bulkGoodsOut(Request $request)
-    {
-        $request->validate([
-            'selected_ids' => 'required|array',
-            'selected_ids.*' => 'exists:material_requests,id',
-        ]);
-
-        $materialRequests = MaterialRequest::whereIn('id', $request->selected_ids)
-            ->where('status', 'approved') // Hanya proses yang sudah disetujui
-            ->get();
-
-        foreach ($materialRequests as $materialRequest) {
-            $inventory = $materialRequest->inventory;
-
-            // Validasi stok
-            if ($materialRequest->qty > $inventory->quantity) {
-                return back()->with('error', "Insufficient stock for {$inventory->name}.");
-            }
-
-            // Kurangi stok inventory
-            $inventory->quantity -= $materialRequest->qty;
-            $inventory->save();
-
-            // Buat Goods Out
-            GoodsOut::create([
-                'material_request_id' => $materialRequest->id,
-                'inventory_id' => $inventory->id,
-                'project_id' => $materialRequest->project_id,
-                'requested_by' => $materialRequest->requested_by,
-                'department' => $materialRequest->department,
-                'quantity' => $materialRequest->qty,
-                'remark' => 'Bulk Goods Out',
-            ]);
-
-            // Update status material request
-            $materialRequest->update(['status' => 'delivered']);
-        }
-
-        return redirect()->route('material_requests.index')->with('success', "Bulk Goods Out processed successfully.");
-    }
-
-    public function getDetails(Request $request)
-    {
-        $request->validate([
-            'selected_ids' => 'required|array',
-            'selected_ids.*' => 'exists:goods_out,id',
-        ]);
-
-        $goodsOuts = GoodsOut::whereIn('id', $request->selected_ids)
-            ->with('inventory')
-            ->get()
-            ->map(function ($goodsOut) {
-                return [
-                    'id' => $goodsOut->id,
-                    'material_name' => $goodsOut->inventory->name,
-                    'goods_out_quantity' => $goodsOut->quantity,
-                ];
-            });
-
-        return response()->json($goodsOuts);
     }
 
     public function destroy($id)
