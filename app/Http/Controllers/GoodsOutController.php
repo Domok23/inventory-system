@@ -217,7 +217,7 @@ class GoodsOutController extends Controller
     {
         $request->validate([
             'inventory_id' => 'required|exists:inventories,id',
-            'project_id' => 'required|exists:projects,id',
+            'project_id' => 'nullable|exists:projects,id',
             'user_id' => 'required|exists:users,id',
             'quantity' => 'required|numeric|min:0.01',
             'remark' => 'nullable|string',
@@ -255,7 +255,10 @@ class GoodsOutController extends Controller
             'remark' => $request->remark,
         ]);
 
-        MaterialUsageHelper::sync($request->inventory_id, $request->project_id);
+        // Sync Material Usage hanya jika ada project
+        if ($request->filled('project_id')) {
+            MaterialUsageHelper::sync($request->inventory_id, $request->project_id);
+        }
 
         return redirect()->route('goods_out.index')->with('success', "Goods Out created successfully.");
     }

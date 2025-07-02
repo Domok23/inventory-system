@@ -40,9 +40,9 @@
                             @enderror
                         </div>
                         <div class="col-lg-12 mb-3">
-                            <label>Project <span class="text-danger">*</span></label>
-                            <select name="project_id" class="form-select select2" required>
-                                <option value="">Select an option</option>
+                            <label>Project</label>
+                            <select name="project_id" class="form-select select2">
+                                <option value="" class="text-muted">No Project</option>
                                 @foreach ($projects as $project)
                                     <option value="{{ $project->id }}"
                                         {{ old('project_id') == $project->id ? 'selected' : '' }}>
@@ -93,7 +93,6 @@
         $(document).ready(function() {
             $('.select2').select2({
                 theme: 'bootstrap-5',
-                placeholder: 'Select an option',
                 allowClear: true
             }).on('select2:open', function() {
                 setTimeout(function() {

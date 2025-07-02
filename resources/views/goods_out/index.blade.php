@@ -140,7 +140,13 @@
                                 </td>
                                 <td>{{ $goodsOut->remaining_quantity }}
                                     {{ $goodsOut->inventory->unit ?? '-' }}</td>
-                                <td>{{ $goodsOut->project->name ?? '-' }}</td>
+                                <td>
+                                    @if ($goodsOut->project)
+                                        {{ $goodsOut->project->name }}
+                                    @else
+                                        <span class="text-secondary">No Project</span>
+                                    @endif
+                                </td>
                                 <td>{{ ucfirst($goodsOut->requested_by) }}
                                     ({{ ucfirst($goodsOut->department) }})
                                 </td>
@@ -174,8 +180,8 @@
                                                 $goodsOut->materialRequest->qty > 0 &&
                                                 in_array(auth()->user()->role, ['admin_logistic', 'super_admin']))
                                             <a href="{{ route('goods_out.create_with_id', $goodsOut->material_request_id) }}"
-                                                class="btn btn-sm btn-outline-primary">
-                                                Shortage
+                                                class="btn btn-sm btn-outline-primary" title="Shortage">
+                                                <i class="bi bi-exclamation-circle"></i>
                                             </a>
                                         @endif
                                         @if ($goodsOut->quantity > 0)

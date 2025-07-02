@@ -3,7 +3,7 @@
 @section('content')
     <div class="container mt-4">
         <div class="card shadow rounded">
-            <div class="card-header bg-primary text-white">
+            <div class="card-header text-white" style="background: linear-gradient(45deg, #8F12FE, #4A25AA);">
                 <h2 class="mb-0 flex-shrink-0" style="font-size:1.3rem;">Inventory Details</h2>
             </div>
             @if (session('success'))
@@ -155,9 +155,9 @@
                     <div class="modal-body">
                         <input type="hidden" name="inventory_id" value="{{ $inventory->id }}">
                         <div class="mb-3">
-                            <label for="project_id" class="form-label">Project <span class="text-danger">*</span></label>
-                            <select name="project_id" id="project_id" class="form-select" required>
-                                <option value="" disabled selected>Select an option</option>
+                            <label for="project_id" class="form-label">Project</label>
+                            <select name="project_id" id="project_id" class="form-select">
+                                <option value="" class="text-muted">No Project</option>
                                 @foreach ($projects as $project)
                                     <option value="{{ $project->id }}">{{ $project->name }}</option>
                                 @endforeach
@@ -279,7 +279,6 @@
                     dropdownParent: $('#goodsOutModal'), // Agar dropdown muncul di dalam modal
                     width: '100%', // Sesuaikan lebar dropdown
                     theme: 'bootstrap-5', // Gunakan tema Bootstrap 5
-                    placeholder: 'Select an option',
                     allowClear: true
                 });
             });

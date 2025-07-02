@@ -58,7 +58,7 @@
                                 @foreach ($inventories as $inv)
                                     <option value="{{ $inv->id }}" data-unit="{{ $inv->unit }}"
                                         data-stock="{{ $inv->quantity }}"
-                                        {{ old('inventory_id') == $inv->id ? 'selected' : '' }}>
+                                        {{ old('inventory_id', $selectedMaterial?->id) == $inv->id ? 'selected' : '' }}>
                                         {{ $inv->name }}
                                     </option>
                                 @endforeach
