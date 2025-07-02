@@ -16,11 +16,20 @@ class MaterialRequestUpdated implements ShouldBroadcast
     public $materialRequest;
     public $action; // Tambahkan properti action
 
-    public function __construct(MaterialRequest $materialRequest, string $action)
+    public function __construct($materialRequest, string $action)
     {
-        $this->materialRequest = is_array($materialRequest)
-            ? collect($materialRequest)->map->load('inventory', 'project')
-            : $materialRequest->load('inventory', 'project');
+        if (is_array($materialRequest) || $materialRequest instanceof \Illuminate\Support\Collection) {
+            $this->materialRequest = collect($materialRequest)->map(function ($mr) {
+                if (is_object($mr) && method_exists($mr, 'load')) {
+                    return $mr->load('inventory', 'project');
+                }
+                return $mr;
+            })->values();
+        } else {
+            $this->materialRequest = is_object($materialRequest) && method_exists($materialRequest, 'load')
+                ? $materialRequest->load('inventory', 'project')
+                : $materialRequest;
+        }
         $this->action = $action;
     }
 

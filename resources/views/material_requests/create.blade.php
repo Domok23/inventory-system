@@ -14,13 +14,10 @@
                 @endif
                 @if ($errors->any())
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <strong>Whoops!</strong> There were some problems with your input.
-                        <ul class="mb-0">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
                 <form method="POST" action="{{ route('material_requests.store') }}">
@@ -37,7 +34,10 @@
                             <select name="project_id" id="project_id" class="form-select select2" required>
                                 <option value="">Select an option</option>
                                 @foreach ($projects as $proj)
-                                    <option value="{{ $proj->id }}">{{ $proj->name }}</option>
+                                    <option value="{{ $proj->id }}"
+                                        {{ old('project_id') == $proj->id ? 'selected' : '' }}>
+                                        {{ $proj->name }}
+                                    </option>
                                 @endforeach
                             </select>
                             @error('project_id')
@@ -56,7 +56,7 @@
                                 <option value="">Select an option</option>
                                 @foreach ($inventories as $inv)
                                     <option value="{{ $inv->id }}" data-unit="{{ $inv->unit }}"
-                                        {{ isset($selectedMaterial) && $selectedMaterial->id == $inv->id ? 'selected' : '' }}>
+                                        {{ old('inventory_id') == $inv->id ? 'selected' : '' }}>
                                         {{ $inv->name }}
                                     </option>
                                 @endforeach
@@ -68,7 +68,8 @@
                         <div class="col-lg-6 mb-3">
                             <label>Requested Quantity <span class="text-danger">*</span></label>
                             <div class="input-group">
-                                <input type="number" name="qty" class="form-control" step="any" required>
+                                <input type="number" name="qty" class="form-control" step="any" required
+                                    value="{{ old('qty') }}">
                                 <span class="input-group-text unit-label">unit</span>
                             </div>
                             @error('qty')
@@ -77,7 +78,7 @@
                         </div>
                         <div class="col-lg-6 mb-3">
                             <label>Remark (Optional)</label>
-                            <textarea name="remark" class="form-control" value="{{ old('remark') }}"></textarea>
+                            <textarea name="remark" class="form-control">{{ old('remark') }}</textarea>
                             @error('remark')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror

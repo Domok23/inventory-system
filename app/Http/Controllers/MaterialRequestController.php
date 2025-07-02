@@ -11,6 +11,7 @@ use App\Models\User;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\MaterialRequestExport;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class MaterialRequestController extends Controller
 {
@@ -195,35 +196,49 @@ class MaterialRequestController extends Controller
             default => 'general',
         };
 
-        $createdRequests = []; // Array untuk menyimpan material request yang dibuat
+        $createdRequests = [];
+        $errors = [];
 
-        foreach ($request->requests as $index => $req) {
-            $inventory = Inventory::findOrFail($req['inventory_id']);
+        DB::beginTransaction();
+        try {
+            foreach ($request->requests as $index => $req) {
+                $inventory = Inventory::findOrFail($req['inventory_id']);
 
-            // Validasi: Pastikan qty tidak melebihi stok yang tersedia
-            if ($req['qty'] > $inventory->quantity) {
-                return back()->withInput()->withErrors([
-                    "requests.$index.qty" => "Quantity exceeds stock for '{$inventory->name}'."
-                ]);
+                // Validasi: Pastikan qty tidak melebihi stok yang tersedia
+                if ($req['qty'] > $inventory->quantity) {
+                    $errors["requests.$index.qty"] = "Quantity exceeds stock for '{$inventory->name}'.";
+                } else {
+                    $materialRequest = MaterialRequest::create([
+                        'inventory_id' => $req['inventory_id'],
+                        'project_id' => $req['project_id'],
+                        'qty' => $req['qty'],
+                        'processed_qty' => 0,
+                        'requested_by' => $user->username,
+                        'department' => $department,
+                        'remark' => $req['remark'] ?? null,
+                    ]);
+                    $createdRequests[] = $materialRequest;
+                    // event(new MaterialRequestUpdated($materialRequest, 'created')); // HAPUS dari sini!
+                }
             }
 
-            $materialRequest = MaterialRequest::create([
-                'inventory_id' => $req['inventory_id'],
-                'project_id' => $req['project_id'],
-                'qty' => $req['qty'],
-                'requested_by' => $user->username,
-                'department' => $department,
-                'remark' => $req['remark'] ?? null,
-            ]);
+            if (!empty($errors)) {
+                DB::rollBack();
+                return back()->withInput()->withErrors($errors);
+            }
 
-            $createdRequests[] = $materialRequest; // Tambahkan ke array
+            DB::commit();
 
-            // Trigger event untuk setiap material request
-            event(new MaterialRequestUpdated($materialRequest, 'created'));
+            // Trigger event SEKALI SAJA setelah commit
+            if (!empty($createdRequests)) {
+                event(new MaterialRequestUpdated($createdRequests, 'created'));
+            }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withInput()->withErrors(['bulk' => 'Bulk request failed: ' . $e->getMessage()]);
         }
 
         if ($request->ajax()) {
-            // Jika permintaan berasal dari AJAX, kembalikan JSON response
             return response()->json([
                 'success' => true,
                 'message' => 'Bulk material requests submitted!',
@@ -231,47 +246,55 @@ class MaterialRequestController extends Controller
             ]);
         }
 
-        // Jika bukan AJAX, redirect ke halaman daftar material request
         return redirect()->route('material_requests.index')->with('success', "Bulk material requests submitted successfully!");
     }
 
-    public function edit($id)
+    public function edit(Request $request, $id)
     {
-        // Ambil data Material Request berdasarkan ID
-        $request = MaterialRequest::with('inventory', 'project')->findOrFail($id);
+        $materialRequest = MaterialRequest::with('inventory', 'project')->findOrFail($id);
+
+        $filters = [
+            'project' => $request->input('filter_project'),
+            'material' => $request->input('filter_material'),
+            'status' => $request->input('filter_status'),
+            'requested_by' => $request->input('filter_requested_by'),
+            'requested_at' => $request->input('filter_requested_at'),
+        ];
+        $filters = array_filter($filters, fn($v) => !is_null($v) && $v !== '');
 
         // Validasi: Pastikan hanya Material Request dengan status tertentu yang bisa diedit
-        if ($request->status !== 'pending') {
-            return redirect()->route('material_requests.index')->with('error', "Only pending requests can be edited.");
+        if ($materialRequest->status !== 'pending') {
+            return redirect()->route('material_requests.index', $filters)->with('error', "Only pending requests can be edited.");
         }
 
-        if ($request->status === 'canceled') {
-            return redirect()->route('material_requests.index')->with('error', "Canceled requests cannot be edited.");
+        if ($materialRequest->status === 'canceled') {
+            return redirect()->route('material_requests.index', $filters)->with('error', "Canceled requests cannot be edited.");
         }
 
-        // Validasi: Pastikan inventory dan project terkait masih ada
-        if (!$request->inventory || !$request->project) {
-            return redirect()->route('material_requests.index')->with('error', "The associated inventory or project no longer exists.");
+        if (!$materialRequest->inventory || !$materialRequest->project) {
+            return redirect()->route('material_requests.index', $filters)->with('error', "The associated inventory or project no longer exists.");
         }
 
-        // Ambil data tambahan untuk dropdown
         $inventories = Inventory::orderBy('name')->get()->map(function ($inventory) {
-            $inventory->available_quantity = $inventory->quantity; // Tambahkan stok tersedia
+            $inventory->available_quantity = $inventory->quantity;
             return $inventory;
         });
 
         $projects = Project::orderBy('name')->get();
 
-        // Tampilkan view edit dengan data yang diperlukan
-        return view('material_requests.edit', compact('request', 'inventories', 'projects'));
+        return view('material_requests.edit', [
+            'request' => $materialRequest,
+            'inventories' => $inventories,
+            'projects' => $projects,
+        ]);
     }
 
     public function update(Request $request, $id)
     {
         $materialRequest = MaterialRequest::findOrFail($id);
 
-        // Jika hanya status yang diperbarui
-        if ($request->has('status') && $request->keys() === ['_token', '_method', 'status']) {
+        // Jika hanya status yang diperbarui (inline dari tabel)
+        if ($request->has('status') && !$request->has('inventory_id')) {
             $request->validate([
                 'status' => 'required|in:pending,approved,delivered,canceled',
             ]);
@@ -280,10 +303,17 @@ class MaterialRequestController extends Controller
                 'status' => $request->status,
             ]);
 
-            // Trigger event
-            event(new MaterialRequestUpdated($materialRequest, 'updated'));
+            event(new MaterialRequestUpdated($materialRequest, 'status'));
 
-            return redirect()->route('material_requests.index')->with('success', "Status updated successfully.");
+            $filters = [
+                'project' => $request->input('filter_project'),
+                'material' => $request->input('filter_material'),
+                'status' => $request->input('filter_status'),
+                'requested_by' => $request->input('filter_requested_by'),
+                'requested_at' => $request->input('filter_requested_at'),
+            ];
+            $filters = array_filter($filters, fn($v) => !is_null($v) && $v !== '');
+            return redirect()->route('material_requests.index', $filters)->with('success', "Status updated successfully.");
         }
 
         // Validasi untuk pembaruan lengkap
@@ -302,8 +332,17 @@ class MaterialRequestController extends Controller
             return back()->withInput()->withErrors(['qty' => 'Requested quantity cannot exceed available inventory quantity.']);
         }
 
+        $filters = [
+            'project' => $request->input('filter_project'),
+            'material' => $request->input('filter_material'),
+            'status' => $request->input('filter_status'),
+            'requested_by' => $request->input('filter_requested_by'),
+            'requested_at' => $request->input('filter_requested_at'),
+        ];
+        $filters = array_filter($filters, fn($v) => !is_null($v) && $v !== '');
+
         if ($materialRequest->status === 'canceled') {
-            return redirect()->route('material_requests.index')->with('error', "Canceled requests cannot be updated.");
+            return redirect()->route('material_requests.index', $filters)->with('error', "Canceled requests cannot be updated.");
         }
 
         $materialRequest->update([
@@ -317,15 +356,24 @@ class MaterialRequestController extends Controller
         // Trigger event
         event(new MaterialRequestUpdated($materialRequest, 'updated'));
 
-        return redirect()->route('material_requests.index')->with('success', "Material Request updated successfully.");
+        return redirect()->route('material_requests.index', $filters)->with('success', "Material Request updated successfully.");
     }
 
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $materialRequest = MaterialRequest::findOrFail($id);
 
+        $filters = [
+            'project' => $request->input('filter_project'),
+            'material' => $request->input('filter_material'),
+            'status' => $request->input('filter_status'),
+            'requested_by' => $request->input('filter_requested_by'),
+            'requested_at' => $request->input('filter_requested_at'),
+        ];
+        $filters = array_filter($filters, fn($v) => !is_null($v) && $v !== '');
+
         if ($materialRequest->status === 'canceled') {
-            return redirect()->route('material_requests.index')->with('error', "Canceled requests cannot be deleted.");
+            return redirect()->route('material_requests.index', $filters)->with('error', "Canceled requests cannot be deleted.");
         }
 
         // Trigger event
@@ -333,6 +381,6 @@ class MaterialRequestController extends Controller
 
         $materialRequest->delete();
 
-        return back()->with('success', "Material Request deleted successfully.");
+        return redirect()->route('material_requests.index', $filters)->with('success', "Material Request deleted successfully.");
     }
 }

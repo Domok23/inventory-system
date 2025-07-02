@@ -8,18 +8,20 @@
                 <hr>
                 @if ($errors->any())
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <strong>Whoops!</strong> There were some problems with your input.
-                        <ul class="mb-0">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
                 <form action="{{ route('material_requests.update', $request->id) }}" method="POST">
                     @csrf
                     @method('PUT')
+                    <input type="hidden" name="filter_project" value="{{ request('project') }}">
+                    <input type="hidden" name="filter_material" value="{{ request('material') }}">
+                    <input type="hidden" name="filter_status" value="{{ request('status') }}">
+                    <input type="hidden" name="filter_requested_by" value="{{ request('requested_by') }}">
+                    <input type="hidden" name="filter_requested_at" value="{{ request('requested_at') }}">
                     <div class="row">
                         <div class="col-lg-6 mb-3">
                             <div class="d-flex justify-content-between align-items-center mb-2">

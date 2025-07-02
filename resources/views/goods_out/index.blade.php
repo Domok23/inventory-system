@@ -168,6 +168,16 @@
                                                 </form>
                                             @endif
                                         @endif
+                                        @if (
+                                            $goodsOut->material_request_id &&
+                                                $goodsOut->materialRequest &&
+                                                $goodsOut->materialRequest->qty > 0 &&
+                                                in_array(auth()->user()->role, ['admin_logistic', 'super_admin']))
+                                            <a href="{{ route('goods_out.create_with_id', $goodsOut->material_request_id) }}"
+                                                class="btn btn-sm btn-outline-primary">
+                                                Shortage
+                                            </a>
+                                        @endif
                                         @if ($goodsOut->quantity > 0)
                                             @if (auth()->user()->username === $goodsOut->requested_by ||
                                                     in_array(auth()->user()->role, ['super_admin', 'admin_logistic']))
@@ -176,16 +186,6 @@
                                                     Goods In
                                                 </a>
                                             @endif
-                                        @endif
-                                        @if (
-                                            $goodsOut->material_request_id &&
-                                                $goodsOut->materialRequest &&
-                                                $goodsOut->materialRequest->qty > 0 &&
-                                                in_array(auth()->user()->role, ['admin_logistic', 'super_admin']))
-                                            <a href="{{ route('goods_out.create_with_id', $goodsOut->material_request_id) }}"
-                                                class="btn btn-sm btn-outline-primary">
-                                                Process
-                                            </a>
                                         @endif
                                     </div>
                                 </td>

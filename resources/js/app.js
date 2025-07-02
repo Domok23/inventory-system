@@ -2,31 +2,15 @@ require("./bootstrap");
 
 import moment from "moment";
 
+// --- Fungsi-fungsi utilitas ---
 function ucfirst(string) {
     if (!string) return ""; // Pastikan string tidak null atau undefined
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-window.Echo.channel("material-requests").listen(
-    "MaterialRequestUpdated",
-    (e) => {
-        if (Array.isArray(e.materialRequest)) {
-            e.materialRequest.forEach((request) => {
-                updateDataTable(request);
-                showToast(request, e.action);
-                playNotificationSound();
-            });
-        } else {
-            updateDataTable(e.materialRequest);
-            showToast(e.materialRequest, e.action);
-            playNotificationSound();
-        }
-    }
-);
-
+// --- Audio ---
 let audioContext;
 let audioBuffer;
-
 function initializeAudio() {
     // Inisialisasi AudioContext
     audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -42,20 +26,8 @@ function initializeAudio() {
             console.error("Failed to load audio file:", error);
         });
 }
-
-document.body.addEventListener(
-    "click",
-    () => {
-        if (audioContext && audioContext.state === "suspended") {
-            audioContext.resume();
-        }
-    },
-    { once: true }
-);
-
 function playNotificationSound() {
     if (!audioContext || !audioBuffer) return;
-
     // Buat sumber audio baru
     const source = audioContext.createBufferSource();
     source.buffer = audioBuffer;
@@ -63,7 +35,8 @@ function playNotificationSound() {
     source.start(0);
 }
 
-function showToast(materialRequest, action) {
+// --- Toast ---
+function showToast(materialRequest, action, playSound = true) {
     const toastContainer = document.getElementById("toast-container");
     const toastTemplate = document.getElementById("toast-template");
 
@@ -114,6 +87,9 @@ function showToast(materialRequest, action) {
                 materialRequest.project?.name || "N/A"
             }</strong> has been deleted.
         `;
+    } else {
+        // Jika action tidak dikenali, jangan tampilkan toast
+        return;
     }
 
     // Isi konten toast
@@ -125,14 +101,17 @@ function showToast(materialRequest, action) {
     // Tambahkan toast ke dalam container
     toastContainer.appendChild(toastElement);
 
-    // Tampilkan toast dengan opsi autohide: false
+    // Tampilkan toast dengan opsi autohide: true
     const toast = new bootstrap.Toast(toastElement, {
-        autohide: false, // Toast tidak akan hilang otomatis
+        autohide: true, // Atur autohide sesuai kebutuhan
+        delay: 10000, // Tampilkan selama 15 detik
     });
     toast.show();
 
-    // Putar suara notifikasi
-    playNotificationSound();
+    // Putar suara notifikasi jika diizinkan
+    if (playSound) {
+        playNotificationSound();
+    }
 
     // Hapus toast dari DOM jika tombol silang diklik
     toastElement.addEventListener("hidden.bs.toast", () => {
@@ -140,6 +119,7 @@ function showToast(materialRequest, action) {
     });
 }
 
+// --- DataTable & Select Color ---
 function updateSelectColor(selectElement) {
     const selectedValue = selectElement.value;
     if (selectedValue === "pending") {
@@ -152,21 +132,6 @@ function updateSelectColor(selectElement) {
         selectElement.classList.add("status-canceled");
     }
 }
-
-// Terapkan fungsi ke semua elemen <select> dengan kelas .status-select
-document.addEventListener("DOMContentLoaded", () => {
-    const statusSelectElements = document.querySelectorAll(".status-select");
-    statusSelectElements.forEach((selectElement) => {
-        // Perbarui warna saat halaman dimuat
-        updateSelectColor(selectElement);
-
-        // Perbarui warna saat nilai berubah
-        selectElement.addEventListener("change", () => {
-            updateSelectColor(selectElement);
-        });
-    });
-});
-
 function updateDataTable(materialRequest) {
     const table = $("#datatable").DataTable();
     const row = table.row(`#row-${materialRequest.id}`);
@@ -175,29 +140,29 @@ function updateDataTable(materialRequest) {
     let statusColumn = materialRequest.status;
     if (["admin_logistic", "super_admin"].includes(authUserRole)) {
         statusColumn = `
-           <form method="POST" action="/material_requests/${
-               materialRequest.id
-           }">
-               <input type="hidden" name="_token" value="${$(
-                   'meta[name="csrf-token"]'
-               ).attr("content")}">
-               <input type="hidden" name="_method" value="PUT">
-               <select name="status" class="form-select form-select-sm status-select" onchange="this.form.submit()">
-                   <option value="pending" ${
-                       materialRequest.status === "pending" ? "selected" : ""
-                   }>Pending</option>
-                   <option value="approved" ${
-                       materialRequest.status === "approved" ? "selected" : ""
-                   }>Approved</option>
-                   <option value="delivered" ${
-                       materialRequest.status === "delivered" ? "selected" : ""
-                   }>Delivered</option>
-                   <option value="canceled" ${
-                       materialRequest.status === "canceled" ? "selected" : ""
-                   }>Canceled</option>
-               </select>
-           </form>
-       `;
+            <form method="POST" action="/material_requests/${
+                materialRequest.id
+            }">
+                <input type="hidden" name="_token" value="${$(
+                    'meta[name="csrf-token"]'
+                ).attr("content")}">
+                <input type="hidden" name="_method" value="PUT">
+                <select name="status" class="form-select form-select-sm status-select" onchange="this.form.submit()">
+                    <option value="pending" ${
+                        materialRequest.status === "pending" ? "selected" : ""
+                    }>Pending</option>
+                    <option value="approved" ${
+                        materialRequest.status === "approved" ? "selected" : ""
+                    }>Approved</option>
+                    <option value="delivered" ${
+                        materialRequest.status === "delivered" ? "selected" : ""
+                    }>Delivered</option>
+                    <option value="canceled" ${
+                        materialRequest.status === "canceled" ? "selected" : ""
+                    }>Canceled</option>
+                </select>
+            </form>
+        `;
     } else {
         const badgeClass =
             materialRequest.status === "pending"
@@ -291,10 +256,10 @@ function updateDataTable(materialRequest) {
         materialRequest.project?.name || "N/A", // Project
         materialRequest.inventory?.name || "N/A", // Material
         `${materialRequest.qty} ${materialRequest.inventory?.unit || ""}`, // Requested Qty
-        `${materialRequest.qty - materialRequest.processed_qty} ${
+        `${materialRequest.qty - (materialRequest.processed_qty ?? 0)} ${
             materialRequest.inventory?.unit || ""
         }`, // Remaining Qty
-        `${materialRequest.processed_qty} ${
+        `${materialRequest.processed_qty ?? 0} ${
             materialRequest.inventory?.unit || ""
         }`, // Processed Qty
         `${ucfirst(materialRequest.requested_by)} (${ucfirst(
@@ -324,13 +289,58 @@ function updateDataTable(materialRequest) {
     }
 }
 
+// --- Event DOMContentLoaded ---
 document.addEventListener("DOMContentLoaded", () => {
     initializeAudio();
+
+    // Terapkan fungsi ke semua elemen <select> dengan kelas .status-select
+    const statusSelectElements = document.querySelectorAll(".status-select");
+    statusSelectElements.forEach((selectElement) => {
+        // Perbarui warna saat halaman dimuat
+        updateSelectColor(selectElement);
+
+        // Perbarui warna saat nilai berubah
+        selectElement.addEventListener("change", () => {
+            updateSelectColor(selectElement);
+        });
+    });
+
+    // Listener real-time
+    window.Echo.channel("material-requests").listen(
+        "MaterialRequestUpdated",
+        (e) => {
+            if (Array.isArray(e.materialRequest)) {
+                e.materialRequest.forEach((request) => {
+                    updateDataTable(request);
+                    if (e.action !== "status") {
+                        showToast(request, e.action, true);
+                    }
+                });
+            } else {
+                updateDataTable(e.materialRequest);
+                if (e.action !== "status") {
+                    showToast(e.materialRequest, e.action, true);
+                }
+            }
+        }
+    );
 });
 
+// --- Event DataTable redraw ---
 $("#datatable").on("draw.dt", function () {
     const statusSelectElements = document.querySelectorAll(".status-select");
     statusSelectElements.forEach((selectElement) => {
         updateSelectColor(selectElement);
     });
 });
+
+// --- Audio resume on user interaction ---
+document.body.addEventListener(
+    "click",
+    () => {
+        if (audioContext && audioContext.state === "suspended") {
+            audioContext.resume();
+        }
+    },
+    { once: true }
+);

@@ -111,9 +111,9 @@
                 </div>
 
                 <!-- Table -->
-                <table class="table table-bordered table-hover" id="datatable">
-                    <thead class="align-middle">
-                        <tr>
+                <table class="table table-bordered table-hover table-sm" id="datatable">
+                    <thead class="align-middle text-nowrap">
+                        <tr class="text-nowrap">
                             <th></th>
                             <th>Project</th>
                             <th>Material</th>
@@ -158,6 +158,15 @@
                                         <form method="POST" action="{{ route('material_requests.update', $req->id) }}">
                                             @csrf
                                             @method('PUT')
+                                            <input type="hidden" name="filter_project"
+                                                value="{{ request('project') }}">
+                                            <input type="hidden" name="filter_material"
+                                                value="{{ request('material') }}">
+                                            <input type="hidden" name="filter_status" value="{{ request('status') }}">
+                                            <input type="hidden" name="filter_requested_by"
+                                                value="{{ request('requested_by') }}">
+                                            <input type="hidden" name="filter_requested_at"
+                                                value="{{ request('requested_at') }}">
                                             <select name="status" class="form-select form-select-sm status-select"
                                                 onchange="this.form.submit()">
                                                 <option value="pending"
@@ -185,9 +194,9 @@
                                                     class="bi bi-box-arrow-right"></i></a>
                                         @endif
                                         @if (
-                                            $req->status !== 'canceled' &&
+                                            $req->status === 'pending' &&
                                                 (auth()->user()->username === $req->requested_by || auth()->user()->isLogisticAdmin()))
-                                            <a href="{{ route('material_requests.edit', $req->id) }}"
+                                            <a href="{{ route('material_requests.edit', [$req->id] + request()->query()) }}"
                                                 class="btn btn-sm btn-warning" title="Edit"><i
                                                     class="bi bi-pencil-square"></i></a>
                                         @endif
@@ -212,6 +221,27 @@
         </div>
     </div>
 @endsection
+@push('styles')
+    <style>
+        #datatable th {
+            font-size: 0.90rem;
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+
+        #datatable td {
+            vertical-align: middle;
+        }
+
+        /* Batasi lebar kolom tertentu jika perlu */
+        #datatable th,
+        #datatable td {
+            max-width: 170px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    </style>
+@endpush
 @push('scripts')
     <script>
         $(document).ready(function() {

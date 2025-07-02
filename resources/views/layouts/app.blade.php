@@ -50,8 +50,8 @@
             }
 
             /* body {
-                                            font-family: Inter, Nunito, Roboto, Poppins,  "Helvetica Neue", Arial, sans-serif;
-                                            } */
+                    font-family: "Helvetica Neue", Inter, Nunito, Roboto, Poppins, Arial, sans-serif;
+            } */
 
             #app {
                 min-height: 100vh;
@@ -226,6 +226,23 @@
             .fancybox__container {
                 z-index: 1060 !important;
                 /* Pastikan lebih tinggi dari modal Bootstrap */
+            }
+
+            footer,
+            footer .container-fluid,
+            footer .row,
+            footer .bg-white,
+            footer .text-center {
+                font-size: 0.85rem;
+            }
+
+            footer h5 {
+                font-size: 1rem;
+            }
+
+            footer p,
+            footer .text-secondary {
+                font-size: 0.8rem;
             }
         </style>
     @endpush
@@ -528,7 +545,7 @@
         </div>
 
         <div class="text-center p-1 bg-dark text-secondary">
-            © {{ date('Y') }} {{ config('app.name', 'Laravel') }}. Created with <i
+            © {{ date('Y') }} {{ config('app.name', 'DCM-app') }}. Created with <i
                 class="fas fa-heart text-danger"></i> by IT Team (Gen 1)
         </div>
     </footer>
