@@ -44,18 +44,20 @@
                             </thead>
                             <tbody id="bulk-rows">
                                 @foreach (old('requests', [0 => []]) as $index => $request)
-                                    <tr>
+                                    <tr class="align-top">
                                         <td>
                                             <select name="requests[{{ $index }}][project_id]"
                                                 class="form-select select2 project-select" required>
                                                 <option value="">Select Project</option>
                                                 @foreach ($projects as $project)
                                                     <option value="{{ $project->id }}"
+                                                        data-department="{{ $project->department }}"
                                                         {{ old("requests.$index.project_id") == $project->id ? 'selected' : '' }}>
                                                         {{ $project->name }}
                                                     </option>
                                                 @endforeach
                                             </select>
+                                            <div class="department-text form-text d-none">Department</div>
                                             @error("requests.$index.project_id")
                                                 <span class="text-danger">{{ $message }}</span>
                                             @enderror
@@ -66,11 +68,13 @@
                                                 <option value="">Select Material</option>
                                                 @foreach ($inventories as $inventory)
                                                     <option value="{{ $inventory->id }}" data-unit="{{ $inventory->unit }}"
+                                                        data-stock="{{ $inventory->quantity }}"
                                                         {{ old("requests.$index.inventory_id") == $inventory->id ? 'selected' : '' }}>
                                                         {{ $inventory->name }}
                                                     </option>
                                                 @endforeach
                                             </select>
+                                            <div class="available-qty-text form-text d-none"></div>
                                             @error("requests.$index.inventory_id")
                                                 <span class="text-danger">{{ $message }}</span>
                                             @enderror
@@ -261,6 +265,10 @@
                 // Reset unit label
                 newRow.find('.unit-label').text('unit');
 
+                // Reset available qty di row baru
+                newRow.find('.available-qty-text').addClass('d-none').removeClass(
+                    'text-danger text-warning').text('');
+
                 // Append the new row
                 $('#bulk-rows').append(newRow);
 
@@ -361,6 +369,44 @@
                     }
                 });
             });
+
+            // Department per-row
+            $(document).on('change', '.project-select', function() {
+                const selected = $(this).find(':selected');
+                const department = selected.data('department');
+                const $deptDiv = $(this).closest('td').find('.department-text');
+                $deptDiv.removeClass('d-none text-danger text-warning');
+                if (selected.val() && department) {
+                    $deptDiv.text(
+                        `Department: ${department.charAt(0).toUpperCase() + department.slice(1)}`);
+                } else {
+                    $deptDiv.addClass('d-none').text('Department');
+                }
+            });
+            $('.project-select').trigger('change');
+
+            // Available Qty per-row
+            $(document).on('change', '.material-select', function() {
+                const selected = $(this).find(':selected');
+                const selectedUnit = selected.data('unit');
+                const selectedStock = selected.data('stock');
+                const $qtyDiv = $(this).closest('td').find('.available-qty-text');
+                $qtyDiv.removeClass('d-none text-danger text-warning');
+                if (selected.val() && selectedStock !== undefined) {
+                    let colorClass = '';
+                    if (selectedStock == 0) {
+                        colorClass = 'text-danger';
+                    } else if (selectedStock < 3) {
+                        colorClass = 'text-warning';
+                    }
+                    $qtyDiv
+                        .text(`Available Qty: ${selectedStock} ${selectedUnit || ''}`)
+                        .addClass(colorClass);
+                } else {
+                    $qtyDiv.addClass('d-none').text('');
+                }
+            });
+            $('.material-select').trigger('change');
         });
     </script>
 @endpush

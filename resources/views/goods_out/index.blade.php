@@ -7,8 +7,8 @@
                 <!-- Header -->
                 <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-2 mb-3">
                     <!-- Header -->
-                    <h2 class="mb-lg-0 flex-shrink-0" style="font-size:1.5rem;"><i class="bi bi-arrow-up-circle"></i> Goods Out
-                        Records</h2>
+                    <h2 class="mb-lg-0 flex-shrink-0" style="font-size:1.3rem;"><i class="bi bi-box-arrow-in-right"></i> Goods
+                        Out Records</h2>
 
                     <!-- Spacer untuk mendorong tombol ke kanan -->
                     <div class="ms-lg-auto d-flex flex-wrap gap-2">
@@ -19,7 +19,7 @@
                             </a>
                         @endif
                         <button id="bulk-goods-in-btn" class="btn btn-info btn-sm flex-shrink-0">
-                            <i class="bi bi-box-arrow-in-right"></i> Bulk Goods In
+                            <i class="bi bi-box-arrow-in-left"></i> Bulk Goods In
                         </button>
                         <a href="{{ route('goods_out.export', request()->query()) }}"
                             class="btn btn-outline-success btn-sm flex-shrink-0">
@@ -105,7 +105,7 @@
 
                 <!-- Tabel Data -->
                 <table class="table table-bordered table-hover" id="datatable">
-                    <thead class="align-middle">
+                    <thead class="align-middle text-nowrap">
                         <tr>
                             <th></th>
                             <th>Material</th>
@@ -182,8 +182,8 @@
                                             @if (auth()->user()->username === $goodsOut->requested_by ||
                                                     in_array(auth()->user()->role, ['super_admin', 'admin_logistic']))
                                                 <a href="{{ route('goods_in.create_with_id', ['goods_out_id' => $goodsOut->id]) }}"
-                                                    class="btn btn-sm btn-info">
-                                                    Goods In
+                                                    class="btn btn-sm btn-info" title="Goods In">
+                                                    <i class="bi bi-box-arrow-in-left"></i>
                                                 </a>
                                             @endif
                                         @endif
@@ -230,6 +230,27 @@
         </div>
     </div>
 @endsection
+@push('styles')
+    <style>
+        #datatable th {
+            font-size: 0.90rem;
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+
+        #datatable td {
+            vertical-align: middle;
+        }
+
+        /* Batasi lebar kolom tertentu jika perlu */
+        #datatable th,
+        #datatable td {
+            max-width: 170px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    </style>
+@endpush
 @push('scripts')
     <script>
         $(document).ready(function() {

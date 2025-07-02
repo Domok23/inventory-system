@@ -6,7 +6,8 @@
             <div class="card-body">
                 <!-- Header -->
                 <div class="d-flex align-items-center mb-3 gap-2">
-                    <h2 class="mb-0 flex-shrink-0" style="font-size:1.3rem;">Users</h2>
+                    <h2 class="mb-0 flex-shrink-0" style="font-size:1.3rem;"><i class="bi bi-people-fill"
+                        style="color:#0d6efd;"></i> Users</h2>
                     <a href="{{ route('users.create') }}" class="btn btn-outline-primary btn-sm flex-shrink-0 ms-2">+ New
                         User</a>
                 </div>

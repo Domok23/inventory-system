@@ -5,13 +5,13 @@
         <div class="card shadow rounded">
             <div class="card-body">
                 <!-- Header -->
-                <h3 class="mb-0 flex-shrink-0" style="font-size:1.5rem;">Trash Bin</h3>
-                <hr>
-                <form id="bulk-action-form" method="POST" action="{{ route('trash.bulkAction') }}">
+                <h3 class="mb-3 flex-shrink-0" style="font-size:1.3rem;"><i class="bi-recycle" style="color:#dc3545;"></i>
+                    Trash Bin</h3>
+                <form class="mb-3" id="bulk-action-form" method="POST" action="{{ route('trash.bulkAction') }}">
                     @csrf
                     <input type="hidden" name="action" id="bulk-action-type">
-                    <button type="button" class="btn btn-success btn-sm mb-2" id="bulk-restore-btn">Bulk Restore</button>
-                    <button type="button" class="btn btn-danger btn-sm mb-2" id="bulk-delete-btn">Bulk Delete
+                    <button type="button" class="btn btn-success btn-sm" id="bulk-restore-btn">Bulk Restore</button>
+                    <button type="button" class="btn btn-danger btn-sm" id="bulk-delete-btn">Bulk Delete
                         Permanently</button>
                 </form>
 

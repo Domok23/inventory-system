@@ -3,7 +3,7 @@
     <div class="container mt-4">
         <div class="card shadow rounded">
             <div class="card-body">
-                <h2 class="mb-0 flex-shrink-0" style="font-size:1.5rem;">Edit Goods In</h2>
+                <h2 class="mb-0 flex-shrink-0" style="font-size:1.3rem;">Edit Goods In</h2>
                 <hr>
                 <form action="{{ route('goods_in.update', $goods_in->id) }}" method="POST">
                     @csrf

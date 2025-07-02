@@ -4,8 +4,7 @@
     <div class="container mt-4">
         <div class="card shadow rounded">
             <div class="card-body">
-                <h2 class="mb-0 flex-shrink-0" style="font-size:1.5rem;">Project Costing Report</h2>
-                <hr>
+                <h2 class="mb-3 flex-shrink-0" style="font-size:1.3rem;"><i class="bi bi-calculator"></i> Project Costing Report</h2>
                 <div class="mb-3">
                     <form id="filter-form" method="GET" action="{{ route('costing.report') }}" class="row g-2">
                         <div class="col-lg-3">

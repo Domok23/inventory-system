@@ -4,7 +4,7 @@
     <div class="container mt-4">
         <div class="card shadow rounded">
             <div class="card-header">
-                <h2 class="mb-0 flex-shrink-0" style="font-size:1.5rem;">Create New User</h2>
+                <h2 class="mb-0 flex-shrink-0" style="font-size:1.3rem;">Create New User</h2>
             </div>
             <div class="card-body">
                 @if ($errors->any())

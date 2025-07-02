@@ -5,8 +5,8 @@
         <div class="row justify-content-center">
             <div class="col-lg-8">
                 <div class="card shadow rounded">
-                    <div class="card-header bg-primary text-white">
-                        <h2 class="mb-0 flex-shrink-0" style="font-size:1.5rem;">Login</h2>
+                    <div class="card-header text-white" style="background: linear-gradient(45deg, #8F12FE, #4A25AA);">
+                        <h2 class="mb-0 flex-shrink-0" style="font-size:1.3rem;">Login</h2>
                     </div>
 
                     <div class="card-body">
@@ -64,11 +64,11 @@
 
                             <div class="row mb-0">
                                 <div class="col-lg-8 offset-lg-4">
-                                    <button type="submit" class="btn btn-primary">
+                                    <button type="submit" class="btn btn-gradient text-white border-0">
                                         {{ __('Login') }}
                                     </button>
 
-                                    <a class="btn btn-link"
+                                    <a class="btn btn-link btn-link-gradient ms-2"
                                         href="https://wa.me/6287721988393?text=duhh%20tolong%2C%20lupa%20password%20nih"
                                         target="_blank">
                                         Forgot your password?
@@ -82,6 +82,42 @@
         </div>
     </div>
 @endsection
+@push('styles')
+    <style>
+        .btn-gradient {
+            background: linear-gradient(45deg, #8F12FE, #4A25AA);
+            color: #fff !important;
+            border: none;
+            transition: opacity 0.2s;
+        }
+
+        .btn-gradient:hover,
+        .btn-gradient:focus {
+            opacity: 0.85;
+            color: #fff !important;
+        }
+
+        .btn-link-gradient {
+            background: linear-gradient(45deg, #8F12FE, #4A25AA);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: underline;
+            border: none;
+            padding: 0;
+            border-radius: 0;
+            transition: opacity 0.2s;
+            display: inline;
+            font-weight: 500;
+        }
+
+        .btn-link-gradient:hover,
+        .btn-link-gradient:focus {
+            opacity: 0.8;
+            text-decoration: underline;
+        }
+    </style>
+@endpush
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {

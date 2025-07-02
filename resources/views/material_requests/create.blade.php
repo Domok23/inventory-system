@@ -4,7 +4,7 @@
     <div class="container mt-4">
         <div class="card shadow rounded">
             <div class="card-body">
-                <h2 class="mb-0 flex-shrink-0" style="font-size:1.5rem;">Create Material Request</h2>
+                <h2 class="mb-0 flex-shrink-0" style="font-size:1.3rem;">Create Material Request</h2>
                 <hr>
                 @if (session('success'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -34,12 +34,13 @@
                             <select name="project_id" id="project_id" class="form-select select2" required>
                                 <option value="">Select an option</option>
                                 @foreach ($projects as $proj)
-                                    <option value="{{ $proj->id }}"
+                                    <option value="{{ $proj->id }}" data-department="{{ $proj->department }}"
                                         {{ old('project_id') == $proj->id ? 'selected' : '' }}>
                                         {{ $proj->name }}
                                     </option>
                                 @endforeach
                             </select>
+                            <div id="department" class="form-text d-none">Department</div>
                             @error('project_id')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
@@ -56,11 +57,13 @@
                                 <option value="">Select an option</option>
                                 @foreach ($inventories as $inv)
                                     <option value="{{ $inv->id }}" data-unit="{{ $inv->unit }}"
+                                        data-stock="{{ $inv->quantity }}"
                                         {{ old('inventory_id') == $inv->id ? 'selected' : '' }}>
                                         {{ $inv->name }}
                                     </option>
                                 @endforeach
                             </select>
+                            <div id="available-qty" class="form-text d-none"></div>
                         </div>
                     </div>
 
@@ -268,5 +271,48 @@
                 });
             });
         });
+
+        // Update available quantity and unit label when inventory is selected
+        $('select[name="inventory_id"]').on('change', function() {
+            const selected = $(this).find(':selected');
+            const selectedUnit = selected.data('unit');
+            const selectedStock = selected.data('stock');
+            $('.unit-label').text(selectedUnit || 'unit');
+
+            const $availableQty = $('#available-qty');
+            $availableQty.removeClass('d-none text-danger text-warning');
+
+            if (selected.val() && selectedStock !== undefined) {
+                let colorClass = '';
+                if (selectedStock == 0) {
+                    colorClass = 'text-danger';
+                } else if (selectedStock < 3) {
+                    colorClass = 'text-warning';
+                }
+                $availableQty
+                    .text(`Available Qty: ${selectedStock} ${selectedUnit || ''}`)
+                    .addClass(colorClass);
+            } else {
+                $availableQty.addClass('d-none').text('');
+            }
+        });
+        // Trigger saat halaman load jika sudah ada value terpilih
+        $('select[name="inventory_id"]').trigger('change');
+
+        // Update department text when project is selected
+        $('select[name="project_id"]').on('change', function() {
+            const selected = $(this).find(':selected');
+            const department = selected.data('department');
+            const $departmentDiv = $('#department');
+            $departmentDiv.removeClass('d-none text-danger text-warning');
+
+            if (selected.val() && department) {
+                $departmentDiv.text(`Department: ${department.charAt(0).toUpperCase() + department.slice(1)}`);
+            } else {
+                $departmentDiv.addClass('d-none').text('Department');
+            }
+        });
+        // Trigger saat halaman load jika sudah ada value terpilih
+        $('select[name="project_id"]').trigger('change');
     </script>
 @endpush

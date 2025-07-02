@@ -4,7 +4,7 @@
     <div class="container mt-4">
         <div class="card shadow rounded">
             <div class="card-body">
-                <h2 class="mb-0 flex-shrink-0" style="font-size:1.5rem;">Edit Inventory</h2>
+                <h2 class="mb-0 flex-shrink-0" style="font-size:1.3rem;">Edit Inventory</h2>
                 <hr>
                 @if (session('success'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
