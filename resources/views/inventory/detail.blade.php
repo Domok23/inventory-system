@@ -62,7 +62,7 @@
                             </tr>
                             <tr>
                                 <th>Remark</th>
-                                <td>{{ $inventory->remark ?? '-' }}</td>
+                                <td>{!! $inventory->remark ?? '-' !!}</td>
                             </tr>
                         </table>
                     </div>

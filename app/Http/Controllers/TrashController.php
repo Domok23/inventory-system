@@ -68,6 +68,11 @@ class TrashController extends Controller
                 if ($item->img && Storage::disk('public')->exists($item->img)) {
                     Storage::disk('public')->delete($item->img);
                 }
+                // Hapus QR code file
+                $qrCodePath = public_path('storage/qrcodes/' . $item->id . '.svg');
+                if (file_exists($qrCodePath)) {
+                    unlink($qrCodePath);
+                }
             } elseif ($model === 'project') {
                 // Hapus project image
                 if ($item->img && Storage::disk('public')->exists($item->img)) {

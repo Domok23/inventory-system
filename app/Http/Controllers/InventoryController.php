@@ -77,7 +77,10 @@ class InventoryController extends Controller
         // Generate QR codes dynamically
         foreach ($inventories as $inventory) {
             $qrCodePath = 'storage/qrcodes/' . $inventory->id . '.svg';
-            QrCode::format('svg')->size(200)->generate(url('/inventory/detail/' . $inventory->id), public_path($qrCodePath));
+            $qrCodeFullPath = public_path($qrCodePath);
+            if (!file_exists($qrCodeFullPath)) {
+                QrCode::format('svg')->size(200)->generate(url('/inventory/detail/' . $inventory->id), $qrCodeFullPath);
+            }
             $inventory->qr_code = asset($qrCodePath); // Simpan URL gambar QR Code
         }
 

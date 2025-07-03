@@ -27636,7 +27636,7 @@ __webpack_require__.r(__webpack_exports__);
 window.Pusher = (pusher_js__WEBPACK_IMPORTED_MODULE_1___default());
 window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_0__["default"]({
   broadcaster: "pusher",
-  key: "86c8af0e6c8d6c971e9d",
+  key: "54ec9493e614e3204705",
   cluster: "ap1",
   forceTLS: true
 });
