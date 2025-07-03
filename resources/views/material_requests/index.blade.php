@@ -33,21 +33,19 @@
                 <!-- Alerts -->
                 @if (session('success'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        {{ session('success') }}
+                        {!! session('success') !!}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
-
                 @if (session('error'))
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        {{ session('error') }}
+                        {!! session('error') !!}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
-
                 @if (session('warning'))
                     <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                        {{ session('warning') }}
+                        {!! session('warning') !!}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
@@ -139,7 +137,7 @@
                     <tbody class="align-middle">
                         @foreach ($requests as $req)
                             <tr id="row-{{ $req->id }}">
-                                <td>
+                                <td class="text-center">
                                     @if ($req->status === 'approved')
                                         <input type="checkbox" class="select-row" id="checkbox-{{ $req->id }}"
                                             value="{{ $req->id }}">
@@ -175,10 +173,11 @@
                                                     Pending</option>
                                                 <option value="approved"
                                                     {{ $req->status === 'approved' ? 'selected' : '' }}>Approved</option>
-                                                <option value="delivered"
-                                                    {{ $req->status === 'delivered' ? 'selected' : '' }}>Delivered</option>
                                                 <option value="canceled"
                                                     {{ $req->status === 'canceled' ? 'selected' : '' }}>Canceled</option>
+                                                <option value="delivered"
+                                                    {{ $req->status === 'delivered' ? 'selected' : '' }} disabled>Delivered
+                                                </option>
                                             </select>
                                         </form>
                                     @else
@@ -191,14 +190,16 @@
                                     <div class="d-flex flex-nowrap gap-1">
                                         @if ($req->status === 'approved' && $req->status !== 'canceled' && auth()->user()->isLogisticAdmin())
                                             <a href="{{ route('goods_out.create_with_id', $req->id) }}"
-                                                class="btn btn-sm btn-success" title="Goods Out"><i
+                                                class="btn btn-sm btn-success" data-bs-toggle="tooltip"
+                                                data-bs-placement="bottom" title="Goods Out"><i
                                                     class="bi bi-box-arrow-right"></i></a>
                                         @endif
                                         @if (
                                             $req->status === 'pending' &&
                                                 (auth()->user()->username === $req->requested_by || auth()->user()->isLogisticAdmin()))
                                             <a href="{{ route('material_requests.edit', [$req->id] + request()->query()) }}"
-                                                class="btn btn-sm btn-warning" title="Edit"><i
+                                                class="btn btn-sm btn-warning" data-bs-toggle="tooltip"
+                                                data-bs-placement="bottom" title="Edit"><i
                                                     class="bi bi-pencil-square"></i></a>
                                         @endif
                                         @if (
@@ -209,7 +210,8 @@
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="button" class="btn btn-sm btn-danger btn-delete"
-                                                    title="Delete"><i class="bi bi-trash3"></i></button>
+                                                    data-bs-toggle="tooltip" data-bs-placement="bottom" title="Delete"><i
+                                                        class="bi bi-trash3"></i></button>
                                             </form>
                                         @endif
                                     </div>
@@ -240,6 +242,12 @@
             max-width: 170px;
             overflow: hidden;
             text-overflow: ellipsis;
+        }
+
+        select.form-select option:disabled {
+            color: #999;
+            cursor: not-allowed;
+            background-color: #f8f9fa;
         }
     </style>
 @endpush

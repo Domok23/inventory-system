@@ -4,7 +4,8 @@
     <div class="container mt-4">
         <div class="card shadow rounded">
             <div class="card-body">
-                <h2 class="mb-3 flex-shrink-0" style="font-size:1.3rem;"><i class="bi bi-calculator"></i> Project Costing Report</h2>
+                <h2 class="mb-3 flex-shrink-0" style="font-size:1.3rem;"><i class="bi bi-calculator"></i> Project Costing
+                    Report</h2>
                 <div class="mb-3">
                     <form id="filter-form" method="GET" action="{{ route('costing.report') }}" class="row g-2">
                         <div class="col-lg-3">
@@ -40,10 +41,10 @@
                                 <td>{{ $project->name }}</td>
                                 <td>{{ ucfirst($project->department) ?? '-' }}</td>
                                 <td>
-                                    <button class="btn btn-primary btn-sm"
-                                        onclick="viewCosting('{{ $project->id }}')" title="View Report"><i class="bi bi-eye"></i></button>
-                                    <a href="{{ route('costing.export', $project->id) }}"
-                                        class="btn btn-success btn-sm" title="Export to Excel"><i class="bi bi-file-earmark-excel"></i></a>
+                                    <button class="btn btn-primary btn-sm" onclick="viewCosting('{{ $project->id }}')"
+                                        title="View Report"><i class="bi bi-eye"></i></button>
+                                    <a href="{{ route('costing.export', $project->id) }}" class="btn btn-success btn-sm"
+                                        title="Export to Excel"><i class="bi bi-file-earmark-excel"></i></a>
                                 </td>
                             </tr>
                         @endforeach
@@ -54,15 +55,15 @@
     </div>
 
     <!-- Modal -->
-    <div class="modal fade" id="costingModal" tab index="-1" aria-labelledby="costingModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+    <div class="modal fade" id="costingModal" tabindex="-1" aria-labelledby="costingModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="costingModalLabel">Project Costing</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <table class="table table-bordered">
+                    <table class="table table-bordered align-middle">
                         <thead>
                             <tr>
                                 <th>Material</th>
@@ -125,20 +126,27 @@
                             currency: {
                                 name: 'N/A'
                             }
-                        }; // Default jika inventory null
+                        };
 
-                        const totalPrice = (inventory.price || 0) * (material.quantity ||
-                            0); // Hitung Price x Quantity
+                        // Gunakan fallback jika ada field kosong/null
+                        const name = inventory.name || 'N/A';
+                        const unit = inventory.unit || 'N/A';
+                        const price = inventory.price ?? 0;
+                        const currencyName = (inventory.currency && inventory.currency.name) ? inventory
+                            .currency.name : 'N/A';
+                        const quantity = material.quantity ?? 0;
+                        const totalPrice = price * quantity;
+                        const totalCost = material.total_cost ?? 0;
 
                         const row = `
-                                        <tr>
-                                            <td>${inventory.name}</td>
-                                            <td>${material.quantity || 0} ${inventory.unit || ''}</td>
-                                            <td>${formatCurrency(inventory.price || 0)} ${inventory.currency.name || 'N/A'}</td>
-                                            <td>${formatCurrency(totalPrice)} ${inventory.currency.name || 'N/A'}</td> <!-- Kolom baru -->
-                                            <td>${formatCurrency(material.total_cost || 0)} IDR</td>
-                                        </tr>
-                                    `;
+                            <tr>
+                                <td>${name}</td>
+                                <td>${quantity} ${unit}</td>
+                                <td>${formatCurrency(price)} ${currencyName}</td>
+                                <td>${formatCurrency(totalPrice)} ${currencyName}</td>
+                                <td>${formatCurrency(totalCost)} IDR</td>
+                            </tr>
+                        `;
                         tableBody.innerHTML += row;
                     });
 

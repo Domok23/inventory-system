@@ -168,7 +168,12 @@ class MaterialRequestController extends Controller
         // Trigger event
         event(new MaterialRequestUpdated($materialRequest, 'created'));
 
-        return redirect()->route('material_requests.index')->with('success', "Material Request Created Successfully");
+        $project = Project::findOrFail($request->project_id);
+
+        return redirect()->route('material_requests.index')->with(
+            'success',
+            "Material Request for <b>{$inventory->name}</b> in project <b>{$project->name}</b> created successfully!"
+        );
     }
 
     public function bulkCreate()
@@ -246,7 +251,16 @@ class MaterialRequestController extends Controller
             ]);
         }
 
-        return redirect()->route('material_requests.index')->with('success', "Bulk material requests submitted successfully!");
+        $infoList = [];
+        foreach ($createdRequests as $req) {
+            $infoList[] = "<b>{$req->inventory->name}</b> in project <b>{$req->project->name}</b>";
+        }
+        $infoString = implode(', ', $infoList);
+
+        return redirect()->route('material_requests.index')->with(
+            'success',
+            "Bulk material requests submitted successfully for: {$infoString}"
+        );
     }
 
     public function edit(Request $request, $id)
@@ -299,6 +313,11 @@ class MaterialRequestController extends Controller
                 'status' => 'required|in:pending,approved,delivered,canceled',
             ]);
 
+            // Ambil data sebelum update
+            $oldStatus = $materialRequest->status;
+            $projectName = $materialRequest->project ? $materialRequest->project->name : '-';
+            $materialName = $materialRequest->inventory ? $materialRequest->inventory->name : '-';
+
             $materialRequest->update([
                 'status' => $request->status,
             ]);
@@ -313,7 +332,14 @@ class MaterialRequestController extends Controller
                 'requested_at' => $request->input('filter_requested_at'),
             ];
             $filters = array_filter($filters, fn($v) => !is_null($v) && $v !== '');
-            return redirect()->route('material_requests.index', $filters)->with('success', "Status updated successfully.");
+
+            // Ambil status akhir
+            $newStatus = $materialRequest->status;
+
+            return redirect()->route('material_requests.index', $filters)->with(
+                'success',
+                "Status for <b>{$materialName}</b> in project <b>{$projectName}</b> updated from <b>" . ucfirst($oldStatus) . "</b> to <b>" . ucfirst($newStatus) . "</b>."
+            );
         }
 
         // Validasi untuk pembaruan lengkap
@@ -356,7 +382,11 @@ class MaterialRequestController extends Controller
         // Trigger event
         event(new MaterialRequestUpdated($materialRequest, 'updated'));
 
-        return redirect()->route('material_requests.index', $filters)->with('success', "Material Request updated successfully.");
+        $project = Project::findOrFail($request->project_id);
+        return redirect()->route('material_requests.index', $filters)->with(
+            'success',
+            "Material Request for <b>{$inventory->name}</b> in project <b>{$project->name}</b> updated successfully."
+        );
     }
 
     public function destroy(Request $request, $id)
@@ -381,6 +411,12 @@ class MaterialRequestController extends Controller
 
         $materialRequest->delete();
 
-        return redirect()->route('material_requests.index', $filters)->with('success', "Material Request deleted successfully.");
+        $inventory = $materialRequest->inventory ?? Inventory::find($materialRequest->inventory_id);
+        $project = $materialRequest->project ?? Project::find($materialRequest->project_id);
+
+        return redirect()->route('material_requests.index', $filters)->with(
+            'success',
+            "Material Request for <b>{$inventory->name}</b> in project <b>{$project->name}</b> deleted successfully."
+        );
     }
 }

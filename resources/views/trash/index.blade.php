@@ -52,7 +52,7 @@
                     <table class="table table-bordered table-sm align-middle" id="table-{{ $var }}">
                         <thead class="table-light align-middle">
                             <tr>
-                                <th><input type="checkbox" class="select-all"></th>
+                                <th></th>
                                 <th>ID</th>
                                 <th>Name/Info</th>
                                 <th>Deleted At</th>
@@ -62,7 +62,7 @@
                         <tbody class="align-middle">
                             @foreach ($$var as $item)
                                 <tr>
-                                    <td>
+                                    <td class="text-center">
                                         <input type="checkbox" class="select-item" name="selected_ids[]"
                                             value="{{ $item->id }}">
                                         <input type="hidden" name="model_map[{{ $item->id }}]"
@@ -153,33 +153,59 @@
                     responsive: true,
                     stateSave: true,
                     order: [],
-                    pageLength: 10
+                    pageLength: 10,
+                    columnDefs: [{
+                            orderable: false,
+                            targets: 0
+                        }
+                    ]
                 });
             @endforeach
 
             // Bulk action scripts
-            let selectedIds = [];
-            $('.select-item').on('change', function() {
-                const id = $(this).val();
-                if ($(this).is(':checked')) {
-                    selectedIds.push(id);
-                } else {
-                    selectedIds = selectedIds.filter(item => item !== id);
-                }
-                $('#bulk-action-form').toggle(selectedIds.length > 0);
-            });
+            function getSelectedIds() {
+                return $('.select-item:checked').map(function() {
+                    return $(this).val();
+                }).get();
+            }
+
+            function getModelMap() {
+                let map = {};
+                $('.select-item:checked').each(function() {
+                    let id = $(this).val();
+                    let model = $(`input[name="model_map[${id}]"]`).val();
+                    map[id] = model;
+                });
+                return map;
+            }
+
+            function appendBulkInputs(form, selectedIds, modelMap) {
+                // Hapus input hidden sebelumnya
+                form.find('input[name="selected_ids[]"], input[name^="model_map"]').remove();
+                // Tambahkan input hidden baru
+                selectedIds.forEach(function(id) {
+                    form.append(`<input type="hidden" name="selected_ids[]" value="${id}">`);
+                    form.append(`<input type="hidden" name="model_map[${id}]" value="${modelMap[id]}">`);
+                });
+            }
 
             $('#bulk-restore-btn').on('click', function() {
+                let selectedIds = getSelectedIds();
+                let modelMap = getModelMap();
                 if (selectedIds.length === 0) return;
                 if (confirm('Restore selected items?')) {
+                    appendBulkInputs($('#bulk-action-form'), selectedIds, modelMap);
                     $('#bulk-action-type').val('restore');
                     $('#bulk-action-form').submit();
                 }
             });
 
             $('#bulk-delete-btn').on('click', function() {
+                let selectedIds = getSelectedIds();
+                let modelMap = getModelMap();
                 if (selectedIds.length === 0) return;
                 if (confirm('Delete permanently?')) {
+                    appendBulkInputs($('#bulk-action-form'), selectedIds, modelMap);
                     $('#bulk-action-type').val('delete');
                     $('#bulk-action-form').submit();
                 }

@@ -126,7 +126,7 @@
                     <tbody class="align-middle">
                         @foreach ($goodsOuts as $goodsOut)
                             <tr>
-                                <td>
+                                <td class="text-center">
                                     @if ($goodsOut->quantity > 0)
                                         @if (auth()->user()->username === $goodsOut->requested_by ||
                                                 in_array(auth()->user()->role, ['super_admin', 'admin_logistic']))
@@ -162,7 +162,8 @@
                                     <div class="d-flex flex-wrap gap-1 align-items-center">
                                         @if (auth()->user()->isLogisticAdmin())
                                             <a href="{{ route('goods_out.edit', $goodsOut->id) }}"
-                                                class="btn btn-sm btn-warning" title="Edit"><i
+                                                class="btn btn-sm btn-warning" data-bs-toggle="tooltip"
+                                                data-bs-placement="bottom" title="Edit"><i
                                                     class="bi bi-pencil-square"></i></a>
                                             @if ($goodsOut->goodsIns->isEmpty())
                                                 <form action="{{ route('goods_out.destroy', $goodsOut->id) }}"
@@ -170,6 +171,7 @@
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="button" class="btn btn-sm btn-danger btn-delete"
+                                                        data-bs-toggle="tooltip" data-bs-placement="bottom"
                                                         title="Delete"><i class="bi bi-trash3"></i></button>
                                                 </form>
                                             @endif
@@ -180,7 +182,8 @@
                                                 $goodsOut->materialRequest->qty > 0 &&
                                                 in_array(auth()->user()->role, ['admin_logistic', 'super_admin']))
                                             <a href="{{ route('goods_out.create_with_id', $goodsOut->material_request_id) }}"
-                                                class="btn btn-sm btn-outline-primary" title="Shortage">
+                                                class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip"
+                                                data-bs-placement="bottom" title="Shortage">
                                                 <i class="bi bi-exclamation-circle"></i>
                                             </a>
                                         @endif
@@ -188,7 +191,8 @@
                                             @if (auth()->user()->username === $goodsOut->requested_by ||
                                                     in_array(auth()->user()->role, ['super_admin', 'admin_logistic']))
                                                 <a href="{{ route('goods_in.create_with_id', ['goods_out_id' => $goodsOut->id]) }}"
-                                                    class="btn btn-sm btn-info" title="Goods In">
+                                                    class="btn btn-sm btn-info" data-bs-toggle="tooltip"
+                                                    data-bs-placement="bottom" title="Goods In">
                                                     <i class="bi bi-box-arrow-in-left"></i>
                                                 </a>
                                             @endif
@@ -395,9 +399,11 @@
                 });
             });
         });
-        $(document).ready(function() {
-            // Inisialisasi Bootstrap Tooltip
-            $('[data-bs-toggle="tooltip"]').tooltip();
+        document.addEventListener("DOMContentLoaded", function() {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.forEach(function(tooltipTriggerEl) {
+                new bootstrap.Tooltip(tooltipTriggerEl);
+            });
         });
     </script>
 @endpush

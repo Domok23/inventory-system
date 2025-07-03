@@ -47,8 +47,18 @@ class TrashController extends Controller
         $id = $request->input('id');
         $modelClass = $this->getModelClass($model);
         if ($modelClass) {
-            $modelClass::onlyTrashed()->findOrFail($id)->restore();
-            return back()->with('success', ucfirst($model) . ' restored!');
+            $item = $modelClass::onlyTrashed()->findOrFail($id);
+            $item->restore();
+
+            $restoredInfo = $item->name
+                ?? $item->username
+                ?? $item->remark
+                ?? (method_exists($item, 'getAttribute') ? $item->getAttribute('id') : $item->id);
+
+            return back()->with(
+                'success',
+                ucfirst($model) . " '{$restoredInfo}' restored!"
+            );
         }
         return back()->with('error', 'Invalid model');
     }
@@ -80,8 +90,24 @@ class TrashController extends Controller
                 }
             }
 
-            $item->forceDelete(); // Hapus permanen dari database
-            return back()->with('success', ucfirst($model) . ' permanently deleted!');
+            $deletedInfo = $item->name
+                ?? $item->username
+                ?? $item->remark
+                ?? (method_exists($item, 'getAttribute') ? $item->getAttribute('id') : $item->id);
+
+            try {
+                $item->forceDelete(); // Hapus permanen dari database
+                return back()->with(
+                    'success',
+                    ucfirst($model) . " '{$deletedInfo}' permanently deleted!"
+                );
+            } catch (\Illuminate\Database\QueryException $e) {
+                // Tangkap error constraint foreign key
+                return back()->with(
+                    'error',
+                    "Cannot delete " . ucfirst($model) . " '{$deletedInfo}' because this data is still used in another transaction."
+                );
+            }
         }
 
         return back()->with('error', 'Invalid model');
@@ -101,6 +127,7 @@ class TrashController extends Controller
             default            => null,
         };
     }
+
     public function bulkAction(Request $request)
     {
         $ids = $request->input('selected_ids', []);
@@ -111,21 +138,49 @@ class TrashController extends Controller
             return back()->with('error', 'No items selected or invalid action.');
         }
 
+        $successInfo = [];
+        $errorInfo = [];
+
         foreach ($ids as $id) {
             $model = $modelMap[$id] ?? null;
             $modelClass = $this->getModelClass($model);
             if ($modelClass) {
                 $item = $modelClass::onlyTrashed()->find($id);
                 if ($item) {
+                    $info = $item->name
+                        ?? $item->username
+                        ?? $item->remark
+                        ?? (method_exists($item, 'getAttribute') ? $item->getAttribute('id') : $item->id);
+
                     if ($action === 'restore') {
                         $item->restore();
+                        $successInfo[] = ucfirst($model) . " '{$info}'";
                     } elseif ($action === 'delete') {
-                        $item->forceDelete();
+                        try {
+                            $item->forceDelete();
+                            $successInfo[] = ucfirst($model) . " '{$info}'";
+                        } catch (\Illuminate\Database\QueryException $e) {
+                            $errorInfo[] = ucfirst($model) . " '{$info}'";
+                        }
                     }
                 }
             }
         }
 
-        return back()->with('success', 'Bulk action completed.');
+        $messages = [];
+        if ($successInfo) {
+            $messages[] = ($action === 'restore'
+                ? 'Restored: '
+                : 'Permanently deleted: ')
+                . implode(', ', $successInfo) . '.';
+        }
+        if ($errorInfo) {
+            $messages[] = 'Cannot delete because still used in another transaction: ' . implode(', ', $errorInfo) . '.';
+        }
+
+        if ($errorInfo) {
+            return back()->with('error', implode(' ', $messages));
+        }
+        return back()->with('success', implode(' ', $messages));
     }
 }

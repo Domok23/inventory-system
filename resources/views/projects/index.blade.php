@@ -113,14 +113,16 @@
                                 <td>
                                     <div class="d-flex flex-wrap gap-1">
                                         <a href="{{ route('projects.edit', $project) }}" class="btn btn-sm btn-warning"
-                                            title="Edit"><i class="bi bi-pencil-square"></i></a>
+                                            data-bs-toggle="tooltip" data-bs-placement="bottom" title="Edit"><i
+                                                class="bi bi-pencil-square"></i></a>
                                         @if (auth()->user()->username === $project->created_by || auth()->user()->role === 'super_admin')
                                             <form action="{{ route('projects.destroy', $project) }}" method="POST"
                                                 class="delete-form">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="button" class="btn btn-sm btn-danger btn-delete"
-                                                    title="Delete"><i class="bi bi-trash3"></i></button>
+                                                    data-bs-toggle="tooltip" data-bs-placement="bottom" title="Delete"><i
+                                                        class="bi bi-trash3"></i></button>
                                             </form>
                                         @endif
                                         <button type="button" class="btn btn-info btn-sm btn-show-image" title="View Image"
@@ -203,6 +205,12 @@
                         text: 'No image available!',
                     });
                 }
+            });
+        });
+        document.addEventListener("DOMContentLoaded", function() {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.forEach(function(tooltipTriggerEl) {
+                new bootstrap.Tooltip(tooltipTriggerEl);
             });
         });
     </script>

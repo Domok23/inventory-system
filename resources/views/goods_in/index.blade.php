@@ -157,7 +157,8 @@
                                         @if (auth()->user()->username === $goodsIn->returned_by ||
                                                 in_array(auth()->user()->role, ['admin_logistic', 'super_admin']))
                                             <a href="{{ route('goods_in.edit', $goodsIn->id) }}"
-                                                class="btn btn-sm btn-warning" title="Edit"><i
+                                                class="btn btn-sm btn-warning" data-bs-toggle="tooltip"
+                                                data-bs-placement="bottom" title="Edit"><i
                                                     class="bi bi-pencil-square"></i></a>
                                         @endif
                                         @if (!$goodsIn->goods_out_id && in_array(auth()->user()->role, ['admin_logistic', 'super_admin']))
@@ -166,7 +167,8 @@
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="button" class="btn btn-sm btn-danger btn-delete"
-                                                    title="Delete"><i class="bi bi-trash3"></i></button>
+                                                    data-bs-toggle="tooltip" data-bs-placement="bottom" title="Delete"><i
+                                                        class="bi bi-trash3"></i></button>
                                             </form>
                                         @endif
                                     </div>
@@ -248,6 +250,12 @@
                 };
                 if (!dateInput.value) dateInput.type = 'text';
             }
+        });
+        document.addEventListener("DOMContentLoaded", function() {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.forEach(function(tooltipTriggerEl) {
+                new bootstrap.Tooltip(tooltipTriggerEl);
+            });
         });
     </script>
 @endpush
