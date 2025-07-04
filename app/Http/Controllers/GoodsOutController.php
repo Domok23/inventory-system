@@ -301,7 +301,10 @@ class GoodsOutController extends Controller
             ]);
 
             // Update status material request
-            $materialRequest->update(['status' => 'delivered']);
+            $materialRequest->update([
+                'status' => 'delivered',
+                'processed_qty' => $materialRequest->qty,
+            ]);
             $updatedRequests[] = $materialRequest->fresh(['inventory', 'project']);
 
             MaterialUsageHelper::sync($inventory->id, $materialRequest->project_id);

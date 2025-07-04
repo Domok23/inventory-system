@@ -1,11 +1,21 @@
 @extends('layouts.app')
-
+@php
+    // Ambil waktu server lalu konversi ke timestamp JS
+    $serverTime = \Carbon\Carbon::now();
+@endphp
 @section('content')
     <div class="container-fluid mt-4">
         <div class="card shadow-sm rounded">
-            <div class="card-body">
+            <div class="card-body position-relative">
+                <div class="position-absolute top-0 end-0 p-3" style="z-index:10;">
+                    <div class="text-dark rounded px-3 py-2 text-end" style="min-width: 160px;">
+                        <div id="realtime-clock" style="font-size:1.1rem; font-weight:600; letter-spacing:1px;">00:00</div>
+                        <div id="realtime-date" style="font-size:0.95rem; opacity:0.8;">Loading date...</div>
+                    </div>
+                </div>
                 <h3 class="card-title">Welcome, {{ ucwords($user->username) }}</h3>
-                <p class="card-text">You are logged in as: <strong>{{ ucwords(str_replace('_', ' ', $user->role)) }}</strong>
+                <p class="card-text">You are logged in as:
+                    <strong>{{ ucwords(str_replace('_', ' ', $user->role)) }}</strong>
                 </p>
                 <div class="row">
                     <div class="col-lg-4">
@@ -152,6 +162,38 @@
                         });
                 });
             });
+        });
+
+        // Ambil waktu server dari PHP (format ISO 8601)
+        const serverTime = new Date("{{ $serverTime->format('Y-m-d\TH:i:sP') }}");
+        let clientTime = new Date();
+        // Hitung selisih waktu client-server (ms)
+        const timeOffset = serverTime.getTime() - clientTime.getTime();
+
+        function updateClock() {
+            // Gunakan waktu client + offset server
+            const now = new Date(Date.now() + timeOffset);
+            // Format waktu: HH:MM (tanpa detik)
+            const pad = n => n.toString().padStart(2, '0');
+            const time = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+            // Format tanggal: Monday, 4 July 2025
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const months = [
+                'January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'
+            ];
+            const day = days[now.getDay()];
+            const date = now.getDate();
+            const month = months[now.getMonth()];
+            const year = now.getFullYear();
+            const fullDate = `${day}, ${date} ${month} ${year}`;
+
+            document.getElementById('realtime-clock').textContent = time;
+            document.getElementById('realtime-date').textContent = fullDate;
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            updateClock();
+            setInterval(updateClock, 10000); // update tiap 10 detik cukup
         });
     </script>
 @endpush

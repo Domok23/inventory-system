@@ -13,6 +13,7 @@ class MaterialRequest extends Model
         'inventory_id',
         'project_id',
         'qty',
+        'processed_qty',
         'requested_by',
         'department',
         'status',
