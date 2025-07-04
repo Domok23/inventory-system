@@ -49,11 +49,11 @@
                         <a href="{{ route('goods_out.index') }}" class="btn btn-primary mb-2">Go to Goods Out</a>
                     @endif
 
-                    @if (in_array($user->role, ['super_admin', 'admin_mascot', 'admin_costume']))
+                    @if (in_array($user->role, ['super_admin', 'admin_mascot', 'admin_costume', 'admin_animatronic', 'general']))
                         <a href="{{ route('projects.index') }}" class="btn btn-warning mb-2">Go to Projects</a>
                     @endif
 
-                    @if (in_array($user->role, ['super_admin', 'admin_mascot', 'admin_costume', 'admin_logistic']))
+                    @if (in_array($user->role, ['super_admin', 'admin_mascot', 'admin_costume', 'admin_logistic', 'admin_animatronic', 'general']))
                         <a href="{{ route('material_requests.index') }}" class="btn btn-danger mb-2">Go to Material
                             Requests</a>
                         <a href="{{ route('goods_in.index') }}" class="btn btn-primary mb-2">Go to Goods In</a>

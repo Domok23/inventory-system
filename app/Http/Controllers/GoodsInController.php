@@ -176,7 +176,7 @@ class GoodsInController extends Controller
 
         $projectName = $goodsOut->project ? $goodsOut->project->name : 'No Project';
 
-        return redirect()->route('goods_in.index')->with('success', "Goods In '{$inventory->name}' for '{$projectName}' added successfully!");
+        return redirect()->route('goods_in.index')->with('success', "Goods In <b>{$inventory->name}</b> for <b>{$projectName}</b> added successfully!");
     }
 
     public function createIndependent()
@@ -222,7 +222,7 @@ class GoodsInController extends Controller
             MaterialUsageHelper::sync($request->inventory_id, $request->project_id);
         }
 
-        return redirect()->route('goods_in.index')->with('success', "Goods In created successfully.");
+        return redirect()->route('goods_in.index')->with('success', "Goods In independent <b>{$inventory->name}</b> created successfully.");
     }
 
     public function bulkGoodsIn(Request $request)
@@ -294,7 +294,7 @@ class GoodsInController extends Controller
         $inventory = Inventory::findOrFail($request->inventory_id);
         $projectName = $request->project_id ? Project::findOrFail($request->project_id)->name : 'No Project';
 
-        return redirect()->route('goods_in.index')->with('success', "Goods In '{$inventory->name}' from '{$projectName}' updated successfully!");
+        return redirect()->route('goods_in.index')->with('success', "Goods In <b>{$inventory->name}</b> from <b>{$projectName}</b> updated successfully!");
     }
 
     public function destroy(GoodsIn $goods_in)
@@ -313,6 +313,6 @@ class GoodsInController extends Controller
         $inventoryName = $goods_in->inventory ? $goods_in->inventory->name : 'Unknown Material';
         $projectName = $goods_in->project ? $goods_in->project->name : 'No Project';
 
-        return redirect()->route('goods_in.index')->with('success', "Goods In '{$inventoryName}' for '{$projectName}' deleted successfully!");
+        return redirect()->route('goods_in.index')->with('success', "Goods In <b>{$inventoryName}</b> for <b>{$projectName}</b> deleted successfully!");
     }
 }

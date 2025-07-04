@@ -164,7 +164,7 @@ class InventoryController extends Controller
             // Validasi nama inventory
             $inventoryName = $row[0] ?? null;
             if (!$inventoryName) {
-                $errors[] = "Row {$index} Error: Inventory name is required.";
+                $errors[] = "Row <b>{$index}</b> Error: Inventory name is required.";
                 continue; // Skip jika nama inventory kosong
             }
 
@@ -191,7 +191,7 @@ class InventoryController extends Controller
             $currencyName = $row[5] ?? '-';
             $currency = Currency::where('name', $currencyName)->first();
             if (!$currency && $currencyName !== '-') {
-                $errors[] = "Row {$index} Error: Invalid currency '{$currencyName}'.";
+                $errors[] = "Row <b>{$index}</b> Error: Invalid currency '{$currencyName}'.";
                 continue; // Skip jika currency tidak valid
             }
 
@@ -209,7 +209,7 @@ class InventoryController extends Controller
             // Cek jika inventory sudah ada
             $existingInventory = Inventory::where('name', $inventory->name)->first();
             if ($existingInventory) {
-                $errors[] = "Row {$index} Error: Duplicate inventory '{$inventory->name}'.";
+                $errors[] = "Row <b>{$index}</b> Error: Duplicate inventory <b>{$inventory->name}</b>.";
                 continue; // Skip jika sudah ada
             }
 
@@ -219,7 +219,7 @@ class InventoryController extends Controller
 
             // Tambahkan warning jika currency atau price kosong
             if (!$inventory->currency_id || !$inventory->price) {
-                $warnings[] = "Price or Currency is empty for '{$inventory->name}'. Please update it as soon as possible, as it will affect the cost calculation!";
+                $warnings[] = "Price or Currency is empty for <b>{$inventory->name}</b>. Please update it as soon as possible, as it will affect the cost calculation!";
             }
         }
 
@@ -238,11 +238,11 @@ class InventoryController extends Controller
         $failedCount = $totalRows - $successCount;
 
         $redirectData = [
-            'success' => "{$successCount} rows imported successfully.",
+            'success' => "<b>{$successCount}</b> rows imported successfully.",
         ];
 
         if ($failedCount > 0) {
-            $redirectData['warning'] = "{$failedCount} rows failed to import.";
+            $redirectData['warning'] = "<b>{$failedCount}</b> rows failed to import.";
         }
 
         return redirect()->route('inventory.index')->with($redirectData);
@@ -298,11 +298,11 @@ class InventoryController extends Controller
         // Buat pesan peringatan jika currency atau price kosong
         $warningMessage = null;
         if (!$inventory->currency_id || !$inventory->price) {
-            $warningMessage = "Price or Currency is empty for '{$inventory->name}'. Please update it as soon as possible, as it will affect the cost calculation!";
+            $warningMessage = "Price or Currency is empty for <b>{$inventory->name}</b>. Please update it as soon as possible, as it will affect the cost calculation!";
         }
 
         return redirect()->route('inventory.index')->with([
-            'success' => "Inventory '{$inventory->name}' added successfully!",
+            'success' => "Inventory <b>{$inventory->name}</b> added successfully!",
             'warning' => $warningMessage,
         ]);
     }
@@ -400,11 +400,11 @@ class InventoryController extends Controller
         // Buat pesan peringatan jika currency atau price kosong
         $warningMessage = null;
         if (!$inventory->currency_id || !$inventory->price) {
-            $warningMessage = "Price or Currency is empty for '{$inventory->name}'. Please update it as soon as possible, as it will affect the cost calculation!";
+            $warningMessage = "Price or Currency is empty for <b>{$inventory->name}</b>. Please update it as soon as possible, as it will affect the cost calculation!";
         }
 
         return redirect()->route('inventory.index')->with([
-            'success' => "Inventory '{$inventory->name}' edited successfully!",
+            'success' => "Inventory <b>{$inventory->name}</b> edited successfully!",
             'warning' => $warningMessage,
         ]);
     }
@@ -423,6 +423,6 @@ class InventoryController extends Controller
         $inventory = Inventory::findOrFail($id);
         $inventory->delete();
 
-        return redirect()->route('inventory.index')->with('success', "Inventory '{$inventory->name}' deleted successfully.");
+        return redirect()->route('inventory.index')->with('success', "Inventory <b>{$inventory->name}</b> deleted successfully.");
     }
 }

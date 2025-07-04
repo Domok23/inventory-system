@@ -194,7 +194,7 @@ class GoodsOutController extends Controller
 
         MaterialUsageHelper::sync($inventory->id, $materialRequest->project_id);
 
-        return redirect()->route('goods_out.index')->with('success', "Goods Out processed successfully.");
+        return redirect()->route('goods_out.index')->with('success', "Goods Out <b>{$inventory->name}</b> to <b>{$materialRequest->project->name}</b> processed successfully.");
     }
 
     public function createIndependent()
@@ -252,7 +252,7 @@ class GoodsOutController extends Controller
             'inventory_id' => $request->inventory_id,
             'project_id' => $request->project_id,
             'requested_by' => $user->username,
-            'department' => $department, // Pastikan department diteruskan
+            'department' => $department,
             'quantity' => $request->quantity,
             'remark' => $request->remark,
         ]);
@@ -262,7 +262,7 @@ class GoodsOutController extends Controller
             MaterialUsageHelper::sync($request->inventory_id, $request->project_id);
         }
 
-        return redirect()->route('goods_out.index')->with('success', "Goods Out created successfully.");
+        return redirect()->route('goods_out.index')->with('success', "Goods Out <b>{$inventory->name}</b> created successfully.");
     }
 
     public function bulkGoodsOut(Request $request)
@@ -429,7 +429,7 @@ class GoodsOutController extends Controller
 
         MaterialUsageHelper::sync($goodsOut->inventory_id, $goodsOut->project_id);
 
-        return redirect()->route('goods_out.index')->with('success', "Goods Out updated successfully.");
+        return redirect()->route('goods_out.index')->with('success', "Goods Out <b>{$inventory->name}</b> to <b>{$materialRequest->project->name}</b> processed successfully.");
     }
 
     public function restore($id)
@@ -458,7 +458,7 @@ class GoodsOutController extends Controller
 
         // Cek apakah ada Goods In yang terkait
         if ($goodsOut->goodsIns()->exists()) {
-            return redirect()->route('goods_out.index')->with('error', "Cannot delete Goods Out with related Goods In.");
+            return redirect()->route('goods_out.index')->with('error', "Cannot delete Goods Out <b>{$goodsOut->id}</b> with related Goods In.");
         }
 
         // Kembalikan stok ke inventory
@@ -471,6 +471,6 @@ class GoodsOutController extends Controller
 
         MaterialUsageHelper::sync($goodsOut->inventory_id, $goodsOut->project_id);
 
-        return redirect()->route('goods_out.index')->with('success', "Goods Out deleted successfully.");
+        return redirect()->route('goods_out.index')->with('success', "Goods Out <b>{$inventory->name}</b> to <b>{$goodsOut->project->name}</b> deleted successfully.");
     }
 }

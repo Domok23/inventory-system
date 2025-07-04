@@ -45,7 +45,7 @@ class UserController extends Controller
             'role' => $validated['role'],
         ]);
 
-        return redirect()->route('users.index')->with('success', 'User created');
+        return redirect()->route('users.index')->with('success', 'User with username ' . $validated['username'] . ' created');
     }
 
     public function show($id)
@@ -77,7 +77,7 @@ class UserController extends Controller
 
         $user->save();
 
-        return redirect()->route('users.index')->with('success', "User updated successfully.");
+        return redirect()->route('users.index')->with('success', "User with username " . $user->username . " updated successfully.");
     }
 
     public function destroy(User $user)
@@ -89,6 +89,6 @@ class UserController extends Controller
 
         $user->delete();
 
-        return redirect()->route('users.index')->with('success', "User deleted successfully.");
+        return redirect()->route('users.index')->with('success', "User with username " . $user->username . " deleted successfully.");
     }
 }

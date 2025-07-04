@@ -338,7 +338,7 @@ class MaterialRequestController extends Controller
 
             return redirect()->route('material_requests.index', $filters)->with(
                 'success',
-                "Status for <b>{$materialName}</b> in project <b>{$projectName}</b> updated from <b>" . ucfirst($oldStatus) . "</b> to <b>" . ucfirst($newStatus) . "</b>."
+                "Material Request status for <b>{$materialName}</b> in project <b>{$projectName}</b> updated from <b>" . ucfirst($oldStatus) . "</b> to <b>" . ucfirst($newStatus) . "</b>."
             );
         }
 

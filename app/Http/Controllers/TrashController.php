@@ -57,7 +57,7 @@ class TrashController extends Controller
 
             return back()->with(
                 'success',
-                ucfirst($model) . " '{$restoredInfo}' restored!"
+                ucfirst($model) . " <b>{$restoredInfo}</b> restored!"
             );
         }
         return back()->with('error', 'Invalid model');
@@ -99,13 +99,13 @@ class TrashController extends Controller
                 $item->forceDelete(); // Hapus permanen dari database
                 return back()->with(
                     'success',
-                    ucfirst($model) . " '{$deletedInfo}' permanently deleted!"
+                    ucfirst($model) . " <b>{$deletedInfo}</b> permanently deleted!"
                 );
             } catch (\Illuminate\Database\QueryException $e) {
                 // Tangkap error constraint foreign key
                 return back()->with(
                     'error',
-                    "Cannot delete " . ucfirst($model) . " '{$deletedInfo}' because this data is still used in another transaction."
+                    "Cannot delete " . ucfirst($model) . " <b>{$deletedInfo}</b> because this data is still used in another transaction."
                 );
             }
         }
@@ -154,13 +154,13 @@ class TrashController extends Controller
 
                     if ($action === 'restore') {
                         $item->restore();
-                        $successInfo[] = ucfirst($model) . " '{$info}'";
+                        $successInfo[] = ucfirst($model) . " <b>{$info}</b> restored!";
                     } elseif ($action === 'delete') {
                         try {
                             $item->forceDelete();
-                            $successInfo[] = ucfirst($model) . " '{$info}'";
+                            $successInfo[] = ucfirst($model) . " <b>{$info}</b>";
                         } catch (\Illuminate\Database\QueryException $e) {
-                            $errorInfo[] = ucfirst($model) . " '{$info}'";
+                            $errorInfo[] = ucfirst($model) . " <b>{$info}</b>";
                         }
                     }
                 }
@@ -172,15 +172,18 @@ class TrashController extends Controller
             $messages[] = ($action === 'restore'
                 ? 'Restored: '
                 : 'Permanently deleted: ')
-                . implode(', ', $successInfo) . '.';
+                . implode(', ', $successInfo) . ' successfully.';
         }
         if ($errorInfo) {
             $messages[] = 'Cannot delete because still used in another transaction: ' . implode(', ', $errorInfo) . '.';
         }
 
+        // Gabungkan pesan dengan <br> agar baris berbeda
+        $finalMessage = implode('<br>', $messages);
+
         if ($errorInfo) {
-            return back()->with('error', implode(' ', $messages));
+            return back()->with('error', $finalMessage);
         }
-        return back()->with('success', implode(' ', $messages));
+        return back()->with('success', $finalMessage);
     }
 }

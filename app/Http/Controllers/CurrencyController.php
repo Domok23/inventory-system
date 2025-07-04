@@ -70,7 +70,7 @@ class CurrencyController extends Controller
                 return back()->with('success', "Currency '{$currency->name}' updated successfully.");
             } else {
                 $currency = Currency::create($request->only('name', 'exchange_rate'));
-                return back()->with('success', "Currency '{$currency->name}' added successfully.");
+                return back()->with('success', "Currency <b>{$currency->name}</b> added successfully.");
             }
         }
     }
@@ -85,7 +85,7 @@ class CurrencyController extends Controller
         $currency = Currency::findOrFail($id);
         $currency->update($request->all());
 
-        return back()->with('success', "Currency '{$currency->name}' updated successfully.");
+        return back()->with('success', "Currency <b>{$currency->name}</b> updated successfully.");
     }
 
     public function destroy($id)
@@ -94,6 +94,6 @@ class CurrencyController extends Controller
         $currencyName = $currency->name;
         $currency->delete();
 
-        return back()->with('success', "Currency '{$currencyName}' deleted successfully.");
+        return back()->with('success', "Currency <b>{$currencyName}</b> deleted successfully.");
     }
 }

@@ -95,7 +95,7 @@ class ProjectController extends Controller
             'created_by' => Auth::user()->username, // Simpan username pembuat
         ]));
 
-        return redirect()->route('projects.index')->with('success', "Project '{$project->name}' added successfully!");
+        return redirect()->route('projects.index')->with('success', "Project <b>{$project->name}</b> added successfully!");
     }
 
     public function storeQuick(Request $request)
@@ -154,7 +154,7 @@ class ProjectController extends Controller
 
         $project->update($validated);
 
-        return redirect()->route('projects.index')->with('success', "Project '{$project->name}' updated successfully!");
+        return redirect()->route('projects.index')->with('success', "Project <b>{$project->name}</b> updated successfully!");
     }
 
     public function destroy(Project $project)
@@ -167,6 +167,6 @@ class ProjectController extends Controller
         $projectName = $project->name;
         $project->delete();
 
-        return redirect()->route('projects.index')->with('success', "Project '{$projectName}' deleted successfully!");
+        return redirect()->route('projects.index')->with('success', "Project <b>{$projectName}</b> deleted successfully!");
     }
 }
