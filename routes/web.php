@@ -7,6 +7,7 @@ use App\Http\Controllers\TrashController;
 use App\Http\Controllers\GoodsInController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\UnitController;
 use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\GoodsOutController;
 use App\Http\Controllers\DashboardController;
@@ -80,6 +81,10 @@ Route::middleware(['auth'])->group(function () {
     // Categories
     Route::post('/categories/quick-add', [CategoryController::class, 'storeQuick'])->name('categories.store');
     Route::get('/categories/json', [CategoryController::class, 'json'])->name('categories.json');
+
+    // Units
+    Route::post('/units', [UnitController::class, 'store'])->name('units.store');
+    Route::get('/units/json', [UnitController::class, 'json'])->name('units.json');
 
     // Currencies
     Route::resource('currencies', CurrencyController::class)->only(['index', 'store', 'update', 'destroy']);

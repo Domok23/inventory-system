@@ -175,6 +175,8 @@ class GoodsOutController extends Controller
 
         $materialRequest->save();
 
+        event(new \App\Events\MaterialRequestUpdated($materialRequest, 'status'));
+
         // Simpan Goods Out
         GoodsOut::create([
             'material_request_id' => $materialRequest->id,
@@ -271,9 +273,10 @@ class GoodsOutController extends Controller
         ]);
 
         $materialRequests = MaterialRequest::whereIn('id', $request->selected_ids)
-            ->where('status', 'approved') // Hanya proses yang sudah disetujui
+            ->where('status', 'approved')
             ->get();
 
+        $updatedRequests = [];
         foreach ($materialRequests as $materialRequest) {
             $inventory = $materialRequest->inventory;
 
@@ -299,8 +302,14 @@ class GoodsOutController extends Controller
 
             // Update status material request
             $materialRequest->update(['status' => 'delivered']);
+            $updatedRequests[] = $materialRequest->fresh(['inventory', 'project']);
 
             MaterialUsageHelper::sync($inventory->id, $materialRequest->project_id);
+        }
+
+        // Broadcast real-time ke semua client
+        if ($updatedRequests) {
+            event(new \App\Events\MaterialRequestUpdated($updatedRequests, 'status'));
         }
 
         return redirect()->route('material_requests.index')->with('success', "Bulk Goods Out processed successfully.");

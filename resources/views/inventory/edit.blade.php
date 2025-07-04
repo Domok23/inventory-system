@@ -58,9 +58,9 @@
                         </div>
                     </div>
 
-                    <div class="row">
+                    <div class="row mb-3">
                         <!-- Quantity -->
-                        <div class="col-lg-6 mb-3">
+                        <div class="col-lg-6">
                             <label for="quantity" class="form-label">Quantity <span class="text-danger">*</span></label>
                             <input type="number" class="form-control" id="quantity" name="quantity"
                                 value="{{ old('quantity', $inventory->quantity) }}" step="any" required>
@@ -70,23 +70,22 @@
                         </div>
 
                         <!-- Unit -->
-                        <div class="col-lg-6 mb-3">
+                        <div class="col-lg-6">
                             <label for="unit" class="form-label">Unit <span class="text-danger">*</span></label>
-                            <select id="unit-select" class="form-select select2" name="unit" required>
-                                <option value="">Select Unit</option>
-                                <option value="__new__">Add New Unit?</option>
-                                @foreach ($units as $unit)
-                                    <option value="{{ $unit->name }}"
-                                        {{ old('unit', $inventory->unit) == $unit->name ? 'selected' : '' }}>
-                                        {{ $unit->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('unit')
-                                <small class="text-danger">{{ $message }}</small>
-                            @enderror
-                            <input type="text" id="unit-input" class="form-control mt-2 d-none" name="new_unit"
-                                placeholder="Enter new unit">
+                            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
+                                data-bs-target="#addUnitModal"
+                                style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .55rem;">
+                                + Add Unit
+                            </button>
+                                <select id="unit-select" class="form-select select2" name="unit" required>
+                                    <option value="">Select Unit</option>
+                                    @foreach ($units as $unit)
+                                        <option value="{{ $unit->name }}"
+                                            {{ old('unit', $inventory->unit ?? '') == $unit->name ? 'selected' : '' }}>
+                                            {{ $unit->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
                         </div>
                     </div>
 
@@ -221,6 +220,28 @@
                         </form>
                     </div>
                 </div>
+                <!-- Add Unit Modal -->
+                <div class="modal fade" id="addUnitModal" tabindex="-1" aria-labelledby="addUnitModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <form id="unitForm" method="POST" action="{{ route('units.store') }}">
+                            @csrf
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="addUnitModalLabel">Add New Unit</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <label>Unit Name <span class="text-danger">*</span></label>
+                                    <input type="text" name="name" class="form-control" required>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-primary">Add Unit</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
                 <!-- Add Currency Modal -->
                 <div class="modal fade" id="currencyModal" tabindex="-1" aria-labelledby="currencyModalLabel"
                     aria-hidden="true">
@@ -318,18 +339,27 @@
                 }, 100);
             });
 
-            // Tampilkan input teks jika "Add New Unit" dipilih
-            const unitInput = document.getElementById('unit-input');
-
-            $('#unit-select').on('change', function() {
-                if (this.value === '__new__') {
-                    unitInput.classList.remove('d-none');
-                    unitInput.setAttribute('required', 'required');
-                } else {
-                    unitInput.classList.add('d-none');
-                    unitInput.removeAttribute('required');
-                    unitInput.value = ''; // Reset nilai input teks
-                }
+            $('#unitForm').on('submit', function(e) {
+                e.preventDefault();
+                let form = $(this);
+                $.ajax({
+                    url: form.attr('action'),
+                    method: 'POST',
+                    data: form.serialize(),
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    success: function(unit) {
+                        // Tambahkan ke select2 dan pilih otomatis
+                        let newOption = new Option(unit.name, unit.name, true, true);
+                        $('#unit-select').append(newOption).val(unit.name).trigger('change');
+                        $('#addUnitModal').modal('hide');
+                        form[0].reset();
+                    },
+                    error: function(xhr) {
+                        alert('Failed to add unit: ' + (xhr.responseJSON?.message || ''));
+                    }
+                });
             });
         });
 
@@ -383,10 +413,8 @@
                         .focus();
                 }, 100);
             });
-        });
 
-        // Quick Add Currency AJAX
-        $(document).ready(function() {
+            // Quick Add Currency AJAX
             $('#currencyForm').on('submit', function(e) {
                 e.preventDefault();
                 let form = $(this);
@@ -397,10 +425,10 @@
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
-                    success: function(currency) {
+                    success: function(res) {
                         // Tambahkan ke select2 dan pilih otomatis
-                        let newOption = new Option(currency.name, currency.id, true, true);
-                        $('#currency_id').append(newOption).val(currency.id).trigger('change');
+                        let newOption = new Option(res.name, res.id, true, true);
+                        $('#currency_id').append(newOption).val(res.id).trigger('change');
                         $('#currencyModal').modal('hide');
                         form[0].reset();
                     },
