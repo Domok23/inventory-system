@@ -293,37 +293,55 @@ function updateDataTable(materialRequest) {
 document.addEventListener("DOMContentLoaded", () => {
     initializeAudio();
 
-    // Terapkan fungsi ke semua elemen <select> dengan kelas .status-select
-    const statusSelectElements = document.querySelectorAll(".status-select");
-    statusSelectElements.forEach((selectElement) => {
-        // Perbarui warna saat halaman dimuat
-        updateSelectColor(selectElement);
-
-        // Perbarui warna saat nilai berubah
-        selectElement.addEventListener("change", () => {
-            updateSelectColor(selectElement);
-        });
-    });
-
-    // Listener real-time
+    // Listener real-time toast & suara: SELALU AKTIF di semua halaman
     window.Echo.channel("material-requests").listen(
         "MaterialRequestUpdated",
         (e) => {
-            if (Array.isArray(e.materialRequest)) {
-                e.materialRequest.forEach((request) => {
-                    updateDataTable(request);
-                    if (e.action !== "status") {
-                        showToast(request, e.action, true);
+            function handleRequest(request) {
+                // Hanya update DataTable jika tabel material request ada
+                const materialRequestTable = document.querySelector(
+                    '#datatable[data-material-request-table="1"]'
+                );
+                if (materialRequestTable) {
+                    if (e.action === "deleted") {
+                        const table = $("#datatable").DataTable();
+                        const row = table.row(`#row-${request.id}`);
+                        if (row.node()) {
+                            row.remove().draw();
+                        }
+                    } else {
+                        updateDataTable(request);
                     }
-                });
-            } else {
-                updateDataTable(e.materialRequest);
-                if (e.action !== "status") {
-                    showToast(e.materialRequest, e.action, true);
                 }
+                // Toast & suara: SELALU tampil di semua halaman
+                if (e.action !== "status") {
+                    showToast(request, e.action, true);
+                }
+            }
+
+            if (Array.isArray(e.materialRequest)) {
+                e.materialRequest.forEach(handleRequest);
+            } else {
+                handleRequest(e.materialRequest);
             }
         }
     );
+
+    // Hanya jalankan select color logic jika tabel material request ada
+    const materialRequestTable = document.querySelector(
+        '#datatable[data-material-request-table="1"]'
+    );
+    if (materialRequestTable) {
+        // Terapkan fungsi ke semua elemen <select> dengan kelas .status-select
+        const statusSelectElements =
+            document.querySelectorAll(".status-select");
+        statusSelectElements.forEach((selectElement) => {
+            updateSelectColor(selectElement);
+            selectElement.addEventListener("change", () => {
+                updateSelectColor(selectElement);
+            });
+        });
+    }
 });
 
 // --- Event DataTable redraw ---

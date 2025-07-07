@@ -110,7 +110,7 @@
                 </div>
 
                 <!-- Table -->
-                <table class="table table-bordered table-hover table-sm" id="datatable">
+                <table class="table table-bordered table-hover table-sm" id="datatable" data-material-request-table="1">
                     <thead class="align-middle text-nowrap">
                         <tr>
                             <th></th>
