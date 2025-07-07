@@ -104,7 +104,7 @@ function showToast(materialRequest, action, playSound = true) {
     // Tampilkan toast dengan opsi autohide: true
     const toast = new bootstrap.Toast(toastElement, {
         autohide: true, // Atur autohide sesuai kebutuhan
-        delay: 10000, // Tampilkan selama 15 detik
+        delay: 15000, // Tampilkan selama 15 detik
     });
     toast.show();
 
@@ -289,6 +289,17 @@ function updateDataTable(materialRequest) {
     }
 }
 
+// Fungsi untuk deteksi apakah sedang di halaman form create, bulk create, atau edit material request
+function isMaterialRequestFormPage() {
+    const path = window.location.pathname;
+    // Cek path create, bulk_create, atau edit (misal: /material_requests/create, /material_requests/bulk_create, /material_requests/123/edit)
+    return (
+        /\/material_requests\/create$/.test(path) ||
+        /\/material_requests\/bulk_create$/.test(path) ||
+        /\/material_requests\/\d+\/edit$/.test(path)
+    );
+}
+
 // --- Event DOMContentLoaded ---
 document.addEventListener("DOMContentLoaded", () => {
     initializeAudio();
@@ -313,8 +324,8 @@ document.addEventListener("DOMContentLoaded", () => {
                         updateDataTable(request);
                     }
                 }
-                // Toast & suara: SELALU tampil di semua halaman
-                if (e.action !== "status") {
+                // Toast & suara: HANYA jika BUKAN di halaman form
+                if (e.action !== "status" && !isMaterialRequestFormPage()) {
                     showToast(request, e.action, true);
                 }
             }
