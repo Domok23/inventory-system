@@ -326,11 +326,14 @@
                             $('#quickAddProjectForm').closest('.modal').modal('hide');
                             form[0].reset();
                         } else {
-                            alert('Failed to add project');
+                            Swal.fire('Error', 'Failed to add project. Please try again.',
+                                'error');
                         }
                     },
-                    error: function() {
-                        alert('Failed to add project');
+                    error: function(xhr) {
+                        let msg = xhr.responseJSON?.message ||
+                            'Failed to add project. Please try again.';
+                        Swal.fire('Error', msg, 'error');
                     }
                 });
             });
@@ -361,11 +364,14 @@
                             $('#quickAddMaterialForm').closest('.modal').modal('hide');
                             form[0].reset();
                         } else {
-                            alert('Failed to add material!');
+                            Swal.fire('Error', 'Failed to add Material. Please try again.',
+                                'error');
                         }
                     },
-                    error: function() {
-                        alert('Failed to add material. Material already exist.');
+                    error: function(xhr) {
+                        let msg = xhr.responseJSON?.message ||
+                            'Failed to add Material. Please try again.';
+                        Swal.fire('Error', msg, 'error');
                     }
                 });
             });

@@ -111,7 +111,7 @@
                             <th>Material</th>
                             <th>Qty (Goods Out)</th>
                             <th>
-                                Remaining Qty
+                                Remaining Qty (Goods In)
                                 <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="top"
                                     title="Remaining Qty column serves as an indicator to monitor the quantity of goods that have not been returned (Goods In) to inventory after the Goods Out process."
                                     style="font-size: 0.8rem;"></i>
@@ -135,11 +135,11 @@
                                         @endif
                                     @endif
                                 </td>
-                                <td>{{ $goodsOut->inventory->name ?? '-' }}</td>
-                                <td>{{ $goodsOut->quantity }} {{ $goodsOut->inventory->unit ?? '-' }}
+                                <td>{{ $goodsOut->inventory->name ?? '(no material)' }}</td>
+                                <td>{{ $goodsOut->quantity }} {{ $goodsOut->inventory->unit ?? '(no unit)' }}
                                 </td>
                                 <td>{{ $goodsOut->remaining_quantity }}
-                                    {{ $goodsOut->inventory->unit ?? '-' }}</td>
+                                    {{ $goodsOut->inventory->unit ?? '(no unit)' }}</td>
                                 <td>
                                     @if ($goodsOut->project)
                                         {{ $goodsOut->project->name }}

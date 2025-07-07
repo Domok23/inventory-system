@@ -77,15 +77,15 @@
                                 style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .55rem;">
                                 + Add Unit
                             </button>
-                                <select id="unit-select" class="form-select select2" name="unit" required>
-                                    <option value="">Select Unit</option>
-                                    @foreach ($units as $unit)
-                                        <option value="{{ $unit->name }}"
-                                            {{ old('unit', $inventory->unit ?? '') == $unit->name ? 'selected' : '' }}>
-                                            {{ $unit->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                            <select id="unit-select" class="form-select select2" name="unit" required>
+                                <option value="">Select Unit</option>
+                                @foreach ($units as $unit)
+                                    <option value="{{ $unit->name }}"
+                                        {{ old('unit', $inventory->unit ?? '') == $unit->name ? 'selected' : '' }}>
+                                        {{ $unit->name }}
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
 
@@ -357,7 +357,13 @@
                         form[0].reset();
                     },
                     error: function(xhr) {
-                        alert('Failed to add unit: ' + (xhr.responseJSON?.message || ''));
+                        let msg = xhr.responseJSON?.message ||
+                            'Failed to add unit. Please try again.';
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: msg
+                        });
                     }
                 });
             });
@@ -395,7 +401,13 @@
                         form[0].reset();
                     },
                     error: function(xhr) {
-                        alert('Failed to add category: ' + xhr.responseJSON.message);
+                        let msg = xhr.responseJSON?.message ||
+                            'Failed to add category. Please try again.';
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: msg
+                        });
                     }
                 });
             });
@@ -433,7 +445,13 @@
                         form[0].reset();
                     },
                     error: function(xhr) {
-                        alert('Failed to add currency: ' + (xhr.responseJSON?.message || ''));
+                        let msg = xhr.responseJSON?.message ||
+                            'Failed to add currency. Please try again.';
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: msg
+                        });
                     }
                 });
             });

@@ -10,10 +10,10 @@
     <tbody>
         @foreach ($usages as $usage)
             <tr>
-                <td>{{ $usage->inventory->name ?? '-' }}</td>
+                <td>{{ $usage->inventory->name ?? '(No Material)' }}</td>
                 <td>{{ $usage->used_quantity }}</td>
-                <td>{{ $usage->inventory->unit ?? '-' }}</td>
-                <td>{{ $usage->project->name ?? '-' }}</td>
+                <td>{{ $usage->inventory->unit ?? '(No Unit)' }}</td>
+                <td>{{ $usage->project->name ?? '(No Project)' }}</td>
             </tr>
         @endforeach
     </tbody>

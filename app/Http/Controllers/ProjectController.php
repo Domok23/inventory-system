@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Validator;
 use App\Models\Project;
 use Illuminate\Http\Request;
-use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ProjectExport;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ProjectController extends Controller
 {
@@ -74,7 +75,7 @@ class ProjectController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:projects,name',
+            'name' => 'required|string|max:255|unique:projects,name,NULL,id,deleted_at,NULL',
             'qty' => 'required|integer|min:1',
             'img' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'start_date' => 'nullable|date',
@@ -100,11 +101,22 @@ class ProjectController extends Controller
 
     public function storeQuick(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255|unique:projects,name',
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255|unique:projects,name,NULL,id,deleted_at,NULL',
             'qty' => 'nullable|numeric|min:0',
             'department' => 'required|string',
         ]);
+
+        if ($validator->fails()) {
+            if ($request->ajax()) {
+                // Kirim error pertama atau semua error
+                return response()->json([
+                    'success' => false,
+                    'message' => $validator->errors()->first() // atau implode(', ', $validator->all())
+                ], 422);
+            }
+            return back()->withErrors($validator)->withInput();
+        }
 
         $project = Project::create([
             'name'       => $request->name,
@@ -113,18 +125,17 @@ class ProjectController extends Controller
             'created_by' => Auth::user()->username,
         ]);
 
-        // Jika request AJAX, kembalikan JSON
         if ($request->ajax()) {
             return response()->json(['success' => true, 'project' => $project]);
         }
 
-        // Jika bukan AJAX, redirect biasa
         return back()->with('success', 'Project added successfully!');
     }
 
     public function json()
     {
-        return Project::select('id', 'name')->get(); // bisa juga pakai paginate/dataTables untuk ribuan data
+        // return Project::select('id', 'name')->get();
+        return response()->json(Project::select('id', 'name')->get()); // bisa juga pakai paginate/dataTables untuk ribuan data
     }
 
     public function edit(Project $project)
@@ -135,7 +146,7 @@ class ProjectController extends Controller
     public function update(Request $request, Project $project)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:projects,name,' . $project->id,
+            'name' => 'required|string|max:255|unique:projects,name,' . $project->id . ',id,deleted_at,NULL',
             'qty' => 'required|integer|min:1',
             'img' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'start_date' => 'nullable|date',

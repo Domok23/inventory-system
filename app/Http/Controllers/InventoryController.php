@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
 use App\Models\Unit;
 use App\Models\User;
 use App\Models\Project;
@@ -10,13 +11,13 @@ use App\Models\Category;
 use App\Models\Currency;
 use App\Models\Inventory;
 use Illuminate\Http\Request;
+use App\Exports\InventoryExport;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Exports\ImportInventoryTemplate;
-use App\Exports\InventoryExport;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Auth;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class InventoryController extends Controller
 {
@@ -256,8 +257,8 @@ class InventoryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255|unique:inventories,name',
-            'quantity' => 'required|numeric|min:0',
+            'name' => 'required|string|max:255|unique:inventories,name,NULL,id,deleted_at,NULL',
+            'quantity' => 'required|numeric|min:0.1',
             'unit' => 'required|string',
             'new_unit' => 'required_if:unit,__new__|nullable|string|max:255',
             'price' => 'nullable|numeric',
@@ -309,18 +310,28 @@ class InventoryController extends Controller
 
     public function storeQuick(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255|unique:inventories,name',
-            'quantity' => 'required|numeric|min:0',
-            'unit' => 'required|string',
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255|unique:inventories,name,NULL,id,deleted_at,NULL',
+            'quantity' => 'required|numeric|min:0.1',
+            'unit' => 'required|string|max:255',
+            'price' => 'nullable|numeric|min:0',
             'remark' => 'nullable|string|max:255',
         ]);
+        if ($validator->fails()) {
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $validator->errors()->first()
+                ], 422);
+            }
+            return back()->withErrors($validator)->withInput();
+        }
 
         $unit = Unit::firstOrCreate(['name' => $request->unit]);
-
+        
         $material = Inventory::create([
             'name'     => $request->name,
-            'quantity' => $request->quantity,
+            'quantity' => $request->quantity, 
             'unit'     => $unit->name,
             'price'    => $request->price ?? 0,
             'remark'   => $request->remark ? $request->remark . ' <span style="color: orange;">(From Quick Add)</span>' : '<span style="color: orange;">(From Quick Add)</span>',
@@ -332,7 +343,9 @@ class InventoryController extends Controller
 
     public function json()
     {
-        return Inventory::select('id', 'name')->get(); // bisa juga pakai paginate/dataTables untuk ribuan data
+        // return Inventory::select('id', 'name')->get();
+        // Mengembalikan data inventory dalam format JSON
+        return response()->json(Inventory::select('id', 'name')->get()); // bisa juga pakai paginate/dataTables untuk ribuan data
     }
 
     public function edit($id)
@@ -347,8 +360,8 @@ class InventoryController extends Controller
     public function update(Request $request, Inventory $inventory)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:inventories,name,' . $inventory->id,
-            'quantity' => 'required|numeric',
+            'name' => 'required|string|max:255|unique:inventories,name,' . $inventory->id . ',id,deleted_at,NULL',
+            'quantity' => 'required|numeric|min:0.1',
             'unit' => 'required|string',
             'new_unit' => 'required_if:unit,__new__|nullable|string|max:255',
             'price' => 'nullable|numeric',

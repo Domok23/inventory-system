@@ -86,10 +86,10 @@
                         @foreach ($usages as $usage)
                             <tr>
                                 <td class="text-center">{{ $loop->iteration }}</td>
-                                <td>{{ $usage->inventory->name ?? '-' }}</td>
-                                <td>{{ $usage->project->name ?? '-' }}</td>
+                                <td>{{ $usage->inventory->name ?? '(No Material)' }}</td>
+                                <td>{{ $usage->project->name ?? '(No Project)' }}</td>
                                 <td style="font-weight: bold;">{{ $usage->used_quantity }}
-                                    {{ $usage->inventory->unit ?? '-' }}</td>
+                                    {{ $usage->inventory->unit ?? '(No Unit)' }}</td>
                                 @if (auth()->user()->role === 'super_admin')
                                     <td>
                                         <div class="d-flex flex-wrap gap-1">

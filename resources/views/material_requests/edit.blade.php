@@ -33,12 +33,13 @@
                             </div>
                             <select name="project_id" class="form-select select2" required>
                                 @foreach ($projects as $proj)
-                                    <option value="{{ $proj->id }}"
+                                    <option value="{{ $proj->id }}" data-department="{{ $proj->department }}"
                                         {{ $proj->id == $request->project_id ? 'selected' : '' }}>
                                         {{ $proj->name }}
                                     </option>
                                 @endforeach
                             </select>
+                            <div id="department" class="form-text d-none">Department</div>
                             @error('project_id')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
@@ -55,11 +56,13 @@
                             <select name="inventory_id" class="form-select select2" required>
                                 @foreach ($inventories as $inv)
                                     <option value="{{ $inv->id }}" data-unit="{{ $inv->unit }}"
+                                        data-stock="{{ $inv->quantity }}"
                                         {{ old('inventory_id', $request->inventory_id) == $inv->id ? 'selected' : '' }}>
                                         {{ $inv->name }}
                                     </option>
                                 @endforeach
                             </select>
+                            <div id="available-qty" class="form-text d-none"></div>
                             @error('inventory_id')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
@@ -127,7 +130,7 @@
                 <div class="modal fade" id="addMaterialModal" tabindex="-1" aria-labelledby="addMaterialModalLabel"
                     aria-hidden="true">
                     <div class="modal-dialog">
-                        <form method="POST" action="{{ route('inventories.store.quick') }}">
+                        <form id="quickAddMaterialForm" method="POST" action="{{ route('inventories.store.quick') }}">
                             @csrf
                             <div class="modal-content">
                                 <div class="modal-header">
@@ -154,7 +157,7 @@
                 <div class="modal fade" id="addProjectModal" tabindex="-1" aria-labelledby="addProjectModalLabel"
                     aria-hidden="true">
                     <div class="modal-dialog">
-                        <form method="POST" action="{{ route('projects.store.quick') }}">
+                        <form id="quickAddProjectForm" method="POST" action="{{ route('projects.store.quick') }}">
                             @csrf
                             <div class="modal-content">
                                 <div class="modal-header">
@@ -225,48 +228,13 @@
                 width: '100%',
                 placeholder: 'Select an option',
                 allowClear: true,
-                theme: 'bootstrap-5'
+                theme: 'bootstrap-5',
             }).on('select2:open', function() {
                 setTimeout(function() {
                     document.querySelector('.select2-container--open .select2-search__field')
                         .focus();
                 }, 100);
             });
-
-            $('#addMaterialModal').on('hidden.bs.modal', function() {
-                refreshMaterialSelect();
-            });
-
-            $('#addProjectModal').on('hidden.bs.modal', function() {
-                refreshProjectSelect();
-            });
-
-            function refreshSelect(selector, url) {
-                $.ajax({
-                    url: url,
-                    type: 'GET',
-                    success: function(data) {
-                        let $select = $(selector);
-                        $select.empty();
-                        data.forEach(function(item) {
-                            $select.append('<option value="' + item.id + '">' + item.name +
-                                '</option>');
-                        });
-                        $select.trigger('change');
-                    },
-                    error: function() {
-                        alert('Failed to load updated data.');
-                    }
-                });
-            }
-
-            function refreshMaterialSelect() {
-                refreshSelect('#inventory_id', "{{ route('inventories.json') }}");
-            }
-
-            function refreshProjectSelect() {
-                refreshSelect('#project_id', "{{ route('projects.json') }}");
-            }
 
             // Update unit label dynamically when material is selected
             $('select[name="inventory_id"]').on('change', function() {
@@ -276,5 +244,115 @@
             // Trigger saat halaman load jika sudah ada value terpilih
             $('select[name="inventory_id"]').trigger('change');
         });
+
+        // Form submit handler
+        $(document).ready(function() {
+            // Quick Add Project
+            $('#quickAddProjectForm').on('submit', function(e) {
+                e.preventDefault();
+                let form = $(this);
+                $.ajax({
+                    url: form.attr('action'),
+                    method: 'POST',
+                    data: form.serialize(),
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    success: function(res) {
+                        if (res.success && res.project) {
+                            let newOption = new Option(res.project.name, res.project.id, true,
+                                true);
+                            $('select[name="project_id"]').append(newOption).val(res.project.id)
+                                .trigger('change');
+                            $('#addProjectModal').modal('hide');
+                            form[0].reset();
+                        } else {
+                            Swal.fire('Error', 'Failed to add project. Please try again.',
+                                'error');
+                        }
+                    },
+                    error: function(xhr) {
+                        let msg = xhr.responseJSON?.message ||
+                            'Failed to add project. Please try again.';
+                        Swal.fire('Error', msg, 'error');
+                    }
+                });
+            });
+
+            // Quick Add Material
+            $('#quickAddMaterialForm').on('submit', function(e) {
+                e.preventDefault();
+                let form = $(this);
+                $.ajax({
+                    url: form.attr('action'),
+                    method: 'POST',
+                    data: form.serialize(),
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    success: function(res) {
+                        if (res.success && res.material) {
+                            let newOption = new Option(res.material.name, res.material.id, true,
+                                true);
+                            $('select[name="inventory_id"]').append(newOption).val(res.material
+                                .id).trigger('change');
+                            $('#addMaterialModal').modal('hide');
+                            form[0].reset();
+                        } else {
+                            Swal.fire('Error', 'Failed to add material. Please try again.',
+                                'error');
+                        }
+                    },
+                    error: function(xhr) {
+                        let msg = xhr.responseJSON?.message ||
+                            'Failed to add material. Please try again.';
+                        Swal.fire('Error', msg, 'error');
+                    }
+                });
+            });
+        });
+
+        // Update available quantity and unit label when inventory is selected
+        $('select[name="inventory_id"]').on('change', function() {
+            const selected = $(this).find(':selected');
+            const selectedUnit = selected.data('unit');
+            const selectedStock = selected.data('stock');
+            $('.unit-label').text(selectedUnit || 'unit');
+
+            const $availableQty = $('#available-qty');
+            $availableQty.removeClass('d-none text-danger text-warning');
+
+            if (selected.val() && selectedStock !== undefined) {
+                let colorClass = '';
+                if (selectedStock == 0) {
+                    colorClass = 'text-danger';
+                } else if (selectedStock < 3) {
+                    colorClass = 'text-warning';
+                }
+                $availableQty
+                    .text(`Available Qty: ${selectedStock} ${selectedUnit || ''}`)
+                    .addClass(colorClass);
+            } else {
+                $availableQty.addClass('d-none').text('');
+            }
+        });
+        // Trigger saat halaman load jika sudah ada value terpilih
+        $('select[name="inventory_id"]').trigger('change');
+
+        // Update department text when project is selected
+        $('select[name="project_id"]').on('change', function() {
+            const selected = $(this).find(':selected');
+            const department = selected.data('department');
+            const $departmentDiv = $('#department');
+            $departmentDiv.removeClass('d-none text-danger text-warning');
+
+            if (selected.val() && department) {
+                $departmentDiv.text(`Department: ${department.charAt(0).toUpperCase() + department.slice(1)}`);
+            } else {
+                $departmentDiv.addClass('d-none').text('Department');
+            }
+        });
+        // Trigger saat halaman load jika sudah ada value terpilih
+        $('select[name="project_id"]').trigger('change');
     </script>
 @endpush

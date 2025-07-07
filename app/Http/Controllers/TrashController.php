@@ -48,6 +48,16 @@ class TrashController extends Controller
         $modelClass = $this->getModelClass($model);
         if ($modelClass) {
             $item = $modelClass::onlyTrashed()->findOrFail($id);
+
+            // Cek duplikasi nama sebelum restore
+            if (
+                ($model === 'project' && Project::where('name', $item->name)->whereNull('deleted_at')->exists()) ||
+                ($model === 'inventory' && Inventory::where('name', $item->name)->whereNull('deleted_at')->exists()) ||
+                ($model === 'currency' && Currency::where('name', $item->name)->whereNull('deleted_at')->exists())
+            ) {
+                return back()->with('error', ucfirst($model) . " <b>{$item->name}</b> cannot be restored because another active $model with the same name exists.");
+            }
+
             $item->restore();
 
             $restoredInfo = $item->name
@@ -153,6 +163,15 @@ class TrashController extends Controller
                         ?? (method_exists($item, 'getAttribute') ? $item->getAttribute('id') : $item->id);
 
                     if ($action === 'restore') {
+                        // Tambahkan pengecekan duplikasi nama
+                        if (
+                            ($model === 'project' && Project::where('name', $item->name)->whereNull('deleted_at')->exists()) ||
+                            ($model === 'inventory' && Inventory::where('name', $item->name)->whereNull('deleted_at')->exists()) ||
+                            ($model === 'currency' && Currency::where('name', $item->name)->whereNull('deleted_at')->exists())
+                        ) {
+                            $errorInfo[] = ucfirst($model) . " <b>{$info}</b> cannot be restored because another active $model with the same name exists.";
+                            continue;
+                        }
                         $item->restore();
                         $successInfo[] = ucfirst($model) . " <b>{$info}</b> restored!";
                     } elseif ($action === 'delete') {

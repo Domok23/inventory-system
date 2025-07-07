@@ -139,13 +139,6 @@ class MaterialRequestController extends Controller
             'qty' => 'required|numeric|min:0.01',
         ]);
 
-        $inventory = Inventory::findOrFail($request->inventory_id);
-
-        // Validasi: Pastikan qty tidak melebihi quantity inventory
-        if ($request->qty > $inventory->quantity) {
-            return back()->withInput()->withErrors(['qty' => 'Requested quantity cannot exceed available inventory quantity.']);
-        }
-
         $user = Auth::user();
         $department = match ($user->role) {
             'admin_mascot' => 'mascot',
@@ -156,24 +149,45 @@ class MaterialRequestController extends Controller
             default => 'general',
         };
 
-        $materialRequest = MaterialRequest::create([
-            'inventory_id' => $request->inventory_id,
-            'project_id' => $request->project_id,
-            'qty' => $request->qty,
-            'requested_by' => $user->username,
-            'department' => $department,
-            'remark' => $request->remark,
-        ]);
+        DB::beginTransaction();
+        try {
+            // Lock inventory row
+            $inventory = Inventory::where('id', $request->inventory_id)->lockForUpdate()->first();
 
-        // Trigger event
-        event(new MaterialRequestUpdated($materialRequest, 'created'));
+            // Validasi stok
+            if ($request->qty > $inventory->quantity) {
+                DB::rollBack();
+                return back()->withInput()->withErrors(['qty' => 'Requested quantity cannot exceed available inventory quantity.']);
+            }
 
-        $project = Project::findOrFail($request->project_id);
+            $materialRequest = MaterialRequest::create([
+                'inventory_id' => $request->inventory_id,
+                'project_id' => $request->project_id,
+                'qty' => $request->qty,
+                'requested_by' => $user->username,
+                'department' => $department,
+                'remark' => $request->remark,
+            ]);
 
-        return redirect()->route('material_requests.index')->with(
-            'success',
-            "Material Request for <b>{$inventory->name}</b> in project <b>{$project->name}</b> created successfully!"
-        );
+            // (Opsional) Kurangi stok jika memang ingin langsung mengurangi
+            // $inventory->quantity -= $request->qty;
+            // $inventory->save();
+
+            DB::commit();
+
+            // Trigger event
+            event(new MaterialRequestUpdated($materialRequest, 'created'));
+
+            $project = Project::findOrFail($request->project_id);
+
+            return redirect()->route('material_requests.index')->with(
+                'success',
+                "Material Request for <b>{$inventory->name}</b> in project <b>{$project->name}</b> created successfully!"
+            );
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withInput()->withErrors(['qty' => 'Failed to create request: ' . $e->getMessage()]);
+        }
     }
 
     public function bulkCreate()
@@ -207,9 +221,10 @@ class MaterialRequestController extends Controller
         DB::beginTransaction();
         try {
             foreach ($request->requests as $index => $req) {
-                $inventory = Inventory::findOrFail($req['inventory_id']);
+                // Lock inventory row
+                $inventory = Inventory::where('id', $req['inventory_id'])->lockForUpdate()->first();
 
-                // Validasi: Pastikan qty tidak melebihi stok yang tersedia
+                // Validasi stok
                 if ($req['qty'] > $inventory->quantity) {
                     $errors["requests.$index.qty"] = "Quantity exceeds stock for '{$inventory->name}'.";
                 } else {
@@ -223,7 +238,6 @@ class MaterialRequestController extends Controller
                         'remark' => $req['remark'] ?? null,
                     ]);
                     $createdRequests[] = $materialRequest;
-                    // event(new MaterialRequestUpdated($materialRequest, 'created')); // HAPUS dari sini!
                 }
             }
 
@@ -351,13 +365,6 @@ class MaterialRequestController extends Controller
             'remark' => 'nullable|string',
         ]);
 
-        $inventory = Inventory::findOrFail($request->inventory_id);
-
-        // Validasi: Pastikan qty tidak melebihi stok yang tersedia
-        if ($request->qty > $inventory->quantity) {
-            return back()->withInput()->withErrors(['qty' => 'Requested quantity cannot exceed available inventory quantity.']);
-        }
-
         $filters = [
             'project' => $request->input('filter_project'),
             'material' => $request->input('filter_material'),
@@ -371,22 +378,39 @@ class MaterialRequestController extends Controller
             return redirect()->route('material_requests.index', $filters)->with('error', "Canceled requests cannot be updated.");
         }
 
-        $materialRequest->update([
-            'inventory_id' => $request->inventory_id,
-            'project_id' => $request->project_id,
-            'qty' => $request->qty,
-            'status' => $request->status,
-            'remark' => $request->remark,
-        ]);
+        DB::beginTransaction();
+        try {
+            // Lock inventory row
+            $inventory = Inventory::where('id', $request->inventory_id)->lockForUpdate()->first();
 
-        // Trigger event
-        event(new MaterialRequestUpdated($materialRequest, 'updated'));
+            // Validasi stok
+            if ($request->qty > $inventory->quantity) {
+                DB::rollBack();
+                return back()->withInput()->withErrors(['qty' => 'Requested quantity cannot exceed available inventory quantity.']);
+            }
 
-        $project = Project::findOrFail($request->project_id);
-        return redirect()->route('material_requests.index', $filters)->with(
-            'success',
-            "Material Request for <b>{$inventory->name}</b> in project <b>{$project->name}</b> updated successfully."
-        );
+            $materialRequest->update([
+                'inventory_id' => $request->inventory_id,
+                'project_id' => $request->project_id,
+                'qty' => $request->qty,
+                'status' => $request->status,
+                'remark' => $request->remark,
+            ]);
+
+            DB::commit();
+
+            // Trigger event
+            event(new MaterialRequestUpdated($materialRequest, 'updated'));
+
+            $project = Project::findOrFail($request->project_id);
+            return redirect()->route('material_requests.index', $filters)->with(
+                'success',
+                "Material Request for <b>{$inventory->name}</b> in project <b>{$project->name}</b> updated successfully."
+            );
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withInput()->withErrors(['qty' => 'Failed to update request: ' . $e->getMessage()]);
+        }
     }
 
     public function destroy(Request $request, $id)

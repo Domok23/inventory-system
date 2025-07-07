@@ -143,11 +143,11 @@
                                             value="{{ $req->id }}">
                                     @endif
                                 </td>
-                                <td>{{ $req->project->name ?? '-' }}</td>
-                                <td>{{ $req->inventory->name ?? '-' }}</td>
-                                <td>{{ $req->qty }} {{ $req->inventory->unit ?? '-' }}</td>
-                                <td>{{ $req->remaining_qty }} {{ $req->inventory->unit ?? '-' }}</td>
-                                <td>{{ $req->processed_qty }} {{ $req->inventory->unit ?? '-' }}</td>
+                                <td>{{ $req->project->name ?? '(No Project)' }}</td>
+                                <td>{{ $req->inventory->name ?? '(No Material)' }}</td>
+                                <td>{{ $req->qty }} {{ $req->inventory->unit ?? '(No Unit)' }}</td>
+                                <td>{{ $req->remaining_qty }} {{ $req->inventory->unit ?? '(No Unit)' }}</td>
+                                <td>{{ $req->processed_qty }} {{ $req->inventory->unit ?? '(No Unit)' }}</td>
                                 <td>{{ ucfirst($req->requested_by) }}
                                     ({{ ucfirst($req->department) }})
                                 </td>

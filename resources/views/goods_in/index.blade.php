@@ -120,7 +120,7 @@
                                     @elseif($goodsIn->inventory)
                                         {{ $goodsIn->inventory->name }}
                                     @else
-                                        <span class="text-danger">-</span>
+                                        <span class="text-danger">(no material)</span>
                                     @endif
                                 </td>
                                 <td>

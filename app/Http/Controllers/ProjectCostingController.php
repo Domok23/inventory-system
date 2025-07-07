@@ -130,7 +130,7 @@ class ProjectCostingController extends Controller
         });
 
         // Ekspor ke Excel
-        return Excel::download(new ProjectCostingExport($materials, $project->name), 'project_costing_' . $project->name . '.xlsx');
+        return Excel::download(new ProjectCostingExport($materials, $project->name), 'project_costing_' . $project->name . '_' . now()->format('Y-m-d') . '.xlsx');
     }
 }
 

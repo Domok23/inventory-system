@@ -152,6 +152,34 @@
             }
         }
         document.addEventListener('DOMContentLoaded', function() {
+            // Validasi tanggal di frontend
+            const startDateInput = document.getElementById('start_date');
+            const deadlineInput = document.getElementById('deadline');
+            const form = startDateInput.closest('form');
+
+            function validateDates(e) {
+                const startDate = startDateInput.value;
+                const deadline = deadlineInput.value;
+                // Hanya validasi jika kedua field terisi
+                if (startDate && deadline && startDate > deadline) {
+                    e.preventDefault();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid Date',
+                        text: 'Start Date cannot be later than Deadline.',
+                    }).then(() => {
+                        startDateInput.focus();
+                    });
+                    return false;
+                }
+                return true;
+            }
+
+            if (form) {
+                form.addEventListener('submit', validateDates);
+            }
+
+            // Inisialisasi Fancybox untuk gambar
             Fancybox.bind("[data-fancybox='gallery']", {
                 Toolbar: {
                     display: [

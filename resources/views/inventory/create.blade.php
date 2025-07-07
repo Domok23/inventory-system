@@ -316,7 +316,13 @@
                         form[0].reset();
                     },
                     error: function(xhr) {
-                        alert('Failed to add unit: ' + (xhr.responseJSON?.message || ''));
+                        let msg = xhr.responseJSON?.message ||
+                            'Failed to add unit. Please try again.';
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: msg
+                        });
                     }
                 });
             });
@@ -354,7 +360,13 @@
                         form[0].reset();
                     },
                     error: function(xhr) {
-                        alert('Failed to add category: ' + xhr.responseJSON.message);
+                        let msg = xhr.responseJSON?.message ||
+                            'Failed to add category. Please try again.';
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: msg
+                        });
                     }
                 });
             });
@@ -392,7 +404,13 @@
                         form[0].reset();
                     },
                     error: function(xhr) {
-                        alert('Failed to add currency: ' + (xhr.responseJSON?.message || ''));
+                        let msg = xhr.responseJSON?.message ||
+                            'Failed to add currency. Please try again.';
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: msg
+                        });
                     }
                 });
             });

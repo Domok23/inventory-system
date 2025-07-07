@@ -18,16 +18,16 @@
     <tbody>
         @foreach ($inventories as $inventory)
             <tr>
-                <td>{{ $inventory->name }}</td>
+                <td>{{ $inventory->name ?? '-' }}</td>
                 <td>{{ $inventory->category ? $inventory->category->name : '-' }}</td>
-                <td>{{ $inventory->quantity }}</td>
-                <td>{{ $inventory->unit }}</td>
+                <td>{{ $inventory->quantity ?? 0 }}</td>
+                <td>{{ $inventory->unit ?? '-' }}</td>
                 @if ($showCurrencyAndPrice)
                     <td>{{ number_format($inventory->price ?? 0, 2, ',', '.') }}</td>
                     <td>{{ $inventory->currency ? $inventory->currency->name : '' }}</td>
                 @endif
-                <td>{{ $inventory->supplier }}</td>
-                <td>{{ $inventory->location }}</td>
+                <td>{{ $inventory->supplier ?? '-' }}</td>
+                <td>{{ $inventory->location ?? '-' }}</td>
                 <td>{{ $inventory->remark ?? '-' }}</td>
             </tr>
         @endforeach
