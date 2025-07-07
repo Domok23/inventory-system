@@ -50,8 +50,8 @@
             }
 
             /* body {
-                    font-family: "Helvetica Neue", Inter, Nunito, Roboto, Poppins, Arial, sans-serif;
-            } */
+                        font-family: "Helvetica Neue", Inter, Nunito, Roboto, Poppins, Arial, sans-serif;
+                } */
 
             #app {
                 min-height: 100vh;
@@ -451,8 +451,16 @@
 
     <!-- Scripts -->
 
-    <!-- jQuery (required by DataTables & SweetAlert) -->
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+
+    <!-- Setup CSRF Token for AJAX -->
+    <script>
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+    </script>
 
     <!-- Bootstrap JS Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>

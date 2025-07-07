@@ -6,15 +6,25 @@
  * CSRF token as a header based on the value of the "XSRF" token cookie.
  */
 
-// import axios from 'axios';
-// window.axios = axios;
+import axios from "axios";
+window.axios = axios;
 
-// // Set default headers untuk Axios
-// window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+// Set default headers untuk Axios
+window.axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
+
+// Setup CSRF token for Axios
+let token = document.head.querySelector('meta[name="csrf-token"]');
+if (token) {
+    window.axios.defaults.headers.common["X-CSRF-TOKEN"] = token.content;
+} else {
+    console.error(
+        "CSRF token not found: https://laravel.com/docs/csrf#csrf-x-csrf-token"
+    );
+}
 
 // Laravel Echo dan Pusher konfigurasi
-import Echo from 'laravel-echo';
-import Pusher from 'pusher-js';
+import Echo from "laravel-echo";
+import Pusher from "pusher-js";
 
 window.Pusher = Pusher;
 
