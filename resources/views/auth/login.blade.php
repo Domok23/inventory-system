@@ -16,14 +16,16 @@
                             <div class="row mb-3">
                                 <label for="username"
                                     class="col-lg-4 col-form-label text-lg-end">{{ __('Username') }}</label>
-
                                 <div class="col-lg-6">
                                     <input id="username" type="text"
                                         class="form-control @error('username') is-invalid @enderror" name="username"
                                         value="{{ old('username') }}" required autocomplete="username" autofocus>
                                     @error('username')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
+                                        <span class="invalid-feedback d-block" role="alert">
+                                            <strong>
+                                                <i class="fas fa-user-times text-danger"></i>
+                                                {{ $message }}
+                                            </strong>
                                         </span>
                                     @enderror
                                 </div>
@@ -42,8 +44,11 @@
                                         </span>
                                     </div>
                                     @error('password')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
+                                        <span class="invalid-feedback d-block" role="alert">
+                                            <strong>
+                                                <i class="fas fa-key text-warning"></i>
+                                                {{ $message }}
+                                            </strong>
                                         </span>
                                     @enderror
                                 </div>
@@ -115,6 +120,39 @@
         .btn-link-gradient:focus {
             opacity: 0.8;
             text-decoration: underline;
+        }
+
+        .invalid-feedback i {
+            margin-right: 6px;
+            font-size: 1.1em;
+            vertical-align: middle;
+        }
+
+        .invalid-feedback.d-block {
+            display: block !important;
+            animation: shake 0.3s;
+        }
+
+        @keyframes shake {
+            0% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            50% {
+                transform: translateX(5px);
+            }
+
+            75% {
+                transform: translateX(-5px);
+            }
+
+            100% {
+                transform: translateX(0);
+            }
         }
     </style>
 @endpush

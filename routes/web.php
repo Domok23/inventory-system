@@ -1,22 +1,23 @@
 <?php
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
+use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\TrashController;
 use App\Http\Controllers\GoodsInController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\UnitController;
 use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\GoodsOutController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\MaterialUsageController;
 use App\Http\Controllers\ProjectCostingController;
 use App\Http\Controllers\MaterialRequestController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Artisan;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,6 +35,8 @@ Auth::routes();
 Route::get('/', function () {
     return redirect('/login');
 });
+
+Route::post('login', [LoginController::class, 'login'])->name('login');
 
 Route::get('/register', function () {
     return redirect('/login');

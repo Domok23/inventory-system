@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller
 {
@@ -49,5 +52,40 @@ class LoginController extends Controller
             $this->credentials($request),
             $request->filled('remember')
         );
+    }
+
+    public function login(Request $request)
+    {
+        $request->validate([
+            'username' => 'required|string',
+            'password' => 'required|string',
+        ]);
+
+        $user = User::where('username', $request->username)->first();
+
+        $usernameValid = $user !== null;
+        $passwordValid = $user && Hash::check($request->password, $user->password);
+
+        if ($usernameValid && $passwordValid) {
+            Auth::login($user, $request->filled('remember'));
+            return redirect()->intended($this->redirectTo);
+        }
+
+        // Siapkan pesan error spesifik
+        $errors = [];
+        if (!$usernameValid) {
+            $errors['username'] = 'Username not found.';
+        }
+        if ($usernameValid && !$passwordValid) {
+            $errors['password'] = 'Password is incorrect.';
+        }
+        if (!$usernameValid && !$passwordValid) {
+            $errors['username'] = 'Username not found.';
+            $errors['password'] = 'Password is incorrect.';
+        }
+
+        return back()
+            ->withErrors($errors)
+            ->withInput($request->only('username', 'remember'));
     }
 }
