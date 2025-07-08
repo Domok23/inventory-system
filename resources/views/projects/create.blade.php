@@ -52,7 +52,8 @@
                             <select name="department" id="department" class="form-select" required>
                                 <option value="">Select Department</option>
                                 <option value="mascot"
-                                    {{ old('department', $project->department ?? '') == 'mascot' ? 'selected' : '' }}>Mascot
+                                    {{ old('department', $project->department ?? '') == 'mascot' ? 'selected' : '' }}>
+                                    Mascot
                                 </option>
                                 <option value="costume"
                                     {{ old('department', $project->department ?? '') == 'costume' ? 'selected' : '' }}>
@@ -130,25 +131,40 @@
             const input = event.target;
             const preview = document.getElementById('img-preview');
             const previewLink = document.getElementById('img-preview-link');
+            const maxSize = 2 * 1024 * 1024; // 2 MB
 
             if (input.files && input.files[0]) {
+                // Validasi ukuran file
+                if (input.files[0].size > maxSize) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'File too large',
+                        text: 'Maximum file size is 2 MB.',
+                    });
+                    input.value = '';
+                    if (preview) preview.src = '';
+                    if (previewLink) previewLink.href = '#';
+                    return;
+                }
+
                 const reader = new FileReader();
-
                 reader.onload = function(e) {
-                    preview.src = e.target.result; // Set src untuk gambar preview
-                    previewLink.href = e.target.result; // Set href untuk Fancybox
-                    preview.style.display = 'block';
-                    previewLink.style.display = 'block';
+                    if (preview) preview.src = e.target.result;
+                    if (previewLink) {
+                        previewLink.href = e.target.result;
+                        preview.style.display = 'block';
+                        previewLink.style.display = 'block';
+                    }
                 };
-
                 reader.readAsDataURL(input.files[0]);
             } else {
-                preview.src = '';
-                previewLink.href = '#';
-                preview.style.display = 'none';
-                previewLink.style.display = 'none';
+                if (preview) preview.src = '';
+                if (previewLink) previewLink.href = '#';
+                if (preview) preview.style.display = 'none';
+                if (previewLink) previewLink.style.display = 'none';
             }
         }
+
         document.addEventListener('DOMContentLoaded', function() {
             // Validasi tanggal di frontend
             const startDateInput = document.getElementById('start_date');

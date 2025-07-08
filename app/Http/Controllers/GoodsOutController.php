@@ -12,6 +12,7 @@ use App\Helpers\MaterialUsageHelper;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\GoodsOutExport;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class GoodsOutController extends Controller
 {
@@ -151,50 +152,60 @@ class GoodsOutController extends Controller
             'remark' => 'nullable|string',
         ]);
 
-        $materialRequest = MaterialRequest::findOrFail($request->material_request_id);
-        $inventory = $materialRequest->inventory;
+        DB::beginTransaction();
+        try {
+            // Lock inventory row
+            $materialRequest = MaterialRequest::where('id', $request->material_request_id)->lockForUpdate()->first();
+            $inventory = Inventory::where('id', $materialRequest->inventory_id)->lockForUpdate()->first();
 
-        // Validasi quantity
-        $remainingQty = $materialRequest->qty - $materialRequest->processed_qty;
-        if ($request->quantity > $remainingQty) {
-            return back()->withInput()->with('error', 'Quantity cannot exceed the remaining requested quantity.');
+            // Validasi quantity
+            $remainingQty = $materialRequest->qty - $materialRequest->processed_qty;
+            if ($request->quantity > $remainingQty) {
+                DB::rollBack();
+                return back()->withInput()->with('error', 'Quantity cannot exceed the remaining requested quantity.');
+            }
+
+            // Validasi tambahan: Pastikan stok inventory tidak menjadi negatif
+            if ($request->quantity > $inventory->quantity) {
+                DB::rollBack();
+                return back()->withInput()->with('error', 'Quantity cannot exceed the available inventory.');
+            }
+
+            // Tambahkan ke processed_qty
+            $materialRequest->processed_qty += $request->quantity;
+
+            // Update status jika sudah selesai
+            if ($materialRequest->processed_qty >= $materialRequest->qty) {
+                $materialRequest->status = 'delivered';
+            }
+
+            $materialRequest->save();
+
+            event(new \App\Events\MaterialRequestUpdated($materialRequest, 'status'));
+
+            // Simpan Goods Out
+            GoodsOut::create([
+                'material_request_id' => $materialRequest->id,
+                'inventory_id' => $inventory->id,
+                'project_id' => $materialRequest->project_id,
+                'requested_by' => $materialRequest->requested_by,
+                'department' => $materialRequest->department,
+                'quantity' => $request->quantity,
+                'remark' => $request->remark,
+            ]);
+
+            // Kurangi stok inventory
+            $inventory->quantity -= $request->quantity;
+            $inventory->save();
+
+            MaterialUsageHelper::sync($inventory->id, $materialRequest->project_id);
+
+            DB::commit();
+            return redirect()->route('goods_out.index')->with('success', "Goods Out <b>{$inventory->name}</b> to <b>{$materialRequest->project->name}</b> processed successfully.");
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withInput()->with('error', 'Failed to process Goods Out: ' . $e->getMessage());
         }
-
-        // Validasi tambahan: Pastikan stok inventory tidak menjadi negatif
-        if ($request->quantity > $inventory->quantity) {
-            return back()->withInput()->with('error', 'Quantity cannot exceed the available inventory.');
-        }
-
-        // Tambahkan ke processed_qty
-        $materialRequest->processed_qty += $request->quantity;
-
-        // Update status jika sudah selesai
-        if ($materialRequest->processed_qty >= $materialRequest->qty) {
-            $materialRequest->status = 'delivered';
-        }
-
-        $materialRequest->save();
-
-        event(new \App\Events\MaterialRequestUpdated($materialRequest, 'status'));
-
-        // Simpan Goods Out
-        GoodsOut::create([
-            'material_request_id' => $materialRequest->id,
-            'inventory_id' => $inventory->id,
-            'project_id' => $materialRequest->project_id,
-            'requested_by' => $materialRequest->requested_by,
-            'department' => $materialRequest->department,
-            'quantity' => $request->quantity,
-            'remark' => $request->remark,
-        ]);
-
-        // Kurangi stok inventory
-        $inventory->quantity -= $request->quantity;
-        $inventory->save();
-
-        MaterialUsageHelper::sync($inventory->id, $materialRequest->project_id);
-
-        return redirect()->route('goods_out.index')->with('success', "Goods Out <b>{$inventory->name}</b> to <b>{$materialRequest->project->name}</b> processed successfully.");
     }
 
     public function createIndependent()
@@ -225,44 +236,53 @@ class GoodsOutController extends Controller
             'remark' => 'nullable|string',
         ]);
 
-        $inventory = Inventory::findOrFail($request->inventory_id);
-        $user = User::findOrFail($request->user_id);
+        DB::beginTransaction();
+        try {
+            // Lock inventory row
+            $inventory = Inventory::where('id', $request->inventory_id)->lockForUpdate()->first();
+            $user = User::findOrFail($request->user_id);
 
-        // Tentukan department berdasarkan role user
-        $department = match ($user->role) {
-            'admin_mascot' => 'mascot',
-            'admin_costume' => 'costume',
-            'admin_logistic' => 'logistic',
-            'admin_finance' => 'finance',
-            'super_admin' => 'management',
-            default => 'general',
-        };
+            // Tentukan department berdasarkan role user
+            $department = match ($user->role) {
+                'admin_mascot' => 'mascot',
+                'admin_costume' => 'costume',
+                'admin_logistic' => 'logistic',
+                'admin_finance' => 'finance',
+                'super_admin' => 'management',
+                default => 'general',
+            };
 
-        // Validasi quantity
-        if ($request->quantity > $inventory->quantity) {
-            return back()->withInput()->with('error', 'Quantity cannot exceed the available inventory.');
+            // Validasi quantity setelah lock
+            if ($request->quantity > $inventory->quantity) {
+                DB::rollBack();
+                return back()->withInput()->with('error', 'Quantity cannot exceed the available inventory.');
+            }
+
+            // Kurangi stok di inventory
+            $inventory->quantity -= $request->quantity;
+            $inventory->save();
+
+            // Simpan Goods Out
+            GoodsOut::create([
+                'inventory_id' => $request->inventory_id,
+                'project_id' => $request->project_id,
+                'requested_by' => $user->username,
+                'department' => $department,
+                'quantity' => $request->quantity,
+                'remark' => $request->remark,
+            ]);
+
+            // Sync Material Usage hanya jika ada project
+            if ($request->filled('project_id')) {
+                MaterialUsageHelper::sync($request->inventory_id, $request->project_id);
+            }
+
+            DB::commit();
+            return redirect()->route('goods_out.index')->with('success', "Goods Out <b>{$inventory->name}</b> created successfully.");
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withInput()->with('error', 'Failed to process Goods Out: ' . $e->getMessage());
         }
-
-        // Kurangi stok di inventory
-        $inventory->quantity -= $request->quantity;
-        $inventory->save();
-
-        // Simpan Goods Out
-        GoodsOut::create([
-            'inventory_id' => $request->inventory_id,
-            'project_id' => $request->project_id,
-            'requested_by' => $user->username,
-            'department' => $department,
-            'quantity' => $request->quantity,
-            'remark' => $request->remark,
-        ]);
-
-        // Sync Material Usage hanya jika ada project
-        if ($request->filled('project_id')) {
-            MaterialUsageHelper::sync($request->inventory_id, $request->project_id);
-        }
-
-        return redirect()->route('goods_out.index')->with('success', "Goods Out <b>{$inventory->name}</b> created successfully.");
     }
 
     public function bulkGoodsOut(Request $request)
@@ -272,50 +292,61 @@ class GoodsOutController extends Controller
             'selected_ids.*' => 'exists:material_requests,id',
         ]);
 
-        $materialRequests = MaterialRequest::whereIn('id', $request->selected_ids)
-            ->where('status', 'approved')
-            ->get();
+        DB::beginTransaction();
+        try {
+            $materialRequests = MaterialRequest::whereIn('id', $request->selected_ids)
+                ->where('status', 'approved')
+                ->lockForUpdate() // Lock semua material request yang dipilih
+                ->get();
 
-        $updatedRequests = [];
-        foreach ($materialRequests as $materialRequest) {
-            $inventory = $materialRequest->inventory;
+            $updatedRequests = [];
+            foreach ($materialRequests as $materialRequest) {
+                // Lock inventory row
+                $inventory = Inventory::where('id', $materialRequest->inventory_id)->lockForUpdate()->first();
 
-            // Validasi stok
-            if ($materialRequest->qty > $inventory->quantity) {
-                return back()->with('error', "Insufficient stock for {$inventory->name}.");
+                // Validasi stok
+                if ($materialRequest->qty > $inventory->quantity) {
+                    DB::rollBack();
+                    return back()->with('error', "Insufficient stock for {$inventory->name}.");
+                }
+
+                // Kurangi stok inventory
+                $inventory->quantity -= $materialRequest->qty;
+                $inventory->save();
+
+                // Buat Goods Out
+                GoodsOut::create([
+                    'material_request_id' => $materialRequest->id,
+                    'inventory_id' => $inventory->id,
+                    'project_id' => $materialRequest->project_id,
+                    'requested_by' => $materialRequest->requested_by,
+                    'department' => $materialRequest->department,
+                    'quantity' => $materialRequest->qty,
+                    'remark' => 'Bulk Goods Out',
+                ]);
+
+                // Update status material request
+                $materialRequest->update([
+                    'status' => 'delivered',
+                    'processed_qty' => $materialRequest->qty,
+                ]);
+                $updatedRequests[] = $materialRequest->fresh(['inventory', 'project']);
+
+                MaterialUsageHelper::sync($inventory->id, $materialRequest->project_id);
             }
 
-            // Kurangi stok inventory
-            $inventory->quantity -= $materialRequest->qty;
-            $inventory->save();
+            DB::commit();
 
-            // Buat Goods Out
-            GoodsOut::create([
-                'material_request_id' => $materialRequest->id,
-                'inventory_id' => $inventory->id,
-                'project_id' => $materialRequest->project_id,
-                'requested_by' => $materialRequest->requested_by,
-                'department' => $materialRequest->department,
-                'quantity' => $materialRequest->qty,
-                'remark' => 'Bulk Goods Out',
-            ]);
+            // Broadcast real-time ke semua client
+            if ($updatedRequests) {
+                event(new \App\Events\MaterialRequestUpdated($updatedRequests, 'status'));
+            }
 
-            // Update status material request
-            $materialRequest->update([
-                'status' => 'delivered',
-                'processed_qty' => $materialRequest->qty,
-            ]);
-            $updatedRequests[] = $materialRequest->fresh(['inventory', 'project']);
-
-            MaterialUsageHelper::sync($inventory->id, $materialRequest->project_id);
+            return redirect()->route('material_requests.index')->with('success', "Bulk Goods Out processed successfully.");
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Bulk Goods Out failed: ' . $e->getMessage());
         }
-
-        // Broadcast real-time ke semua client
-        if ($updatedRequests) {
-            event(new \App\Events\MaterialRequestUpdated($updatedRequests, 'status'));
-        }
-
-        return redirect()->route('material_requests.index')->with('success', "Bulk Goods Out processed successfully.");
     }
 
     public function getDetails(Request $request)
@@ -369,67 +400,71 @@ class GoodsOutController extends Controller
             'remark' => 'nullable|string',
         ]);
 
-        $goodsOut = GoodsOut::findOrFail($id);
-        if (!$goodsOut) {
-            return redirect()->route('goods_out.index')->with('error', 'Goods Out not found.');
-        }
-        $inventory = Inventory::findOrFail($request->inventory_id);
-        $materialRequest = $goodsOut->materialRequest;
+        DB::beginTransaction();
+        try {
+            $goodsOut = GoodsOut::lockForUpdate()->findOrFail($id);
+            $inventory = Inventory::where('id', $request->inventory_id)->lockForUpdate()->first();
+            $materialRequest = $goodsOut->materialRequest;
 
-        $user = User::findOrFail($request->user_id);
+            $user = User::findOrFail($request->user_id);
 
-        // Kembalikan stok lama ke inventory
-        $oldQuantity = $goodsOut->quantity;
-        $inventory->quantity += $oldQuantity;
+            // Kembalikan stok lama ke inventory
+            $oldQuantity = $goodsOut->quantity;
+            $inventory->quantity += $oldQuantity;
 
-        // Kembalikan quantity lama ke Material Request
-        if ($materialRequest) {
-            $materialRequest->qty += $oldQuantity;
-        }
-
-        // Validasi quantity baru
-        if ($request->quantity > ($inventory->quantity + $oldQuantity)) {
-            return back()->with('error', 'Quantity cannot exceed the available inventory.');
-        }
-
-        // Kurangi stok dengan quantity baru
-        $inventory->quantity -= $request->quantity;
-        $inventory->save();
-
-        // Perbarui Material Request dengan quantity baru
-        if ($materialRequest) {
-            $materialRequest->qty -= $request->quantity;
-
-            // Perbarui status jika quantity habis
-            if ($materialRequest->qty == 0) {
-                $materialRequest->status = 'delivered';
-            } else {
-                $materialRequest->status = 'approved';
+            // Validasi quantity baru
+            if ($request->quantity > $inventory->quantity) {
+                DB::rollBack();
+                return back()->with('error', 'Quantity cannot exceed the available inventory.');
             }
 
-            $materialRequest->save();
+            // Kurangi stok dengan quantity baru
+            $inventory->quantity -= $request->quantity;
+            $inventory->save();
+
+            // Perbarui Material Request dengan quantity baru
+            if ($materialRequest) {
+                // Kembalikan processed_qty lama
+                $materialRequest->processed_qty -= $oldQuantity;
+                // Tambahkan processed_qty baru
+                $materialRequest->processed_qty += $request->quantity;
+
+                // Perbarui status jika quantity habis
+                if ($materialRequest->processed_qty >= $materialRequest->qty) {
+                    $materialRequest->status = 'delivered';
+                } else {
+                    $materialRequest->status = 'approved';
+                }
+
+                $materialRequest->save();
+            }
+
+            // Perbarui Goods Out
+            $goodsOut->update([
+                'inventory_id' => $request->inventory_id,
+                'project_id' => $request->project_id,
+                'requested_by' => $user->username,
+                'department' => match ($user->role) {
+                    'admin_mascot' => 'mascot',
+                    'admin_costume' => 'costume',
+                    'admin_logistic' => 'logistic',
+                    'admin_finance' => 'finance',
+                    'super_admin' => 'management',
+                    default => 'general',
+                },
+                'quantity' => $request->quantity,
+                'remark' => $request->remark,
+            ]);
+
+            MaterialUsageHelper::sync($goodsOut->inventory_id, $goodsOut->project_id);
+
+            DB::commit();
+
+            return redirect()->route('goods_out.index')->with('success', "Goods Out <b>{$inventory->name}</b> to <b>{$materialRequest->project->name}</b> processed successfully.");
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Failed to update Goods Out: ' . $e->getMessage());
         }
-
-        // Perbarui Goods Out
-        $goodsOut->update([
-            'inventory_id' => $request->inventory_id,
-            'project_id' => $request->project_id,
-            'requested_by' => $user->username,
-            'department' => match ($user->role) {
-                'admin_mascot' => 'mascot',
-                'admin_costume' => 'costume',
-                'admin_logistic' => 'logistic',
-                'admin_finance' => 'finance',
-                'super_admin' => 'management',
-                default => 'general',
-            },
-            'quantity' => $request->quantity,
-            'remark' => $request->remark,
-        ]);
-
-        MaterialUsageHelper::sync($goodsOut->inventory_id, $goodsOut->project_id);
-
-        return redirect()->route('goods_out.index')->with('success', "Goods Out <b>{$inventory->name}</b> to <b>{$materialRequest->project->name}</b> processed successfully.");
     }
 
     public function restore($id)

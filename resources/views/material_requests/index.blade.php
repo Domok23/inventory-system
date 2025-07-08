@@ -99,8 +99,8 @@
                             </select>
                         </div>
                         <div class="col-lg-2">
-                            <input type="date" id="filter-requested-at" name="requested_at" class="form-control"
-                                value="{{ request('requested_at') }}" placeholder="Requested At Date">
+                            <input type="text" id="filter-requested-at" name="requested_at" class="form-control"
+                                value="{{ request('requested_at') }}" placeholder="Requested At Date" autocomplete="off">
                         </div>
                         <div class="col-lg-2 align-self-end">
                             <button type="submit" class="btn btn-primary">Filter</button>
@@ -145,9 +145,12 @@
                                 </td>
                                 <td>{{ $req->project->name ?? '(No Project)' }}</td>
                                 <td>{{ $req->inventory->name ?? '(No Material)' }}</td>
-                                <td>{{ $req->qty }} {{ $req->inventory->unit ?? '(No Unit)' }}</td>
-                                <td>{{ $req->remaining_qty }} {{ $req->inventory->unit ?? '(No Unit)' }}</td>
-                                <td>{{ $req->processed_qty }} {{ $req->inventory->unit ?? '(No Unit)' }}</td>
+                                <td>{{ rtrim(rtrim(number_format($req->qty, 2, '.', ''), '0'), '.') }}
+                                    {{ $req->inventory->unit ?? '(No Unit)' }}</td>
+                                <td>{{ rtrim(rtrim(number_format($req->remaining_qty, 2, '.', ''), '0'), '.') }}
+                                    {{ $req->inventory->unit ?? '(No Unit)' }}</td>
+                                <td>{{ rtrim(rtrim(number_format($req->processed_qty, 2, '.', ''), '0'), '.') }}
+                                    {{ $req->inventory->unit ?? '(No Unit)' }}</td>
                                 <td>{{ ucfirst($req->requested_by) }}
                                     ({{ ucfirst($req->department) }})
                                 </td>
@@ -305,9 +308,8 @@
                     }
                 });
             });
-        });
 
-        $(document).ready(function() {
+            // Handle bulk goods out button
             $('#select-all').on('change', function() {
                 $('.select-row').prop('checked', $(this).prop('checked'));
             });
@@ -352,6 +354,13 @@
                         });
                     }
                 });
+
+            });
+
+            flatpickr("#filter-requested-at", {
+                dateFormat: "Y-m-d",
+                allowInput: true,
+                locale: "id", // jika ingin bahasa Indonesia, tambahkan import locale flatpickr
             });
         });
         document.addEventListener("DOMContentLoaded", function() {

@@ -7,7 +7,8 @@
                 <!-- Header -->
                 <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-2 mb-3">
                     <!-- Header -->
-                    <h2 class="mb-lg-0 flex-shrink-0" style="font-size:1.3rem;"><i class="bi bi-box-arrow-in-right"></i> Goods
+                    <h2 class="mb-lg-0 flex-shrink-0" style="font-size:1.3rem;"><i class="bi bi-box-arrow-in-right"></i>
+                        Goods
                         Out Records</h2>
 
                     <!-- Spacer untuk mendorong tombol ke kanan -->
@@ -93,8 +94,8 @@
                             </select>
                         </div>
                         <div class="col-lg-2">
-                            <input type="date" id="filter-requested-at" name="requested_at" class="form-control"
-                                value="{{ request('requested_at') }}" placeholder="Proceed At Date">
+                            <input type="text" id="filter-requested-at" name="requested_at" class="form-control"
+                                value="{{ request('requested_at') }}" placeholder="Proceed At Date" autocomplete="off">
                         </div>
                         <div class="col-lg-2 align-self-end">
                             <button type="submit" class="btn btn-primary">Filter</button>
@@ -136,9 +137,10 @@
                                     @endif
                                 </td>
                                 <td>{{ $goodsOut->inventory->name ?? '(no material)' }}</td>
-                                <td>{{ $goodsOut->quantity }} {{ $goodsOut->inventory->unit ?? '(no unit)' }}
+                                <td>{{ rtrim(rtrim(number_format($goodsOut->quantity, 2, '.', ''), '0'), '.') }}
+                                    {{ $goodsOut->inventory->unit ?? '(no unit)' }}
                                 </td>
-                                <td>{{ $goodsOut->remaining_quantity }}
+                                <td>{{ rtrim(rtrim(number_format($goodsOut->remaining_quantity, 2, '.', ''), '0'), '.') }}
                                     {{ $goodsOut->inventory->unit ?? '(no unit)' }}</td>
                                 <td>
                                     @if ($goodsOut->project)
@@ -397,6 +399,12 @@
                         Swal.fire('Error', 'An error occurred while processing.', 'error');
                     }
                 });
+            });
+
+            flatpickr("#filter-requested-at", {
+                dateFormat: "Y-m-d",
+                allowInput: true,
+                locale: "id", // aktifkan jika ingin bahasa Indonesia
             });
         });
         document.addEventListener("DOMContentLoaded", function() {

@@ -7,7 +7,7 @@
     <div class="container-fluid mt-4">
         <div class="card shadow-sm rounded">
             <div class="card-body position-relative">
-                <div class="position-absolute top-0 end-0 p-3" style="z-index:10;">
+                <div class="dashboard-clock-container position-absolute top-0 end-0 p-3" style="z-index:10;">
                     <div class="text-dark rounded px-3 py-2 text-end" style="min-width: 160px;">
                         <div id="realtime-clock" style="font-size:1.1rem; font-weight:600; letter-spacing:1px;">00:00</div>
                         <div id="realtime-date" style="font-size:0.95rem; opacity:0.8;">Loading date...</div>
@@ -53,7 +53,14 @@
                         <a href="{{ route('projects.index') }}" class="btn btn-warning mb-2">Go to Projects</a>
                     @endif
 
-                    @if (in_array($user->role, ['super_admin', 'admin_mascot', 'admin_costume', 'admin_logistic', 'admin_animatronic', 'general']))
+                    @if (in_array($user->role, [
+                            'super_admin',
+                            'admin_mascot',
+                            'admin_costume',
+                            'admin_logistic',
+                            'admin_animatronic',
+                            'general',
+                        ]))
                         <a href="{{ route('material_requests.index') }}" class="btn btn-danger mb-2">Go to Material
                             Requests</a>
                         <a href="{{ route('goods_in.index') }}" class="btn btn-primary mb-2">Go to Goods In</a>
@@ -111,6 +118,55 @@
         </div>
     </div>
 @endsection
+@push('styles')
+    <style>
+        @media (max-width: 539.98px) {
+            .dashboard-clock-container {
+                position: absolute !important;
+                top: 0.5rem;
+                right: 0.5rem;
+                left: auto;
+                z-index: 10;
+                min-width: 0 !important;
+                width: auto;
+                padding: 0.25rem 0.5rem !important;
+                text-align: right;
+            }
+
+            .dashboard-clock-container .text-dark {
+                font-size: 0.95rem;
+                padding: 0.25rem 0.5rem;
+                min-width: 0;
+            }
+
+            #realtime-clock {
+                font-size: 1rem !important;
+            }
+
+            #realtime-date {
+                font-size: 0.85rem !important;
+            }
+
+            .card-body.position-relative {
+                padding-top: 3.2rem !important;
+            }
+        }
+
+        @media (min-width: 540px) {
+            .dashboard-clock-container {
+                position: absolute !important;
+                top: 0;
+                right: 0;
+                z-index: 10;
+                min-width: 160px;
+                text-align: right;
+                padding: 1rem;
+            }
+        }
+
+        @media (max-width: 767.98px) {}
+    </style>
+@endpush
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {

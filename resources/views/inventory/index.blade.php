@@ -8,7 +8,8 @@
                 <!-- Header -->
                 <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-2 mb-3">
                     <!-- Header -->
-                    <h2 class="mb-2 mb-lg-0 flex-shrink-0" style="font-size:1.3rem;"><i class="bi bi-box-seam"></i> Inventory
+                    <h2 class="mb-2 mb-lg-0 flex-shrink-0" style="font-size:1.3rem;"><i class="bi bi-box-seam"></i>
+                        Inventory
                         List</h2>
 
                     <!-- Spacer untuk mendorong tombol ke kanan -->
@@ -130,7 +131,8 @@
                                 <td>
                                     {{ $inventory->category ? $inventory->category->name : '-' }}
                                 </td>
-                                <td>{{ $inventory->quantity }} {{ $inventory->unit }}</td>
+                                <td>{{ rtrim(rtrim(number_format($inventory->quantity, 2, '.', ''), '0'), '.') }}
+                                    {{ $inventory->unit }}</td>
                                 @if (in_array(auth()->user()->role, ['super_admin', 'admin_logistic', 'admin_finance']))
                                     <td>
                                         {{ number_format($inventory->price ?? 0, 2, ',', '.') }}
@@ -143,7 +145,8 @@
                                 <td>
                                     <div class="d-flex flex-nowrap gap-1">
                                         <a href="{{ route('inventory.detail', ['id' => $inventory->id]) }}"
-                                            class="btn btn-sm btn-success" data-bs-toggle="tooltip" data-bs-placement="bottom" title="More Detail"><i
+                                            class="btn btn-sm btn-success" data-bs-toggle="tooltip"
+                                            data-bs-placement="bottom" title="More Detail"><i
                                                 class="bi bi-info-circle"></i></a>
                                         <button type="button" class="btn btn-sm btn-secondary btn-show-image"
                                             title="View Image & QR Code" data-bs-toggle="modal" data-bs-target="#imageModal"
@@ -153,14 +156,16 @@
                                         </button>
                                         @if (in_array(auth()->user()->role, ['super_admin', 'admin_logistic']))
                                             <a href="{{ route('inventory.edit', $inventory->id) }}"
-                                                class="btn btn-warning btn-sm" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Edit"><i
+                                                class="btn btn-warning btn-sm" data-bs-toggle="tooltip"
+                                                data-bs-placement="bottom" title="Edit"><i
                                                     class="bi bi-pencil-square"></i></a>
                                             <form action="{{ route('inventory.destroy', $inventory->id) }}" method="POST"
                                                 class="delete-form">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="button" class="btn btn-sm btn-danger btn-delete"
-                                                data-bs-toggle="tooltip" data-bs-placement="bottom" title="Delete"><i class="bi bi-trash3"></i></button>
+                                                    data-bs-toggle="tooltip" data-bs-placement="bottom" title="Delete"><i
+                                                        class="bi bi-trash3"></i></button>
                                             </form>
                                         @endif
                                     </div>

@@ -1,119 +1,119 @@
 @extends('layouts.app')
 @section('content')
-    <div class="container mt-4">
-        <div class="card shadow rounded">
-            <div class="card-body">
-                <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-2 mb-3">
-                    <!-- Header -->
-                    <h2 class="mb-2 mb-lg-0 flex-shrink-0" style="font-size:1.3rem;"><i class="bi-boxes"></i> Material Usage
-                    </h2>
+<div class="container mt-4">
+    <div class="card shadow rounded">
+        <div class="card-body">
+            <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-2 mb-3">
+                <!-- Header -->
+                <h2 class="mb-2 mb-lg-0 flex-shrink-0" style="font-size:1.3rem;"><i class="bi-boxes"></i> Material Usage
+                </h2>
 
-                    <!-- Spacer untuk mendorong tombol ke kanan -->
-                    <div class="ms-lg-auto d-flex flex-wrap gap-2">
-                        <a href="{{ route('material_usage.export', request()->query()) }}"
-                            class="btn btn-outline-success btn-sm flex-shrink-0">
-                            <i class="bi bi-file-earmark-excel"></i> Export
-                        </a>
-                    </div>
+                <!-- Spacer untuk mendorong tombol ke kanan -->
+                <div class="ms-lg-auto d-flex flex-wrap gap-2">
+                    <a href="{{ route('material_usage.export', request()->query()) }}"
+                        class="btn btn-outline-success btn-sm flex-shrink-0">
+                        <i class="bi bi-file-earmark-excel"></i> Export
+                    </a>
                 </div>
-                <!-- Alerts -->
-                @if (session('success'))
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        {!! session('success') !!}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                @endif
-
-                @if (session('error'))
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        {!! session('error') !!}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                @endif
-
-                @if (session('warning'))
-                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                        {!! session('warning') !!}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                @endif
-
-                <div class="mb-3">
-                    <form id="filter-form" method="GET" action="{{ route('material_usage.index') }}" class="row g-2">
-                        <div class="col-lg-2">
-                            <select id="filter-material" name="material" class="form-select select2">
-                                <option value="">All Materials</option>
-                                @foreach ($materials as $material)
-                                    <option value="{{ $material->id }}"
-                                        {{ request('material') == $material->id ? 'selected' : '' }}>
-                                        {{ $material->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-lg-2">
-                            <select id="filter-project" name="project" class="form-select select2">
-                                <option value="">All Projects</option>
-                                @foreach ($projects as $project)
-                                    <option value="{{ $project->id }}"
-                                        {{ request('project') == $project->id ? 'selected' : '' }}>
-                                        {{ $project->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-lg-2 align-self-end">
-                            <button type="submit" class="btn btn-primary">Filter</button>
-                            <a href="{{ route('material_usage.index') }}" class="btn btn-secondary">Reset</a>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- Table -->
-                <table class="table table-bordered table-hover table-striped" id="datatable">
-                    <thead class="align-middle">
-                        <tr>
-                            <th></th>
-                            <th>Material</th>
-                            <th>Project</th>
-                            <th>Used Quantity</th>
-                            @if (auth()->user()->role === 'super_admin')
-                                <th>Actions</th>
-                            @endif
-                        </tr>
-                    </thead>
-                    <tbody class="align-middle">
-                        @foreach ($usages as $usage)
-                            <tr>
-                                <td class="text-center">{{ $loop->iteration }}</td>
-                                <td>{{ $usage->inventory->name ?? '(No Material)' }}</td>
-                                <td>{{ $usage->project->name ?? '(No Project)' }}</td>
-                                <td style="font-weight: bold;">{{ $usage->used_quantity }}
-                                    {{ $usage->inventory->unit ?? '(No Unit)' }}</td>
-                                @if (auth()->user()->role === 'super_admin')
-                                    <td>
-                                        <div class="d-flex flex-wrap gap-1">
-                                            <form action="{{ route('material_usage.destroy', $usage->id) }}" method="POST"
-                                                class="delete-form">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="button" class="btn btn-sm btn-danger btn-delete"
-                                                    title="Delete"><i class="bi bi-trash3"></i></button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                @endif
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
             </div>
+            <!-- Alerts -->
+            @if (session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {!! session('success') !!}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            @endif
+
+            @if (session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {!! session('error') !!}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            @endif
+
+            @if (session('warning'))
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                {!! session('warning') !!}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            @endif
+
+            <div class="mb-3">
+                <form id="filter-form" method="GET" action="{{ route('material_usage.index') }}" class="row g-2">
+                    <div class="col-lg-2">
+                        <select id="filter-material" name="material" class="form-select select2">
+                            <option value="">All Materials</option>
+                            @foreach ($materials as $material)
+                            <option value="{{ $material->id }}" {{ request('material')==$material->id ? 'selected' : ''
+                                }}>
+                                {{ $material->name }}
+                            </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-lg-2">
+                        <select id="filter-project" name="project" class="form-select select2">
+                            <option value="">All Projects</option>
+                            @foreach ($projects as $project)
+                            <option value="{{ $project->id }}" {{ request('project')==$project->id ? 'selected' : '' }}>
+                                {{ $project->name }}
+                            </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-lg-2 align-self-end">
+                        <button type="submit" class="btn btn-primary">Filter</button>
+                        <a href="{{ route('material_usage.index') }}" class="btn btn-secondary">Reset</a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Table -->
+            <table class="table table-bordered table-hover table-striped" id="datatable">
+                <thead class="align-middle">
+                    <tr>
+                        <th></th>
+                        <th>Material</th>
+                        <th>Project</th>
+                        <th>Used Quantity</th>
+                        @if (auth()->user()->role === 'super_admin')
+                        <th>Actions</th>
+                        @endif
+                    </tr>
+                </thead>
+                <tbody class="align-middle">
+                    @foreach ($usages as $usage)
+                    <tr>
+                        <td class="text-center">{{ $loop->iteration }}</td>
+                        <td>{{ $usage->inventory->name ?? '(No Material)' }}</td>
+                        <td>{{ $usage->project->name ?? '(No Project)' }}</td>
+                        <td style="font-weight: bold;">{{ rtrim(rtrim(number_format($usage->used_quantity, 2, '.', ''),
+                            '0'), '.') }} {{
+                            $usage->inventory->unit ?? '(No Unit)' }}</td>
+                        @if (auth()->user()->role === 'super_admin')
+                        <td>
+                            <div class="d-flex flex-wrap gap-1">
+                                <form action="{{ route('material_usage.destroy', $usage->id) }}" method="POST"
+                                    class="delete-form">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="button" class="btn btn-sm btn-danger btn-delete" title="Delete"><i
+                                            class="bi bi-trash3"></i></button>
+                                </form>
+                            </div>
+                        </td>
+                        @endif
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
     </div>
+</div>
 @endsection
 @push('scripts')
-    <script>
-        $(document).ready(function() {
+<script>
+    $(document).ready(function() {
             $('#datatable').DataTable({
                 responsive: true,
                 stateSave: true,
@@ -148,5 +148,5 @@
                 });
             });
         });
-    </script>
+</script>
 @endpush

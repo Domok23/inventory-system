@@ -41,6 +41,10 @@
 
     <!-- Fancybox CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css" />
+
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
     @push('styles')
         <style>
             html,
@@ -50,8 +54,8 @@
             }
 
             /* body {
-                        font-family: "Helvetica Neue", Inter, Nunito, Roboto, Poppins, Arial, sans-serif;
-                } */
+                                    font-family: "Helvetica Neue", Inter, Nunito, Roboto, Poppins, Arial, sans-serif;
+                            } */
 
             #app {
                 min-height: 100vh;
@@ -489,6 +493,10 @@
 
     <!-- Fancybox JS -->
     <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script>
+
+    <!-- Flatpickr JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
     <script>
         const authUserRole = "{{ auth()->check() ? auth()->user()->role : '' }}";
     </script>

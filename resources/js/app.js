@@ -247,6 +247,17 @@ function updateDataTable(materialRequest) {
         actionColumn += `</div>`;
     }
 
+    // Format angka dinamis
+    function formatNumberDynamic(num) {
+        if (num == null) return "0";
+        num = Number(num);
+        if (Number.isInteger(num)) return num.toString();
+        return num % 1 === 0
+            ? num.toFixed(0)
+            : num.toString().replace(/\.?0+$/, "");
+    }
+
+    // Format tanggal
     const formattedDate = moment(materialRequest.created_at).format(
         "YYYY-MM-DD, HH:mm"
     );
@@ -255,11 +266,13 @@ function updateDataTable(materialRequest) {
         checkboxColumn, // Checkbox
         materialRequest.project?.name || "N/A", // Project
         materialRequest.inventory?.name || "N/A", // Material
-        `${materialRequest.qty} ${materialRequest.inventory?.unit || ""}`, // Requested Qty
-        `${materialRequest.qty - (materialRequest.processed_qty ?? 0)} ${
+        `${formatNumberDynamic(materialRequest.qty)} ${
             materialRequest.inventory?.unit || ""
-        }`, // Remaining Qty
-        `${materialRequest.processed_qty ?? 0} ${
+        }`, // Requested Qty
+        `${formatNumberDynamic(
+            materialRequest.qty - (materialRequest.processed_qty ?? 0)
+        )} ${materialRequest.inventory?.unit || ""}`, // Remaining Qty
+        `${formatNumberDynamic(materialRequest.processed_qty ?? 0)} ${
             materialRequest.inventory?.unit || ""
         }`, // Processed Qty
         `${ucfirst(materialRequest.requested_by)} (${ucfirst(
@@ -300,9 +313,27 @@ function isMaterialRequestFormPage() {
     );
 }
 
+function ensureAudioContextActive() {
+    if (audioContext && audioContext.state === "suspended") {
+        audioContext.resume();
+    }
+}
+
 // --- Event DOMContentLoaded ---
 document.addEventListener("DOMContentLoaded", () => {
     initializeAudio();
+
+    // Aktifkan AudioContext pada gesture pertama user (klik, tap, dsb)
+    const resumeAudio = () => {
+        ensureAudioContextActive();
+        // Hanya perlu sekali, lalu hapus listener
+        document.body.removeEventListener("click", resumeAudio);
+        document.body.removeEventListener("keydown", resumeAudio);
+        document.body.removeEventListener("touchstart", resumeAudio);
+    };
+    document.body.addEventListener("click", resumeAudio);
+    document.body.addEventListener("keydown", resumeAudio);
+    document.body.addEventListener("touchstart", resumeAudio);
 
     // Listener real-time toast & suara: SELALU AKTIF di semua halaman
     window.Echo.channel("material-requests").listen(

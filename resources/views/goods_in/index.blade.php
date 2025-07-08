@@ -86,8 +86,8 @@
                             </select>
                         </div>
                         <div class="col-lg-2">
-                            <input type="date" id="filter-returned-at" name="returned_at" class="form-control"
-                                value="{{ request('returned_at') }}" placeholder="Returned At Date">
+                            <input type="text" id="filter-returned-at" name="returned_at" class="form-control"
+                                value="{{ request('returned_at') }}" placeholder="Returned At Date" autocomplete="off">
                         </div>
                         <div class="col-lg-2 align-self-end">
                             <button type="submit" class="btn btn-primary">Filter</button>
@@ -125,11 +125,13 @@
                                 </td>
                                 <td>
                                     @if ($goodsIn->goodsOut && $goodsIn->goodsOut->inventory)
-                                        {{ $goodsIn->quantity }} {{ $goodsIn->goodsOut->inventory->unit }}
+                                        {{ rtrim(rtrim(number_format($goodsIn->quantity, 2, '.', ''), '0'), '.') }}
+                                        {{ $goodsIn->goodsOut->inventory->unit }}
                                     @elseif($goodsIn->inventory)
-                                        {{ $goodsIn->quantity }} {{ $goodsIn->inventory->unit }}
+                                        {{ rtrim(rtrim(number_format($goodsIn->quantity, 2, '.', ''), '0'), '.') }}
+                                        {{ $goodsIn->inventory->unit }}
                                     @else
-                                        {{ $goodsIn->quantity }}
+                                        {{ rtrim(rtrim(number_format($goodsIn->quantity, 2, '.', ''), '0'), '.') }}
                                     @endif
                                 </td>
                                 <td>
@@ -239,17 +241,11 @@
                 allowClear: true
             });
 
-            // Add placeholder support for input[type="date"]
-            const dateInput = document.getElementById('filter-returned-at');
-            if (dateInput) {
-                dateInput.onfocus = function() {
-                    this.type = 'date';
-                };
-                dateInput.onblur = function() {
-                    if (!this.value) this.type = 'text';
-                };
-                if (!dateInput.value) dateInput.type = 'text';
-            }
+            flatpickr("#filter-returned-at", {
+                dateFormat: "Y-m-d",
+                allowInput: true,
+                locale: "id",
+            });
         });
         document.addEventListener("DOMContentLoaded", function() {
             var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));

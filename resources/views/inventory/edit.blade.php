@@ -60,7 +60,7 @@
 
                     <div class="row mb-3">
                         <!-- Quantity -->
-                        <div class="col-lg-6">
+                        <div class="col-lg-6 mb-3">
                             <label for="quantity" class="form-label">Quantity <span class="text-danger">*</span></label>
                             <input type="number" class="form-control" id="quantity" name="quantity"
                                 value="{{ old('quantity', $inventory->quantity) }}" step="any" required>
@@ -70,7 +70,7 @@
                         </div>
 
                         <!-- Unit -->
-                        <div class="col-lg-6">
+                        <div class="col-lg-6 mb-3">
                             <label for="unit" class="form-label">Unit <span class="text-danger">*</span></label>
                             <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
                                 data-bs-target="#addUnitModal"
@@ -461,26 +461,37 @@
             const input = event.target;
             const preview = document.getElementById('img-preview');
             const previewLink = document.getElementById('img-preview-link');
-            const noImageText = document.getElementById('no-image-text');
+            const maxSize = 2 * 1024 * 1024; // 2 MB
 
             if (input.files && input.files[0]) {
+                // Validasi ukuran file
+                if (input.files[0].size > maxSize) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'File too large',
+                        text: 'Maximum file size is 2 MB.',
+                    });
+                    input.value = '';
+                    if (preview) preview.src = '';
+                    if (previewLink) previewLink.href = '#';
+                    return;
+                }
+
                 const reader = new FileReader();
-
                 reader.onload = function(e) {
-                    preview.src = e.target.result; // Set src untuk gambar preview
-                    previewLink.href = e.target.result; // Set href untuk Fancybox
-                    preview.style.display = 'block';
-                    previewLink.style.display = 'block';
-                    noImageText.style.display = 'none'; // Sembunyikan teks "No Image"
+                    if (preview) preview.src = e.target.result;
+                    if (previewLink) {
+                        previewLink.href = e.target.result;
+                        preview.style.display = 'block';
+                        previewLink.style.display = 'block';
+                    }
                 };
-
                 reader.readAsDataURL(input.files[0]);
             } else {
-                preview.src = '';
-                previewLink.href = '#';
-                preview.style.display = 'none';
-                previewLink.style.display = 'none';
-                noImageText.style.display = 'block'; // Tampilkan teks "No Image"
+                if (preview) preview.src = '';
+                if (previewLink) previewLink.href = '#';
+                if (preview) preview.style.display = 'none';
+                if (previewLink) previewLink.style.display = 'none';
             }
         }
 
