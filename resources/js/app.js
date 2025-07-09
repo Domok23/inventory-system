@@ -174,7 +174,7 @@ function updateDataTable(materialRequest) {
                 ? "text-bg-danger"
                 : "";
 
-        statusColumn = `<span class="badge ${badgeClass}">${ucfirst(
+        statusColumn = `<span class="badge rounded-pill ${badgeClass}">${ucfirst(
             materialRequest.status
         )}</span>`;
     }

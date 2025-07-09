@@ -158,14 +158,14 @@ class GoodsOutController extends Controller
             $materialRequest = MaterialRequest::where('id', $request->material_request_id)->lockForUpdate()->first();
             $inventory = Inventory::where('id', $materialRequest->inventory_id)->lockForUpdate()->first();
 
-            // Validasi quantity
+            // VALIDASI: Quantity tidak boleh melebihi Remaining Quantity
             $remainingQty = $materialRequest->qty - $materialRequest->processed_qty;
             if ($request->quantity > $remainingQty) {
                 DB::rollBack();
                 return back()->withInput()->with('error', 'Quantity cannot exceed the remaining requested quantity.');
             }
 
-            // Validasi tambahan: Pastikan stok inventory tidak menjadi negatif
+            // Validasi tambahan: stok inventory
             if ($request->quantity > $inventory->quantity) {
                 DB::rollBack();
                 return back()->withInput()->with('error', 'Quantity cannot exceed the available inventory.');
@@ -304,14 +304,19 @@ class GoodsOutController extends Controller
                 // Lock inventory row
                 $inventory = Inventory::where('id', $materialRequest->inventory_id)->lockForUpdate()->first();
 
-                // Validasi stok
-                if ($materialRequest->qty > $inventory->quantity) {
+                // Validasi remaining qty
+                $remainingQty = $materialRequest->qty - $materialRequest->processed_qty;
+                if ($remainingQty <= 0) {
+                    DB::rollBack();
+                    return back()->with('error', "Material Request {$materialRequest->id} has no remaining quantity.");
+                }
+                if ($remainingQty > $inventory->quantity) {
                     DB::rollBack();
                     return back()->with('error', "Insufficient stock for {$inventory->name}.");
                 }
 
                 // Kurangi stok inventory
-                $inventory->quantity -= $materialRequest->qty;
+                $inventory->quantity -= $remainingQty;
                 $inventory->save();
 
                 // Buat Goods Out
@@ -321,7 +326,7 @@ class GoodsOutController extends Controller
                     'project_id' => $materialRequest->project_id,
                     'requested_by' => $materialRequest->requested_by,
                     'department' => $materialRequest->department,
-                    'quantity' => $materialRequest->qty,
+                    'quantity' => $remainingQty,
                     'remark' => 'Bulk Goods Out',
                 ]);
 
@@ -412,10 +417,19 @@ class GoodsOutController extends Controller
             $oldQuantity = $goodsOut->quantity;
             $inventory->quantity += $oldQuantity;
 
-            // Validasi quantity baru
+            // VALIDASI: Quantity tidak boleh melebihi Remaining Quantity (jika ada material request)
+            if ($materialRequest) {
+                $remainingQty = $materialRequest->qty - ($materialRequest->processed_qty - $oldQuantity);
+                if ($request->quantity > $remainingQty) {
+                    DB::rollBack();
+                    return back()->withInput()->with('error', 'Quantity cannot exceed the remaining requested quantity.');
+                }
+            }
+
+            // Validasi stok inventory
             if ($request->quantity > $inventory->quantity) {
                 DB::rollBack();
-                return back()->with('error', 'Quantity cannot exceed the available inventory.');
+                return back()->withInput()->with('error', 'Quantity cannot exceed the available inventory.');
             }
 
             // Kurangi stok dengan quantity baru

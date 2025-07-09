@@ -15,6 +15,7 @@ use App\Models\Currency;
 
 class PurgeSoftDeletes extends Command
 {
+    // php artisan purge:softdeletes
     protected $signature = 'purge:softdeletes';
     protected $description = 'Permanently delete soft deleted records older than 30 days';
 

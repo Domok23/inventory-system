@@ -142,7 +142,7 @@ class GoodsInController extends Controller
 
         // Validasi jumlah pengembalian
         if ($request->quantity > $goodsOut->remaining_quantity) {
-            return back()->with('error', 'Returned quantity cannot exceed Goods Out quantity.');
+            return back()->with('error', 'Returned quantity cannot exceed Remaining Quantity to Goods In.');
         }
 
         // Tambahkan stok ke inventory

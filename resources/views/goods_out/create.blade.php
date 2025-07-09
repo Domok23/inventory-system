@@ -37,15 +37,20 @@
 
                     <div class="row">
                         <div class="col-lg-6 mb-3">
-                            <label>Quantity Requested</label>
+                            <label>Remaining Quantity to Goods Out</label>
                             <input type="text" class="form-control"
-                                value="{{ $materialRequest->qty }} {{ $materialRequest->inventory->unit }}" disabled>
+                                value="{{ $materialRequest->remaining_qty }} {{ $materialRequest->inventory->unit }}"
+                                id="remaining-qty" readonly disabled>
+                            <div class="form-text">
+                                Quantity Requested: {{ $materialRequest->qty }} {{ $materialRequest->inventory->unit }}
+                            </div>
                         </div>
                         <div class="col-lg-6 mb-3">
                             <label>Quantity to Goods Out <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <input type="number" name="quantity" class="form-control"
-                                    value="{{ old('quantity', $materialRequest->qty) }}" step="any" required>
+                                    value="{{ old('quantity', $materialRequest->remaining_qty) }}"
+                                    max="{{ $materialRequest->remaining_qty }}" step="any" required>
                                 <span class="input-group-text unit-label">
                                     {{ $materialRequest->inventory ? $materialRequest->inventory->unit : 'unit' }}
                                 </span>

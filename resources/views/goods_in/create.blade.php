@@ -18,23 +18,28 @@
                             <input type="text" class="form-control" value="{{ $goodsOut->inventory->name }}" disabled>
                         </div>
                         <div class="col-lg-6 mb-3">
-                            <label>Proceeded Quantity</label>
+                            <label>Remaining Quantity to Goods In</label>
                             <div class="input-group">
-                                <input type="number" class="form-control" value="{{ $goodsOut->quantity }}" disabled>
+                                <input type="number" class="form-control" value="{{ $goodsOut->remaining_quantity }}"
+                                    id="remaining-qty" readonly disabled>
                                 <span class="input-group-text unit-label">{{ $goodsOut->inventory->unit }}</span>
+                            </div>
+                            <div class="form-text">
+                                Goods Out Quantity: {{ $goodsOut->quantity }} {{ $goodsOut->inventory->unit }}
                             </div>
                         </div>
                         <div class="col-lg-6 mb-3">
                             <label>Quantity Returned <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <input type="number" name="quantity" class="form-control" step="any"
-                                    max="{{ $goodsOut->quantity }}" value="{{ old('quantity', $goodsOut->quantity) }}"
-                                    required>
+                                    max="{{ $goodsOut->remaining_quantity }}" value="{{ old('quantity') }}" required
+                                    oninvalid="this.setCustomValidity('Quantity Returned must not exceed Remaining Quantity to Goods In.')"
+                                    oninput="this.setCustomValidity('')">
                                 <span class="input-group-text unit-label">{{ $goodsOut->inventory->unit }}</span>
                             </div>
                         </div>
                         <div class="col-lg-12 mb-3">
-                            <label>Project</label>
+                            <label>From Project</label>
                             <input type="text" class="form-control" value="{{ $goodsOut->project->name }}" disabled>
                         </div>
                         <div class="col-lg-6 mb-3">

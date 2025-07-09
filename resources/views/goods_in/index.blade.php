@@ -103,7 +103,7 @@
                             <th></th>
                             <th>Material</th>
                             <th>Qty Returned/In</th>
-                            <th>Project</th>
+                            <th>From Project</th>
                             <th>Returned/In By</th>
                             <th>Returned/In At</th>
                             <th>Remark</th>

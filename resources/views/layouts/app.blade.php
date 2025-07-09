@@ -54,8 +54,8 @@
             }
 
             /* body {
-                                    font-family: "Helvetica Neue", Inter, Nunito, Roboto, Poppins, Arial, sans-serif;
-                            } */
+                                            font-family: "Helvetica Neue", Inter, Nunito, Roboto, Poppins, Arial, sans-serif;
+                                    } */
 
             #app {
                 min-height: 100vh;
@@ -213,6 +213,10 @@
                 /* Warna merah */
                 color: #fff !important;
                 /* Warna teks putih */
+            }
+
+            .badge {
+                padding: 0.5em 0.5em;
             }
 
             .img-hover {

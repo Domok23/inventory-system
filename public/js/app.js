@@ -34511,7 +34511,7 @@ function updateDataTable(materialRequest) {
     statusColumn = "\n            <form method=\"POST\" action=\"/material_requests/".concat(materialRequest.id, "\">\n                <input type=\"hidden\" name=\"_token\" value=\"").concat($('meta[name="csrf-token"]').attr("content"), "\">\n                <input type=\"hidden\" name=\"_method\" value=\"PUT\">\n                <select name=\"status\" class=\"form-select form-select-sm status-select\" onchange=\"this.form.submit()\">\n                    <option value=\"pending\" ").concat(materialRequest.status === "pending" ? "selected" : "", ">Pending</option>\n                    <option value=\"approved\" ").concat(materialRequest.status === "approved" ? "selected" : "", ">Approved</option>\n                    <option value=\"delivered\" ").concat(materialRequest.status === "delivered" ? "selected" : "", ">Delivered</option>\n                    <option value=\"canceled\" ").concat(materialRequest.status === "canceled" ? "selected" : "", ">Canceled</option>\n                </select>\n            </form>\n        ");
   } else {
     var badgeClass = materialRequest.status === "pending" ? "text-bg-warning" : materialRequest.status === "approved" ? "text-bg-primary" : materialRequest.status === "delivered" ? "text-bg-success" : materialRequest.status === "canceled" ? "text-bg-danger" : "";
-    statusColumn = "<span class=\"badge ".concat(badgeClass, "\">").concat(ucfirst(materialRequest.status), "</span>");
+    statusColumn = "<span class=\"badge rounded-pill ".concat(badgeClass, "\">").concat(ucfirst(materialRequest.status), "</span>");
   }
 
   // Logika untuk checkbox
@@ -34726,7 +34726,7 @@ if (token) {
 window.Pusher = (pusher_js__WEBPACK_IMPORTED_MODULE_2___default());
 window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_1__["default"]({
   broadcaster: "pusher",
-  key: "86c8af0e6c8d6c971e9d",
+  key: "54ec9493e614e3204705",
   cluster: "ap1",
   forceTLS: true
 });

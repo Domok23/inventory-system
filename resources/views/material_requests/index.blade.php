@@ -187,7 +187,7 @@
                                         </form>
                                     @else
                                         <span
-                                            class="badge {{ $req->getStatusBadgeClass() }}">{{ ucfirst($req->status) }}</span>
+                                            class="badge rounded-pill {{ $req->getStatusBadgeClass() }}">{{ ucfirst($req->status) }}</span>
                                     @endif
                                 </td>
                                 <td>{{ $req->remark }}</td>
