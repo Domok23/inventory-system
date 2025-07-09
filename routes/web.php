@@ -36,8 +36,6 @@ Route::get('/', function () {
     return redirect('/login');
 });
 
-Route::post('login', [LoginController::class, 'login'])->name('login');
-
 Route::get('/register', function () {
     return redirect('/login');
 });

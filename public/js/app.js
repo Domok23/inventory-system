@@ -289,7 +289,7 @@ const resolveBodyLength = async (headers, body) => {
       credentials: isCredentialsSupported ? withCredentials : undefined
     });
 
-    let response = await fetch(request);
+    let response = await fetch(request, fetchOptions);
 
     const isStreamResponse = supportsResponseStream && (responseType === 'stream' || responseType === 'response');
 
@@ -2280,7 +2280,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   VERSION: () => (/* binding */ VERSION)
 /* harmony export */ });
-const VERSION = "1.9.0";
+const VERSION = "1.10.0";
 
 /***/ }),
 
@@ -3468,6 +3468,10 @@ function toFormData(obj, formData, options) {
 
     if (_utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isDate(value)) {
       return value.toISOString();
+    }
+
+    if (_utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isBoolean(value)) {
+      return value.toString();
     }
 
     if (!useBlob && _utils_js__WEBPACK_IMPORTED_MODULE_0__["default"].isBlob(value)) {
@@ -6891,7 +6895,7 @@ class d {
     this.namespace = e;
   }
 }
-function g(n) {
+function w(n) {
   try {
     new n();
   } catch (e) {
@@ -6977,7 +6981,7 @@ class u extends l {
     return this.subscription.bind(e, t), this;
   }
 }
-class b extends u {
+class f extends u {
   /**
    * Send a whisper event to other clients in the channel.
    */
@@ -6988,7 +6992,7 @@ class b extends u {
     ), this;
   }
 }
-class w extends u {
+class g extends u {
   /**
    * Send a whisper event to other clients in the channel.
    */
@@ -6999,7 +7003,7 @@ class w extends u {
     ), this;
   }
 }
-class y extends b {
+class y extends f {
   /**
    * Register a callback to be called anytime the member list changes.
    */
@@ -7034,7 +7038,7 @@ class y extends b {
     }), this;
   }
 }
-class f extends l {
+class b extends l {
   /**
    * Create a new class instance.
    */
@@ -7110,7 +7114,7 @@ class f extends l {
     )), (!t || this.listeners[e].length === 0) && (this.events[e] && (this.socket.removeListener(e, this.events[e]), delete this.events[e]), delete this.listeners[e]);
   }
 }
-class v extends f {
+class v extends b {
   /**
    * Send a whisper event to other clients in the channel.
    */
@@ -7274,7 +7278,7 @@ const c = class c {
    */
   csrfToken() {
     var e, t;
-    return ((e = window == null ? void 0 : window.Laravel) == null ? void 0 : e.csrfToken) ?? this.options.csrfToken ?? ((t = document == null ? void 0 : document.querySelector('meta[name="csrf-token"]')) == null ? void 0 : t.getAttribute("content")) ?? null;
+    return typeof window < "u" && ((e = window.Laravel) != null && e.csrfToken) ? window.Laravel.csrfToken : this.options.csrfToken ? this.options.csrfToken : typeof document < "u" && typeof document.querySelector == "function" ? ((t = document.querySelector('meta[name="csrf-token"]')) == null ? void 0 : t.getAttribute("content")) ?? null : null;
   }
 };
 c._defaultOptions = {
@@ -7341,7 +7345,7 @@ class o extends i {
    * Get a private channel instance by name.
    */
   privateChannel(e) {
-    return this.channels["private-" + e] || (this.channels["private-" + e] = new b(
+    return this.channels["private-" + e] || (this.channels["private-" + e] = new f(
       this.pusher,
       "private-" + e,
       this.options
@@ -7351,7 +7355,7 @@ class o extends i {
    * Get a private encrypted channel instance by name.
    */
   encryptedPrivateChannel(e) {
-    return this.channels["private-encrypted-" + e] || (this.channels["private-encrypted-" + e] = new w(
+    return this.channels["private-encrypted-" + e] || (this.channels["private-encrypted-" + e] = new g(
       this.pusher,
       "private-encrypted-" + e,
       this.options
@@ -7411,7 +7415,7 @@ class I extends i {
     this.socket = e(
       this.options.host ?? void 0,
       this.options
-    ), this.socket.on("reconnect", () => {
+    ), this.socket.io.on("reconnect", () => {
       Object.values(this.channels).forEach((t) => {
         t.subscribe();
       });
@@ -7439,7 +7443,7 @@ class I extends i {
    * Get a channel instance by name.
    */
   channel(e) {
-    return this.channels[e] || (this.channels[e] = new f(
+    return this.channels[e] || (this.channels[e] = new b(
       this.socket,
       e,
       this.options
@@ -7587,7 +7591,7 @@ class E {
       this.connector = new I(this.options);
     else if (this.options.broadcaster === "null")
       this.connector = new p(this.options);
-    else if (typeof this.options.broadcaster == "function" && g(this.options.broadcaster))
+    else if (typeof this.options.broadcaster == "function" && w(this.options.broadcaster))
       this.connector = new this.options.broadcaster(this.options);
     else
       throw new Error(
@@ -29794,7 +29798,8 @@ process.umask = function() { return 0; };
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(true)
 		module.exports = factory();
-	else {}
+	else // removed by dead control flow
+{}
 })(window, function() {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
@@ -34718,7 +34723,7 @@ if (token) {
 window.Pusher = (pusher_js__WEBPACK_IMPORTED_MODULE_2___default());
 window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_1__["default"]({
   broadcaster: "pusher",
-  key: "54ec9493e614e3204705",
+  key: "86c8af0e6c8d6c971e9d",
   cluster: "ap1",
   forceTLS: true
 });
