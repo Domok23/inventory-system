@@ -52,7 +52,7 @@ function showToast(materialRequest, action, playSound = true) {
             <strong>${ucfirst(materialRequest.requested_by)} (${ucfirst(
             materialRequest.department
         )})</strong><br>
-            New Request: <strong>${
+            <span class="text-success">New Request:</span> <strong>${
                 materialRequest.inventory?.name || "N/A"
             }</strong>
             for <strong>${materialRequest.project?.name || "N/A"}</strong><br>
@@ -68,9 +68,8 @@ function showToast(materialRequest, action, playSound = true) {
             Material Request: <strong>${
                 materialRequest.inventory?.name || "N/A"
             }</strong>
-            for <strong>${
-                materialRequest.project?.name || "N/A"
-            }</strong> has been updated.<br>
+            for <strong>${materialRequest.project?.name || "N/A"}</strong>
+            <span class="text-warning">has been updated.</span><br>
             <a href="/material_requests/${
                 materialRequest.id
             }/edit" class="text-primary">View More...</a>
@@ -83,9 +82,8 @@ function showToast(materialRequest, action, playSound = true) {
             Material Request: <strong>${
                 materialRequest.inventory?.name || "N/A"
             }</strong>
-            for <strong>${
-                materialRequest.project?.name || "N/A"
-            }</strong> has been deleted.
+            for <strong>${materialRequest.project?.name || "N/A"}</strong>
+            <span class="text-danger">has been deleted.</span>
         `;
     } else {
         // Jika action tidak dikenali, jangan tampilkan toast
@@ -134,7 +132,8 @@ function updateSelectColor(selectElement) {
 }
 function updateDataTable(materialRequest) {
     const table = $("#datatable").DataTable();
-    const row = table.row(`#row-${materialRequest.id}`);
+    const rowSelector = `#row-${materialRequest.id}`;
+    let row = table.row(rowSelector);
 
     // Logika untuk kolom status
     let statusColumn = materialRequest.status;
@@ -264,6 +263,7 @@ function updateDataTable(materialRequest) {
 
     const rowData = [
         checkboxColumn, // Checkbox
+        materialRequest.id, // Kolom ID tersembunyi
         materialRequest.project?.name || "N/A", // Project
         materialRequest.inventory?.name || "N/A", // Material
         `${formatNumberDynamic(materialRequest.qty)} ${
@@ -286,12 +286,12 @@ function updateDataTable(materialRequest) {
 
     if (!row.node()) {
         table.row.add(rowData).draw();
-        table.order([7, "desc"]).draw(); // Urutkan ulang tabel berdasarkan kolom `Requested At`
+        table.order([8, "desc"]).draw(); // Urutkan ulang tabel berdasarkan kolom `Requested At`
         return;
     }
 
     row.data(rowData).draw();
-    table.order([7, "desc"]).draw(); // Urutkan ulang tabel setelah pembaruan
+    table.order([8, "desc"]).draw(); // Urutkan ulang tabel setelah pembaruan
 
     // Perbarui warna elemen <select> setelah elemen ditambahkan
     const selectElement = row.node().querySelector(".status-select");

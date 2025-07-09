@@ -404,7 +404,6 @@
             flatpickr("#filter-requested-at", {
                 dateFormat: "Y-m-d",
                 allowInput: true,
-                locale: "id", // aktifkan jika ingin bahasa Indonesia
             });
         });
         document.addEventListener("DOMContentLoaded", function() {

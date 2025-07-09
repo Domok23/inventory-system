@@ -244,7 +244,6 @@
             flatpickr("#filter-returned-at", {
                 dateFormat: "Y-m-d",
                 allowInput: true,
-                locale: "id",
             });
         });
         document.addEventListener("DOMContentLoaded", function() {

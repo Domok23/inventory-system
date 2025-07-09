@@ -114,6 +114,7 @@
                     <thead class="align-middle text-nowrap">
                         <tr>
                             <th></th>
+                            <th style="display:none">ID</th>
                             <th>Project</th>
                             <th>Material</th>
                             <th>Requested Qty</th>
@@ -143,6 +144,7 @@
                                             value="{{ $req->id }}">
                                     @endif
                                 </td>
+                                <td style="display:none">{{ $req->id }}</td>
                                 <td>{{ $req->project->name ?? '(No Project)' }}</td>
                                 <td>{{ $req->inventory->name ?? '(No Material)' }}</td>
                                 <td>{{ rtrim(rtrim(number_format($req->qty, 2, '.', ''), '0'), '.') }}
@@ -265,7 +267,14 @@
                         orderable: false,
                         targets: 0
                     }, // Kolom checkbox tidak dapat diurutkan
+                    {
+                        visible: false,
+                        targets: 1
+                    }, // Sembunyikan kolom ID di DataTable
                 ],
+                rowId: function(data) {
+                    return 'row-' + data[1]; // data[1] adalah kolom ID
+                },
             });
 
             // Initialize Select2
@@ -360,7 +369,6 @@
             flatpickr("#filter-requested-at", {
                 dateFormat: "Y-m-d",
                 allowInput: true,
-                locale: "id", // jika ingin bahasa Indonesia, tambahkan import locale flatpickr
             });
         });
         document.addEventListener("DOMContentLoaded", function() {

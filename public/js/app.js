@@ -34448,13 +34448,13 @@ function showToast(materialRequest, action) {
   var message = "";
   if (action === "created") {
     var _materialRequest$inve, _materialRequest$proj;
-    message = "\n            <strong>".concat(ucfirst(materialRequest.requested_by), " (").concat(ucfirst(materialRequest.department), ")</strong><br>\n            New Request: <strong>").concat(((_materialRequest$inve = materialRequest.inventory) === null || _materialRequest$inve === void 0 ? void 0 : _materialRequest$inve.name) || "N/A", "</strong>\n            for <strong>").concat(((_materialRequest$proj = materialRequest.project) === null || _materialRequest$proj === void 0 ? void 0 : _materialRequest$proj.name) || "N/A", "</strong><br>\n            <a href=\"/material_requests/").concat(materialRequest.id, "/edit\" class=\"text-primary\">View More...</a>\n        ");
+    message = "\n            <strong>".concat(ucfirst(materialRequest.requested_by), " (").concat(ucfirst(materialRequest.department), ")</strong><br>\n            <span class=\"text-success\">New Request:</span> <strong>").concat(((_materialRequest$inve = materialRequest.inventory) === null || _materialRequest$inve === void 0 ? void 0 : _materialRequest$inve.name) || "N/A", "</strong>\n            for <strong>").concat(((_materialRequest$proj = materialRequest.project) === null || _materialRequest$proj === void 0 ? void 0 : _materialRequest$proj.name) || "N/A", "</strong><br>\n            <a href=\"/material_requests/").concat(materialRequest.id, "/edit\" class=\"text-primary\">View More...</a>\n        ");
   } else if (action === "updated") {
     var _materialRequest$inve2, _materialRequest$proj2;
-    message = "\n            <strong>".concat(ucfirst(materialRequest.requested_by), " (").concat(ucfirst(materialRequest.department), ")</strong><br>\n            Material Request: <strong>").concat(((_materialRequest$inve2 = materialRequest.inventory) === null || _materialRequest$inve2 === void 0 ? void 0 : _materialRequest$inve2.name) || "N/A", "</strong>\n            for <strong>").concat(((_materialRequest$proj2 = materialRequest.project) === null || _materialRequest$proj2 === void 0 ? void 0 : _materialRequest$proj2.name) || "N/A", "</strong> has been updated.<br>\n            <a href=\"/material_requests/").concat(materialRequest.id, "/edit\" class=\"text-primary\">View More...</a>\n        ");
+    message = "\n            <strong>".concat(ucfirst(materialRequest.requested_by), " (").concat(ucfirst(materialRequest.department), ")</strong><br>\n            Material Request: <strong>").concat(((_materialRequest$inve2 = materialRequest.inventory) === null || _materialRequest$inve2 === void 0 ? void 0 : _materialRequest$inve2.name) || "N/A", "</strong>\n            for <strong>").concat(((_materialRequest$proj2 = materialRequest.project) === null || _materialRequest$proj2 === void 0 ? void 0 : _materialRequest$proj2.name) || "N/A", "</strong>\n            <span class=\"text-warning\">has been updated.</span><br>\n            <a href=\"/material_requests/").concat(materialRequest.id, "/edit\" class=\"text-primary\">View More...</a>\n        ");
   } else if (action === "deleted") {
     var _materialRequest$inve3, _materialRequest$proj3;
-    message = "\n            <strong>".concat(ucfirst(materialRequest.requested_by), " (").concat(ucfirst(materialRequest.department), ")</strong><br>\n            Material Request: <strong>").concat(((_materialRequest$inve3 = materialRequest.inventory) === null || _materialRequest$inve3 === void 0 ? void 0 : _materialRequest$inve3.name) || "N/A", "</strong>\n            for <strong>").concat(((_materialRequest$proj3 = materialRequest.project) === null || _materialRequest$proj3 === void 0 ? void 0 : _materialRequest$proj3.name) || "N/A", "</strong> has been deleted.\n        ");
+    message = "\n            <strong>".concat(ucfirst(materialRequest.requested_by), " (").concat(ucfirst(materialRequest.department), ")</strong><br>\n            Material Request: <strong>").concat(((_materialRequest$inve3 = materialRequest.inventory) === null || _materialRequest$inve3 === void 0 ? void 0 : _materialRequest$inve3.name) || "N/A", "</strong>\n            for <strong>").concat(((_materialRequest$proj3 = materialRequest.project) === null || _materialRequest$proj3 === void 0 ? void 0 : _materialRequest$proj3.name) || "N/A", "</strong>\n            <span class=\"text-danger\">has been deleted.</span>\n        ");
   } else {
     // Jika action tidak dikenali, jangan tampilkan toast
     return;
@@ -34502,7 +34502,8 @@ function updateSelectColor(selectElement) {
 function updateDataTable(materialRequest) {
   var _materialRequest$proj4, _materialRequest$inve4, _materialRequest$inve5, _materialRequest$proc, _materialRequest$inve6, _materialRequest$proc2, _materialRequest$inve7;
   var table = $("#datatable").DataTable();
-  var row = table.row("#row-".concat(materialRequest.id));
+  var rowSelector = "#row-".concat(materialRequest.id);
+  var row = table.row(rowSelector);
 
   // Logika untuk kolom status
   var statusColumn = materialRequest.status;
@@ -34561,6 +34562,8 @@ function updateDataTable(materialRequest) {
   var formattedDate = moment__WEBPACK_IMPORTED_MODULE_0___default()(materialRequest.created_at).format("YYYY-MM-DD, HH:mm");
   var rowData = [checkboxColumn,
   // Checkbox
+  materialRequest.id,
+  // Kolom ID tersembunyi
   ((_materialRequest$proj4 = materialRequest.project) === null || _materialRequest$proj4 === void 0 ? void 0 : _materialRequest$proj4.name) || "N/A",
   // Project
   ((_materialRequest$inve4 = materialRequest.inventory) === null || _materialRequest$inve4 === void 0 ? void 0 : _materialRequest$inve4.name) || "N/A", // Material
@@ -34579,11 +34582,11 @@ function updateDataTable(materialRequest) {
   ];
   if (!row.node()) {
     table.row.add(rowData).draw();
-    table.order([7, "desc"]).draw(); // Urutkan ulang tabel berdasarkan kolom `Requested At`
+    table.order([8, "desc"]).draw(); // Urutkan ulang tabel berdasarkan kolom `Requested At`
     return;
   }
   row.data(rowData).draw();
-  table.order([7, "desc"]).draw(); // Urutkan ulang tabel setelah pembaruan
+  table.order([8, "desc"]).draw(); // Urutkan ulang tabel setelah pembaruan
 
   // Perbarui warna elemen <select> setelah elemen ditambahkan
   var selectElement = row.node().querySelector(".status-select");
@@ -34723,7 +34726,7 @@ if (token) {
 window.Pusher = (pusher_js__WEBPACK_IMPORTED_MODULE_2___default());
 window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_1__["default"]({
   broadcaster: "pusher",
-  key: "86c8af0e6c8d6c971e9d",
+  key: "54ec9493e614e3204705",
   cluster: "ap1",
   forceTLS: true
 });
