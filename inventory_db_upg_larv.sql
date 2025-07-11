@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.2
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost:3306
--- Generation Time: Jul 09, 2025 at 03:39 AM
--- Server version: 8.4.3
--- PHP Version: 8.3.16
+-- Host: 127.0.0.1
+-- Generation Time: Jul 10, 2025 at 09:53 AM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -28,8 +28,8 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `categories` (
-  `id` bigint UNSIGNED NOT NULL,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL
@@ -70,9 +70,9 @@ INSERT INTO `categories` (`id`, `name`, `created_at`, `updated_at`, `deleted_at`
 --
 
 CREATE TABLE `currencies` (
-  `id` bigint UNSIGNED NOT NULL,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `exchange_rate` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `exchange_rate` varchar(255) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL
@@ -122,17 +122,40 @@ INSERT INTO `currencies` (`id`, `name`, `exchange_rate`, `created_at`, `updated_
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `employees`
+--
+
+CREATE TABLE `employees` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `position` varchar(255) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `employees`
+--
+
+INSERT INTO `employees` (`id`, `name`, `position`, `created_at`, `updated_at`) VALUES
+(1, 'Minato Namikaze', 'IT Staff', '2025-07-09 06:22:12', '2025-07-09 06:22:12'),
+(2, 'Obito Uciha', 'Airbrush Specialist', '2025-07-09 08:07:39', '2025-07-09 08:07:39'),
+(3, 'Neji Hyuga', 'Accounting', '2025-07-09 08:08:05', '2025-07-09 08:08:05');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `failed_jobs`
 --
 
 CREATE TABLE `failed_jobs` (
-  `id` bigint UNSIGNED NOT NULL,
-  `uuid` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `connection` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `queue` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `payload` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `exception` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `failed_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `uuid` varchar(255) NOT NULL,
+  `connection` text NOT NULL,
+  `queue` text NOT NULL,
+  `payload` longtext NOT NULL,
+  `exception` longtext NOT NULL,
+  `failed_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -142,16 +165,16 @@ CREATE TABLE `failed_jobs` (
 --
 
 CREATE TABLE `goods_in` (
-  `id` bigint UNSIGNED NOT NULL,
-  `goods_out_id` bigint UNSIGNED DEFAULT NULL,
-  `inventory_id` bigint UNSIGNED DEFAULT NULL,
-  `project_id` bigint UNSIGNED DEFAULT NULL,
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `goods_out_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `inventory_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `project_id` bigint(20) UNSIGNED DEFAULT NULL,
   `quantity` decimal(10,2) NOT NULL,
-  `returned_by` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `returned_at` timestamp NOT NULL,
+  `returned_by` varchar(255) NOT NULL,
+  `returned_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `remark` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `remark` text DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -209,16 +232,16 @@ INSERT INTO `goods_in` (`id`, `goods_out_id`, `inventory_id`, `project_id`, `qua
 --
 
 CREATE TABLE `goods_out` (
-  `id` bigint UNSIGNED NOT NULL,
-  `material_request_id` bigint UNSIGNED DEFAULT NULL,
-  `inventory_id` bigint UNSIGNED NOT NULL,
-  `project_id` bigint UNSIGNED DEFAULT NULL,
-  `requested_by` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `department` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `material_request_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `inventory_id` bigint(20) UNSIGNED NOT NULL,
+  `project_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `requested_by` varchar(255) NOT NULL,
+  `department` varchar(255) NOT NULL,
   `quantity` decimal(10,2) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `remark` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `remark` text DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -316,21 +339,21 @@ INSERT INTO `goods_out` (`id`, `material_request_id`, `inventory_id`, `project_i
 --
 
 CREATE TABLE `inventories` (
-  `id` bigint UNSIGNED NOT NULL,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) NOT NULL,
   `quantity` decimal(8,2) NOT NULL,
-  `unit` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `unit` varchar(255) NOT NULL,
   `price` decimal(10,2) DEFAULT NULL,
-  `supplier` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `currency_id` bigint UNSIGNED DEFAULT NULL,
-  `location` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `remark` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `img` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `qrcode_path` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `qrcode` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `supplier` varchar(255) DEFAULT NULL,
+  `currency_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `location` varchar(255) DEFAULT NULL,
+  `remark` text DEFAULT NULL,
+  `img` varchar(255) DEFAULT NULL,
+  `qrcode_path` varchar(255) DEFAULT NULL,
+  `qrcode` longtext DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `category_id` bigint UNSIGNED DEFAULT NULL,
+  `category_id` bigint(20) UNSIGNED DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -450,7 +473,7 @@ INSERT INTO `inventories` (`id`, `name`, `quantity`, `unit`, `price`, `supplier`
 --
 
 CREATE TABLE `inventory_transactions` (
-  `id` bigint UNSIGNED NOT NULL,
+  `id` bigint(20) UNSIGNED NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -462,15 +485,15 @@ CREATE TABLE `inventory_transactions` (
 --
 
 CREATE TABLE `material_requests` (
-  `id` bigint UNSIGNED NOT NULL,
-  `inventory_id` bigint UNSIGNED NOT NULL,
-  `project_id` bigint UNSIGNED NOT NULL,
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `inventory_id` bigint(20) UNSIGNED NOT NULL,
+  `project_id` bigint(20) UNSIGNED NOT NULL,
   `qty` decimal(10,2) NOT NULL,
-  `processed_qty` decimal(10,2) NOT NULL DEFAULT '0.00',
-  `requested_by` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `department` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `remark` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `status` enum('pending','approved','delivered','canceled') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
+  `processed_qty` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `requested_by` varchar(255) NOT NULL,
+  `department` varchar(255) NOT NULL,
+  `remark` text DEFAULT NULL,
+  `status` enum('pending','approved','delivered','canceled') NOT NULL DEFAULT 'pending',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL
@@ -876,10 +899,10 @@ INSERT INTO `material_requests` (`id`, `inventory_id`, `project_id`, `qty`, `pro
 --
 
 CREATE TABLE `material_usages` (
-  `id` bigint UNSIGNED NOT NULL,
-  `inventory_id` bigint UNSIGNED NOT NULL,
-  `project_id` bigint UNSIGNED NOT NULL,
-  `used_quantity` decimal(12,2) NOT NULL DEFAULT '0.00',
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `inventory_id` bigint(20) UNSIGNED NOT NULL,
+  `project_id` bigint(20) UNSIGNED NOT NULL,
+  `used_quantity` decimal(12,2) NOT NULL DEFAULT 0.00,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL
@@ -942,9 +965,9 @@ INSERT INTO `material_usages` (`id`, `inventory_id`, `project_id`, `used_quantit
 --
 
 CREATE TABLE `migrations` (
-  `id` int UNSIGNED NOT NULL,
-  `migration` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `batch` int NOT NULL
+  `id` int(10) UNSIGNED NOT NULL,
+  `migration` varchar(255) NOT NULL,
+  `batch` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -991,7 +1014,12 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (37, '2025_06_05_164030_add_start_date_to_projects_table', 28),
 (38, '2025_06_09_153310_add_remark_to_inventories_table', 29),
 (39, '2025_06_14_124912_add_created_by_to_projects_table', 30),
-(40, '2025_06_17_144806_add_processed_qty_to_material_requests_table', 31);
+(40, '2025_06_17_144806_add_processed_qty_to_material_requests_table', 31),
+(41, '2025_07_09_114509_create_employees_table', 32),
+(42, '2025_07_09_142656_create_timings_table', 33),
+(43, '2025_07_09_154713_create_project_costings_table', 34),
+(44, '2025_07_09_175705_add_finish_date_to_projects_table', 35),
+(45, '2025_07_09_214844_create_project_parts_table', 36);
 
 -- --------------------------------------------------------
 
@@ -1000,8 +1028,8 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 --
 
 CREATE TABLE `password_resets` (
-  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `token` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `token` varchar(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -1012,12 +1040,12 @@ CREATE TABLE `password_resets` (
 --
 
 CREATE TABLE `personal_access_tokens` (
-  `id` bigint UNSIGNED NOT NULL,
-  `tokenable_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `tokenable_id` bigint UNSIGNED NOT NULL,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `token` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `abilities` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `tokenable_type` varchar(255) NOT NULL,
+  `tokenable_id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `token` varchar(64) NOT NULL,
+  `abilities` text DEFAULT NULL,
   `last_used_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -1030,14 +1058,15 @@ CREATE TABLE `personal_access_tokens` (
 --
 
 CREATE TABLE `projects` (
-  `id` bigint UNSIGNED NOT NULL,
-  `created_by` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `qty` int NOT NULL,
-  `img` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `created_by` varchar(255) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `qty` int(11) NOT NULL,
+  `img` varchar(255) DEFAULT NULL,
   `start_date` date DEFAULT NULL,
   `deadline` date DEFAULT NULL,
-  `department` enum('mascot','costume','mascot&costume','animatronic','plustoys','it','facility','bag') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `finish_date` date DEFAULT NULL,
+  `department` enum('mascot','costume','mascot&costume','animatronic','plustoys','it','facility','bag') NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL
@@ -1047,45 +1076,136 @@ CREATE TABLE `projects` (
 -- Dumping data for table `projects`
 --
 
-INSERT INTO `projects` (`id`, `created_by`, `name`, `qty`, `img`, `start_date`, `deadline`, `department`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(14, '', 'Costume 1', 2, 'projects/zvqZPckVQpBA9twdjkDNl1YFj8V653lvmULjEXCP.png', NULL, '2025-05-31', 'costume', '2025-05-19 07:35:12', '2025-05-19 07:35:12', NULL),
-(15, '', 'Costume 2', 5, 'projects/nco7izn5X5Jl26ldDwilHYVNmsyUhuRgQ1FzrFYl.png', NULL, '2025-06-07', 'costume', '2025-05-19 07:35:35', '2025-05-19 07:35:35', NULL),
-(16, '', 'Costume 3', 3, 'projects/xyFSpqbI8iO76qg3BSDv0Bz76IIpnRiLyB9J9nnY.png', NULL, '2025-06-04', 'costume', '2025-05-19 07:36:07', '2025-05-19 07:36:07', NULL),
-(17, '', 'Mascot 1', 1, 'projects/WwxLYysaGwcbB5vWnrmz35GdAy4nlY1aDlxCOkS2.png', NULL, '2025-06-27', 'mascot', '2025-05-19 07:36:29', '2025-05-19 07:36:29', NULL),
-(18, '', 'Mascot 2', 1, 'projects/iC6qedTR8cRVPXPlYAOubatgBstx8gXuTTeIc2eo.png', NULL, '2025-07-05', 'mascot', '2025-05-19 07:36:41', '2025-05-19 07:38:18', NULL),
-(19, '', 'Project 1', 1, 'projects/1wA9TSzcWaZzQc8ErdysqOJ5QxMo4zvPt8EcNHkY.png', NULL, '2025-07-25', 'mascot&costume', '2025-05-19 07:37:03', '2025-05-19 07:37:03', NULL),
-(20, '', 'Project 2', 1, 'projects/0sT6jN7Jn7379mQVftEC7HK1d1B1eMFeLWuGHCXt.png', NULL, '2025-05-23', 'mascot&costume', '2025-05-19 07:37:22', '2025-05-19 07:37:22', NULL),
-(21, '', 'Test', 5, 'projects/MzmRuUIHFFQVV1HRgM77EbYwWK3BCftJ7HMdoRm1.png', NULL, '2025-05-24', 'mascot', '2025-05-19 07:45:58', '2025-05-19 07:45:58', NULL),
-(23, '', 'Test 3', 2, 'projects/iJdBsy9olbY2oyMq4lJnZskulz3RrdnM725oWiDY.png', NULL, '2025-05-24', 'mascot', '2025-05-19 07:46:43', '2025-05-19 07:46:43', NULL),
-(24, '', 'Project 3', 2, 'projects/ejZvq2QTLy8z5bM6y7UEUeAIPMTWeEuUNshlhA63.jpg', NULL, '2025-05-23', 'costume', '2025-05-19 07:47:19', '2025-05-19 07:47:19', NULL),
-(25, '', 'Bobo', 1, NULL, NULL, NULL, 'costume', '2025-05-19 07:50:24', '2025-05-19 07:50:24', NULL),
-(26, '', 'Qucking', 12, 'projects/h2aE72Y5oPCkEnDCqAqhiMOriqWt0Ulh6uyXhO2X.png', NULL, '2025-05-31', 'costume', '2025-05-19 07:51:55', '2025-05-19 07:58:17', NULL),
-(27, '', 'Mascot 7', 1, NULL, NULL, NULL, 'mascot', '2025-05-19 08:02:52', '2025-05-19 08:02:52', NULL),
-(31, '', 'test99', 9, NULL, NULL, NULL, 'costume', '2025-05-19 09:07:05', '2025-05-19 09:07:05', NULL),
-(39, '', 'final test pro', 2, 'projects/XQjjQvOXyF87BpwPi7CO0qwTaYcLb7NlwieKYIny.png', NULL, '2025-06-13', 'mascot&costume', '2025-05-20 06:41:02', '2025-05-20 06:41:02', NULL),
-(40, '', 'test quick add', 4, NULL, NULL, NULL, 'mascot', '2025-05-22 08:25:43', '2025-05-23 09:32:19', NULL),
-(41, '', 'testssspro', 1, 'projects/pYshVyIsaPeGBS7GuNmARVodUzrk9Th9slHcDZ7q.png', NULL, '2025-06-03', 'animatronic', '2025-06-02 02:36:03', '2025-06-02 02:36:03', NULL),
-(42, '', 'Panda', 1, 'projects/tCOdO1QFaV0v53rMlQhswEAjQq6dtSwam7HxujRe.png', NULL, '2025-06-14', 'mascot', '2025-06-04 09:09:22', '2025-06-04 09:09:22', NULL),
-(43, '', 'buaya', 1, NULL, '2025-06-05', '2025-06-07', 'mascot', '2025-06-04 09:12:54', '2025-06-05 09:54:46', NULL),
-(44, '', 'ffty', 1, 'projects/iAefyFCaIJwEv8lvtX5MmgwhzfrU4DLqCXqIoRdz.png', NULL, '2025-06-07', 'mascot&costume', '2025-06-05 09:59:08', '2025-06-05 10:04:55', NULL),
-(45, '', 'power ranger', 1, 'projects/b9WXhh2IS6geSZ1qOKqJKV0JcGoIFUDpoGqzztOf.png', '2025-06-01', '2025-06-05', 'mascot', '2025-06-05 10:09:45', '2025-06-05 10:09:45', NULL),
-(46, '', 'Server', 23, 'projects/9xfqRx4eMrOvQ7oD1Wc0tMy27LQfNj58YFt8oBus.jpg', '2025-06-01', '2025-06-28', 'it', '2025-06-09 04:03:27', '2025-06-09 04:03:27', NULL),
-(48, '', 'test1black', 2, 'projects/SXp2Bf8vuB6PlAouJhxsRuBSSeCngyDy02XVwHww.png', '2025-06-11', '2025-06-13', 'bag', '2025-06-10 10:10:20', '2025-07-03 04:27:07', NULL),
-(49, '', 'Wifi', 23, 'projects/A6KLjrLfGTh81LxC8Nplf74srabxgdhwXZIBSR6W.png', '2025-06-08', '2025-06-14', 'facility', '2025-06-14 05:42:01', '2025-06-14 05:42:01', NULL),
-(50, '', 'Server Bawah', 2, NULL, NULL, NULL, 'facility', '2025-06-14 05:42:38', '2025-06-14 05:42:38', NULL),
-(51, 'tari', 'sdsd', 4, NULL, NULL, NULL, 'costume', '2025-06-14 05:58:35', '2025-06-14 06:00:03', NULL),
-(52, 'tari', 'gtyo', 2, NULL, NULL, NULL, 'costume', '2025-06-14 06:02:20', '2025-06-14 06:02:20', NULL),
-(53, 'logitech', 'Joni', 1, 'projects/RxOGo4bPLrFoJZuqsR9iEmVfLjwlTsYzecuVvEbo.jpg', '2025-06-17', '2025-06-24', 'mascot', '2025-06-17 06:10:25', '2025-06-17 06:10:25', NULL),
-(54, 'dyla', 'ssss', 3, NULL, NULL, NULL, 'animatronic', '2025-06-17 08:07:18', '2025-07-03 08:14:17', '2025-07-03 08:14:17'),
-(55, 'logitech', 'Pillow Mascottt', 2, NULL, NULL, NULL, 'mascot', '2025-07-01 07:44:52', '2025-07-03 08:13:50', NULL),
-(56, 'logitech', 'sdfsdfds', 5, NULL, NULL, NULL, 'bag', '2025-07-03 01:57:30', '2025-07-03 04:43:32', '2025-07-03 04:43:32'),
-(57, 'logitech', 'fdb', 5, NULL, NULL, NULL, 'facility', '2025-07-03 08:14:27', '2025-07-03 08:14:27', NULL),
-(58, 'logitech', 'ds', 23, NULL, NULL, NULL, 'mascot', '2025-07-04 09:13:47', '2025-07-04 09:13:47', NULL),
-(59, 'logitech', 'test1ggh', 2, NULL, NULL, NULL, 'costume', '2025-07-04 09:37:49', '2025-07-04 09:37:49', NULL),
-(60, 'logitech', 'dfbdf', 3, NULL, '2025-07-01', '2025-07-12', 'mascot', '2025-07-05 03:39:30', '2025-07-05 03:39:45', '2025-07-05 03:39:45'),
-(61, 'logitech', 'okami', 1, NULL, NULL, NULL, 'mascot', '2025-07-05 05:53:42', '2025-07-05 05:53:42', NULL),
-(62, 'logitech', 'gty', 1, NULL, NULL, NULL, 'mascot', '2025-07-05 05:56:07', '2025-07-05 05:56:07', NULL),
-(63, 'dyla', 'tdst', 1, 'projects/eaQonLMPwQe6tPnaMabDsBksqwD0ZFuN3vaHoTxW.jpg', '2025-07-18', '2025-08-09', 'bag', '2025-07-07 06:29:24', '2025-07-07 06:29:24', NULL);
+INSERT INTO `projects` (`id`, `created_by`, `name`, `qty`, `img`, `start_date`, `deadline`, `finish_date`, `department`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(14, '', 'Costume 1', 2, 'projects/zvqZPckVQpBA9twdjkDNl1YFj8V653lvmULjEXCP.png', NULL, '2025-05-31', NULL, 'costume', '2025-05-19 07:35:12', '2025-05-19 07:35:12', NULL),
+(15, '', 'Costume 2', 5, 'projects/nco7izn5X5Jl26ldDwilHYVNmsyUhuRgQ1FzrFYl.png', NULL, '2025-06-07', NULL, 'costume', '2025-05-19 07:35:35', '2025-05-19 07:35:35', NULL),
+(16, '', 'Costume 3', 3, 'projects/xyFSpqbI8iO76qg3BSDv0Bz76IIpnRiLyB9J9nnY.png', NULL, '2025-06-04', NULL, 'costume', '2025-05-19 07:36:07', '2025-05-19 07:36:07', NULL),
+(17, '', 'Mascot 1', 1, 'projects/WwxLYysaGwcbB5vWnrmz35GdAy4nlY1aDlxCOkS2.png', NULL, '2025-06-27', NULL, 'mascot', '2025-05-19 07:36:29', '2025-05-19 07:36:29', NULL),
+(18, '', 'Mascot 2', 1, 'projects/iC6qedTR8cRVPXPlYAOubatgBstx8gXuTTeIc2eo.png', NULL, '2025-07-05', NULL, 'mascot', '2025-05-19 07:36:41', '2025-05-19 07:38:18', NULL),
+(19, '', 'Project 1', 1, 'projects/1wA9TSzcWaZzQc8ErdysqOJ5QxMo4zvPt8EcNHkY.png', NULL, '2025-07-25', NULL, 'mascot&costume', '2025-05-19 07:37:03', '2025-05-19 07:37:03', NULL),
+(20, '', 'Project 2', 1, 'projects/0sT6jN7Jn7379mQVftEC7HK1d1B1eMFeLWuGHCXt.png', NULL, '2025-05-23', NULL, 'mascot&costume', '2025-05-19 07:37:22', '2025-05-19 07:37:22', NULL),
+(21, '', 'Test', 5, 'projects/MzmRuUIHFFQVV1HRgM77EbYwWK3BCftJ7HMdoRm1.png', NULL, '2025-05-24', NULL, 'mascot', '2025-05-19 07:45:58', '2025-05-19 07:45:58', NULL),
+(23, '', 'Test 3', 2, 'projects/iJdBsy9olbY2oyMq4lJnZskulz3RrdnM725oWiDY.png', NULL, '2025-05-24', NULL, 'mascot', '2025-05-19 07:46:43', '2025-05-19 07:46:43', NULL),
+(24, '', 'Project 3', 2, 'projects/ejZvq2QTLy8z5bM6y7UEUeAIPMTWeEuUNshlhA63.jpg', NULL, '2025-05-23', NULL, 'costume', '2025-05-19 07:47:19', '2025-05-19 07:47:19', NULL),
+(25, '', 'Bobo', 1, NULL, NULL, NULL, NULL, 'costume', '2025-05-19 07:50:24', '2025-05-19 07:50:24', NULL),
+(26, '', 'Qucking', 12, 'projects/h2aE72Y5oPCkEnDCqAqhiMOriqWt0Ulh6uyXhO2X.png', NULL, '2025-05-31', NULL, 'costume', '2025-05-19 07:51:55', '2025-05-19 07:58:17', NULL),
+(27, '', 'Mascot 7', 1, NULL, NULL, NULL, NULL, 'mascot', '2025-05-19 08:02:52', '2025-05-19 08:02:52', NULL),
+(31, '', 'test99', 9, NULL, NULL, NULL, NULL, 'costume', '2025-05-19 09:07:05', '2025-05-19 09:07:05', NULL),
+(39, '', 'final test pro', 2, 'projects/XQjjQvOXyF87BpwPi7CO0qwTaYcLb7NlwieKYIny.png', NULL, '2025-06-13', NULL, 'mascot&costume', '2025-05-20 06:41:02', '2025-05-20 06:41:02', NULL),
+(40, '', 'test quick add', 4, NULL, NULL, NULL, NULL, 'mascot', '2025-05-22 08:25:43', '2025-05-23 09:32:19', NULL),
+(41, '', 'testssspro', 1, 'projects/pYshVyIsaPeGBS7GuNmARVodUzrk9Th9slHcDZ7q.png', NULL, '2025-06-03', NULL, 'animatronic', '2025-06-02 02:36:03', '2025-06-02 02:36:03', NULL),
+(42, '', 'Panda', 1, 'projects/tCOdO1QFaV0v53rMlQhswEAjQq6dtSwam7HxujRe.png', NULL, '2025-06-14', NULL, 'mascot', '2025-06-04 09:09:22', '2025-06-04 09:09:22', NULL),
+(43, '', 'buaya', 1, NULL, '2025-06-05', '2025-06-07', '2025-06-30', 'mascot', '2025-06-04 09:12:54', '2025-07-09 11:26:31', NULL),
+(44, '', 'ffty', 1, 'projects/iAefyFCaIJwEv8lvtX5MmgwhzfrU4DLqCXqIoRdz.png', NULL, '2025-06-07', NULL, 'mascot&costume', '2025-06-05 09:59:08', '2025-06-05 10:04:55', NULL),
+(45, '', 'power ranger', 1, 'projects/b9WXhh2IS6geSZ1qOKqJKV0JcGoIFUDpoGqzztOf.png', '2025-06-01', '2025-06-05', NULL, 'mascot', '2025-06-05 10:09:45', '2025-06-05 10:09:45', NULL),
+(46, '', 'Server', 23, 'projects/9xfqRx4eMrOvQ7oD1Wc0tMy27LQfNj58YFt8oBus.jpg', '2025-06-01', '2025-06-28', NULL, 'it', '2025-06-09 04:03:27', '2025-06-09 04:03:27', NULL),
+(48, '', 'test1black', 2, 'projects/SXp2Bf8vuB6PlAouJhxsRuBSSeCngyDy02XVwHww.png', '2025-06-11', '2025-06-13', NULL, 'bag', '2025-06-10 10:10:20', '2025-07-03 04:27:07', NULL),
+(49, '', 'Wifi', 23, 'projects/A6KLjrLfGTh81LxC8Nplf74srabxgdhwXZIBSR6W.png', '2025-06-08', '2025-06-14', NULL, 'facility', '2025-06-14 05:42:01', '2025-06-14 05:42:01', NULL),
+(50, '', 'Server Bawah', 2, NULL, NULL, NULL, NULL, 'facility', '2025-06-14 05:42:38', '2025-06-14 05:42:38', NULL),
+(51, 'tari', 'sdsd', 4, NULL, NULL, NULL, NULL, 'costume', '2025-06-14 05:58:35', '2025-06-14 06:00:03', NULL),
+(52, 'tari', 'gtyo', 2, NULL, NULL, NULL, NULL, 'costume', '2025-06-14 06:02:20', '2025-06-14 06:02:20', NULL),
+(53, 'logitech', 'Joni', 1, 'projects/RxOGo4bPLrFoJZuqsR9iEmVfLjwlTsYzecuVvEbo.jpg', '2025-06-17', '2025-06-24', NULL, 'mascot', '2025-06-17 06:10:25', '2025-06-17 06:10:25', NULL),
+(54, 'dyla', 'ssss', 3, NULL, NULL, NULL, NULL, 'animatronic', '2025-06-17 08:07:18', '2025-07-03 08:14:17', '2025-07-03 08:14:17'),
+(55, 'logitech', 'Pillow Mascottt', 2, NULL, NULL, NULL, NULL, 'mascot', '2025-07-01 07:44:52', '2025-07-03 08:13:50', NULL),
+(56, 'logitech', 'sdfsdfds', 5, NULL, NULL, NULL, NULL, 'bag', '2025-07-03 01:57:30', '2025-07-03 04:43:32', '2025-07-03 04:43:32'),
+(57, 'logitech', 'fdb', 5, NULL, NULL, NULL, NULL, 'facility', '2025-07-03 08:14:27', '2025-07-03 08:14:27', NULL),
+(58, 'logitech', 'ds', 23, NULL, NULL, NULL, NULL, 'mascot', '2025-07-04 09:13:47', '2025-07-04 09:13:47', NULL),
+(59, 'logitech', 'test1ggh', 2, NULL, NULL, NULL, NULL, 'costume', '2025-07-04 09:37:49', '2025-07-04 09:37:49', NULL),
+(60, 'logitech', 'dfbdf', 3, NULL, '2025-07-01', '2025-07-12', NULL, 'mascot', '2025-07-05 03:39:30', '2025-07-05 03:39:45', '2025-07-05 03:39:45'),
+(61, 'logitech', 'okami', 1, NULL, NULL, NULL, NULL, 'mascot', '2025-07-05 05:53:42', '2025-07-05 05:53:42', NULL),
+(62, 'logitech', 'gty', 1, NULL, NULL, NULL, NULL, 'mascot', '2025-07-05 05:56:07', '2025-07-05 05:56:07', NULL),
+(63, 'dyla', 'tdst', 1, 'projects/eaQonLMPwQe6tPnaMabDsBksqwD0ZFuN3vaHoTxW.jpg', '2025-07-18', '2025-08-09', NULL, 'bag', '2025-07-07 06:29:24', '2025-07-07 06:29:24', NULL),
+(64, 'logitech', 'Kamen Riders', 1, 'projects/N3QlBuoxA7Le79Q5bAqwiuk2UY9FtmoCWQM3p0NM.jpg', '2025-07-09', '2025-07-31', NULL, 'mascot', '2025-07-09 11:09:33', '2025-07-09 11:09:33', NULL),
+(65, 'logitech', 'Naruto Sanin Mode', 2, 'projects/odRABKsYp7QD85xS3aQLmmS8fzxLhXc51H4h1xv0.png', '2025-07-01', '2025-07-31', '2025-07-20', 'mascot', '2025-07-09 11:19:58', '2025-07-10 02:33:45', NULL),
+(66, 'logitech', 'Optimus Prime (Transformer One Movie)', 5, 'projects/NutG0E0r7bNBmMsWiYrSnSXiv0eCHxIrybM6Kzb7.jpg', '2025-07-01', '2025-07-21', NULL, 'it', '2025-07-09 15:06:15', '2025-07-10 02:31:04', NULL),
+(67, 'logitech', 'Megatron (Transformer One)', 1, 'projects/LShcXUROitCBzxS5FSZQlTSnZMfYyFk6Lq091OoL.jpg', '2025-07-10', '2025-08-01', NULL, 'plustoys', '2025-07-10 02:44:13', '2025-07-10 02:44:13', NULL),
+(68, 'logitech', 'Kamen Rider Ryuuki', 1, 'projects/rrPar39TNNcrzZ5C8VQtM7tCwhyqZW8O1737qPhG.jpg', '2025-07-10', '2025-07-31', '2025-07-30', 'mascot', '2025-07-10 02:55:55', '2025-07-10 06:23:01', NULL),
+(69, 'logitech', 'Uciha Sasuke', 1, 'projects/vNkFnOCDZ3Sq2pixdxD8btfk4fEIencbwnWq0QjX.jpg', '2025-07-10', '2025-08-01', NULL, 'mascot&costume', '2025-07-10 03:01:56', '2025-07-10 03:01:56', NULL),
+(70, 'logitech', 'Patrick Turu', 1, 'projects/VZXGvayhysPGut659iG6cSKvg376kdW7VLP9o0EH.jpg', '2025-07-10', '2025-07-30', NULL, 'mascot', '2025-07-10 03:08:38', '2025-07-10 03:08:38', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `project_costings`
+--
+
+CREATE TABLE `project_costings` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `project_parts`
+--
+
+CREATE TABLE `project_parts` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `project_id` bigint(20) UNSIGNED NOT NULL,
+  `part_name` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `project_parts`
+--
+
+INSERT INTO `project_parts` (`id`, `project_id`, `part_name`) VALUES
+(1, 66, 'Tangan'),
+(2, 66, 'kaki'),
+(3, 66, 'kepala'),
+(4, 65, 'Tangan'),
+(5, 65, 'Selangkangan'),
+(6, 67, 'Cannon'),
+(7, 67, 'Legs'),
+(8, 67, 'Head'),
+(13, 69, 'Body Susanoo'),
+(14, 70, 'Petrik'),
+(15, 70, 'Kursi'),
+(16, 68, 'Dragvisor'),
+(17, 68, 'Body Armor'),
+(18, 68, 'Selangkangan');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `timings`
+--
+
+CREATE TABLE `timings` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `tanggal` date NOT NULL,
+  `project_id` bigint(20) UNSIGNED NOT NULL,
+  `category` varchar(255) NOT NULL,
+  `step` varchar(255) NOT NULL,
+  `parts` varchar(255) NOT NULL,
+  `employee_id` bigint(20) UNSIGNED NOT NULL,
+  `start_time` time NOT NULL,
+  `end_time` time NOT NULL,
+  `output_qty` int(11) NOT NULL,
+  `status` enum('complete','on progress','not started') NOT NULL,
+  `remarks` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `timings`
+--
+
+INSERT INTO `timings` (`id`, `tanggal`, `project_id`, `category`, `step`, `parts`, `employee_id`, `start_time`, `end_time`, `output_qty`, `status`, `remarks`, `created_at`, `updated_at`) VALUES
+(1, '2025-07-09', 43, 'it', 'Makan', 'Minum', 1, '08:00:00', '10:00:00', 5, 'complete', 'Testing', '2025-07-09 08:11:24', '2025-07-09 08:11:24'),
+(2, '2025-07-09', 42, 'bag', 'Jahit', 'Obras', 2, '07:00:00', '12:00:00', 4, 'on progress', 'modul', '2025-07-09 08:11:24', '2025-07-09 08:11:24'),
+(3, '2025-07-09', 45, 'animatronic', 'Menyapu', 'Mengepel', 3, '06:00:00', '15:00:00', 7, 'not started', 'timing', '2025-07-09 08:11:24', '2025-07-09 08:11:24'),
+(4, '2025-07-10', 66, 'it', 'menjahit', 'Tangan', 1, '07:00:00', '12:00:00', 5, 'complete', 'hai', '2025-07-10 04:11:49', '2025-07-10 04:11:49'),
+(5, '2025-07-11', 67, 'plustoys', 'menyulam', 'Cannon', 2, '07:00:00', '11:45:00', 2, 'not started', 'ayo nonton', '2025-07-10 04:11:49', '2025-07-10 04:11:49'),
+(6, '2025-07-10', 70, 'mascot', 'menyublim', 'Kursi', 3, '07:30:00', '12:00:00', 1, 'on progress', 'MCR', '2025-07-10 04:11:49', '2025-07-10 04:11:49'),
+(7, '2025-07-10', 68, 'mascot', 'menguap', 'Dragvisor', 1, '07:00:00', '11:00:00', 4, 'complete', 'aku', '2025-07-10 06:22:22', '2025-07-10 06:22:22'),
+(8, '2025-07-10', 68, 'mascot', 'menyulam', 'Body Armor', 2, '07:00:00', '12:00:00', 5, 'complete', 'gabut', '2025-07-10 06:22:22', '2025-07-10 06:22:22'),
+(9, '2025-07-10', 68, 'mascot', 'menyublim', 'Selangkangan', 3, '07:00:00', '13:00:00', 7, 'complete', 'banget', '2025-07-10 06:22:22', '2025-07-10 06:22:22'),
+(10, '2025-07-10', 68, 'mascot', 'mengmadang', 'Dragvisor', 1, '07:00:00', '13:55:00', 7, 'complete', 'dino', '2025-07-10 06:22:22', '2025-07-10 06:22:22'),
+(11, '2025-07-10', 68, 'mascot', 'menturu', 'Body Armor', 2, '07:00:00', '12:00:00', 4, 'complete', 'iki', '2025-07-10 06:22:22', '2025-07-10 06:22:22');
 
 -- --------------------------------------------------------
 
@@ -1094,8 +1214,8 @@ INSERT INTO `projects` (`id`, `created_by`, `name`, `qty`, `img`, `start_date`, 
 --
 
 CREATE TABLE `units` (
-  `id` bigint UNSIGNED NOT NULL,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1137,11 +1257,11 @@ INSERT INTO `units` (`id`, `name`, `created_at`, `updated_at`) VALUES
 --
 
 CREATE TABLE `users` (
-  `id` bigint UNSIGNED NOT NULL,
-  `username` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `role` enum('super_admin','admin_logistic','admin_mascot','admin_costume','admin_finance','admin_animatronic','general') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `remember_token` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `username` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `role` enum('super_admin','admin_logistic','admin_mascot','admin_costume','admin_finance','admin_animatronic','general') NOT NULL,
+  `remember_token` varchar(100) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL
@@ -1180,6 +1300,12 @@ ALTER TABLE `categories`
 ALTER TABLE `currencies`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `currencies_name_unique` (`name`);
+
+--
+-- Indexes for table `employees`
+--
+ALTER TABLE `employees`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `failed_jobs`
@@ -1263,6 +1389,27 @@ ALTER TABLE `projects`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `project_costings`
+--
+ALTER TABLE `project_costings`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `project_parts`
+--
+ALTER TABLE `project_parts`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `project_parts_project_id_foreign` (`project_id`);
+
+--
+-- Indexes for table `timings`
+--
+ALTER TABLE `timings`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `timings_project_id_foreign` (`project_id`),
+  ADD KEY `timings_employee_id_foreign` (`employee_id`);
+
+--
 -- Indexes for table `units`
 --
 ALTER TABLE `units`
@@ -1284,85 +1431,109 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT for table `currencies`
 --
 ALTER TABLE `currencies`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
+
+--
+-- AUTO_INCREMENT for table `employees`
+--
+ALTER TABLE `employees`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `failed_jobs`
 --
 ALTER TABLE `failed_jobs`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `goods_in`
 --
 ALTER TABLE `goods_in`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=69;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=69;
 
 --
 -- AUTO_INCREMENT for table `goods_out`
 --
 ALTER TABLE `goods_out`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=105;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=105;
 
 --
 -- AUTO_INCREMENT for table `inventories`
 --
 ALTER TABLE `inventories`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=187;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=187;
 
 --
 -- AUTO_INCREMENT for table `inventory_transactions`
 --
 ALTER TABLE `inventory_transactions`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `material_requests`
 --
 ALTER TABLE `material_requests`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=458;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=458;
 
 --
 -- AUTO_INCREMENT for table `material_usages`
 --
 ALTER TABLE `material_usages`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=70;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=70;
 
 --
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
 
 --
 -- AUTO_INCREMENT for table `personal_access_tokens`
 --
 ALTER TABLE `personal_access_tokens`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `projects`
 --
 ALTER TABLE `projects`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=64;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=71;
+
+--
+-- AUTO_INCREMENT for table `project_costings`
+--
+ALTER TABLE `project_costings`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `project_parts`
+--
+ALTER TABLE `project_parts`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+
+--
+-- AUTO_INCREMENT for table `timings`
+--
+ALTER TABLE `timings`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `units`
 --
 ALTER TABLE `units`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- Constraints for dumped tables
@@ -1404,6 +1575,19 @@ ALTER TABLE `material_requests`
 ALTER TABLE `material_usages`
   ADD CONSTRAINT `material_usages_inventory_id_foreign` FOREIGN KEY (`inventory_id`) REFERENCES `inventories` (`id`),
   ADD CONSTRAINT `material_usages_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`);
+
+--
+-- Constraints for table `project_parts`
+--
+ALTER TABLE `project_parts`
+  ADD CONSTRAINT `project_parts_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `timings`
+--
+ALTER TABLE `timings`
+  ADD CONSTRAINT `timings_employee_id_foreign` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`),
+  ADD CONSTRAINT `timings_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

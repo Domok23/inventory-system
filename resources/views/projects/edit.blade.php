@@ -35,6 +35,25 @@
                             @enderror
                         </div>
 
+                        <div class="mb-3">
+                        <label>Parts (opsional)</label>
+                        <div id="parts-wrapper">
+                        @foreach($project->parts as $part)
+                        <div class="input-group mb-2">
+                        <input type="text" name="parts[]" class="form-control" value="{{ $part->part_name }}" placeholder="Part name">
+                        <button type="button" class="btn btn-danger btn-remove-part">Hapus</button>
+                        </div>
+                         @endforeach
+                        @if($project->parts->isEmpty())
+                        <div class="input-group mb-2">
+                        <input type="text" name="parts[]" class="form-control" placeholder="Part name">
+                            <button type="button" class="btn btn-danger btn-remove-part" style="display:none;">Hapus</button>
+                        </div>
+                        @endif
+                    </div>
+                    <button type="button" class="btn btn-primary btn-sm" id="add-part">Tambah Part</button>
+                </div>
+
                         <div class="col-lg-6 mb-3">
                             <label for="qty" class="form-label">Quantity <span class="text-danger">*</span></label>
                             <input type="number" name="qty" id="qty"
@@ -102,6 +121,19 @@
                     </div>
 
                     <div class="row">
+                        <div class="col-lg-4 mb-3">
+                            <label for="finish_date" class="form-label">Finish Date (hanya diisi saat project selesai)</label>
+                            <input type="date" name="finish_date" id="finish_date"
+                                value="{{ old('finish_date', $project->finish_date ?? '') }}"
+                                class="form-control"
+                                @if(isset($project) && $project->finish_date && auth()->user()->role !== 'super_admin') readonly @endif>
+                            @error('finish_date')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="row">
                         <div class="col-lg-12 mb-3">
                             <label for="img" class="form-label">Image (optional)</label>
                             <input type="file" name="img" class="form-control" id="img" accept="image/*"
@@ -109,7 +141,12 @@
                             <a id="img-preview-link"
                                 href="{{ isset($project) && $project->img ? asset('storage/' . $project->img) : '#' }}"
                                 data-fancybox="gallery"
-                                style="display: {{ isset($project) && $project->img ? 'block' : 'none' }};">
+                                @if(isset($project) && $project->img)
+                                    style="display: block;"
+                                @else
+                                    style="display: none;"
+                                @endif
+                                >
                                 <img id="img-preview"
                                     src="{{ isset($project) && $project->img ? asset('storage/' . $project->img) : '#' }}"
                                     alt="Image Preview" class="mt-2 rounded" style="max-width: 200px;">
@@ -211,5 +248,19 @@
                 Hash: false,
             });
         });
+
+document.getElementById('add-part').onclick = function() {
+    let wrapper = document.getElementById('parts-wrapper');
+    let div = document.createElement('div');
+    div.className = 'input-group mb-2';
+    div.innerHTML = `<input type="text" name="parts[]" class="form-control" placeholder="Part name">
+        <button type="button" class="btn btn-danger btn-remove-part">Hapus</button>`;
+    wrapper.appendChild(div);
+};
+document.addEventListener('click', function(e) {
+    if(e.target.classList.contains('btn-remove-part')) {
+        e.target.parentElement.remove();
+    }
+});
     </script>
 @endpush

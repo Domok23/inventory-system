@@ -77,6 +77,21 @@
                     @if ($user->role === 'super_admin')
                         <a href="{{ route('users.index') }}" class="btn btn-primary mb-2">Manage Users</a>
                     @endif
+
+                       @if ($user->role === 'super_admin')
+                        <a href="{{ route('employees.index') }}" class="btn btn-primary mb-2">Manage Employee</a>
+                    @endif        
+
+                       @if ($user->role === 'super_admin')
+                        <a href="{{ route('timings.index') }}" class="btn btn-primary mb-2">Timing Management</a>
+                    @endif 
+
+                    @if ($user->role === 'super_admin')
+                        <a href="{{ route('final_project_summary.index') }}" class="btn btn-primary mb-2">Final Project Summary</a>
+                    @endif  
+
+
+
                 </div>
 
                 <!-- Super Admin Actions -->

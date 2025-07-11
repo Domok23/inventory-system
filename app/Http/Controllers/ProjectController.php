@@ -72,32 +72,38 @@ class ProjectController extends Controller
         return view('projects.create');
     }
 
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:projects,name,NULL,id,deleted_at,NULL',
-            'qty' => 'required|integer|min:1',
-            'img' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'start_date' => 'nullable|date',
-            'deadline' => 'nullable|date',
-            'department' => 'required|in:mascot,costume,mascot&costume,animatronic,plustoys,it,facility,bag'
-        ]);
+  public function store(Request $request)
+{
+    $validated = $request->validate([
+        'name' => 'required|string|max:255|unique:projects,name,NULL,id,deleted_at,NULL',
+        'qty' => 'required|integer|min:1',
+        'img' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        'start_date' => 'nullable|date',
+        'deadline' => 'nullable|date',
+        'finish_date' => 'nullable|date',
+        'department' => 'required|in:mascot,costume,mascot&costume,animatronic,plustoys,it,facility,bag'
+    ]);
 
-        // Validasi: start_date tidak boleh melebihi deadline
-        if ($request->start_date && $request->deadline && $request->start_date > $request->deadline) {
-            return back()->withErrors(['start_date' => 'Start Date cannot be later than Deadline.'])->withInput();
-        }
-
-        if ($request->hasFile('img')) {
-            $validated['img'] = $request->file('img')->store('projects', 'public');
-        }
-
-        $project = Project::create(array_merge($validated, [
-            'created_by' => Auth::user()->username, // Simpan username pembuat
-        ]));
-
-        return redirect()->route('projects.index')->with('success', "Project <b>{$project->name}</b> added successfully!");
+    if ($request->hasFile('img')) {
+        $validated['img'] = $request->file('img')->store('projects', 'public');
     }
+
+    $project = Project::create(array_merge($validated, [
+        'created_by' => Auth::user()->username,
+    ]));
+
+    // Simpan parts jika ada
+    if ($request->parts) {
+        foreach ($request->parts as $part) {
+            if ($part) {
+                $project->parts()->create(['part_name' => $part]);
+            }
+        }
+    }
+
+    return redirect()->route('projects.index')->with('success', 'Project added successfully!');
+}   
+
 
     public function storeQuick(Request $request)
     {
@@ -138,36 +144,49 @@ class ProjectController extends Controller
         return response()->json(Project::select('id', 'name')->get()); // bisa juga pakai paginate/dataTables untuk ribuan data
     }
 
-    public function edit(Project $project)
+       public function edit(Project $project)
     {
+        // Pastikan relasi parts di-load
+        $project->load('parts');
         return view('projects.edit', compact('project'));
     }
 
-    public function update(Request $request, Project $project)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:projects,name,' . $project->id . ',id,deleted_at,NULL',
-            'qty' => 'required|integer|min:1',
-            'img' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'start_date' => 'nullable|date',
-            'deadline' => 'nullable|date',
-            'department' => 'required|in:mascot,costume,mascot&costume,animatronic,plustoys,it,facility,bag'
-        ]);
+   public function update(Request $request, Project $project)
+{
+    $validated = $request->validate([
+        'name' => 'required|string|max:255|unique:projects,name,' . $project->id . ',id,deleted_at,NULL',
+        'qty' => 'required|integer|min:1',
+        'img' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        'start_date' => 'nullable|date',
+        'deadline' => 'nullable|date',
+        'finish_date' => 'nullable|date',
+        'department' => 'required|in:mascot,costume,mascot&costume,animatronic,plustoys,it,facility,bag'
+    ]);
 
-        // Validasi: start_date tidak boleh melebihi deadline
-        if ($request->start_date && $request->deadline && $request->start_date > $request->deadline) {
-            return back()->withErrors(['start_date' => 'Start Date cannot be later than Deadline.'])->withInput();
-        }
-
-        if ($request->hasFile('img')) {
-            $validated['img'] = $request->file('img')->store('projects', 'public');
-        }
-
-        $project->update($validated);
-
-        return redirect()->route('projects.index')->with('success', "Project <b>{$project->name}</b> updated successfully!");
+    // Validasi: start_date tidak boleh melebihi deadline
+    if ($request->start_date && $request->deadline && $request->start_date > $request->deadline) {
+        return back()->withErrors(['start_date' => 'Start Date cannot be later than Deadline.'])->withInput();
     }
 
+    if ($request->hasFile('img')) {
+        $validated['img'] = $request->file('img')->store('projects', 'public');
+    }
+
+    $project->update($validated);
+
+    // Update parts: hapus semua lalu simpan ulang
+    $project->parts()->delete();
+    if ($request->parts) {
+        foreach ($request->parts as $part) {
+            if ($part) {
+                $project->parts()->create(['part_name' => $part]);
+            }
+        }
+    }
+
+    // Tambahkan baris berikut agar redirect ke modul project
+    return redirect()->route('projects.index')->with('success', 'Project updated successfully!');
+}
     public function destroy(Project $project)
     {
         // Validasi: Hanya pembuat proyek atau super_admin yang dapat menghapus

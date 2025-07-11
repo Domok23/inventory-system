@@ -18,6 +18,9 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\MaterialUsageController;
 use App\Http\Controllers\ProjectCostingController;
 use App\Http\Controllers\MaterialRequestController;
+use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\TimingController;
+use App\Http\Controllers\FinalProjectSummaryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -133,7 +136,30 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/trash/{id}/details', [TrashController::class, 'show'])->name('trash.show');
 });
 
-Route::get('/artisan/{action}', function ($action) {
+    // Employees
+Route::middleware(['auth'])->group(function () {
+    // ...existing code...
+
+    Route::resource('employees', EmployeeController::class);
+    Route::get('employees/{employee}/timing', [EmployeeController::class, 'timing'])->name('employees.timing');
+});
+
+    //Timming
+    Route::middleware(['auth'])->group(function () {
+    Route::resource('timings', TimingController::class)->only(['index', 'create', 'store', 'show']);
+    Route::post('timings/store-multiple', [TimingController::class, 'storeMultiple'])->name('timings.storeMultiple');
+    Route::get('/timings/ajax-search', [TimingController::class, 'ajaxSearch'])->name('timings.ajax_search');
+
+});
+
+    //Final Project Summary
+
+    Route::get('final_project_summary', [App\Http\Controllers\FinalProjectSummaryController::class, 'index'])->name('final_project_summary.index');
+    Route::get('final_project_summary/{project}', [App\Http\Controllers\FinalProjectSummaryController::class, 'show'])->name('final_project_summary.show');
+    Route::get('/final-project-summary/ajax-search', [FinalProjectSummaryController::class, 'ajaxSearch'])->name('final_project_summary.ajax_search');
+
+
+    Route::get('/artisan/{action}', function ($action) {
     try {
         switch ($action) {
             case 'storage-link':
