@@ -48,8 +48,7 @@
                         <div class="col-lg-6 mb-3">
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <label>Material <span class="text-danger">*</span></label>
-                                <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal"
-                                    data-bs-target="#addMaterialModal">
+                                <button type="button" class="btn btn-sm btn-outline-primary" id="btnQuickAddMaterial">
                                     + Quick Add Material
                                 </button>
                             </div>
@@ -126,6 +125,30 @@
                     <button type="submit" class="btn btn-primary">Update Request</button>
                 </form>
 
+                <!-- Confirmation Modal Before Quick Add Material -->
+                <div class="modal fade" id="confirmAddMaterialModal" tabindex="-1"
+                    aria-labelledby="confirmAddMaterialModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="confirmAddMaterialModalLabel">Confirm Add Material!</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <b>Please make sure this material does not already exist in the inventory table.</b><br>
+                                <span class="text-danger">Use this feature only if the material is truly not available and
+                                    is urgently needed.<br>
+                                    Adding duplicate materials will cause data inconsistency!</span>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-danger" id="btnConfirmAddMaterial">Yes, I
+                                    Understand</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <!-- Add Material Modal -->
                 <div class="modal fade" id="addMaterialModal" tabindex="-1" aria-labelledby="addMaterialModalLabel"
                     aria-hidden="true">
@@ -133,21 +156,33 @@
                         <form id="quickAddMaterialForm" method="POST" action="{{ route('inventories.store.quick') }}">
                             @csrf
                             <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Quick Add Material</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
+                                <div class="modal-header flex-column align-items-start pb-1 pt-3">
+                                    <h5 class="modal-title w-100 mb-2">Quick Add Material</h5>
+                                    <div class="w-100 mb-2">
+                                        <small class="text-muted d-block" style="font-size: 0.92em;">
+                                            <i class="bi bi-search"></i>
+                                            Search Material Before Adding <span class="fst-italic">(optional)</span>
+                                        </small>
+                                        <input type="text" id="search-material-autocomplete"
+                                            class="form-control form-control-sm mt-1"
+                                            placeholder="Type material name to search...">
+                                        <div id="search-material-result" class="form-text mt-1 mb-0"></div>
+                                    </div>
+                                    <button type="button" class="btn-close position-absolute end-0 top-0 m-3"
+                                        data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
-                                <div class="modal-body">
+                                <div class="modal-body pt-2">
                                     <label>Material Name <span class="text-danger">*</span></label>
                                     <input type="text" name="name" class="form-control" required>
                                     <label class="mt-2">Quantity <span class="text-danger">*</span></label>
                                     <input type="number" step="any" name="quantity" class="form-control" required>
                                     <label class="mt-2">Unit <span class="text-danger">*</span></label>
                                     <input type="text" name="unit" class="form-control" required>
+                                    <label class="mt-2">Remark (optional)</label>
+                                    <textarea name="remark" class="form-control" rows="2"></textarea>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="submit" class="btn btn-primary">Add Material</button>
+                                    <button type="submit" class="btn btn-primary w-100">Add Material</button>
                                 </div>
                             </div>
                         </form>
@@ -219,6 +254,24 @@
             height: calc(2.375rem + 2px);
             /* Tinggi elemen form Bootstrap */
         }
+
+        @media (max-width: 576px) {
+            #addMaterialModal .modal-dialog {
+                max-width: 98vw;
+                margin: 0.5rem auto;
+            }
+
+            #addMaterialModal .modal-content {
+                padding: 0.5rem;
+            }
+
+            #addMaterialModal .modal-header,
+            #addMaterialModal .modal-body,
+            #addMaterialModal .modal-footer {
+                padding-left: 0.5rem;
+                padding-right: 0.5rem;
+            }
+        }
     </style>
 @endpush
 @push('scripts')
@@ -243,6 +296,21 @@
             });
             // Trigger saat halaman load jika sudah ada value terpilih
             $('select[name="inventory_id"]').trigger('change');
+        });
+
+        $(document).ready(function() {
+            // Untuk halaman create, edit, bulk create
+            $('#btnQuickAddMaterial').off('click').on('click', function(e) {
+                e.preventDefault();
+                $('#confirmAddMaterialModal').modal('show');
+            });
+
+            $('#btnConfirmAddMaterial').off('click').on('click', function() {
+                $('#confirmAddMaterialModal').modal('hide');
+                setTimeout(function() {
+                    $('#addMaterialModal, #quickAddMaterialModal').modal('show');
+                }, 360);
+            });
         });
 
         // Form submit handler
@@ -308,6 +376,51 @@
                             'Failed to add material. Please try again.';
                         Swal.fire('Error', msg, 'error');
                     }
+                });
+            });
+        });
+
+        // Search material autocomplete
+        $(document).ready(function() {
+            // Untuk modal Quick Add Material di halaman bulk create & edit
+            $('#quickAddMaterialForm').closest('.modal').on('shown.bs.modal', function() {
+                const $input = $(this).find('#search-material-autocomplete');
+                const $result = $(this).find('#search-material-result');
+                $input.off('input').on('input', function() {
+                    const keyword = $(this).val().trim();
+                    if (keyword.length < 2) {
+                        $result.html('');
+                        return;
+                    }
+                    $.ajax({
+                        url: "{{ route('inventories.json') }}",
+                        data: {
+                            q: keyword
+                        },
+                        success: function(data) {
+                            const filtered = data.filter(item =>
+                                item.name.toLowerCase().includes(keyword
+                                    .toLowerCase())
+                            );
+                            if (filtered.length > 0) {
+                                $result.html(
+                                    '<b>Similar material(s) found:</b><ul class="mb-0">' +
+                                    filtered.map(item => `<li>${item.name}</li>`)
+                                    .join('') +
+                                    '</ul><span class="text-danger">Please make sure you are not adding a duplicate material!</span>'
+                                );
+                            } else {
+                                $result.html(
+                                    '<span class="text-success">No similar material found. You can proceed to add this material.</span>'
+                                );
+                            }
+                        },
+                        error: function() {
+                            $result.html(
+                                '<span class="text-danger">Failed to search material.</span>'
+                            );
+                        }
+                    });
                 });
             });
         });

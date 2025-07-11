@@ -328,10 +328,10 @@ class InventoryController extends Controller
         }
 
         $unit = Unit::firstOrCreate(['name' => $request->unit]);
-        
+
         $material = Inventory::create([
             'name'     => $request->name,
-            'quantity' => $request->quantity, 
+            'quantity' => $request->quantity,
             'unit'     => $unit->name,
             'price'    => $request->price ?? 0,
             'remark'   => $request->remark ? $request->remark . ' <span style="color: orange;">(From Quick Add)</span>' : '<span style="color: orange;">(From Quick Add)</span>',
@@ -341,11 +341,19 @@ class InventoryController extends Controller
         return response()->json(['success' => true, 'material' => $material]);
     }
 
-    public function json()
+    public function json(Request $request)
     {
         // return Inventory::select('id', 'name')->get();
         // Mengembalikan data inventory dalam format JSON
-        return response()->json(Inventory::select('id', 'name')->get()); // bisa juga pakai paginate/dataTables untuk ribuan data
+        $q = $request->q;
+        $query = Inventory::select('id', 'name');
+        if ($q) {
+            // Escape karakter khusus untuk LIKE query
+            $escapedQ = addcslashes($q, '%_\\');
+            $query->where('name', 'like', '%' . $escapedQ . '%');
+        }
+        return response()->json($query->get());
+        // bisa juga pakai paginate/dataTables untuk ribuan data
     }
 
     public function edit($id)
