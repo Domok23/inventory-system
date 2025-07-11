@@ -8,8 +8,6 @@ class ProjectPart extends Model
 {
     protected $fillable = ['project_id', 'part_name'];
 
-    public $timestamps = false;
-
     public function project()
     {
         return $this->belongsTo(Project::class);
