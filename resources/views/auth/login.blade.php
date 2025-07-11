@@ -154,6 +154,16 @@
                 transform: translateX(0);
             }
         }
+
+        .form-select:focus {
+            border-color: #8F12FE;
+            box-shadow: 0 0 0 0.2rem rgba(143, 18, 254, 0.25);
+        }
+
+        .form-control:focus {
+            border-color: #8F12FE;
+            box-shadow: 0 0 0 0.2rem rgba(143, 18, 254, 0.25);
+        }
     </style>
 @endpush
 @push('scripts')

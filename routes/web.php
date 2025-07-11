@@ -39,9 +39,8 @@ Route::get('/', function () {
     return redirect('/login');
 });
 
-Route::get('/register', function () {
-    return redirect('/login');
-});
+Route::get('/register', [App\Http\Controllers\Auth\RegisterController::class, 'showRegistrationForm'])->name('register');
+Route::post('/register', [App\Http\Controllers\Auth\RegisterController::class, 'register']);
 
 Route::middleware(['auth'])->group(function () {
     // Dashboard
@@ -134,32 +133,23 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/trash/force-delete', [TrashController::class, 'forceDelete'])->name('trash.forceDelete');
     Route::post('/trash/bulk-action', [TrashController::class, 'bulkAction'])->name('trash.bulkAction');
     Route::get('/trash/{id}/details', [TrashController::class, 'show'])->name('trash.show');
-});
 
     // Employees
-Route::middleware(['auth'])->group(function () {
-    // ...existing code...
-
     Route::resource('employees', EmployeeController::class);
     Route::get('employees/{employee}/timing', [EmployeeController::class, 'timing'])->name('employees.timing');
-});
 
     //Timming
-    Route::middleware(['auth'])->group(function () {
     Route::resource('timings', TimingController::class)->only(['index', 'create', 'store', 'show']);
     Route::post('timings/store-multiple', [TimingController::class, 'storeMultiple'])->name('timings.storeMultiple');
     Route::get('/timings/ajax-search', [TimingController::class, 'ajaxSearch'])->name('timings.ajax_search');
 
-});
-
     //Final Project Summary
-
     Route::get('final_project_summary', [App\Http\Controllers\FinalProjectSummaryController::class, 'index'])->name('final_project_summary.index');
     Route::get('final_project_summary/{project}', [App\Http\Controllers\FinalProjectSummaryController::class, 'show'])->name('final_project_summary.show');
     Route::get('/final-project-summary/ajax-search', [FinalProjectSummaryController::class, 'ajaxSearch'])->name('final_project_summary.ajax_search');
+});
 
-
-    Route::get('/artisan/{action}', function ($action) {
+Route::get('/artisan/{action}', function ($action) {
     try {
         switch ($action) {
             case 'storage-link':
