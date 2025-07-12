@@ -22,7 +22,7 @@ return new class extends Migration
         $table->time('start_time');
         $table->time('end_time');
         $table->integer('output_qty');
-        $table->enum('status', ['complete', 'on progress', 'not started']);
+        $table->enum('status', ['complete', 'on progress', 'pending']);
         $table->string('remarks')->nullable();
         $table->timestamps();
     });

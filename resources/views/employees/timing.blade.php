@@ -32,9 +32,9 @@
                 <td>
                     @php
                         $color = [
+                            'pending' => 'danger',
                             'complete' => 'success',
                             'on progress' => 'warning',
-                            'not started' => 'secondary'
                         ][$timing->status];
                     @endphp
                     <span class="badge bg-{{ $color }}">{{ ucfirst($timing->status) }}</span>

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Employee; // Assuming you have an Employee model
+use App\Models\Employee;
 
 class EmployeeController extends Controller
 {
@@ -24,10 +24,18 @@ class EmployeeController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required',
-            'position' => 'required',
+            'name' => 'required|string|max:255',
+            'position' => 'required|string|max:255',
+            'department' => 'nullable|string|max:255',
+            'email' => 'nullable|email|unique:employees,email',
+            'phone' => 'nullable|string|max:20',
+            'hire_date' => 'nullable|date',
+            'salary' => 'nullable|numeric|min:0',
+            'status' => 'required|in:active,inactive,terminated',
+            'notes' => 'nullable|string',
         ]);
-        Employee::create($request->only('name', 'position'));
+
+        Employee::create($request->all());
         return redirect()->route('employees.index')->with('success', 'Employee berhasil ditambahkan.');
     }
 
@@ -39,10 +47,18 @@ class EmployeeController extends Controller
     public function update(Request $request, Employee $employee)
     {
         $request->validate([
-            'name' => 'required',
-            'position' => 'required',
+            'name' => 'required|string|max:255',
+            'position' => 'required|string|max:255',
+            'department' => 'nullable|string|max:255',
+            'email' => 'nullable|email|unique:employees,email,' . $employee->id,
+            'phone' => 'nullable|string|max:20',
+            'hire_date' => 'nullable|date',
+            'salary' => 'nullable|numeric|min:0',
+            'status' => 'required|in:active,inactive,terminated',
+            'notes' => 'nullable|string',
         ]);
-        $employee->update($request->only('name', 'position'));
+
+        $employee->update($request->all());
         return redirect()->route('employees.index')->with('success', 'Employee berhasil diupdate.');
     }
 
@@ -52,10 +68,10 @@ class EmployeeController extends Controller
         return redirect()->route('employees.index')->with('success', 'Employee berhasil dihapus.');
     }
 
-    // View timing (dummy)
+    // View timing
     public function timing(Employee $employee)
-{
-    $timings = $employee->timings()->with('project')->get();
-    return view('employees.timing', compact('employee', 'timings'));
-}
+    {
+        $timings = $employee->timings()->with('project')->get();
+        return view('employees.timing', compact('employee', 'timings'));
+    }
 }

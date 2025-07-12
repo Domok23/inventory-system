@@ -141,7 +141,7 @@ Route::middleware(['auth'])->group(function () {
     //Timming
     Route::resource('timings', TimingController::class)->only(['index', 'create', 'store', 'show']);
     Route::post('timings/store-multiple', [TimingController::class, 'storeMultiple'])->name('timings.storeMultiple');
-    Route::get('/timings/ajax-search', [TimingController::class, 'ajaxSearch'])->name('timings.ajax_search');
+    Route::post('/timings/ajax-search', [TimingController::class, 'ajaxSearch'])->name('timings.ajax_search');
 
     //Final Project Summary
     Route::get('final_project_summary', [App\Http\Controllers\FinalProjectSummaryController::class, 'index'])->name('final_project_summary.index');

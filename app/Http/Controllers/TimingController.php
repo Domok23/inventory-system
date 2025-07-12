@@ -6,102 +6,129 @@ use App\Models\Timing;
 use App\Models\Project;
 use App\Models\Employee;
 use Illuminate\Http\Request;
+
 class TimingController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-public function index(Request $request)
-{
-    $timings = Timing::with(['project', 'employee'])
-        // ...tambahkan filter jika ada...
-        ->get();
+    public function index(Request $request)
+    {
+        $timings = Timing::with(['project', 'employee'])->get();
 
-    $projects = Project::orderBy('name')->get();
-    $departments = Project::select('department')->distinct()->pluck('department');
-    $employees = Employee::orderBy('name')->get();
+        $projects = Project::orderBy('name')->get();
+        $departments = Project::select('department')->distinct()->pluck('department');
+        $employees = Employee::orderBy('name')->get(); // Tetap tampilkan semua untuk filter
 
-    return view('timings.index', compact('timings', 'projects', 'departments', 'employees'));
-}
+        return view('timings.index', compact('timings', 'projects', 'departments', 'employees'));
+    }
+
+    public function ajaxSearch(Request $request)
+    {
+        $query = Timing::with(['project', 'employee']);
+
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('step', 'like', '%' . $request->search . '%')->orWhere('remarks', 'like', '%' . $request->search . '%');
+            });
+        }
+        if ($request->filled('project_id')) {
+            $query->where('project_id', $request->project_id);
+        }
+        if ($request->filled('department')) {
+            $query->where('category', $request->department);
+        }
+        if ($request->filled('employee_id')) {
+            $query->where('employee_id', $request->employee_id);
+        }
+
+        $timings = $query->orderByDesc('tanggal')->get();
+
+        try {
+            $html = view('timings.timing_table', compact('timings'))->render();
+            return response()->json([
+                'html' => $html,
+                'count' => $timings->count(),
+                'success' => true,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(
+                [
+                    'html' => '<tr class="no-data-row"><td colspan="11" class="text-center text-muted py-4"><i class="bi bi-exclamation-triangle"></i> Error loading data</td></tr>',
+                    'count' => 0,
+                    'success' => false,
+                    'error' => $e->getMessage(),
+                ],
+                500,
+            );
+        }
+    }
 
     public function create()
     {
         $projects = Project::with('parts')->get();
-        $employees = Employee::all();
+
+        // HANYA ambil employee yang statusnya 'active'
+        $employees = Employee::where('status', 'active')->orderBy('name')->get();
+
         $categories = Project::select('department')->distinct()->pluck('department');
         return view('timings.create', compact('projects', 'employees', 'categories'));
     }
 
-    public function store(Request $request)
+    public function storeMultiple(Request $request)
     {
-        $request->validate([
-            'tanggal' => 'required|date',
-            'project_id' => 'required|exists:projects,id',
-            'category' => 'required',
-            'step' => 'required',
-            'parts' => 'required',
-            'employee_id' => 'required|exists:employees,id',
-            'start_time' => 'required',
-            'end_time' => 'required',
-            'output_qty' => 'required|numeric',
-            'status' => 'required|in:complete,on progress,not started',
-            'remarks' => 'nullable',
+        $data = $request->validate([
+            'timings' => 'required|array',
+            'timings.*.tanggal' => 'required|date',
+            'timings.*.project_id' => 'required|exists:projects,id',
+            'timings.*.category' => 'required',
+            'timings.*.step' => 'required',
+            'timings.*.parts' => 'nullable|string',
+            'timings.*.employee_id' => 'required|exists:employees,id',
+            'timings.*.start_time' => 'required',
+            'timings.*.end_time' => 'required',
+            'timings.*.output_qty' => 'required|numeric',
+            'timings.*.status' => 'required|in:complete,on progress,pending',
+            'timings.*.remarks' => 'nullable',
         ]);
-        Timing::create($request->all());
-        return redirect()->route('timings.index')->with('success', 'Data timing berhasil ditambahkan.');
+
+        // Validasi tambahan: pastikan employee yang dipilih statusnya active
+        foreach ($data['timings'] as $idx => $timing) {
+            $employee = Employee::find($timing['employee_id']);
+            if (!$employee || $employee->status !== 'active') {
+                return back()
+                    ->withErrors([
+                        "timings.$idx.employee_id" => 'Selected employee is not active or does not exist.',
+                    ])
+                    ->withInput();
+            }
+        }
+
+        $projectsWithParts = Project::has('parts')->pluck('id')->toArray();
+        $errors = [];
+        foreach ($data['timings'] as $idx => $timing) {
+            if (in_array($timing['project_id'], $projectsWithParts)) {
+                if (empty($timing['parts'])) {
+                    $projectName = Project::find($timing['project_id'])->name ?? 'Unknown';
+                    $errors["timings.$idx.parts"] = "Part wajib dipilih untuk project: <b>$projectName</b>";
+                }
+            }
+        }
+
+        if (!empty($errors)) {
+            return back()->withErrors($errors)->withInput();
+        }
+
+        // Jika semua valid, baru insert ke database
+        foreach ($data['timings'] as &$timing) {
+            if (!in_array($timing['project_id'], $projectsWithParts)) {
+                $timing['parts'] = 'No Part';
+            }
+            Timing::create($timing);
+        }
+
+        return redirect()->route('timings.index')->with('success', 'Semua data timing berhasil disimpan.');
     }
 
     public function show(Timing $timing)
     {
         return view('timings.show', compact('timing'));
     }
-
-public function storeMultiple(Request $request)
-{
-    $data = $request->validate([
-        'timings' => 'required|array',
-        'timings.*.tanggal' => 'required|date',
-        'timings.*.project_id' => 'required|exists:projects,id',
-        'timings.*.category' => 'required',
-        'timings.*.step' => 'required',
-        'timings.*.parts' => 'required',
-        'timings.*.employee_id' => 'required|exists:employees,id',
-        'timings.*.start_time' => 'required',
-        'timings.*.end_time' => 'required',
-        'timings.*.output_qty' => 'required|numeric',
-        'timings.*.status' => 'required|in:complete,on progress,not started',
-        'timings.*.remarks' => 'nullable',
-    ]);
-    foreach ($data['timings'] as $timing) {
-        \App\Models\Timing::create($timing);
-    }
-    return redirect()->route('timings.index')->with('success', 'Semua data timing berhasil disimpan.');
-}
-
-public function ajaxSearch(Request $request)
-{
-    $query = \App\Models\Timing::with(['project', 'employee']);
-
-    if ($request->filled('search')) {
-        $query->where(function($q) use ($request) {
-            $q->where('step', 'like', '%'.$request->search.'%')
-              ->orWhere('remarks', 'like', '%'.$request->search.'%');
-        });
-    }
-    if ($request->filled('project_id')) {
-        $query->where('project_id', $request->project_id);
-    }
-    if ($request->filled('department')) {
-        $query->where('category', $request->department);
-    }
-    if ($request->filled('employee_id')) {
-        $query->where('employee_id', $request->employee_id);
-    }
-
-    $timings = $query->orderByDesc('tanggal')->get();
-
-    $html = view('timings._timing_table', compact('timings'))->render();
-    return response()->json(['html' => $html]);
-}
-    
 }

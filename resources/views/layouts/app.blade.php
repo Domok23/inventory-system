@@ -113,6 +113,107 @@
                 transition: background 0.3s, color 0.3s;
             }
 
+            /* Dropdown Styles */
+            .dropdown-toggle::after {
+                border-top: 0.3em solid;
+                border-right: 0.3em solid transparent;
+                border-left: 0.3em solid transparent;
+                transition: transform 0.3s ease;
+            }
+
+            .dropdown-toggle[aria-expanded="true"]::after {
+                transform: rotate(180deg);
+            }
+
+            .dropdown-menu {
+                background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+                border: 1px solid rgba(143, 18, 254, 0.15);
+                border-radius: 12px;
+                box-shadow: 0 8px 32px rgba(143, 18, 254, 0.15);
+                margin-top: 0.5rem;
+                padding: 0.5rem 0;
+                min-width: 200px;
+            }
+
+            .dropdown-item {
+                color: #333;
+                padding: 0.5rem 1rem;
+                font-size: 0.95rem;
+                border-radius: 6px;
+                margin: 0.1rem 0.5rem;
+                transition: all 0.3s ease;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+
+            .dropdown-item:hover {
+                background: linear-gradient(45deg, #8F12FE, #4A25AA);
+                color: white;
+                transform: translateX(2px);
+            }
+
+            .dropdown-item.active {
+                background: linear-gradient(45deg, #8F12FE, #4A25AA);
+                color: white;
+                font-weight: 600;
+            }
+
+            .dropdown-item i {
+                width: 16px;
+                text-align: center;
+                opacity: 0.8;
+            }
+
+            .nav-item .dropdown-toggle {
+                font-weight: 600;
+                color: #333;
+                transition: all 0.3s ease;
+            }
+
+            .nav-item .dropdown-toggle:hover {
+                background: linear-gradient(45deg, #8F12FE, #4A25AA);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+
+            .nav-item .dropdown-toggle.active {
+                background: linear-gradient(45deg, #8F12FE, #4A25AA);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                position: relative;
+            }
+
+            .nav-item .dropdown-toggle.active::after {
+                content: '';
+                position: absolute;
+                bottom: -0.5rem;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 60%;
+                height: 2px;
+                background: linear-gradient(45deg, #8F12FE, #4A25AA);
+            }
+
+            @media (max-width: 991.98px) {
+                .dropdown-menu {
+                    position: static !important;
+                    box-shadow: none;
+                    border: none;
+                    background: rgba(143, 18, 254, 0.05);
+                    margin-top: 0;
+                    margin-left: 1rem;
+                    border-radius: 8px;
+                }
+
+                .dropdown-item {
+                    padding: 0.4rem 0.8rem;
+                    font-size: 0.9rem;
+                }
+            }
+
             td .btn {
                 margin-bottom: 0.25rem;
                 text-align: center;
@@ -274,6 +375,15 @@
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav me-auto">
                         @if (auth()->check())
+                            <!-- Dashboard -->
+                            {{-- <li class="nav-item">
+                                <a class="nav-link {{ request()->is('dashboard*') ? 'active' : '' }}"
+                                    href="{{ route('dashboard') }}">
+                                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                                </a>
+                            </li> --}}
+
+                            <!-- Logistics Dropdown -->
                             @if (in_array(auth()->user()->role, [
                                     'super_admin',
                                     'admin_mascot',
@@ -283,13 +393,38 @@
                                     'admin_animatronic',
                                     'general',
                                 ]))
-                                <li class="nav-item">
-                                    <a class="nav-link {{ request()->is('inventory*') ? 'active' : '' }}"
-                                        href="{{ route('inventory.index') }}">
-                                        Inventory
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle {{ request()->is('inventory*') || request()->is('material_requests*') || request()->is('goods_out*') || request()->is('goods_in*') || request()->is('material-usage*') ? 'active' : '' }}"
+                                        href="#" id="logisticsDropdown" role="button" data-bs-toggle="dropdown"
+                                        aria-expanded="false">
+                                        <i class="fas fa-boxes"></i> Logistics
                                     </a>
+                                    <ul class="dropdown-menu" aria-labelledby="logisticsDropdown">
+                                        <li><a class="dropdown-item {{ request()->is('inventory*') ? 'active' : '' }}"
+                                                href="{{ route('inventory.index') }}">
+                                                <i class="fas fa-warehouse"></i> Inventory Listing
+                                            </a></li>
+                                        <li><a class="dropdown-item {{ request()->is('material_requests*') ? 'active' : '' }}"
+                                                href="{{ route('material_requests.index') }}">
+                                                <i class="fas fa-clipboard-list"></i> Material Request
+                                            </a></li>
+                                        <li><a class="dropdown-item {{ request()->is('goods_out*') ? 'active' : '' }}"
+                                                href="{{ route('goods_out.index') }}">
+                                                <i class="fas fa-shipping-fast"></i> Goods Out
+                                            </a></li>
+                                        <li><a class="dropdown-item {{ request()->is('goods_in*') ? 'active' : '' }}"
+                                                href="{{ route('goods_in.index') }}">
+                                                <i class="fas fa-dolly"></i> Goods In
+                                            </a></li>
+                                        <li><a class="dropdown-item {{ request()->is('material-usage*') ? 'active' : '' }}"
+                                                href="{{ route('material_usage.index') }}">
+                                                <i class="fas fa-chart-line"></i> Material Usage
+                                            </a></li>
+                                    </ul>
                                 </li>
                             @endif
+
+                            <!-- Productions Dropdown -->
                             @if (in_array(auth()->user()->role, [
                                     'super_admin',
                                     'admin_mascot',
@@ -299,93 +434,80 @@
                                     'admin_animatronic',
                                     'general',
                                 ]))
-                                <li class="nav-item">
-                                    <a class="nav-link {{ request()->is('projects*') ? 'active' : '' }}"
-                                        href="{{ route('projects.index') }}">
-                                        Project
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle {{ request()->is('projects*') || request()->is('timings*') || request()->is('employees/*/timing*') ? 'active' : '' }}"
+                                        href="#" id="productionsDropdown" role="button" data-bs-toggle="dropdown"
+                                        aria-expanded="false">
+                                        <i class="fas fa-cogs"></i> Productions
                                     </a>
+                                    <ul class="dropdown-menu" aria-labelledby="productionsDropdown">
+                                        <li><a class="dropdown-item {{ request()->is('projects*') ? 'active' : '' }}"
+                                                href="{{ route('projects.index') }}">
+                                                <i class="fas fa-project-diagram"></i> Project
+                                            </a></li>
+                                        <li><a class="dropdown-item {{ request()->is('material_requests*') ? 'active' : '' }}"
+                                                href="{{ route('material_requests.index') }}">
+                                                <i class="fas fa-clipboard-list"></i> Material Request
+                                            </a></li>
+                                        <li><a class="dropdown-item {{ request()->is('material-usage*') ? 'active' : '' }}"
+                                                href="{{ route('material_usage.index') }}">
+                                                <i class="fas fa-chart-line"></i> Material Usage
+                                            </a></li>
+                                        <li><a class="dropdown-item {{ request()->is('timings*') ? 'active' : '' }}"
+                                                href="{{ route('timings.index') }}">
+                                                <i class="fas fa-clock"></i> Timing
+                                            </a></li>
+                                    </ul>
                                 </li>
                             @endif
-                            @if (in_array(auth()->user()->role, [
-                                    'super_admin',
-                                    'admin_mascot',
-                                    'admin_costume',
-                                    'admin_logistic',
-                                    'admin_finance',
-                                    'admin_animatronic',
-                                    'general',
-                                ]))
-                                <li class="nav-item">
-                                    <a class="nav-link {{ request()->is('material_requests*') ? 'active' : '' }}"
-                                        href="{{ route('material_requests.index') }}">
-                                        Material Request
-                                    </a>
-                                </li>
-                            @endif
-                            @if (in_array(auth()->user()->role, [
-                                    'super_admin',
-                                    'admin_mascot',
-                                    'admin_costume',
-                                    'admin_logistic',
-                                    'admin_finance',
-                                    'admin_animatronic',
-                                    'general',
-                                ]))
-                                <li class="nav-item">
-                                    <a class="nav-link {{ request()->is('goods_out*') ? 'active' : '' }}"
-                                        href="{{ route('goods_out.index') }}">
-                                        Goods Out
-                                    </a>
-                                </li>
-                            @endif
-                            @if (in_array(auth()->user()->role, [
-                                    'super_admin',
-                                    'admin_mascot',
-                                    'admin_costume',
-                                    'admin_logistic',
-                                    'admin_finance',
-                                    'admin_animatronic',
-                                    'general',
-                                ]))
-                                <li class="nav-item">
-                                    <a class="nav-link {{ request()->is('goods_in*') ? 'active' : '' }}"
-                                        href="{{ route('goods_in.index') }}">
-                                        Goods In
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link {{ request()->is('material-usage*') ? 'active' : '' }}"
-                                        href="{{ route('material_usage.index') }}">
-                                        Material Usage
-                                    </a>
-                                </li>
-                            @endif
+
+                            <!-- Finances Dropdown -->
                             @if (in_array(auth()->user()->role, ['super_admin', 'admin_finance']))
-                                <li class="nav-item">
-                                    <a class="nav-link {{ request()->is('costing-report*') ? 'active' : '' }}"
-                                        href="{{ route('costing.report') }}">
-                                        Costing Report
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle {{ request()->is('currencies*') || request()->is('costing-report*') || request()->is('final_project_summary*') ? 'active' : '' }}"
+                                        href="#" id="financesDropdown" role="button" data-bs-toggle="dropdown"
+                                        aria-expanded="false">
+                                        <i class="fas fa-calculator"></i> Finances
                                     </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link {{ request()->is('currencies*') ? 'active' : '' }}"
-                                        href="{{ route('currencies.index') }}">
-                                        Currency
-                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="financesDropdown">
+                                        <li><a class="dropdown-item {{ request()->is('currencies*') ? 'active' : '' }}"
+                                                href="{{ route('currencies.index') }}">
+                                                <i class="fas fa-coins"></i> Currency
+                                            </a></li>
+                                        <li><a class="dropdown-item {{ request()->is('costing-report*') ? 'active' : '' }}"
+                                                href="{{ route('costing.report') }}">
+                                                <i class="fas fa-file-invoice-dollar"></i> Costing Report
+                                            </a></li>
+                                        <li><a class="dropdown-item {{ request()->is('final_project_summary*') ? 'active' : '' }}"
+                                                href="{{ route('final_project_summary.index') }}">
+                                                <i class="fas fa-chart-pie"></i> Final Project Summary
+                                            </a></li>
+                                    </ul>
                                 </li>
                             @endif
+
+                            <!-- Admin Dropdown -->
                             @if (auth()->user()->role === 'super_admin')
-                                <li class="nav-item">
-                                    <a class="nav-link {{ request()->is('users*') ? 'active' : '' }}"
-                                        href="{{ route('users.index') }}">
-                                        User
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle {{ request()->is('employees*') || request()->is('users*') || request()->routeIs('trash.index') ? 'active' : '' }}"
+                                        href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown"
+                                        aria-expanded="false">
+                                        <i class="fas fa-user-shield"></i> Admin
                                     </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link {{ request()->routeIs('trash.index') ? 'active' : '' }}"
-                                        href="{{ route('trash.index') }}">
-                                        Trash
-                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="adminDropdown">
+                                        <li><a class="dropdown-item {{ request()->is('employees*') ? 'active' : '' }}"
+                                                href="{{ route('employees.index') }}">
+                                                <i class="fas fa-users"></i> Employees
+                                            </a></li>
+                                        <li><a class="dropdown-item {{ request()->is('users*') ? 'active' : '' }}"
+                                                href="{{ route('users.index') }}">
+                                                <i class="fas fa-user"></i> Users
+                                            </a></li>
+                                        <li><a class="dropdown-item {{ request()->routeIs('trash.index') ? 'active' : '' }}"
+                                                href="{{ route('trash.index') }}">
+                                                <i class="fas fa-trash"></i> Trash
+                                            </a></li>
+                                    </ul>
                                 </li>
                             @endif
                         @endif
