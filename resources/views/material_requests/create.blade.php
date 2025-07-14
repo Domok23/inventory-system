@@ -73,8 +73,8 @@
                         <div class="col-lg-6 mb-3">
                             <label>Requested Quantity <span class="text-danger">*</span></label>
                             <div class="input-group">
-                                <input type="number" name="qty" class="form-control" step="any" required
-                                    value="{{ old('qty') }}">
+                                <input type="number" name="qty" class="form-control @error('qty') is-invalid @enderror"
+                                    step="any" required value="{{ old('qty') }}">
                                 <span class="input-group-text unit-label">unit</span>
                             </div>
                             @error('qty')

@@ -82,8 +82,8 @@
                                         <td>
                                             <div class="input-group">
                                                 <input type="number" name="requests[{{ $index }}][qty]"
-                                                    class="form-control" step="any"
-                                                    value="{{ old("requests.$index.qty") }}" required>
+                                                    class="form-control @error("requests.$index.qty") is-invalid @enderror"
+                                                    step="any" value="{{ old("requests.$index.qty") }}" required>
                                                 <span class="input-group-text unit-label">unit</span>
                                             </div>
                                             @error("requests.$index.qty")
@@ -518,7 +518,7 @@
                         error: function() {
                             $result.html(
                                 '<span class="text-danger">Failed to search material.</span>'
-                                );
+                            );
                         }
                     });
                 });
