@@ -4,12 +4,20 @@
     <div class="container-fluid py-4">
         <div class="card shadow-sm border-0 mb-4">
             <div class="card-body">
-                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3 gap-2">
-                    <h3 class="mb-0 text-primary">Employee Timing Data</h3>
-                    <a href="{{ route('timings.create') }}" class="btn btn-primary btn-sm">
-                        <i class="bi bi-plus-circle"></i> Input Timing
-                    </a>
+                <!-- Header -->
+                <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-2 mb-3">
+                    <!-- Header -->
+                    <h2 class="mb-2 mb-lg-0 flex-shrink-0" style="font-size:1.3rem;"><i
+                            class="far fa-clock"></i> Timing Data</h2>
+
+                    <!-- Spacer untuk mendorong tombol ke kanan -->
+                    <div class="ms-lg-auto d-flex flex-wrap gap-2">
+                        <a href="{{ route('timings.create') }}" class="btn btn-primary btn-sm">
+                            <i class="bi bi-plus-circle"></i> Input Timing
+                        </a>
+                    </div>
                 </div>
+
                 @if (session('success'))
                     <div class="alert alert-success">{{ session('success') }}</div>
                 @endif
@@ -134,7 +142,10 @@
 
         /* Right side: Pagination */
         .dataTables_wrapper .row .col-md-6:last-child {
-            justify-content: flex-end;
+            justify-content: flex-end !important;
+            display: flex !important;
+            flex: 1 1 0%;
+            /* Tambahan agar child ini ambil sisa ruang */
         }
 
         /* Individual element styling */
@@ -151,6 +162,7 @@
 
         .dataTables_paginate {
             margin-bottom: 0 !important;
+            margin-left: auto !important;
         }
 
         /* Pagination buttons styling */
@@ -234,17 +246,21 @@
             ordering: true,
             lengthChange: true,
             pageLength: 25,
-            dom: '<"top">rt<"bottom"<"row"<"col-md-6"li><"col-md-6 text-end"p>>>',
             language: {
-                info: "Showing _START_ to _END_ of _TOTAL_ entries",
-                lengthMenu: "Show _MENU_ entries per page",
+                info: "_START_ to _END_ of _TOTAL_ entries",
                 emptyTable: "No timing data found",
                 zeroRecords: "No timing data found"
             },
             columnDefs: [{
                 targets: '_all',
                 defaultContent: '-'
-            }]
+            }],
+            createdRow: function(row, data, dataIndex) {
+                if ($(row).hasClass('no-data-row')) {
+                    // Hapus semua <td> setelah yang pertama agar colspan tetap
+                    $(row).find('td:gt(0)').remove();
+                }
+            }
         };
 
         $(document).ready(function() {
@@ -275,7 +291,6 @@
                             project_id: project_id,
                             department: department,
                             employee_id: employee_id,
-                            _token: '{{ csrf_token() }}'
                         },
                         success: function(res) {
                             try {

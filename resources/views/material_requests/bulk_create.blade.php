@@ -304,7 +304,7 @@
                 // Reset input elements
                 newRow.find('input').each(function() {
                     let name = $(this).attr('name').replace(/\d+/, rowCount);
-                    $(this).attr('name', name).val('');
+                    $(this).attr('name', name).val('').removeClass('is-invalid');
                 });
 
                 // Reset textarea elements
@@ -312,6 +312,9 @@
                     let name = $(this).attr('name').replace(/\d+/, rowCount);
                     $(this).attr('name', name).val('');
                 });
+
+                // Hapus error message pada row baru
+                newRow.find('.text-danger').remove();
 
                 // Reset unit label
                 newRow.find('.unit-label').text('unit');

@@ -205,14 +205,9 @@
                 ],
                 language: {
                     search: "Search employees:",
-                    lengthMenu: "Show _MENU_ employees per page",
-                    info: "Showing _START_ to _END_ of _TOTAL_ employees",
+                    info: "Total: _TOTAL_ employees",
                     infoEmpty: "No employees available",
                     infoFiltered: "(filtered from _MAX_ total employees)",
-                    paginate: {
-                        first: "First",
-                        last: "Last",
-                    },
                     emptyTable: "No employees found",
                     zeroRecords: "No employees match your search criteria"
                 },

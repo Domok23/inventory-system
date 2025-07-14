@@ -15,7 +15,7 @@ return new class extends Migration
         $table->id();
         $table->date('tanggal');
         $table->foreignId('project_id')->constrained('projects');
-        $table->string('category');
+        $table->string('department');
         $table->string('step');
         $table->string('parts');
         $table->foreignId('employee_id')->constrained('employees');

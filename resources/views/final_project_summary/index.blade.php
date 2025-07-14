@@ -191,8 +191,6 @@
                 [10, 25, 50, 100]
             ],
             language: {
-                info: "Showing _START_ to _END_ of _TOTAL_ projects",
-                lengthMenu: "Show _MENU_ projects per page",
                 emptyTable: "No projects found",
                 zeroRecords: "No projects found"
             },

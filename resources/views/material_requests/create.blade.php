@@ -90,6 +90,7 @@
                         </div>
                     </div>
 
+                    <a href="{{ route('material_requests.index') }}" class="btn btn-secondary">Cancel</a>
                     <button class="btn btn-success">Submit Request</button>
                 </form>
                 <!-- Confirmation Modal Before Quick Add Material -->

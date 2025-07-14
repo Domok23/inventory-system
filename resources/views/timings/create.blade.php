@@ -53,7 +53,7 @@
                                                 <option value="">Select Project</option>
                                                 @foreach ($projects as $project)
                                                     <option value="{{ $project->id }}"
-                                                        data-category="{{ $project->department }}"
+                                                        data-department="{{ $project->department }}"
                                                         data-parts='@json($project->parts->pluck('part_name'))'
                                                         {{ old("timings.$i.project_id") == $project->id ? 'selected' : '' }}>
                                                         {{ $project->name }}
@@ -62,9 +62,9 @@
                                             </select>
                                         </td>
                                         <td>
-                                            <input type="text" name="timings[{{ $i }}][category]"
-                                                class="form-control form-control-sm category-input" placeholder="Department"
-                                                readonly value="{{ old("timings.$i.category") }}">
+                                            <input type="text" name="timings[{{ $i }}][department]"
+                                                class="form-control form-control-sm department-input" placeholder="Department"
+                                                readonly value="{{ old("timings.$i.department") }}">
                                         </td>
                                         <td>
                                             <input type="text" name="timings[{{ $i }}][step]"
@@ -192,7 +192,7 @@
                 // Ambil value dari row sebelumnya
                 let prevDate = $lastRow.find('input[name^="timings"][name$="[tanggal]"]').val();
                 let prevProject = $lastRow.find('select[name^="timings"][name$="[project_id]"]').val();
-                let prevDept = $lastRow.find('input[name^="timings"][name$="[category]"]').val();
+                let prevDept = $lastRow.find('input[name^="timings"][name$="[department]"]').val();
                 let prevStart = $lastRow.find('input[name^="timings"][name$="[start_time]"]').val();
                 let prevEnd = $lastRow.find('input[name^="timings"][name$="[end_time]"]').val();
 
@@ -208,13 +208,13 @@
                         $(this).val(prevDate);
                     } else if ($(this).is('[name$="[project_id]"]')) {
                         $(this).val(prevProject).trigger('change');
-                    } else if ($(this).is('[name$="[category]"]')) {
+                    } else if ($(this).is('[name$="[department]"]')) {
                         $(this).val(prevDept);
                     } else if ($(this).is('[name$="[start_time]"]')) {
                         $(this).val(prevStart);
                     } else if ($(this).is('[name$="[end_time]"]')) {
                         $(this).val(prevEnd);
-                    } else if ($(this).hasClass('category-input')) {
+                    } else if ($(this).hasClass('department-input')) {
                         $(this).val('');
                     } else if ($(this).hasClass('part-select')) {
                         $(this).html('<option value="">Select Project Part</option>');
@@ -241,13 +241,13 @@
                 }
             });
 
-            // Project change: isi category & parts otomatis
+            // Project change: isi department & parts otomatis
             $(document).on('change', '.project-select', function() {
                 let $row = $(this).closest('tr');
                 let selected = this.options[this.selectedIndex];
-                // Isi category otomatis
-                let category = selected.getAttribute('data-category');
-                $row.find('.category-input').val(category ? category : '');
+                // Isi department otomatis
+                let department = selected.getAttribute('data-department');
+                $row.find('.department-input').val(department ? department : '');
                 // Isi part otomatis
                 let parts = selected.getAttribute('data-parts');
                 let $partSelect = $row.find('.part-select');

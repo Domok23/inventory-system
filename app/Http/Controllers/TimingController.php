@@ -33,7 +33,7 @@ class TimingController extends Controller
             $query->where('project_id', $request->project_id);
         }
         if ($request->filled('department')) {
-            $query->where('category', $request->department);
+            $query->where('department', $request->department);
         }
         if ($request->filled('employee_id')) {
             $query->where('employee_id', $request->employee_id);
@@ -68,8 +68,8 @@ class TimingController extends Controller
         // HANYA ambil employee yang statusnya 'active'
         $employees = Employee::where('status', 'active')->orderBy('name')->get();
 
-        $categories = Project::select('department')->distinct()->pluck('department');
-        return view('timings.create', compact('projects', 'employees', 'categories'));
+        $departments = Project::select('department')->distinct()->pluck('department');
+        return view('timings.create', compact('projects', 'employees', 'departments'));
     }
 
     public function storeMultiple(Request $request)
@@ -78,7 +78,7 @@ class TimingController extends Controller
             'timings' => 'required|array',
             'timings.*.tanggal' => 'required|date',
             'timings.*.project_id' => 'required|exists:projects,id',
-            'timings.*.category' => 'required',
+            'timings.*.department' => 'required',
             'timings.*.step' => 'required',
             'timings.*.parts' => 'nullable|string',
             'timings.*.employee_id' => 'required|exists:employees,id',
