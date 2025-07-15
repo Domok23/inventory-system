@@ -27,18 +27,29 @@ function initializeAudio() {
         });
 }
 function playNotificationSound() {
-    if (!audioContext || !audioBuffer) return;
-    // Buat sumber audio baru
-    const source = audioContext.createBufferSource();
-    source.buffer = audioBuffer;
-    source.connect(audioContext.destination);
-    source.start(0);
+    // Web Audio API
+    if (audioContext && audioBuffer) {
+        const source = audioContext.createBufferSource();
+        source.buffer = audioBuffer;
+        source.connect(audioContext.destination);
+        source.start(0);
+    } else {
+        // Fallback ke HTML5 Audio jika gagal
+        const audioEl = document.getElementById("notification-sound");
+        if (audioEl) {
+            audioEl.currentTime = 0;
+            audioEl.play();
+        }
+    }
 }
 
 // --- Toast ---
 function showToast(materialRequest, action, playSound = true) {
     const toastContainer = document.getElementById("toast-container");
     const toastTemplate = document.getElementById("toast-template");
+
+    // Pastikan container dan template ada
+    if (!toastContainer || !toastTemplate) return;
 
     // Clone elemen template toast
     const toastElement = toastTemplate.cloneNode(true);
@@ -84,6 +95,16 @@ function showToast(materialRequest, action, playSound = true) {
             }</strong>
             for <strong>${materialRequest.project?.name || "N/A"}</strong>
             <span class="text-danger">has been deleted.</span>
+        `;
+    } else if (action === "reminder") {
+        message = `
+            <strong>Hi Admin</strong><br>
+            You haven't send <strong>${
+                materialRequest.inventory?.name || "N/A"
+            }</strong>
+            for <strong>${materialRequest.project?.name || "N/A"}</strong>
+            from <strong>${ucfirst(materialRequest.requested_by)}</strong>.<br>
+            <span class="text-danger">Tolong segera diantar!</span>
         `;
     } else {
         // Jika action tidak dikenali, jangan tampilkan toast
@@ -369,6 +390,15 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     );
 
+    window.Echo.channel("material-requests").listen(
+        "MaterialRequestReminder",
+        function (e) {
+            if (window.authUser && window.authUser.is_logistic_admin) {
+                showToast(e.materialRequest, "reminder", true);
+            }
+        }
+    );
+
     // Hanya jalankan select color logic jika tabel material request ada
     const materialRequestTable = document.querySelector(
         '#datatable[data-material-request-table="1"]'
@@ -397,7 +427,7 @@ $("#datatable").on("draw.dt", function () {
 // --- Audio resume on user interaction ---
 document.body.addEventListener(
     "click",
-    () => {
+    function () {
         if (audioContext && audioContext.state === "suspended") {
             audioContext.resume();
         }

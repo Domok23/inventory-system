@@ -80,6 +80,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/material_requests/{id}/edit', [MaterialRequestController::class, 'edit'])->name('material_requests.edit');
     Route::put('/material_requests/{id}', [MaterialRequestController::class, 'update'])->name('material_requests.update');
     Route::delete('/material_requests/{id}', [MaterialRequestController::class, 'destroy'])->name('material_requests.destroy');
+    Route::post('/material_requests/{id}/reminder', [MaterialRequestController::class, 'sendReminder'])->name('material_requests.reminder');
 
     // Categories
     Route::post('/categories/quick-add', [CategoryController::class, 'storeQuick'])->name('categories.store');

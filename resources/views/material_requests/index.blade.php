@@ -219,6 +219,13 @@
                                                         class="bi bi-trash3"></i></button>
                                             </form>
                                         @endif
+                                        @if ($req->status === 'approved' && $req->processed_qty < $req->qty)
+                                            <button class="btn btn-sm btn-primary btn-reminder"
+                                                data-id="{{ $req->id }}" data-bs-toggle="tooltip"
+                                                data-bs-placement="bottom" title="Remind Logistic">
+                                                <i class="bi bi-bell"></i>
+                                            </button>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>
@@ -383,5 +390,18 @@
             is_logistic_admin: {{ auth()->user()->isLogisticAdmin() ? 'true' : 'false' }},
             is_super_admin: {{ auth()->user()->isSuperAdmin() ? 'true' : 'false' }}
         };
+
+        $(document).on('click', '.btn-reminder', function() {
+            const id = $(this).data('id');
+            $.post(`/material_requests/${id}/reminder`, {}, function(res) {
+                if (res.success) {
+                    Swal.fire('Reminder sent!', 'Logistic will be notified.', 'success');
+                } else {
+                    Swal.fire('Error', res.message || 'Failed to send reminder.', 'error');
+                }
+            }).fail(function(xhr) {
+                Swal.fire('Error', 'Failed to send reminder. Please try again.', 'error');
+            });
+        });
     </script>
 @endpush
