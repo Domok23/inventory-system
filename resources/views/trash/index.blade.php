@@ -47,6 +47,7 @@
             'materialUsages' => 'Material Usage',
             'currencies' => 'Currency',
             'users' => 'User',
+            'employees' => 'Employee',
         ] as $var => $label)
                     <h5 class="mt-4">{{ $label }}</h5>
                     <table class="table table-bordered table-sm align-middle" id="table-{{ $var }}">
@@ -75,6 +76,7 @@
                                                 'materialUsages' => 'material_usage',
                                                 'currencies' => 'currency',
                                                 'users' => 'user',
+                                                'employees' => 'employee',
                                             ][$var] }}">
                                     </td>
                                     <td>{{ $item->id }}</td>
@@ -90,6 +92,8 @@
                                             {{ $item->username }}
                                         @elseif(isset($item->remark))
                                             {{ $item->remark }}
+                                        @elseif($var === 'employees')
+                                            {{ $item->name }}
                                         @else
                                             (no info)
                                         @endif
@@ -110,6 +114,7 @@
                                                         'materialUsages' => 'material_usage',
                                                         'currencies' => 'currency',
                                                         'users' => 'user',
+                                                        'employees' => 'employee',
                                                     ][$var] }}">
                                                 <input type="hidden" name="id" value="{{ $item->id }}">
                                                 <button class="btn btn-success btn-sm restore-btn" type="button"
@@ -129,6 +134,7 @@
                                                         'materialUsages' => 'material_usage',
                                                         'currencies' => 'currency',
                                                         'users' => 'user',
+                                                        'employees' => 'employee',
                                                     ][$var] }}">
                                                 <input type="hidden" name="id" value="{{ $item->id }}">
                                                 <button class="btn btn-danger btn-sm delete-btn" type="button"
@@ -148,17 +154,16 @@
 @push('scripts')
     <script>
         $(document).ready(function() {
-            @foreach (['inventories', 'projects', 'materialRequests', 'goodsOuts', 'goodsIns', 'materialUsages', 'currencies', 'users', 'categories'] as $var)
+            @foreach (['inventories', 'projects', 'materialRequests', 'goodsOuts', 'goodsIns', 'materialUsages', 'currencies', 'users', 'employees', 'categories'] as $var)
                 $('#table-{{ $var }}').DataTable({
                     responsive: true,
                     stateSave: true,
                     order: [],
                     pageLength: 10,
                     columnDefs: [{
-                            orderable: false,
-                            targets: 0
-                        }
-                    ]
+                        orderable: false,
+                        targets: 0
+                    }]
                 });
             @endforeach
 

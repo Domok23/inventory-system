@@ -12,7 +12,7 @@ class EmployeeController extends Controller
      */
     public function index()
     {
-        $employees = Employee::all();
+        $employees = Employee::withTrashed()->get();
         return view('employees.index', compact('employees'));
     }
 
@@ -27,7 +27,7 @@ class EmployeeController extends Controller
             'name' => 'required|string|max:255',
             'position' => 'required|string|max:255',
             'department' => 'nullable|string|max:255',
-            'email' => 'nullable|email|unique:employees,email',
+            'email' => ['nullable', 'email', 'unique:employees,email'],
             'phone' => 'nullable|string|max:20',
             'hire_date' => 'nullable|date',
             'salary' => 'nullable|numeric|min:0',
@@ -35,8 +35,8 @@ class EmployeeController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        Employee::create($request->all());
-        return redirect()->route('employees.index')->with('success', 'Employee berhasil ditambahkan.');
+        Employee::create($request->only(['name', 'position', 'department', 'email', 'phone', 'hire_date', 'salary', 'status', 'notes']));
+        return redirect()->route('employees.index')->with('success', 'Employee successfully added.');
     }
 
     public function edit(Employee $employee)
@@ -50,7 +50,7 @@ class EmployeeController extends Controller
             'name' => 'required|string|max:255',
             'position' => 'required|string|max:255',
             'department' => 'nullable|string|max:255',
-            'email' => 'nullable|email|unique:employees,email,' . $employee->id,
+            'email' => ['nullable', 'email', 'unique:employees,email' . ($employee ? ',' . $employee->id : '')],
             'phone' => 'nullable|string|max:20',
             'hire_date' => 'nullable|date',
             'salary' => 'nullable|numeric|min:0',
@@ -58,20 +58,27 @@ class EmployeeController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        $employee->update($request->all());
-        return redirect()->route('employees.index')->with('success', 'Employee berhasil diupdate.');
+        $employee->update($request->only(['name', 'position', 'department', 'email', 'phone', 'hire_date', 'salary', 'status', 'notes']));
+        return redirect()->route('employees.index')->with('success', 'Employee successfully updated.');
     }
 
     public function destroy(Employee $employee)
     {
         $employee->delete();
-        return redirect()->route('employees.index')->with('success', 'Employee berhasil dihapus.');
+        return redirect()->route('employees.index')->with('success', 'Employee successfully deleted.');
+    }
+
+    public function restore($id)
+    {
+        $employee = Employee::onlyTrashed()->findOrFail($id);
+        $employee->restore();
+        return redirect()->route('employees.index')->with('success', 'Employee successfully restored.');
     }
 
     // View timing
     public function timing(Employee $employee)
     {
-        $timings = $employee->timings()->with('project')->get();
+        $timings = $employee->timings()->with('project')->paginate(50);
         return view('employees.timing', compact('employee', 'timings'));
     }
 }

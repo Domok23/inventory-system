@@ -11,6 +11,7 @@ use App\Models\GoodsIn;
 use App\Models\MaterialRequest;
 use App\Models\Currency;
 use App\Models\User;
+use App\Models\Employee;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 
@@ -38,6 +39,7 @@ class TrashController extends Controller
             'materialUsages'   => MaterialUsage::onlyTrashed()->with(['inventory', 'project'])->get(),
             'currencies'       => Currency::onlyTrashed()->get(),
             'users'            => User::onlyTrashed()->get(),
+            'employees'        => Employee::onlyTrashed()->get(),
         ]);
     }
 
@@ -134,6 +136,7 @@ class TrashController extends Controller
             'material_usage'   => MaterialUsage::class,
             'currency'         => Currency::class,
             'user'             => User::class,
+            'employee'         => Employee::class,
             default            => null,
         };
     }

@@ -4,63 +4,66 @@
     <div class="container-fluid py-4">
         <div class="card shadow-sm border-0 mb-4">
             <div class="card-body">
-                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3 gap-2">
-                    <h4 class="mb-0 text-primary">Employees Data</h4>
-                    <a href="{{ route('employees.create') }}" class="btn btn-primary btn-sm">
-                        <i class="bi bi-plus-circle"></i> Add Employee
-                    </a>
+                <!-- Header -->
+                <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-2 mb-3">
+                    <!-- Header -->
+                    <h2 class="mb-2 mb-lg-0 flex-shrink-0" style="font-size:1.3rem;"><i class="fas fa-users"></i> Employees
+                        Data
+                    </h2>
+
+                    <!-- Spacer untuk mendorong tombol ke kanan -->
+                    <div class="ms-lg-auto d-flex flex-wrap gap-2">
+                        <a href="{{ route('employees.create') }}" class="btn btn-primary btn-sm">
+                            <i class="bi bi-plus-circle"></i> Add Employee
+                        </a>
+                    </div>
                 </div>
                 @if (session('success'))
                     <div class="alert alert-success">{{ session('success') }}</div>
                 @endif
 
-                <div class="table-responsive">
-                    <table class="table table-bordered table-hover align-middle" id="employees-table">
-                        <thead class="table-light">
+                <table class="table table-bordered table-hover align-middle" id="employees-table">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Employee Name</th>
+                            <th>Position</th>
+                            <th>Department</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($employees as $employee)
                             <tr>
-                                <th>Employee Name</th>
-                                <th>Position</th>
-                                <th>Department</th>
-                                <th>Status</th>
-                                <th>Action</th>
+                                <td>{{ $employee->name }}</td>
+                                <td>{{ $employee->position }}</td>
+                                <td>{{ $employee->department ? ucfirst($employee->department) : '-' }}</td>
+                                <td>
+                                    <span class="badge bg-{{ $employee->status_badge['color'] }}">
+                                        {{ $employee->status_badge['text'] }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-wrap gap-1">
+                                        <a href="{{ route('employees.edit', $employee) }}" class="btn btn-warning btn-sm">
+                                            <i class="bi bi-pencil"></i> Edit
+                                        </a>
+                                        <a href="{{ route('employees.timing', $employee) }}" class="btn btn-info btn-sm">
+                                            <i class="bi bi-clock"></i> Timing
+                                        </a>
+                                        <form action="{{ route('employees.destroy', $employee) }}" method="POST"
+                                            style="display:inline;">
+                                            @csrf @method('DELETE')
+                                            <button type="submit" class="btn btn-danger btn-sm">
+                                                <i class="bi bi-trash"></i> Delete
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($employees as $employee)
-                                <tr>
-                                    <td>{{ $employee->name }}</td>
-                                    <td>{{ $employee->position }}</td>
-                                    <td>{{ $employee->department ? ucfirst($employee->department) : '-' }}</td>
-                                    <td>
-                                        <span class="badge bg-{{ $employee->status_badge['color'] }}">
-                                            {{ $employee->status_badge['text'] }}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex flex-wrap gap-1">
-                                            <a href="{{ route('employees.edit', $employee) }}"
-                                                class="btn btn-warning btn-sm">
-                                                <i class="bi bi-pencil"></i> Edit
-                                            </a>
-                                            <a href="{{ route('employees.timing', $employee) }}"
-                                                class="btn btn-info btn-sm">
-                                                <i class="bi bi-clock"></i> Timing
-                                            </a>
-                                            <form action="{{ route('employees.destroy', $employee) }}" method="POST"
-                                                style="display:inline;">
-                                                @csrf @method('DELETE')
-                                                <button type="submit" class="btn btn-danger btn-sm"
-                                                    onclick="return confirm('Are you sure you want to delete this employee?')">
-                                                    <i class="bi bi-trash"></i> Delete
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -212,11 +215,10 @@
                     zeroRecords: "No employees match your search criteria"
                 },
                 columnDefs: [{
-                        targets: 4, // Action column (index 4)
-                        orderable: false,
-                        searchable: false
-                    },
-                ],
+                    targets: 4, // Action column (index 4)
+                    orderable: false,
+                    searchable: false
+                }, ],
                 order: [
                     [0, 'asc']
                 ], // Default sort by employee name
@@ -227,15 +229,26 @@
             // Inisialisasi DataTables
             $('#employees-table').DataTable(dtConfig);
 
-            // Konfirmasi delete
+            // konfirmasi delete dengan SweetAlert
             $(document).on('click', '.btn-danger', function(e) {
                 e.preventDefault();
                 const form = $(this).closest('form');
                 const employeeName = $(this).closest('tr').find('td:first').text();
 
-                if (confirm(`Are you sure you want to delete employee "${employeeName}"?`)) {
-                    form.submit();
-                }
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: `Delete employee "${employeeName}"? This action cannot be undone!`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, delete!',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
             });
         });
     </script>

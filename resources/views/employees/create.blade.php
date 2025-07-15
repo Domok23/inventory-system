@@ -4,7 +4,9 @@
     <div class="container mt-4">
         <div class="card shadow rounded">
             <div class="card-header">
-                <h2 class="mb-0 flex-shrink-0" style="font-size:1.3rem;">Add New Employee</h2>
+                <h2 class="mb-0" style="font-size:1.3rem;">
+                    <i class="bi bi-person-plus-fill me-2"></i>Add New Employee
+                </h2>
             </div>
             <div class="card-body">
                 @if (session('success'))
@@ -28,131 +30,113 @@
                 <form method="POST" action="{{ route('employees.store') }}">
                     @csrf
                     <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="name" class="form-label">Employee Name <span
-                                        class="text-danger">*</span></label>
+                        <div class="col-md-6 mb-3">
+                            <label for="name" class="form-label">Employee Name <span
+                                    class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-person"></i></span>
                                 <input type="text" class="form-control" id="name" name="name"
                                     value="{{ old('name') }}" required>
-                                @error('name')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
                             </div>
+                            @error('name')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
                         </div>
-
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="position" class="form-label">Position <span class="text-danger">*</span></label>
+                        <div class="col-md-6 mb-3">
+                            <label for="position" class="form-label">Position <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-briefcase"></i></span>
                                 <input type="text" class="form-control" id="position" name="position"
                                     value="{{ old('position') }}" required>
-                                @error('position')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
                             </div>
+                            @error('position')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
                         </div>
                     </div>
 
                     <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="department" class="form-label">Department</label>
-                                <select name="department" id="department" class="form-select">
-                                    <option value="">Select Department</option>
-                                    <option value="logistic" {{ old('department') == 'logistic' ? 'selected' : '' }}>
-                                        Logistic
-                                    </option>
-                                    <option value="mascot" {{ old('department') == 'mascot' ? 'selected' : '' }}>
-                                        Mascot
-                                    </option>
-                                    <option value="costume" {{ old('department') == 'costume' ? 'selected' : '' }}>
-                                        Costume
-                                    </option>
-                                    <option value="finance" {{ old('department') == 'finance' ? 'selected' : '' }}>
-                                        Finance
-                                    </option>
-                                    <option value="animatronic" {{ old('department') == 'animatronic' ? 'selected' : '' }}>
-                                        Animatronic
-                                    </option>
-                                    <option value="plusstoys" {{ old('department') == 'plusstoys' ? 'selected' : '' }}>
-                                        Plus Toys
-                                    </option>
-                                </select>
-                                @error('department')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="department" class="form-label">Department</label>
+                            <select name="department" id="department" class="form-select">
+                                <option value="">Select Department</option>
+                                <option value="logistic" {{ old('department') == 'logistic' ? 'selected' : '' }}>Logistic
+                                </option>
+                                <option value="mascot" {{ old('department') == 'mascot' ? 'selected' : '' }}>Mascot</option>
+                                <option value="costume" {{ old('department') == 'costume' ? 'selected' : '' }}>Costume
+                                </option>
+                                <option value="finance" {{ old('department') == 'finance' ? 'selected' : '' }}>Finance
+                                </option>
+                                <option value="animatronic" {{ old('department') == 'animatronic' ? 'selected' : '' }}>
+                                    Animatronic</option>
+                                <option value="plusstoys" {{ old('department') == 'plusstoys' ? 'selected' : '' }}>Plus
+                                    Toys</option>
+                            </select>
+                            @error('department')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
                         </div>
-
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="status" class="form-label">Employment Status <span
-                                        class="text-danger">*</span></label>
-                                <select name="status" id="status" class="form-select" required>
-                                    <option value="active" {{ old('status', 'active') == 'active' ? 'selected' : '' }}>
-                                        Active
-                                    </option>
-                                    <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>
-                                        Inactive
-                                    </option>
-                                    <option value="terminated" {{ old('status') == 'terminated' ? 'selected' : '' }}>
-                                        Terminated
-                                    </option>
-                                </select>
-                                @error('status')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="status" class="form-label">Employment Status <span
+                                    class="text-danger">*</span></label>
+                            <select name="status" id="status" class="form-select" required>
+                                <option value="active" {{ old('status', 'active') == 'active' ? 'selected' : '' }}>Active
+                                </option>
+                                <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive
+                                </option>
+                                <option value="terminated" {{ old('status') == 'terminated' ? 'selected' : '' }}>Terminated
+                                </option>
+                            </select>
+                            @error('status')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
                         </div>
                     </div>
 
                     <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Email</label>
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
                                 <input type="email" class="form-control" id="email" name="email"
                                     value="{{ old('email') }}" placeholder="employee@company.com">
-                                @error('email')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
                             </div>
+                            @error('email')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
                         </div>
-
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="phone" class="form-label">Phone Number</label>
+                        <div class="col-md-6 mb-3">
+                            <label for="phone" class="form-label">Phone Number</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-telephone"></i></span>
                                 <input type="tel" class="form-control" id="phone" name="phone"
                                     value="{{ old('phone') }}" placeholder="+62 xxx xxxx xxxx">
-                                @error('phone')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
                             </div>
+                            @error('phone')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
                         </div>
                     </div>
 
                     <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="hire_date" class="form-label">Hire Date</label>
-                                <input type="date" class="form-control" id="hire_date" name="hire_date"
-                                    value="{{ old('hire_date') }}">
-                                @error('hire_date')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
-                            </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="hire_date" class="form-label">Hire Date</label>
+                            <input type="date" class="form-control" id="hire_date" name="hire_date"
+                                value="{{ old('hire_date') }}">
+                            @error('hire_date')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
                         </div>
-
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="salary" class="form-label">Salary</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">Rp</span>
-                                    <input type="number" class="form-control" id="salary" name="salary"
-                                        value="{{ old('salary') }}" placeholder="0" min="0">
-                                </div>
-                                @error('salary')
-                                    <small class="text-danger">{{ $message }}</small>
-                                @enderror
+                        <div class="col-md-6 mb-3">
+                            <label for="salary" class="form-label">Salary</label>
+                            <div class="input-group">
+                                <span class="input-group-text">Rp</span>
+                                <input type="number" class="form-control" id="salary" name="salary"
+                                    value="{{ old('salary') }}" placeholder="0" min="0">
                             </div>
+                            @error('salary')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
                         </div>
                     </div>
 
@@ -165,7 +149,7 @@
                         @enderror
                     </div>
 
-                    <div class="d-flex gap-2">
+                    <div class="d-flex justify-content-end gap-2 mt-3">
                         <a href="{{ route('employees.index') }}" class="btn btn-secondary">
                             <i class="bi bi-arrow-left"></i> Cancel
                         </a>
@@ -186,21 +170,17 @@
             const salaryInput = document.getElementById('salary');
             if (salaryInput) {
                 salaryInput.addEventListener('input', function() {
-                    // Remove non-numeric characters
                     this.value = this.value.replace(/[^0-9]/g, '');
                 });
             }
-
             // Format phone number input
             const phoneInput = document.getElementById('phone');
             if (phoneInput) {
                 phoneInput.addEventListener('input', function() {
-                    // Basic phone number formatting
                     let value = this.value.replace(/[^0-9+]/g, '');
                     this.value = value;
                 });
             }
-
             // Auto-dismiss alerts after 5 seconds
             const alerts = document.querySelectorAll('.alert');
             alerts.forEach(alert => {

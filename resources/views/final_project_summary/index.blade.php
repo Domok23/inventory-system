@@ -8,11 +8,11 @@
                     Final Project Summary</h3>
                 <form method="GET" class="row g-2 align-items-end mb-3">
                     <div class="col-md-4">
-                        <label class="form-label mb-1">Search Project</label>
+                        <label class="form-label mb-1">Search</label>
                         <input type="text" name="search" value="{{ request('search') }}" class="form-control"
-                            placeholder="Project name...">
+                            placeholder="Search project name...">
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <label class="form-label mb-1">Filter Department</label>
                         <select name="department" class="form-select select2" data-placeholder="All Departments">
                             <option value="">All Departments</option>
@@ -23,35 +23,28 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-md-2">
-                        <button type="submit" class="btn btn-primary w-100"><i class="bi bi-search"></i> Filter</button>
-                    </div>
-                    <div class="col-md-2">
-                        <a href="{{ route('final_project_summary.index') }}"
-                            class="btn btn-outline-secondary w-100">Reset</a>
+                    <div class="col-lg-2 d-flex align-items-end gap-2">
+                        <a href="{{ route('final_project_summary.index') }}" class="btn btn-secondary">Reset</a>
                     </div>
                 </form>
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle rounded shadow-sm" id="projects-table">
-                        <thead class="table-light">
-                            <tr>
-                                <th style="width:45%;">Project Name</th>
-                                <th style="width:25%;">Department</th>
-                                <th style="width:20%;">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="timing-rows">
-                            @include('final_project_summary.project_table', ['projects' => $projects])
-                        </tbody>
-                    </table>
-                </div>
+                <table class="table table-hover align-middle rounded shadow-sm" id="projects-table">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width:45%;">Project Name</th>
+                            <th style="width:25%;">Department</th>
+                            <th style="width:20%;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="timing-rows">
+                        @include('final_project_summary.project_table', ['projects' => $projects])
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 @endsection
 
 @push('styles')
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <style>
         .select2-container .select2-selection--single {
             height: 2.375rem;
@@ -175,12 +168,12 @@
 @endpush
 
 @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         let dt;
         let dtConfig = {
             responsive: true,
-            searching: false, // Disable DataTables built-in search
+            stateSave: true,
+            searching: false,
             paging: true,
             info: true,
             ordering: true,
@@ -195,16 +188,26 @@
                 zeroRecords: "No projects found"
             },
             columnDefs: [{
-                targets: 2, // Action column
-                orderable: false,
-                searchable: false
-            }],
+                    targets: 2, // Action column
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    targets: '_all',
+                    defaultContent: '-'
+                }
+            ],
             order: [
                 [0, 'asc']
-            ], // Default sort by project name
+            ],
             drawCallback: function(settings) {
-                // Callback setelah table di-draw ulang
                 console.log('DataTables redrawn with', settings.fnRecordsTotal(), 'records');
+            },
+            createdRow: function(row, data, dataIndex) {
+                if ($(row).hasClass('no-data-row')) {
+                    // Hapus semua <td> setelah yang pertama agar colspan tetap
+                    $(row).find('td:gt(0)').remove();
+                }
             }
         };
 
@@ -217,46 +220,76 @@
                 allowClear: true
             });
 
+            function updateQueryString() {
+                const params = new URLSearchParams();
+                const search = $('input[name="search"]').val();
+                const department = $('select[name="department"]').val();
+                if (search) params.set('search', search);
+                if (department) params.set('department', department);
+                const newUrl = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
+                window.history.replaceState({}, '', newUrl);
+            }
+
+            function setFiltersFromUrl() {
+                const params = new URLSearchParams(window.location.search);
+                if (params.has('search')) $('input[name="search"]').val(params.get('search'));
+                if (params.has('department')) $('select[name="department"]').val(params.get('department')).trigger(
+                    'change');
+            }
+            setFiltersFromUrl();
+
             // Inisialisasi DataTables
             dt = $('#projects-table').DataTable(dtConfig);
 
             // Live search dengan AJAX
+            let debounceTimer;
             $('input[name="search"], select[name="department"]').on('input change', function() {
-                let search = $('input[name="search"]').val();
-                let department = $('select[name="department"]').val();
+                updateQueryString();
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(function() {
+                    let search = $('input[name="search"]').val();
+                    let department = $('select[name="department"]').val();
 
-                $.ajax({
-                    url: "{{ route('final_project_summary.ajax_search') }}",
-                    method: 'GET',
-                    data: {
-                        search: search,
-                        department: department
-                    },
-                    success: function(res) {
-                        try {
-                            // Destroy DataTables dengan error handling
-                            if (dt && typeof dt.destroy === 'function') {
-                                dt.destroy();
+                    $.ajax({
+                        url: "{{ route('final_project_summary.ajax_search') }}",
+                        method: 'GET',
+                        data: {
+                            search: search,
+                            department: department
+                        },
+                        success: function(res) {
+                            try {
+                                // Simpan state sebelum destroy
+                                let state = dt.state ? dt.state.loaded() : null;
+
+                                if (dt && typeof dt.destroy === 'function') {
+                                    dt.destroy();
+                                }
+
+                                // Update content
+                                $('#timing-rows').html(res.html);
+
+                                // Reinit DataTables
+                                dt = $('#projects-table').DataTable(dtConfig);
+
+                                // Restore state (page, order, dll)
+                                if (state) {
+                                    if (state.start) dt.page(state.start / dt.page
+                                        .len()).draw('page');
+                                    if (state.order) dt.order(state.order).draw();
+                                }
+                            } catch (error) {
+                                console.error('Error reinitializing DataTables:',
+                                    error);
+                                location.reload();
                             }
-
-                            // Update content
-                            $('#timing-rows').html(res.html);
-
-                            // Reinit DataTables dengan config yang sama
-                            dt = $('#projects-table').DataTable(dtConfig);
-
-                        } catch (error) {
-                            console.error('Error reinitializing DataTables:', error);
-
-                            // Fallback: reload page jika ada error
-                            location.reload();
+                        },
+                        error: function(xhr) {
+                            console.error('AJAX Error:', xhr);
+                            alert('Error loading data. Please try again.');
                         }
-                    },
-                    error: function(xhr) {
-                        console.error('AJAX Error:', xhr);
-                        alert('Error loading data. Please try again.');
-                    }
-                });
+                    });
+                }, 400);
             });
         });
     </script>

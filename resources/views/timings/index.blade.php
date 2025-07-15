@@ -5,10 +5,10 @@
         <div class="card shadow-sm border-0 mb-4">
             <div class="card-body">
                 <!-- Header -->
-                <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-2 mb-3">
+                <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-2 mb-2">
                     <!-- Header -->
-                    <h2 class="mb-2 mb-lg-0 flex-shrink-0" style="font-size:1.3rem;"><i
-                            class="far fa-clock"></i> Timing Data</h2>
+                    <h2 class="mb-2 mb-lg-0 flex-shrink-0" style="font-size:1.3rem;"><i class="far fa-clock"></i> Timing Data
+                    </h2>
 
                     <!-- Spacer untuk mendorong tombol ke kanan -->
                     <div class="ms-lg-auto d-flex flex-wrap gap-2">
@@ -23,12 +23,12 @@
                 @endif
 
                 <form method="GET" class="row g-2 align-items-end mb-3">
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <label class="form-label mb-1">Search</label>
                         <input type="text" name="search" value="{{ request('search') }}" class="form-control"
-                            placeholder="Cari step, remarks...">
+                            placeholder="Search step, remarks...">
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <label class="form-label mb-1">Filter Project</label>
                         <select name="project_id" class="form-select select2" data-placeholder="All Projects">
                             <option value="">All Projects</option>
@@ -63,11 +63,11 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-md-2 d-flex gap-2">
-                        <button type="submit" class="btn btn-primary w-100"><i class="bi bi-search"></i> Filter</button>
-                        <a href="{{ route('timings.index') }}" class="btn btn-outline-secondary w-100">Reset</a>
+                    <div class="col-lg-2 d-flex align-items-end gap-2">
+                        <a href="{{ route('timings.index') }}" class="btn btn-secondary">Reset</a>
                     </div>
                 </form>
+                <div id="timing-error-alert" class="alert alert-danger d-none" role="alert"></div>
                 <table class="table table-bordered table-hover align-middle rounded shadow-sm" id="timing-table">
                     <thead class="table-light">
                         <tr>
@@ -240,6 +240,7 @@
         let dt;
         let dtConfig = {
             responsive: true,
+            stateSave: true,
             searching: false,
             paging: true,
             info: true,
@@ -272,55 +273,93 @@
                 allowClear: true
             });
 
+            // Fungsi update query string di URL
+            function updateQueryString() {
+                const params = new URLSearchParams();
+                const search = $('input[name="search"]').val();
+                const project_id = $('select[name="project_id"]').val();
+                const department = $('select[name="department"]').val();
+                const employee_id = $('select[name="employee_id"]').val();
+
+                if (search) params.set('search', search);
+                if (project_id) params.set('project_id', project_id);
+                if (department) params.set('department', department);
+                if (employee_id) params.set('employee_id', employee_id);
+
+                const newUrl = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
+                window.history.replaceState({}, '', newUrl);
+            }
+
+            // Fungsi set filter dari URL saat halaman load
+            function setFiltersFromUrl() {
+                const params = new URLSearchParams(window.location.search);
+                if (params.has('search')) $('input[name="search"]').val(params.get('search'));
+                if (params.has('project_id')) $('select[name="project_id"]').val(params.get('project_id')).trigger(
+                    'change');
+                if (params.has('department')) $('select[name="department"]').val(params.get('department')).trigger(
+                    'change');
+                if (params.has('employee_id')) $('select[name="employee_id"]').val(params.get('employee_id'))
+                    .trigger('change');
+            }
+            setFiltersFromUrl();
+
             // Inisialisasi DataTables
             dt = $('#timing-table').DataTable(dtConfig);
 
-            // AJAX search & filter
+            // AJAX search & filter dengan debounce dan update URL
+            let debounceTimer;
             $('input[name="search"], select[name="project_id"], select[name="department"], select[name="employee_id"]')
                 .on('input change', function() {
-                    let search = $('input[name="search"]').val();
-                    let project_id = $('select[name="project_id"]').val();
-                    let department = $('select[name="department"]').val();
-                    let employee_id = $('select[name="employee_id"]').val();
+                    updateQueryString(); // update URL setiap filter berubah
+                    clearTimeout(debounceTimer);
+                    debounceTimer = setTimeout(function() {
+                        let state = dt.state ? dt.state.loaded() : null;
 
-                    $.ajax({
-                        url: "{{ route('timings.ajax_search') }}",
-                        method: 'POST',
-                        data: {
-                            search: search,
-                            project_id: project_id,
-                            department: department,
-                            employee_id: employee_id,
-                        },
-                        success: function(res) {
-                            try {
-                                // Destroy DataTables dengan error handling
-                                if (dt && typeof dt.destroy === 'function') {
-                                    dt.destroy();
+                        let search = $('input[name="search"]').val();
+                        let project_id = $('select[name="project_id"]').val();
+                        let department = $('select[name="department"]').val();
+                        let employee_id = $('select[name="employee_id"]').val();
+
+                        $.ajax({
+                            url: "{{ route('timings.ajax_search') }}",
+                            method: 'POST',
+                            data: {
+                                search: search,
+                                project_id: project_id,
+                                department: department,
+                                employee_id: employee_id,
+                            },
+                            success: function(res) {
+                                $('#timing-error-alert').addClass('d-none').text('');
+                                try {
+                                    if (dt && typeof dt.destroy === 'function') {
+                                        dt.destroy();
+                                    }
+                                    $('#timing-rows').html(res.html);
+                                    dt = $('#timing-table').DataTable(dtConfig);
+
+                                    if (state) {
+                                        if (state.start) dt.page(state.start / dt.page
+                                        .len()).draw('page');
+                                        if (state.order) dt.order(state.order).draw();
+                                    }
+                                } catch (error) {
+                                    location.reload();
                                 }
-
-                                // Update content
-                                $('#timing-rows').html(res.html);
-
-                                // Reinit DataTables dengan config yang sama
-                                dt = $('#timing-table').DataTable(dtConfig);
-
-                            } catch (error) {
-                                console.error('Error reinitializing DataTables:', error);
-
-                                // Fallback: reload page jika ada error
-                                location.reload();
+                            },
+                            error: function(xhr) {
+                                let msg =
+                                    'Failed to load data. Please check your connection or try again in a while.';
+                                if (xhr.status === 500) {
+                                    msg =
+                                        'An error occurred on the server. Please try again later.';
+                                } else if (xhr.status === 404) {
+                                    msg = 'Data not found.';
+                                }
+                                $('#timing-error-alert').removeClass('d-none').text(msg);
                             }
-                        },
-                        error: function(xhr) {
-                            console.error('AJAX Error:', xhr);
-                            console.error('Status:', xhr.status);
-                            console.error('Response:', xhr.responseText);
-
-                            // Show user-friendly error
-                            alert('Error loading data. Please try again.');
-                        }
-                    });
+                        });
+                    }, 400); // 400ms debounce
                 });
         });
     </script>
