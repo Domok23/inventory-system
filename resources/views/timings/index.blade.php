@@ -184,8 +184,8 @@
         }
 
         .dataTables_paginate .paginate_button.current {
-            background: #007bff;
-            border-color: #007bff;
+            background: #8116ed;
+            border-color: #8116ed;
             color: white;
         }
 

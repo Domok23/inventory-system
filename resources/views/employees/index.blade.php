@@ -139,10 +139,12 @@
             border-color: #adb5bd;
         }
 
-        .dataTables_paginate .paginate_button.current {
-            background: #007bff;
-            border-color: #007bff;
-            color: white;
+        #employees-table_wrapper .dataTables_paginate .paginate_button.current,
+        #employees-table_wrapper .dataTables_paginate .paginate_button.current:focus,
+        #employees-table_wrapper .dataTables_paginate .paginate_button.current:active {
+            background: #8116ed !important;
+            border-color: #8116ed !important;
+            color: #fff !important;
         }
 
         .dataTables_paginate .paginate_button.disabled {

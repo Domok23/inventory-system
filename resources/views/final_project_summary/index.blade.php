@@ -4,8 +4,13 @@
     <div class="container py-4">
         <div class="card shadow-sm border-0 mb-4">
             <div class="card-body">
-                <h3 class="mb-3 flex-shrink-0 text-primary">
-                    Final Project Summary</h3>
+                <!-- Header -->
+                <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-2 mb-2">
+                    <!-- Header -->
+                    <h2 class="mb-2 mb-lg-0 flex-shrink-0" style="font-size:1.3rem;"><i class="fas fa-chart-pie"></i> Final
+                        Project Summary
+                    </h2>
+                </div>
                 <form method="GET" class="row g-2 align-items-end mb-3">
                     <div class="col-md-4">
                         <label class="form-label mb-1">Search</label>
@@ -130,8 +135,8 @@
         }
 
         .dataTables_paginate .paginate_button.current {
-            background: #007bff;
-            border-color: #007bff;
+            background: #8116ed;
+            border-color: #8116ed;
             color: white;
         }
 
