@@ -107,7 +107,7 @@ class TimingController extends Controller
             if (in_array($timing['project_id'], $projectsWithParts)) {
                 if (empty($timing['parts'])) {
                     $projectName = Project::find($timing['project_id'])->name ?? 'Unknown';
-                    $errors["timings.$idx.parts"] = "Part wajib dipilih untuk project: <b>$projectName</b>";
+                    $errors["timings.$idx.parts"] = "Part is required for project: <b>$projectName</b>";
                 }
             }
         }
@@ -124,7 +124,7 @@ class TimingController extends Controller
             Timing::create($timing);
         }
 
-        return redirect()->route('timings.index')->with('success', 'Semua data timing berhasil disimpan.');
+        return redirect()->route('timings.index')->with('success', 'All timing data is saved successfully.');
     }
 
     public function show(Timing $timing)

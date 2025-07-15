@@ -32,7 +32,7 @@
                     @csrf
                     <div class="table-responsive">
                         <table class="table table-bordered align-middle" id="bulk-material-table"
-                            style="min-width: 1000px;">
+                            style="min-width: 100%;">
                             <thead class="table-light">
                                 <tr>
                                     <th style="width: 25%;">Project <span class="text-danger">*</span></th>
@@ -45,7 +45,7 @@
                             <tbody id="bulk-rows">
                                 @foreach (old('requests', [0 => []]) as $index => $request)
                                     <tr class="align-top">
-                                        <td>
+                                        <td data-label="Project">
                                             <select name="requests[{{ $index }}][project_id]"
                                                 class="form-select select2 project-select" required>
                                                 <option value="">Select Project</option>
@@ -62,7 +62,7 @@
                                                 <span class="text-danger">{{ $message }}</span>
                                             @enderror
                                         </td>
-                                        <td>
+                                        <td data-label="Material">
                                             <select name="requests[{{ $index }}][inventory_id]"
                                                 class="form-select select2 material-select" required>
                                                 <option value="">Select Material</option>
@@ -79,7 +79,7 @@
                                                 <span class="text-danger">{{ $message }}</span>
                                             @enderror
                                         </td>
-                                        <td>
+                                        <td data-label="Quantity">
                                             <div class="input-group">
                                                 <input type="number" name="requests[{{ $index }}][qty]"
                                                     class="form-control @error("requests.$index.qty") is-invalid @enderror"
@@ -90,13 +90,13 @@
                                                 <span class="text-danger">{{ $message }}</span>
                                             @enderror
                                         </td>
-                                        <td>
+                                        <td data-label="Remark">
                                             <textarea name="requests[{{ $index }}][remark]" class="form-control" rows="1">{{ old("requests.$index.remark") }}</textarea>
                                             @error("requests.$index.remark")
                                                 <span class="text-danger">{{ $message }}</span>
                                             @enderror
                                         </td>
-                                        <td>
+                                        <td data-label="Action">
                                             <button type="button" class="btn btn-danger btn-sm remove-row">Remove</button>
                                         </td>
                                     </tr>
@@ -244,6 +244,57 @@
             #addMaterialModal .modal-footer {
                 padding-left: 0.5rem;
                 padding-right: 0.5rem;
+            }
+        }
+
+        @media (max-width: 992px) {
+
+            .table-responsive table,
+            .table-responsive thead,
+            .table-responsive tbody,
+            .table-responsive tr,
+            .table-responsive th,
+            .table-responsive td {
+                display: block !important;
+                width: 100% !important;
+            }
+
+            .table-responsive thead {
+                display: none !important;
+            }
+
+            .table-responsive tr {
+                margin-bottom: 1.5rem;
+                border-bottom: 2px solid #dee2e6;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+            }
+
+            .table-responsive td {
+                position: relative;
+                padding-left: 120px;
+                min-height: 40px;
+                border: none;
+                border-bottom: 1px solid #dee2e6;
+                box-sizing: border-box;
+                word-break: break-word;
+            }
+
+            .table-responsive td:before {
+                position: absolute;
+                left: 10px;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 100px;
+                white-space: normal;
+                font-weight: 600;
+                color: #888;
+                content: attr(data-label);
+                box-sizing: border-box;
+                text-align: left;
+            }
+
+            .table-responsive td:last-child {
+                border-bottom: 2px solid #dee2e6;
             }
         }
     </style>

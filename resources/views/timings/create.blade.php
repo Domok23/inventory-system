@@ -19,21 +19,20 @@
                 <form action="{{ route('timings.storeMultiple') }}" method="POST">
                     @csrf
                     <div class="table-responsive">
-                        <table class="table table-bordered align-middle mb-0" style="min-width:1200px;">
+                        <table class="table table-bordered align-middle mb-0" style="min-width:100%;">
                             <thead class="table-light align-middle">
                                 <tr>
-                                    <th style="width:10%;">Date</th>
-                                    <th style="width:12%;">Project</th>
-                                    <th style="width:9%;">Department</th>
-                                    <th style="width:8%;">Step</th>
+                                    <th style="width:9%;">Date</th>
+                                    <th style="width:13%;">Project</th>
+                                    <th style="width:13%;">Step</th>
                                     <th style="width:12%;">Part</th>
-                                    <th style="width:12%;">Employee</th>
-                                    <th style="width:7%;">Start</th>
-                                    <th style="width:7%;">End</th>
-                                    <th style="width:6%;">Qty</th>
+                                    <th style="width:13%;">Employee</th>
+                                    <th style="width:5%;">Start</th>
+                                    <th style="width:5%;">End</th>
+                                    <th style="width:5%;">Qty</th>
                                     <th style="width:9%;">Status</th>
                                     <th style="width:13%;">Remarks</th>
-                                    <th style="width:5%;"></th>
+                                    <th style="width:3%;"></th>
                                 </tr>
                             </thead>
                             <tbody id="timing-rows">
@@ -41,13 +40,13 @@
                                     $oldTimings = old('timings') ?? [0 => []];
                                 @endphp
                                 @foreach ($oldTimings as $i => $timing)
-                                    <tr class="timing-row">
-                                        <td>
+                                    <tr class="timing-row align-top">
+                                        <td data-label="Date">
                                             <input type="date" name="timings[{{ $i }}][tanggal]"
                                                 class="form-control form-control-sm" required
                                                 value="{{ old("timings.$i.tanggal") }}">
                                         </td>
-                                        <td>
+                                        <td data-label="Project">
                                             <select name="timings[{{ $i }}][project_id]"
                                                 class="form-select form-select-sm select2 project-select" required>
                                                 <option value="">Select Project</option>
@@ -60,18 +59,23 @@
                                                     </option>
                                                 @endforeach
                                             </select>
+                                            <div
+                                                class="form-text department-text {{ old("timings.$i.project_id") ? '' : 'd-none' }}">
+                                                @php
+                                                    $selectedProject = $projects->firstWhere(
+                                                        'id',
+                                                        old("timings.$i.project_id"),
+                                                    );
+                                                @endphp
+                                                {{ $selectedProject ? 'Department: ' . ucfirst($selectedProject->department) : 'Department' }}
+                                            </div>
                                         </td>
-                                        <td>
-                                            <input type="text" name="timings[{{ $i }}][department]"
-                                                class="form-control form-control-sm department-input" placeholder="Department"
-                                                readonly value="{{ old("timings.$i.department") }}">
-                                        </td>
-                                        <td>
+                                        <td data-label="Step">
                                             <input type="text" name="timings[{{ $i }}][step]"
                                                 class="form-control form-control-sm" placeholder="Step" required
                                                 value="{{ old("timings.$i.step") }}">
                                         </td>
-                                        <td>
+                                        <td data-label="Part">
                                             @php
                                                 $selectedProject = $projects->firstWhere(
                                                     'id',
@@ -97,7 +101,7 @@
                                                 @endif
                                             </select>
                                         </td>
-                                        <td>
+                                        <td data-label="Employee">
                                             <select name="timings[{{ $i }}][employee_id]"
                                                 class="form-select form-select-sm select2" required>
                                                 <option value="">Select Employee</option>
@@ -108,22 +112,22 @@
                                                 @endforeach
                                             </select>
                                         </td>
-                                        <td>
+                                        <td data-label="Start Time">
                                             <input type="time" name="timings[{{ $i }}][start_time]"
                                                 class="form-control form-control-sm" required
                                                 value="{{ old("timings.$i.start_time") }}">
                                         </td>
-                                        <td>
+                                        <td data-label="End Time">
                                             <input type="time" name="timings[{{ $i }}][end_time]"
                                                 class="form-control form-control-sm" required
                                                 value="{{ old("timings.$i.end_time") }}">
                                         </td>
-                                        <td>
+                                        <td data-label="Output Qty">
                                             <input type="number" name="timings[{{ $i }}][output_qty]"
                                                 class="form-control form-control-sm" placeholder="Qty" required
                                                 value="{{ old("timings.$i.output_qty") }}">
                                         </td>
-                                        <td>
+                                        <td data-label="Status">
                                             <select name="timings[{{ $i }}][status]"
                                                 class="form-select form-select-sm" required>
                                                 <option value="pending" style="color:red;"
@@ -137,12 +141,12 @@
                                                 </option>
                                             </select>
                                         </td>
-                                        <td>
+                                        <td data-label="Remarks">
                                             <input type="text" name="timings[{{ $i }}][remarks]"
                                                 class="form-control form-control-sm" placeholder="Remarks"
                                                 value="{{ old("timings.$i.remarks") }}">
                                         </td>
-                                        <td>
+                                        <td data-label="Actions">
                                             <button type="button" class="btn btn-danger btn-sm btn-remove-row"
                                                 title="Delete"><i class="bi bi-trash3"></i></button>
                                         </td>
@@ -151,15 +155,92 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="mt-3 d-flex gap-2">
-                        <button type="button" class="btn btn-primary" id="add-row">+ Add New Row</button>
-                        <button type="submit" class="btn btn-success">Submit</button>
+                    <div class="mt-2 d-flex justify-content-between align-items-center">
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-outline-secondary btn-sm" id="copy-row">
+                                <i class="bi bi-files"></i> Copy Last Row
+                            </button>
+                            <button type="button" class="btn btn-outline-primary btn-sm" id="add-row">
+                                <i class="bi bi-plus-square"></i> Add Empty Row
+                            </button>
+                        </div>
                     </div>
-                </form>
             </div>
+            <div class="card-footer bg-white border-0 d-flex justify-content-end">
+                <button type="submit" class="btn btn-success btn-sm">
+                    <i class="bi bi-check-circle"></i> Submit All
+                </button>
+            </div>
+            </form>
         </div>
     </div>
 @endsection
+
+@push('styles')
+    <style>
+        .form-text.department-text {
+            font-size: 0.75em;
+            margin-top: 2px;
+            margin-bottom: 0;
+            color: #888;
+            line-height: 1.2;
+            padding-left: 2px;
+        }
+
+        @media (max-width: 992px) {
+
+            .table-responsive table,
+            .table-responsive thead,
+            .table-responsive tbody,
+            .table-responsive tr,
+            .table-responsive th,
+            .table-responsive td {
+                display: block !important;
+                width: 100% !important;
+            }
+
+            .table-responsive thead {
+                display: none !important;
+            }
+
+            .table-responsive tr {
+                margin-bottom: 1.5rem;
+                border-bottom: 2px solid #dee2e6;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+            }
+
+            .table-responsive td {
+                position: relative;
+                padding-left: 120px;
+                min-height: 40px;
+                border: none;
+                border-bottom: 1px solid #dee2e6;
+                box-sizing: border-box;
+                width: 100% !important;
+                word-break: break-word;
+            }
+
+            .table-responsive td:before {
+                position: absolute;
+                left: 10px;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 100px;
+                /* Lebar label, sesuaikan dengan padding-left di atas */
+                white-space: normal;
+                font-weight: 600;
+                color: #888;
+                content: attr(data-label);
+                box-sizing: border-box;
+                text-align: left;
+            }
+
+            .table-responsive td:last-child {
+                border-bottom: 2px solid #dee2e6;
+            }
+        }
+    </style>
+@endpush
 
 @push('scripts')
     <script>
@@ -176,7 +257,7 @@
 
             let rowIdx = 1;
 
-            $('#add-row').click(function() {
+            $('#copy-row').click(function() {
                 let $lastRow = $('.timing-row').last();
 
                 // Destroy select2 pada row yang akan di-clone
@@ -195,6 +276,7 @@
                 let prevDept = $lastRow.find('input[name^="timings"][name$="[department]"]').val();
                 let prevStart = $lastRow.find('input[name^="timings"][name$="[start_time]"]').val();
                 let prevEnd = $lastRow.find('input[name^="timings"][name$="[end_time]"]').val();
+                let prevPart = $lastRow.find('select[name^="timings"][name$="[parts]"]').val();
 
                 // Reset value dan name index
                 $newRow.find('input, select').each(function() {
@@ -207,7 +289,7 @@
                     if ($(this).is('[name$="[tanggal]"]')) {
                         $(this).val(prevDate);
                     } else if ($(this).is('[name$="[project_id]"]')) {
-                        $(this).val(prevProject).trigger('change');
+                        $(this).val(prevProject);
                     } else if ($(this).is('[name$="[department]"]')) {
                         $(this).val(prevDept);
                     } else if ($(this).is('[name$="[start_time]"]')) {
@@ -232,6 +314,68 @@
                 initSelect2Row($newRow);
                 initSelect2Row($lastRow);
 
+                // Trigger change project-select di row baru, lalu set part setelah option selesai diisi
+                let $projectSelect = $newRow.find('select[name$="[project_id]"]');
+                $projectSelect.trigger('change');
+
+                // Tunggu option part selesai diisi, lalu set value part
+                setTimeout(function() {
+                    $newRow.find('select[name$="[parts]"]').val('');
+                }, 150);
+
+                rowIdx++;
+            });
+
+            $('#add-row').click(function() {
+                let $lastRow = $('.timing-row').last();
+
+                // Destroy select2 pada row yang akan di-clone
+                $lastRow.find('.select2').each(function() {
+                    if ($(this).data('select2')) {
+                        $(this).select2('destroy');
+                    }
+                });
+
+                // Clone row terakhir
+                let $newRow = $lastRow.clone();
+
+                // Reset value dan name index ke default
+                $newRow.find('input, select').each(function() {
+                    let name = $(this).attr('name');
+                    if (name) {
+                        name = name.replace(/\[\d+\]/, '[' + rowIdx + ']');
+                        $(this).attr('name', name);
+                    }
+                    // Reset semua field ke default
+                    if ($(this).is('input[type="date"]')) {
+                        $(this).val('');
+                    } else if ($(this).is('input[type="time"]')) {
+                        $(this).val('');
+                    } else if ($(this).is('input[type="number"]')) {
+                        $(this).val('');
+                    } else if ($(this).is('input[type="text"]')) {
+                        $(this).val('');
+                    } else if ($(this).is('select')) {
+                        if ($(this).hasClass('project-select')) {
+                            $(this).val('');
+                        } else if ($(this).hasClass('part-select')) {
+                            $(this).html('<option value="">Select Project Part</option>');
+                            $(this).val('');
+                        } else {
+                            $(this).val('');
+                        }
+                    }
+                });
+
+                $newRow.find('.btn-remove-row').show();
+
+                // Append row baru
+                $('#timing-rows').append($newRow);
+
+                // Inisialisasi select2 pada row baru & row terakhir
+                initSelect2Row($newRow);
+                initSelect2Row($lastRow);
+
                 rowIdx++;
             });
 
@@ -244,39 +388,34 @@
             // Project change: isi department & parts otomatis
             $(document).on('change', '.project-select', function() {
                 let $row = $(this).closest('tr');
-                let selected = this.options[this.selectedIndex];
-                // Isi department otomatis
-                let department = selected.getAttribute('data-department');
-                $row.find('.department-input').val(department ? department : '');
-                // Isi part otomatis
+                let selected = $(this).find(':selected')[0];
+                let department = $(selected).data('department');
                 let parts = selected.getAttribute('data-parts');
+                let $deptDiv = $row.find('.department-text');
                 let $partSelect = $row.find('.part-select');
-                $partSelect.html('<option value="">Select Project Part</option>');
-                if (parts) {
+
+                // Update department text
+                if ($(this).val() && department) {
+                    $deptDiv.removeClass('d-none').text('Department: ' + department.charAt(0)
+                        .toUpperCase() + department.slice(1));
+                } else {
+                    $deptDiv.addClass('d-none').text('Department');
+                }
+
+                // Update parts select
+                if (parts && JSON.parse(parts).length > 0) {
+                    $partSelect.prop('disabled', false).prop('readonly', false);
+                    $partSelect.html('<option value="">Select Project Part</option>');
                     JSON.parse(parts).forEach(function(part) {
                         $partSelect.append(`<option value="${part}">${part}</option>`);
                     });
+                    $partSelect.val('');
+                } else {
+                    $partSelect.prop('disabled', true).prop('readonly', true);
+                    $partSelect.html('<option value="No Part" selected>No Part</option>');
+                    $partSelect.val('No Part');
                 }
             });
-        });
-
-        $(document).on('change', '.project-select', function() {
-            let $row = $(this).closest('tr');
-            let selected = this.options[this.selectedIndex];
-            let parts = selected.getAttribute('data-parts');
-            let $partSelect = $row.find('.part-select');
-            if (parts && JSON.parse(parts).length > 0) {
-                $partSelect.prop('disabled', false).prop('readonly', false);
-                $partSelect.html('<option value="">Select Project Part</option>');
-                JSON.parse(parts).forEach(function(part) {
-                    $partSelect.append(`<option value="${part}">${part}</option>`);
-                });
-                $partSelect.val(''); // reset value jika sebelumnya 'No Part'
-            } else {
-                $partSelect.prop('disabled', true).prop('readonly', true);
-                $partSelect.html('<option value="No Part" selected>No Part</option>');
-                $partSelect.val('No Part'); // pastikan value-nya benar
-            }
         });
     </script>
 @endpush
