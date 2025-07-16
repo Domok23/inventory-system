@@ -37,7 +37,7 @@
                             <tr>
                                 <td>{{ $employee->name }}</td>
                                 <td>{{ $employee->position }}</td>
-                                <td>{{ $employee->department ? ucfirst($employee->department) : '-' }}</td>
+                                <td>{{ $employee->department ? ucfirst($employee->department->name) : '-' }}</td>
                                 <td>
                                     <span class="badge bg-{{ $employee->status_badge['color'] }}">
                                         {{ $employee->status_badge['text'] }}

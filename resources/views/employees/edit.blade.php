@@ -59,28 +59,16 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="department" class="form-label">Department</label>
-                            <select name="department" id="department" class="form-select">
+                            <select name="department_id" id="department_id" class="form-select" required>
                                 <option value="">Select Department</option>
-                                <option value="logistic"
-                                    {{ old('department', $employee->department ?? '') == 'logistic' ? 'selected' : '' }}>
-                                    Logistic</option>
-                                <option value="mascot"
-                                    {{ old('department', $employee->department ?? '') == 'mascot' ? 'selected' : '' }}>
-                                    Mascot</option>
-                                <option value="costume"
-                                    {{ old('department', $employee->department ?? '') == 'costume' ? 'selected' : '' }}>
-                                    Costume</option>
-                                <option value="finance"
-                                    {{ old('department', $employee->department ?? '') == 'finance' ? 'selected' : '' }}>
-                                    Finance</option>
-                                <option value="animatronic"
-                                    {{ old('department', $employee->department ?? '') == 'animatronic' ? 'selected' : '' }}>
-                                    Animatronic</option>
-                                <option value="plusstoys"
-                                    {{ old('department', $employee->department ?? '') == 'plusstoys' ? 'selected' : '' }}>
-                                    Plus Toys</option>
+                                @foreach ($departments as $dept)
+                                    <option value="{{ $dept->id }}"
+                                        {{ old('department_id', $employee->department_id ?? '') == $dept->id ? 'selected' : '' }}>
+                                        {{ $dept->name }}
+                                    </option>
+                                @endforeach
                             </select>
-                            @error('department')
+                            @error('department_id')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
                         </div>

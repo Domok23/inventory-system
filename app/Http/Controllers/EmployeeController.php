@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Employee;
+use App\Models\Department;
 
 class EmployeeController extends Controller
 {
@@ -12,13 +13,16 @@ class EmployeeController extends Controller
      */
     public function index()
     {
-        $employees = Employee::withTrashed()->get();
+        $employees = Employee::with(['department'])
+            ->withTrashed()
+            ->get();
         return view('employees.index', compact('employees'));
     }
 
     public function create()
     {
-        return view('employees.create');
+        $departments = Department::orderBy('name')->get();
+        return view('employees.create', compact('departments'));
     }
 
     public function store(Request $request)
@@ -26,7 +30,7 @@ class EmployeeController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'position' => 'required|string|max:255',
-            'department' => 'nullable|string|max:255',
+            'department_id' => 'required|exists:departments,id',
             'email' => ['nullable', 'email', 'unique:employees,email'],
             'phone' => 'nullable|string|max:20',
             'hire_date' => 'nullable|date',
@@ -35,13 +39,14 @@ class EmployeeController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        Employee::create($request->only(['name', 'position', 'department', 'email', 'phone', 'hire_date', 'salary', 'status', 'notes']));
+        Employee::create($request->only(['name', 'position', 'department_id', 'email', 'phone', 'hire_date', 'salary', 'status', 'notes']));
         return redirect()->route('employees.index')->with('success', 'Employee successfully added.');
     }
 
     public function edit(Employee $employee)
     {
-        return view('employees.edit', compact('employee'));
+        $departments = Department::orderBy('name')->get();
+        return view('employees.edit', compact('employee', 'departments'));
     }
 
     public function update(Request $request, Employee $employee)
@@ -49,7 +54,7 @@ class EmployeeController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'position' => 'required|string|max:255',
-            'department' => 'nullable|string|max:255',
+            'department_id' => 'required|exists:departments,id',
             'email' => ['nullable', 'email', 'unique:employees,email' . ($employee ? ',' . $employee->id : '')],
             'phone' => 'nullable|string|max:20',
             'hire_date' => 'nullable|date',
@@ -58,7 +63,7 @@ class EmployeeController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        $employee->update($request->only(['name', 'position', 'department', 'email', 'phone', 'hire_date', 'salary', 'status', 'notes']));
+        $employee->update($request->only(['name', 'position', 'department_id', 'email', 'phone', 'hire_date', 'salary', 'status', 'notes']));
         return redirect()->route('employees.index')->with('success', 'Employee successfully updated.');
     }
 
@@ -78,7 +83,10 @@ class EmployeeController extends Controller
     // View timing
     public function timing(Employee $employee)
     {
-        $timings = $employee->timings()->with('project')->paginate(50);
+        $timings = $employee
+            ->timings()
+            ->with(['project.department'])
+            ->paginate(50);
         return view('employees.timing', compact('employee', 'timings'));
     }
 }

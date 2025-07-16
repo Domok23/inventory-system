@@ -11,7 +11,7 @@ class Employee extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['name', 'position', 'department', 'email', 'phone', 'hire_date', 'salary', 'status', 'notes'];
+    protected $fillable = ['name', 'position', 'department_id', 'email', 'phone', 'hire_date', 'salary', 'status', 'notes'];
 
     protected $casts = [
         'hire_date' => 'date',
@@ -21,6 +21,11 @@ class Employee extends Model
     public function timings()
     {
         return $this->hasMany(Timing::class);
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(\App\Models\Department::class);
     }
 
     // Accessor untuk format salary
