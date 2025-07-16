@@ -39,7 +39,7 @@
                             <tr>
                                 <td class="text-center">{{ $loop->iteration }}</td>
                                 <td>{{ $project->name }}</td>
-                                <td>{{ ucfirst($project->department) ?? '-' }}</td>
+                                <td>{{ ucfirst($project->department->name) ?? '-' }}</td>
                                 <td>
                                     <button class="btn btn-primary btn-sm" onclick="viewCosting('{{ $project->id }}')"
                                         title="View Report"><i class="bi bi-eye"></i></button>

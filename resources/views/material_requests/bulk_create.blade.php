@@ -31,8 +31,7 @@
                 <form method="POST" action="{{ route('material_requests.bulk_store') }}">
                     @csrf
                     <div class="table-responsive">
-                        <table class="table table-bordered align-middle" id="bulk-material-table"
-                            style="min-width: 100%;">
+                        <table class="table table-bordered align-middle" id="bulk-material-table" style="min-width: 100%;">
                             <thead class="table-light">
                                 <tr>
                                     <th style="width: 25%;">Project <span class="text-danger">*</span></th>
@@ -51,7 +50,7 @@
                                                 <option value="">Select Project</option>
                                                 @foreach ($projects as $project)
                                                     <option value="{{ $project->id }}"
-                                                        data-department="{{ $project->department }}"
+                                                        data-department="{{ $project->department->name }}"
                                                         {{ old("requests.$index.project_id") == $project->id ? 'selected' : '' }}>
                                                         {{ $project->name }}
                                                     </option>
@@ -136,8 +135,8 @@
                 </div>
             </div>
             <!-- Add Material Modal -->
-            <div class="modal fade" id="quickAddMaterialModal" tabindex="-1" aria-labelledby="quickAddMaterialModalLabel"
-                aria-hidden="true">
+            <div class="modal fade" id="quickAddMaterialModal" tabindex="-1"
+                aria-labelledby="quickAddMaterialModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <form id="quickAddMaterialForm" method="POST" action="{{ route('inventories.store.quick') }}">
                         @csrf
@@ -192,15 +191,11 @@
                                 <label class="mt-2">Qty <span class="text-danger">*</span></label>
                                 <input type="number" step="any" name="qty" class="form-control" required>
                                 <label class="mt-2">Department <span class="text-danger">*</span></label>
-                                <select name="department" class="form-select" required>
-                                    <option value="mascot">Mascot</option>
-                                    <option value="costume">Costume</option>
-                                    <option value="mascot&costume">Mascot & Costume</option>
-                                    <option value="animatronic">Animatronic</option>
-                                    <option value="plustoys">Plus Toys</option>
-                                    <option value="it">IT</option>
-                                    <option value="facility">Facility</option>
-                                    <option value="bag">Bag</option>
+                                <select name="department_id" class="form-select" required>
+                                    <option value="">Select Department</option>
+                                    @foreach ($departments as $dept)
+                                        <option value="{{ $dept->id }}">{{ $dept->name }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                             <div class="modal-footer">

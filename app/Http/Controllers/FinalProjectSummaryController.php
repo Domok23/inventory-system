@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Project;
+use App\Models\Department;
 use Illuminate\Http\Request;
 use App\Models\GoodsOut;
 use Carbon\Carbon;
@@ -14,9 +15,11 @@ class FinalProjectSummaryController extends Controller
         $query = Project::query();
 
         // Filter department
-        $departments = Project::select('department')->distinct()->pluck('department');
+        $departments = Department::orderBy('name')->pluck('name', 'id');
         if ($request->filled('department')) {
-            $query->where('department', $request->department);
+            $query->whereHas('department', function ($q) use ($request) {
+                $q->where('name', $request->department);
+            });
         }
 
         // Search project name
@@ -24,7 +27,7 @@ class FinalProjectSummaryController extends Controller
             $query->where('name', 'like', '%' . $request->search . '%');
         }
 
-        $projects = $query->orderBy('name')->get();
+        $projects = $query->with('department')->orderBy('name')->get();
 
         return view('final_project_summary.index', compact('projects', 'departments'));
     }
@@ -32,7 +35,7 @@ class FinalProjectSummaryController extends Controller
     public function show(Project $project)
     {
         // Ambil semua material yang digunakan dalam proyek
-        $materials = \App\Models\GoodsOut::where('project_id', $project->id)
+        $materials = GoodsOut::where('project_id', $project->id)
             ->with([
                 'inventory' => function ($q) {
                     $q->withTrashed()->with('currency');
@@ -86,7 +89,6 @@ class FinalProjectSummaryController extends Controller
             }
         }
 
-        // <-- Pindahkan ke sini, agar selalu dihitung
         $manpowerCount = \App\Models\Timing::where('project_id', $project->id)->distinct('employee_id')->count('employee_id');
 
         return view('final_project_summary.show', compact('project', 'grandTotal', 'dayCount', 'partOutputs', 'manpowerCount'));
@@ -134,7 +136,9 @@ class FinalProjectSummaryController extends Controller
             $query = Project::query();
 
             if ($request->filled('department')) {
-                $query->where('department', $request->department);
+                $query->whereHas('department', function ($q) use ($request) {
+                    $q->where('name', $request->department);
+                });
             }
             if ($request->filled('search')) {
                 $query->where('name', 'like', '%' . $request->search . '%');

@@ -2,7 +2,7 @@
     <tr>
         <td>{{ $timing->tanggal }}</td>
         <td>{{ $timing->project->name ?? '-' }}</td>
-        <td>{{ $timing->department }}</td>
+        <td>{{ $timing->project->department->name }}</td>
         <td>{{ $timing->step }}</td>
         <td>{{ $timing->parts }}</td>
         <td>{{ $timing->employee->name ?? '-' }}</td>

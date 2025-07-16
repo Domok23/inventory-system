@@ -59,21 +59,12 @@
                         <div class="col-lg-2">
                             <select id="filter-department" name="department" class="form-select select2">
                                 <option value="">All Department</option>
-                                <option value="mascot" {{ request('department') == 'mascot' ? 'selected' : '' }}>Mascot
-                                </option>
-                                <option value="costume" {{ request('department') == 'costume' ? 'selected' : '' }}>Costume
-                                </option>
-                                <option value="mascot&costume"
-                                    {{ request('department') == 'mascot&costume' ? 'selected' : '' }}>Mascot & Costume
-                                </option>
-                                <option value="animatronic" {{ request('department') == 'animatronic' ? 'selected' : '' }}>
-                                    Animatronic</option>
-                                <option value="plustoys" {{ request('department') == 'plustoys' ? 'selected' : '' }}>Plus
-                                    Toys</option>
-                                <option value="it" {{ request('department') == 'it' ? 'selected' : '' }}>IT</option>
-                                <option value="facility" {{ request('department') == 'facility' ? 'selected' : '' }}>
-                                    Facility</option>
-                                <option value="bag" {{ request('department') == 'bag' ? 'selected' : '' }}>Bag</option>
+                                @foreach ($departments as $dept)
+                                    <option value="{{ $dept->name }}"
+                                        {{ request('department') == $dept->name ? 'selected' : '' }}>
+                                        {{ $dept->name }}
+                                    </option>
+                                @endforeach
                             </select>
                         </div>
                         <div class="col-lg-2 align-self-end">
@@ -103,7 +94,7 @@
                                 <td>{{ $project->name }}</td>
                                 <td>{{ $project->qty }}</td>
                                 <td>
-                                    {{ ucwords(str_replace('&', ' & ', $project->department)) }}
+                                    {{ ucwords(str_replace('&', ' & ', $project->department->name)) }}
                                 </td>
                                 <td>{{ $project->start_date ? \Carbon\Carbon::parse($project->start_date)->translatedFormat('d F Y') : '-' }}
                                 </td>

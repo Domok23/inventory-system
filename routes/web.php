@@ -21,6 +21,7 @@ use App\Http\Controllers\MaterialRequestController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\TimingController;
 use App\Http\Controllers\FinalProjectSummaryController;
+use App\Http\Controllers\DepartmentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -89,6 +90,9 @@ Route::middleware(['auth'])->group(function () {
     // Units
     Route::post('/units', [UnitController::class, 'store'])->name('units.store');
     Route::get('/units/json', [UnitController::class, 'json'])->name('units.json');
+
+    // Departments
+    Route::post('/departments/store', [DepartmentController::class, 'store'])->name('departments.store');
 
     // Currencies
     Route::resource('currencies', CurrencyController::class)->only(['index', 'store', 'update', 'destroy']);

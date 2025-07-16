@@ -26,7 +26,7 @@
                         @method('PUT')
                     @endif
                     <div class="row">
-                        <div class="col-lg-6 mb-3">
+                        <div class="col-lg-4 mb-3">
                             <label for="name" class="form-label">Project Name <span class="text-danger">*</span></label>
                             <input type="text" name="name" id="name"
                                 value="{{ old('name', $project->name ?? '') }}" class="form-control" required>
@@ -34,27 +34,7 @@
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
                         </div>
-
-                        <div class="mb-3">
-                        <label>Parts (opsional)</label>
-                        <div id="parts-wrapper">
-                        @foreach($project->parts as $part)
-                        <div class="input-group mb-2">
-                        <input type="text" name="parts[]" class="form-control" value="{{ $part->part_name }}" placeholder="Part name">
-                        <button type="button" class="btn btn-danger btn-remove-part">Hapus</button>
-                        </div>
-                         @endforeach
-                        @if($project->parts->isEmpty())
-                        <div class="input-group mb-2">
-                        <input type="text" name="parts[]" class="form-control" placeholder="Part name">
-                            <button type="button" class="btn btn-danger btn-remove-part" style="display:none;">Hapus</button>
-                        </div>
-                        @endif
-                    </div>
-                    <button type="button" class="btn btn-primary btn-sm" id="add-part">Tambah Part</button>
-                </div>
-
-                        <div class="col-lg-6 mb-3">
+                        <div class="col-lg-4 mb-3">
                             <label for="qty" class="form-label">Quantity <span class="text-danger">*</span></label>
                             <input type="number" name="qty" id="qty"
                                 value="{{ old('qty', $project->qty ?? '') }}" class="form-control" required>
@@ -62,44 +42,54 @@
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
                         </div>
-                    </div>
-
-                    <div class="row">
                         <div class="col-lg-4 mb-3">
-                            <label for="department" class="form-label">Department <span class="text-danger">*</span></label>
-                            <select name="department" id="department" class="form-select" required>
-                                <option value="mascot"
-                                    {{ old('department', $project->department ?? '') == 'mascot' ? 'selected' : '' }}>
-                                    Mascot
-                                </option>
-                                <option value="costume"
-                                    {{ old('department', $project->department ?? '') == 'costume' ? 'selected' : '' }}>
-                                    Costume
-                                </option>
-                                <option value="mascot&costume"
-                                    {{ old('department', $project->department ?? '') == 'mascot&costume' ? 'selected' : '' }}>
-                                    Mascot &
-                                    Costume</option>
-                                <option value="animatronic"
-                                    {{ old('department', $project->department ?? '') == 'animatronic' ? 'selected' : '' }}>
-                                    Animatronic</option>
-                                <option value="plustoys"
-                                    {{ old('department', $project->department ?? '') == 'plustoys' ? 'selected' : '' }}>
-                                    Plus Toys</option>
-                                <option value="it"
-                                    {{ old('department', $project->department ?? '') == 'it' ? 'selected' : '' }}>
-                                    IT</option>
-                                <option value="facility"
-                                    {{ old('department', $project->department ?? '') == 'facility' ? 'selected' : '' }}>
-                                    Facility</option>
-                                <option value="bag"
-                                    {{ old('department', $project->department ?? '') == 'bag' ? 'selected' : '' }}>
-                                    Bag</option>
+                            <label for="department_id" class="form-label">Department <span
+                                    class="text-danger">*</span></label>
+                            <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal"
+                                style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .55rem;"
+                                data-bs-target="#addDepartmentModal">
+                                + Add Department
+                            </button>
+                            <select name="department_id" id="department_id" class="form-select" required>
+                                <option value="">Select Department</option>
+                                @foreach ($departments as $dept)
+                                    <option value="{{ $dept->id }}"
+                                        {{ old('department_id', $project->department_id ?? '') == $dept->id ? 'selected' : '' }}>
+                                        {{ $dept->name }}
+                                    </option>
+                                @endforeach
                             </select>
-                            @error('department')
+                            @error('department_id')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
                         </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="mb-3">
+                            <label>Parts (optional)</label>
+                            <div id="parts-wrapper">
+                                @foreach ($project->parts as $part)
+                                    <div class="input-group mb-2">
+                                        <input type="text" name="parts[]" class="form-control"
+                                            value="{{ $part->part_name }}" placeholder="Part name">
+                                        <button type="button" class="btn btn-danger btn-remove-part">Remove</button>
+                                    </div>
+                                @endforeach
+                                @if ($project->parts->isEmpty())
+                                    <div class="input-group mb-2">
+                                        <input type="text" name="parts[]" class="form-control" placeholder="Part name">
+                                        <button type="button" class="btn btn-danger btn-remove-part"
+                                            style="display:none;">Remove</button>
+                                    </div>
+                                @endif
+                            </div>
+                            <button type="button" class="btn btn-outline-primary btn-sm" id="add-part">Add
+                                Part</button>
+                        </div>
+                    </div>
+
+                    <div class="row">
                         <div class="col-lg-4 mb-3">
                             <label for="start_date" class="form-label">Start Date (optional)</label>
                             <input type="date" name="start_date" id="start_date"
@@ -118,15 +108,12 @@
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
                         </div>
-                    </div>
-
-                    <div class="row">
                         <div class="col-lg-4 mb-3">
-                            <label for="finish_date" class="form-label">Finish Date (hanya diisi saat project selesai)</label>
+                            <label for="finish_date" class="form-label">Finish Date (hanya diisi saat project
+                                selesai)</label>
                             <input type="date" name="finish_date" id="finish_date"
-                                value="{{ old('finish_date', $project->finish_date ?? '') }}"
-                                class="form-control"
-                                @if(isset($project) && $project->finish_date && auth()->user()->role !== 'super_admin') readonly @endif>
+                                value="{{ old('finish_date', $project->finish_date ?? '') }}" class="form-control"
+                                @if (isset($project) && $project->finish_date && auth()->user()->role !== 'super_admin') readonly @endif>
                             @error('finish_date')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
@@ -141,12 +128,9 @@
                             <a id="img-preview-link"
                                 href="{{ isset($project) && $project->img ? asset('storage/' . $project->img) : '#' }}"
                                 data-fancybox="gallery"
-                                @if(isset($project) && $project->img)
-                                    style="display: block;"
+                                @if (isset($project) && $project->img) style="display: block;"
                                 @else
-                                    style="display: none;"
-                                @endif
-                                >
+                                    style="display: none;" @endif>
                                 <img id="img-preview"
                                     src="{{ isset($project) && $project->img ? asset('storage/' . $project->img) : '#' }}"
                                     alt="Image Preview" class="mt-2 rounded" style="max-width: 200px;">
@@ -156,11 +140,32 @@
                             @enderror
                         </div>
                     </div>
-
                     <a href="{{ route('projects.index') }}" class="btn btn-secondary">Cancel</a>
                     <button type="submit" class="btn btn-success">{{ isset($project) ? 'Update' : 'Create' }}</button>
                 </form>
             </div>
+        </div>
+    </div>
+    <!-- Add Department Modal -->
+    <div class="modal fade" id="addDepartmentModal" tabindex="-1" aria-labelledby="addDepartmentModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <form id="departmentForm" method="POST" action="{{ route('departments.store') }}">
+                @csrf
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addDepartmentModalLabel">Add New Department</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <label>Department Name <span class="text-danger">*</span></label>
+                        <input type="text" name="name" class="form-control" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">Add Department</button>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 @endsection
@@ -249,18 +254,50 @@
             });
         });
 
-document.getElementById('add-part').onclick = function() {
-    let wrapper = document.getElementById('parts-wrapper');
-    let div = document.createElement('div');
-    div.className = 'input-group mb-2';
-    div.innerHTML = `<input type="text" name="parts[]" class="form-control" placeholder="Part name">
-        <button type="button" class="btn btn-danger btn-remove-part">Hapus</button>`;
-    wrapper.appendChild(div);
-};
-document.addEventListener('click', function(e) {
-    if(e.target.classList.contains('btn-remove-part')) {
-        e.target.parentElement.remove();
-    }
-});
+        document.getElementById('add-part').onclick = function() {
+            let wrapper = document.getElementById('parts-wrapper');
+            let div = document.createElement('div');
+            div.className = 'input-group mb-2';
+            div.innerHTML = `<input type="text" name="parts[]" class="form-control" placeholder="Part name">
+        <button type="button" class="btn btn-danger btn-remove-part">Remove</button>`;
+            wrapper.appendChild(div);
+        };
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('btn-remove-part')) {
+                e.target.parentElement.remove();
+            }
+        });
+
+        $(document).ready(function() {
+            $('#departmentForm').on('submit', function(e) {
+                e.preventDefault();
+                let form = $(this);
+                $.ajax({
+                    url: form.attr('action'),
+                    method: 'POST',
+                    data: form.serialize(),
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    success: function(department) {
+                        // Tambahkan ke select2 dan pilih otomatis
+                        let newOption = new Option(department.name, department.id, true, true);
+                        $('#department_id').append(newOption).val(department.id).trigger(
+                            'change');
+                        $('#addDepartmentModal').modal('hide');
+                        form[0].reset();
+                    },
+                    error: function(xhr) {
+                        let msg = xhr.responseJSON?.message ||
+                            'Failed to add department. Please try again.';
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: msg
+                        });
+                    }
+                });
+            });
+        });
     </script>
 @endpush

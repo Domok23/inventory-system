@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\MaterialRequest;
 use App\Models\Inventory;
 use App\Models\Project;
+use App\Models\Department;
 use Illuminate\Http\Request;
 use App\Events\MaterialRequestUpdated;
 use App\Models\User;
@@ -117,7 +118,7 @@ class MaterialRequestController extends Controller
     public function create(Request $request)
     {
         $inventories = Inventory::orderBy('name')->get();
-        $projects = Project::orderBy('name')->get();
+        $projects = Project::with('department')->orderBy('name')->get();
 
         // Periksa apakah parameter material_id ada
         $selectedMaterial = null;
@@ -193,8 +194,10 @@ class MaterialRequestController extends Controller
     public function bulkCreate()
     {
         $inventories = Inventory::orderBy('name')->get();
-        $projects = Project::orderBy('name')->get();
-        return view('material_requests.bulk_create', compact('inventories', 'projects'));
+        $projects = Project::with('department')->orderBy('name')->get();
+        $departments = Department::orderBy('name')->get();
+
+        return view('material_requests.bulk_create', compact('inventories', 'projects', 'departments'));
     }
 
     public function bulkStore(Request $request)
@@ -311,7 +314,7 @@ class MaterialRequestController extends Controller
                 return $inventory;
             });
 
-        $projects = Project::orderBy('name')->get();
+        $projects = Project::with('department')->orderBy('name')->get();
 
         return view('material_requests.edit', [
             'request' => $materialRequest,

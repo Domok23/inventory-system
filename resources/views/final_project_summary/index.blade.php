@@ -21,9 +21,10 @@
                         <label class="form-label mb-1">Filter Department</label>
                         <select name="department" class="form-select select2" data-placeholder="All Departments">
                             <option value="">All Departments</option>
-                            @foreach ($departments as $dept)
-                                <option value="{{ $dept }}" {{ request('department') == $dept ? 'selected' : '' }}>
-                                    {{ ucfirst($dept) }}
+                            @foreach ($departments as $id => $deptName)
+                                <option value="{{ $deptName }}"
+                                    {{ request('department') == $deptName ? 'selected' : '' }}>
+                                    {{ ucfirst($deptName) }}
                                 </option>
                             @endforeach
                         </select>

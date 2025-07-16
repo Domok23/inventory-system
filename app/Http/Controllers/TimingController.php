@@ -5,24 +5,25 @@ namespace App\Http\Controllers;
 use App\Models\Timing;
 use App\Models\Project;
 use App\Models\Employee;
+use App\Models\Department;
 use Illuminate\Http\Request;
 
 class TimingController extends Controller
 {
     public function index(Request $request)
     {
-        $timings = Timing::with(['project', 'employee'])->get();
+        $timings = Timing::with(['project.department', 'employee'])->get();
 
-        $projects = Project::orderBy('name')->get();
-        $departments = Project::select('department')->distinct()->pluck('department');
-        $employees = Employee::orderBy('name')->get(); // Tetap tampilkan semua untuk filter
+        $projects = Project::with('department')->orderBy('name')->get();
+        $departments = Department::orderBy('name')->pluck('name', 'id');
+        $employees = Employee::orderBy('name')->get();
 
         return view('timings.index', compact('timings', 'projects', 'departments', 'employees'));
     }
 
     public function ajaxSearch(Request $request)
     {
-        $query = Timing::with(['project', 'employee']);
+        $query = Timing::with(['project.department', 'employee']);
 
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
@@ -33,7 +34,9 @@ class TimingController extends Controller
             $query->where('project_id', $request->project_id);
         }
         if ($request->filled('department')) {
-            $query->where('department', $request->department);
+            $query->whereHas('project.department', function ($q) use ($request) {
+                $q->where('name', $request->department);
+            });
         }
         if ($request->filled('employee_id')) {
             $query->where('employee_id', $request->employee_id);
@@ -63,12 +66,12 @@ class TimingController extends Controller
 
     public function create()
     {
-        $projects = Project::with('parts')->get();
+        $projects = Project::with(['parts', 'department'])->get();
 
         // HANYA ambil employee yang statusnya 'active'
         $employees = Employee::where('status', 'active')->orderBy('name')->get();
 
-        $departments = Project::select('department')->distinct()->pluck('department');
+        $departments = Department::orderBy('name')->pluck('name', 'id');
         return view('timings.create', compact('projects', 'employees', 'departments'));
     }
 
@@ -78,7 +81,6 @@ class TimingController extends Controller
             'timings' => 'required|array',
             'timings.*.tanggal' => 'required|date',
             'timings.*.project_id' => 'required|exists:projects,id',
-            'timings.*.department' => 'required',
             'timings.*.step' => 'required',
             'timings.*.parts' => 'nullable|string',
             'timings.*.employee_id' => 'required|exists:employees,id',
