@@ -38,7 +38,8 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="password" class="form-label mb-0">New Password <span class="text-danger">*</span></label>
+                            <label for="password" class="form-label mb-0">New Password <span
+                                    class="text-danger">*</span></label>
                             <small class="text-muted mb-2">(Leave blank to keep current password)</small>
                             <div class="input-group">
                                 <input type="password" id="password" name="password" class="form-control">
@@ -72,10 +73,26 @@
                                 <option value="admin_animatronic"
                                     {{ old('role', $user->role) == 'admin_animatronic' ? 'selected' : '' }}>
                                     Admin Animatronic</option>
-                                <option value="general"
-                                    {{ old('role', $user->role) == 'general' ? 'selected' : '' }}>General</option>
+                                <option value="general" {{ old('role', $user->role) == 'general' ? 'selected' : '' }}>
+                                    General</option>
                             </select>
                             @error('role')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label>Department <span class="text-danger">*</span></label>
+                            <select name="department_id" class="form-control" required>
+                                <option value="">Select Department</option>
+                                @foreach ($departments as $dept)
+                                    <option value="{{ $dept->id }}"
+                                        {{ old('department_id', $user->department_id) == $dept->id ? 'selected' : '' }}>
+                                        {{ $dept->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('department_id')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
                         </div>

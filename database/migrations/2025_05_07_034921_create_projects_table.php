@@ -19,7 +19,6 @@ return new class extends Migration
             $table->integer('qty');
             $table->string('img')->nullable();
             $table->date('deadline')->nullable();
-            $table->enum('department', ['mascot', 'costume', 'mascot&costume', 'animatronic', 'plustoys', 'it', 'facility', 'bag']);
             $table->timestamps();
         });
     }

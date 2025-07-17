@@ -18,14 +18,20 @@
                     <div class="row">
                         <div class="mb-3">
                             <label>Material <span class="text-danger">*</span></label>
-                            <select name="inventory_id" class="form-select select2" required>
+                            <select name="inventory_id" class="form-select select2"
+                                {{ $fromMaterialRequest ? 'disabled' : '' }} required>
                                 @foreach ($inventories as $inventory)
-                                    <option value="{{ $inventory->id }}" data-unit="{{ $inventory->unit }}"
+                                    <option value="{{ $inventory->id }}"
                                         {{ $inventory->id == $goodsOut->inventory_id ? 'selected' : '' }}>
                                         {{ $inventory->name }}
                                     </option>
                                 @endforeach
                             </select>
+                            @if ($fromMaterialRequest)
+                                <input type="hidden" name="inventory_id" value="{{ $goodsOut->inventory_id }}">
+                                <div class="form-text text-warning">Material cannot be changed because Goods Out comes from
+                                    Material Request.</div>
+                            @endif
                         </div>
                         <div class="mb-3">
                             <label>Quantity <span class="text-danger">*</span></label>
@@ -37,7 +43,8 @@
                         </div>
                         <div class="mb-3">
                             <label>Project <span class="text-danger">*</span></label>
-                            <select name="project_id" class="form-select select2" required>
+                            <select name="project_id" class="form-select select2"
+                                {{ $fromMaterialRequest ? 'disabled' : '' }}>
                                 @foreach ($projects as $project)
                                     <option value="{{ $project->id }}"
                                         {{ $project->id == $goodsOut->project_id ? 'selected' : '' }}>
@@ -45,20 +52,33 @@
                                     </option>
                                 @endforeach
                             </select>
+                            @if ($fromMaterialRequest)
+                                <input type="hidden" name="project_id" value="{{ $goodsOut->project_id }}">
+                                <div class="form-text text-warning">Project cannot be changed because Goods Out comes from
+                                    Material Request.</div>
+                            @endif
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-lg-6 mb-3">
                             <label>Requested By <span class="text-danger">*</span></label>
-                            <select name="user_id" class="form-select select2" required>
+                            <select name="user_id" class="form-select select2" {{ $fromMaterialRequest ? 'disabled' : '' }}
+                                required>
                                 @foreach ($users as $user)
-                                    <option value="{{ $user->id }}" data-department="{{ $user->department }}"
+                                    <option value="{{ $user->id }}"
+                                        data-department="{{ $user->department ? $user->department->name : '' }}"
                                         {{ $user->username == $goodsOut->requested_by ? 'selected' : '' }}>
                                         {{ $user->username }}
                                     </option>
                                 @endforeach
                             </select>
+                            @if ($fromMaterialRequest)
+                                <input type="hidden" name="user_id"
+                                    value="{{ $users->firstWhere('username', $goodsOut->requested_by)?->id }}">
+                                <div class="form-text text-warning">Requested By cannot be changed because Goods Out comes
+                                    from Material Request.</div>
+                            @endif
                         </div>
                         <div class="col-lg-6 mb-3">
                             <label>Department</label>
@@ -104,6 +124,10 @@
                 const selectedDepartment = $(this).find(':selected').data('department');
                 $('#department').val(selectedDepartment || '');
             });
+
+            @if ($fromMaterialRequest)
+                $('select[name="project_id"]').prop('disabled', true);
+            @endif
         });
     </script>
 @endpush

@@ -14,7 +14,6 @@ class CreateGoodsOutTable extends Migration
             $table->foreignId('inventory_id')->constrained('inventories')->onDelete('cascade');
             $table->foreignId('project_id')->nullable()->constrained('projects')->onDelete('cascade');
             $table->string('requested_by');
-            $table->string('department');
             $table->decimal('quantity', 10, 2);
             $table->timestamps();
         });

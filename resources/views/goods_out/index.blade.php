@@ -149,8 +149,9 @@
                                         <span class="text-secondary">No Project</span>
                                     @endif
                                 </td>
-                                <td>{{ ucfirst($goodsOut->requested_by) }}
-                                    ({{ ucfirst($goodsOut->department) }})
+                                <td>
+                                    {{ ucfirst($goodsOut->requested_by) }}
+                                    ({{ $goodsOut->user && $goodsOut->user->department ? ucfirst($goodsOut->user->department->name) : '-' }})
                                 </td>
                                 <td>{{ \Carbon\Carbon::parse($goodsOut->created_at)->translatedFormat('d F Y, H:i') }}</td>
                                 <td>

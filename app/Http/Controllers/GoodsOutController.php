@@ -22,19 +22,7 @@ class GoodsOutController extends Controller
 
         // Batasi akses untuk fitur tertentu agar hanya bisa diakses oleh admin_logistic dan super_admin
         $this->middleware(function ($request, $next) {
-            if (
-                in_array($request->route()->getName(), [
-                    'goods_out.create_with_id',
-                    'goods_out.store',
-                    'goods_out.create_independent',
-                    'goods_out.store_independent',
-                    'goods_out.bulk',
-                    'goods_out.edit',
-                    'goods_out.update',
-                    'goods_out.destroy'
-                ]) &&
-                !in_array(Auth::user()->role, ['admin_logistic', 'super_admin'])
-            ) {
+            if (in_array($request->route()->getName(), ['goods_out.create_with_id', 'goods_out.store', 'goods_out.create_independent', 'goods_out.store_independent', 'goods_out.bulk', 'goods_out.edit', 'goods_out.update', 'goods_out.destroy']) && !in_array(Auth::user()->role, ['admin_logistic', 'super_admin'])) {
                 abort(403, 'Unauthorized');
             }
             return $next($request);
@@ -44,7 +32,7 @@ class GoodsOutController extends Controller
     public function index(Request $request)
     {
         // Tambahkan eager loading untuk relasi goodsIns
-        $query = GoodsOut::with(['inventory', 'project', 'goodsIns', 'materialRequest']);
+        $query = GoodsOut::with(['inventory', 'project', 'goodsIns', 'materialRequest', 'user.department']);
 
         // Apply filters
         if ($request->has('material') && $request->material !== null) {
@@ -189,7 +177,6 @@ class GoodsOutController extends Controller
                 'inventory_id' => $inventory->id,
                 'project_id' => $materialRequest->project_id,
                 'requested_by' => $materialRequest->requested_by,
-                'department' => $materialRequest->department,
                 'quantity' => $request->quantity,
                 'remark' => $request->remark,
             ]);
@@ -201,10 +188,14 @@ class GoodsOutController extends Controller
             MaterialUsageHelper::sync($inventory->id, $materialRequest->project_id);
 
             DB::commit();
-            return redirect()->route('goods_out.index')->with('success', "Goods Out <b>{$inventory->name}</b> to <b>{$materialRequest->project->name}</b> processed successfully.");
+            return redirect()
+                ->route('goods_out.index')
+                ->with('success', "Goods Out <b>{$inventory->name}</b> to <b>{$materialRequest->project->name}</b> processed successfully.");
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withInput()->with('error', 'Failed to process Goods Out: ' . $e->getMessage());
+            return back()
+                ->withInput()
+                ->with('error', 'Failed to process Goods Out: ' . $e->getMessage());
         }
     }
 
@@ -212,17 +203,7 @@ class GoodsOutController extends Controller
     {
         $inventories = Inventory::orderBy('name')->get();
         $projects = Project::orderBy('name')->get();
-        $users = User::orderBy('username')->get()->map(function ($user) {
-            $user->department = match ($user->role) {
-                'admin_mascot' => 'mascot',
-                'admin_costume' => 'costume',
-                'admin_logistic' => 'logistic',
-                'admin_finance' => 'finance',
-                'super_admin' => 'management',
-                default => 'general',
-            };
-            return $user;
-        });
+        $users = User::with('department')->orderBy('username')->get();
         return view('goods_out.create_independent', compact('inventories', 'projects', 'users'));
     }
 
@@ -240,17 +221,10 @@ class GoodsOutController extends Controller
         try {
             // Lock inventory row
             $inventory = Inventory::where('id', $request->inventory_id)->lockForUpdate()->first();
-            $user = User::findOrFail($request->user_id);
+            $user = User::with('department')->findOrFail($request->user_id);
 
-            // Tentukan department berdasarkan role user
-            $department = match ($user->role) {
-                'admin_mascot' => 'mascot',
-                'admin_costume' => 'costume',
-                'admin_logistic' => 'logistic',
-                'admin_finance' => 'finance',
-                'super_admin' => 'management',
-                default => 'general',
-            };
+            // Ambil nama department dari relasi
+            $department = $user->department ? $user->department->name : null;
 
             // Validasi quantity setelah lock
             if ($request->quantity > $inventory->quantity) {
@@ -267,7 +241,6 @@ class GoodsOutController extends Controller
                 'inventory_id' => $request->inventory_id,
                 'project_id' => $request->project_id,
                 'requested_by' => $user->username,
-                'department' => $department,
                 'quantity' => $request->quantity,
                 'remark' => $request->remark,
             ]);
@@ -278,10 +251,14 @@ class GoodsOutController extends Controller
             }
 
             DB::commit();
-            return redirect()->route('goods_out.index')->with('success', "Goods Out <b>{$inventory->name}</b> created successfully.");
+            return redirect()
+                ->route('goods_out.index')
+                ->with('success', "Goods Out <b>{$inventory->name}</b> created successfully.");
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withInput()->with('error', 'Failed to process Goods Out: ' . $e->getMessage());
+            return back()
+                ->withInput()
+                ->with('error', 'Failed to process Goods Out: ' . $e->getMessage());
         }
     }
 
@@ -325,7 +302,6 @@ class GoodsOutController extends Controller
                     'inventory_id' => $inventory->id,
                     'project_id' => $materialRequest->project_id,
                     'requested_by' => $materialRequest->requested_by,
-                    'department' => $materialRequest->department,
                     'quantity' => $remainingQty,
                     'remark' => 'Bulk Goods Out',
                 ]);
@@ -347,7 +323,7 @@ class GoodsOutController extends Controller
                 event(new \App\Events\MaterialRequestUpdated($updatedRequests, 'status'));
             }
 
-            return redirect()->route('material_requests.index')->with('success', "Bulk Goods Out processed successfully.");
+            return redirect()->route('material_requests.index')->with('success', 'Bulk Goods Out processed successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Bulk Goods Out failed: ' . $e->getMessage());
@@ -377,26 +353,29 @@ class GoodsOutController extends Controller
 
     public function edit($id)
     {
-        $goodsOut = GoodsOut::with('inventory', 'project')->findOrFail($id);
+        $goodsOut = GoodsOut::with('inventory', 'project', 'materialRequest')->findOrFail($id);
         $inventories = Inventory::orderBy('name')->get();
         $projects = Project::orderBy('name')->get();
-        $users = User::all()->map(function ($user) {
-            $user->department = match ($user->role) {
-                'admin_mascot' => 'mascot',
-                'admin_costume' => 'costume',
-                'admin_logistic' => 'logistic',
-                'admin_finance' => 'finance',
-                'super_admin' => 'management',
-                default => 'general',
-            };
-            return $user;
-        });
+        $users = User::with('department')->orderBy('username')->get();
 
-        return view('goods_out.edit', compact('goodsOut', 'inventories', 'projects', 'users'));
+        $fromMaterialRequest = $goodsOut->material_request_id ? true : false;
+
+        return view('goods_out.edit', compact('goodsOut', 'inventories', 'projects', 'users', 'fromMaterialRequest'));
     }
 
     public function update(Request $request, $id)
     {
+        $goodsOut = GoodsOut::findOrFail($id);
+
+        // Jika dari Material Request, pakai project_id lama
+        if ($goodsOut->material_request_id) {
+            $request->merge([
+                'project_id' => $goodsOut->project_id,
+                'inventory_id' => $goodsOut->inventory_id,
+                'user_id' => User::where('username', $goodsOut->requested_by)->value('id'),
+            ]);
+        }
+
         $request->validate([
             'inventory_id' => 'required|exists:inventories,id',
             'project_id' => 'required|exists:projects,id',
@@ -410,10 +389,8 @@ class GoodsOutController extends Controller
             $goodsOut = GoodsOut::lockForUpdate()->findOrFail($id);
             $inventory = Inventory::where('id', $request->inventory_id)->lockForUpdate()->first();
             $materialRequest = $goodsOut->materialRequest;
+            $user = User::with('department')->findOrFail($request->user_id);
 
-            $user = User::findOrFail($request->user_id);
-
-            // Kembalikan stok lama ke inventory
             $oldQuantity = $goodsOut->quantity;
             $inventory->quantity += $oldQuantity;
 
@@ -453,19 +430,13 @@ class GoodsOutController extends Controller
                 $materialRequest->save();
             }
 
+            $department = $user->department ? $user->department->name : null;
+
             // Perbarui Goods Out
             $goodsOut->update([
                 'inventory_id' => $request->inventory_id,
                 'project_id' => $request->project_id,
                 'requested_by' => $user->username,
-                'department' => match ($user->role) {
-                    'admin_mascot' => 'mascot',
-                    'admin_costume' => 'costume',
-                    'admin_logistic' => 'logistic',
-                    'admin_finance' => 'finance',
-                    'super_admin' => 'management',
-                    default => 'general',
-                },
                 'quantity' => $request->quantity,
                 'remark' => $request->remark,
             ]);
@@ -474,7 +445,9 @@ class GoodsOutController extends Controller
 
             DB::commit();
 
-            return redirect()->route('goods_out.index')->with('success', "Goods Out <b>{$inventory->name}</b> to <b>{$materialRequest->project->name}</b> processed successfully.");
+            return redirect()
+                ->route('goods_out.index')
+                ->with('success', "Goods Out <b>{$inventory->name}</b> to <b>{$materialRequest->project->name}</b> processed successfully.");
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Failed to update Goods Out: ' . $e->getMessage());
@@ -498,7 +471,7 @@ class GoodsOutController extends Controller
         // Sinkronkan Material Usage
         MaterialUsageHelper::sync($goodsOut->inventory_id, $goodsOut->project_id);
 
-        return redirect()->route('goods_out.index')->with('success', "Goods Out restored successfully.");
+        return redirect()->route('goods_out.index')->with('success', 'Goods Out restored successfully.');
     }
 
     public function destroy($id)
@@ -507,7 +480,9 @@ class GoodsOutController extends Controller
 
         // Cek apakah ada Goods In yang terkait
         if ($goodsOut->goodsIns()->exists()) {
-            return redirect()->route('goods_out.index')->with('error', "Cannot delete Goods Out <b>{$goodsOut->id}</b> with related Goods In.");
+            return redirect()
+                ->route('goods_out.index')
+                ->with('error', "Cannot delete Goods Out <b>{$goodsOut->id}</b> with related Goods In.");
         }
 
         // Kembalikan stok ke inventory
@@ -520,6 +495,8 @@ class GoodsOutController extends Controller
 
         MaterialUsageHelper::sync($goodsOut->inventory_id, $goodsOut->project_id);
 
-        return redirect()->route('goods_out.index')->with('success', "Goods Out <b>{$inventory->name}</b> to <b>{$goodsOut->project->name}</b> deleted successfully.");
+        return redirect()
+            ->route('goods_out.index')
+            ->with('success', "Goods Out <b>{$inventory->name}</b> to <b>{$goodsOut->project->name}</b> deleted successfully.");
     }
 }

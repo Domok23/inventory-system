@@ -174,15 +174,11 @@
                                     <label class="mt-2">Quantity <span class="text-danger">*</span></label>
                                     <input type="number" step="any" name="qty" class="form-control" required>
                                     <label class="mt-2">Department <span class="text-danger">*</span></label>
-                                    <select name="department" class="form-select" required>
-                                        <option value="mascot">Mascot</option>
-                                        <option value="costume">Costume</option>
-                                        <option value="mascot&costume">Mascot & Costume</option>
-                                        <option value="animatronic">Animatronic</option>
-                                        <option value="plustoys">Plus Toys</option>
-                                        <option value="it">IT</option>
-                                        <option value="facility">Facility</option>
-                                        <option value="bag">Bag</option>
+                                    <select name="department_id" class="form-select" required>
+                                        <option value="">Select Department</option>
+                                        @foreach ($departments as $dept)
+                                            <option value="{{ $dept->id }}">{{ $dept->name }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                                 <div class="modal-footer">

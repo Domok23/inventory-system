@@ -23,7 +23,7 @@ class MaterialRequestController extends Controller
 
     public function index(Request $request)
     {
-        $query = MaterialRequest::with('inventory', 'project');
+        $query = MaterialRequest::with('inventory', 'project', 'user.department');
 
         // Apply filters
         if ($request->has('project') && $request->project !== null) {
@@ -66,7 +66,7 @@ class MaterialRequestController extends Controller
         $requestedAt = $request->requested_at;
 
         // Filter data berdasarkan request
-        $query = MaterialRequest::with('inventory', 'project');
+        $query = MaterialRequest::with(['inventory', 'project', 'user.department']);
 
         if ($project) {
             $query->where('project_id', $project);
@@ -119,6 +119,7 @@ class MaterialRequestController extends Controller
     {
         $inventories = Inventory::orderBy('name')->get();
         $projects = Project::with('department')->orderBy('name')->get();
+        $departments = Department::orderBy('name')->get();
 
         // Periksa apakah parameter material_id ada
         $selectedMaterial = null;
@@ -126,7 +127,7 @@ class MaterialRequestController extends Controller
             $selectedMaterial = Inventory::find($request->material_id);
         }
 
-        return view('material_requests.create', compact('inventories', 'projects', 'selectedMaterial'));
+        return view('material_requests.create', compact('inventories', 'projects', 'selectedMaterial', 'departments'));
     }
 
     public function store(Request $request)
@@ -138,14 +139,7 @@ class MaterialRequestController extends Controller
         ]);
 
         $user = Auth::user();
-        $department = match ($user->role) {
-            'admin_mascot' => 'mascot',
-            'admin_costume' => 'costume',
-            'admin_logistic' => 'logistic',
-            'admin_finance' => 'finance',
-            'super_admin' => 'management',
-            default => 'general',
-        };
+        $department = $user->department ? $user->department->name : null;
 
         DB::beginTransaction();
         try {
@@ -165,7 +159,6 @@ class MaterialRequestController extends Controller
                 'project_id' => $request->project_id,
                 'qty' => $request->qty,
                 'requested_by' => $user->username,
-                'department' => $department,
                 'remark' => $request->remark,
             ]);
 
@@ -209,14 +202,7 @@ class MaterialRequestController extends Controller
         ]);
 
         $user = Auth::user();
-        $department = match ($user->role) {
-            'admin_mascot' => 'mascot',
-            'admin_costume' => 'costume',
-            'admin_logistic' => 'logistic',
-            'admin_finance' => 'finance',
-            'super_admin' => 'management',
-            default => 'general',
-        };
+        $department = $user->department ? $user->department->name : null;
 
         $createdRequests = [];
         $errors = [];
@@ -237,7 +223,6 @@ class MaterialRequestController extends Controller
                         'qty' => $req['qty'],
                         'processed_qty' => 0,
                         'requested_by' => $user->username,
-                        'department' => $department,
                         'remark' => $req['remark'] ?? null,
                     ]);
                     $createdRequests[] = $materialRequest;
@@ -284,6 +269,7 @@ class MaterialRequestController extends Controller
     public function edit(Request $request, $id)
     {
         $materialRequest = MaterialRequest::with('inventory', 'project')->findOrFail($id);
+        $departments = Department::orderBy('name')->get();
 
         $filters = [
             'project' => $request->input('filter_project'),
@@ -320,6 +306,7 @@ class MaterialRequestController extends Controller
             'request' => $materialRequest,
             'inventories' => $inventories,
             'projects' => $projects,
+            'departments' => $departments,
         ]);
     }
 

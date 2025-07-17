@@ -58,8 +58,8 @@
                             <select name="user_id" class="form-select select2" required>
                                 <option value="">Select an option</option>
                                 @foreach ($users as $user)
-                                    <option value="{{ $user->id }}" data-department="{{ $user->department }}"
-                                        {{ old('user_id') == $user->id ? 'selected' : '' }}>
+                                    <option value="{{ $user->id }}"
+                                        data-department="{{ $user->department ? $user->department->name : '' }}">
                                         {{ $user->username }}
                                     </option>
                                 @endforeach
@@ -67,9 +67,8 @@
                         </div>
                         <div class="col-lg-6 mb-3">
                             <label>Department</label>
-                            <input type="text" class="form-control" id="department" value="{{ old('department') }}"
-                                disabled>
-                            <input type="hidden" name="department" id="department-hidden" value="{{ old('department') }}">
+                            <input type="text" class="form-control" id="department" value="" disabled>
+                            <input type="hidden" name="department" id="department-hidden" value="">
                         </div>
                     </div>
                     <div class="row">
@@ -112,7 +111,7 @@
             $('select[name="user_id"]').on('change', function() {
                 const selectedDepartment = $(this).find(':selected').data('department');
                 $('#department').val(selectedDepartment || '');
-                $('#department-hidden').val(selectedDepartment || ''); // Update hidden input
+                $('#department-hidden').val(selectedDepartment || '');
             });
 
             // Trigger change event on page load to restore old values

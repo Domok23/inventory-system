@@ -8,6 +8,12 @@ function ucfirst(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
+function getDepartmentName(materialRequest) {
+    return materialRequest.user && materialRequest.user.department
+        ? materialRequest.user.department.name
+        : "";
+}
+
 // --- Audio ---
 let audioContext;
 let audioBuffer;
@@ -48,6 +54,8 @@ function showToast(materialRequest, action, playSound = true) {
     const toastContainer = document.getElementById("toast-container");
     const toastTemplate = document.getElementById("toast-template");
 
+    const departmentName = getDepartmentName(materialRequest);
+
     // Pastikan container dan template ada
     if (!toastContainer || !toastTemplate) return;
 
@@ -61,7 +69,7 @@ function showToast(materialRequest, action, playSound = true) {
     if (action === "created") {
         message = `
             <strong>${ucfirst(materialRequest.requested_by)} (${ucfirst(
-            materialRequest.department
+            departmentName
         )})</strong><br>
             <span class="text-success">New Request:</span> <strong>${
                 materialRequest.inventory?.name || "N/A"
@@ -74,7 +82,7 @@ function showToast(materialRequest, action, playSound = true) {
     } else if (action === "updated") {
         message = `
             <strong>${ucfirst(materialRequest.requested_by)} (${ucfirst(
-            materialRequest.department
+            departmentName
         )})</strong><br>
             Material Request: <strong>${
                 materialRequest.inventory?.name || "N/A"
@@ -88,7 +96,7 @@ function showToast(materialRequest, action, playSound = true) {
     } else if (action === "deleted") {
         message = `
             <strong>${ucfirst(materialRequest.requested_by)} (${ucfirst(
-            materialRequest.department
+            departmentName
         )})</strong><br>
             Material Request: <strong>${
                 materialRequest.inventory?.name || "N/A"
@@ -215,7 +223,7 @@ function updateDataTable(materialRequest) {
 
     let actionColumn = `<div class="d-flex flex-nowrap gap-1">`;
 
-    // Goods Out
+    // Goods Out Button
     if (
         materialRequest.status === "approved" &&
         materialRequest.status !== "canceled" &&
@@ -228,7 +236,7 @@ function updateDataTable(materialRequest) {
         `;
     }
 
-    // Edit
+    // Edit Button
     if (
         materialRequest.status !== "canceled" &&
         (isRequestOwner || isLogisticAdmin)
@@ -240,7 +248,7 @@ function updateDataTable(materialRequest) {
         `;
     }
 
-    // Delete
+    // Delete Button
     if (
         materialRequest.status !== "canceled" &&
         (isRequestOwner || isSuperAdmin)
@@ -257,6 +265,20 @@ function updateDataTable(materialRequest) {
                     <i class="bi bi-trash3"></i>
                 </button>
             </form>
+        `;
+    }
+
+    // Reminder Button
+    if (
+        ["pending", "approved"].includes(materialRequest.status) &&
+        (isRequestOwner || isSuperAdmin)
+    ) {
+        actionColumn += `
+            <button class="btn btn-sm btn-primary btn-reminder"
+                data-id="${materialRequest.id}" data-bs-toggle="tooltip"
+                data-bs-placement="bottom" title="Remind Logistic">
+                <i class="bi bi-bell"></i>
+            </button>
         `;
     }
 
@@ -282,6 +304,9 @@ function updateDataTable(materialRequest) {
         "YYYY-MM-DD, HH:mm"
     );
 
+    // Ambil nama departemen dari user yang membuat permintaan
+    const departmentName = getDepartmentName(materialRequest);
+
     const rowData = [
         checkboxColumn, // Checkbox
         materialRequest.id, // Kolom ID tersembunyi
@@ -296,9 +321,7 @@ function updateDataTable(materialRequest) {
         `${formatNumberDynamic(materialRequest.processed_qty ?? 0)} ${
             materialRequest.inventory?.unit || ""
         }`, // Processed Qty
-        `${ucfirst(materialRequest.requested_by)} (${ucfirst(
-            materialRequest.department
-        )})`, // Requested By
+        `${ucfirst(materialRequest.requested_by)} (${ucfirst(departmentName)})`, // Requested By
         formattedDate, // Requested At (format lokal)
         statusColumn, // Status
         materialRequest.remark || "-", // Remark

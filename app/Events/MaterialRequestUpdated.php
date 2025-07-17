@@ -21,13 +21,13 @@ class MaterialRequestUpdated implements ShouldBroadcast
         if (is_array($materialRequest) || $materialRequest instanceof \Illuminate\Support\Collection) {
             $this->materialRequest = collect($materialRequest)->map(function ($mr) {
                 if (is_object($mr) && method_exists($mr, 'load')) {
-                    return $mr->load('inventory', 'project');
+                    return $mr->load('inventory', 'project', 'user.department');
                 }
                 return $mr;
             })->values();
         } else {
             $this->materialRequest = is_object($materialRequest) && method_exists($materialRequest, 'load')
-                ? $materialRequest->load('inventory', 'project')
+                ? $materialRequest->load('inventory', 'project', 'user.department')
                 : $materialRequest;
         }
         $this->action = $action;

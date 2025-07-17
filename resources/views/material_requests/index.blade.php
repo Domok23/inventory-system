@@ -153,8 +153,9 @@
                                     {{ $req->inventory->unit ?? '(No Unit)' }}</td>
                                 <td>{{ rtrim(rtrim(number_format($req->processed_qty, 2, '.', ''), '0'), '.') }}
                                     {{ $req->inventory->unit ?? '(No Unit)' }}</td>
-                                <td>{{ ucfirst($req->requested_by) }}
-                                    ({{ ucfirst($req->department) }})
+                                <td>
+                                    {{ ucfirst($req->requested_by) }}
+                                    ({{ $req->user && $req->user->department ? ucfirst($req->user->department->name) : '-' }})
                                 </td>
                                 <td>{{ $req->created_at?->format('Y-m-d, H:i') }}</td>
                                 <td>
@@ -219,7 +220,8 @@
                                                         class="bi bi-trash3"></i></button>
                                             </form>
                                         @endif
-                                        @if ($req->status === 'approved' && $req->processed_qty < $req->qty)
+                                        @if (in_array($req->status, ['pending', 'approved']) &&
+                                                (auth()->user()->username === $req->requested_by || auth()->user()->isSuperAdmin()))
                                             <button class="btn btn-sm btn-primary btn-reminder"
                                                 data-id="{{ $req->id }}" data-bs-toggle="tooltip"
                                                 data-bs-placement="bottom" title="Remind Logistic">

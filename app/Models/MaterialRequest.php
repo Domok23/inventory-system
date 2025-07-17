@@ -9,16 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class MaterialRequest extends Model
 {
     use SoftDeletes;
-    protected $fillable = [
-        'inventory_id',
-        'project_id',
-        'qty',
-        'processed_qty',
-        'requested_by',
-        'department',
-        'status',
-        'remark',
-    ];
+    protected $fillable = ['inventory_id', 'project_id', 'qty', 'processed_qty', 'requested_by', 'status', 'remark'];
 
     protected $casts = [
         'created_at' => 'datetime', // Pastikan created_at di-cast sebagai datetime
@@ -53,5 +44,15 @@ class MaterialRequest extends Model
     public function getRemainingQtyAttribute()
     {
         return $this->qty - $this->processed_qty;
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'requested_by', 'username');
+    }
+
+    public function getDepartmentNameAttribute()
+    {
+        return $this->user && $this->user->department ? $this->user->department->name : null;
     }
 }

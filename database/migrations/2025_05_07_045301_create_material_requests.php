@@ -19,7 +19,6 @@ return new class extends Migration
             $table->foreignId('project_id')->constrained()->onDelete('cascade');
             $table->decimal('qty', 10, 2);
             $table->string('requested_by');
-            $table->string('department');
             $table->enum('status', ['pending', 'approved', 'delivered'])->default('pending');
             $table->timestamps();
         });
