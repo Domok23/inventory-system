@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class MaterialRequest extends Model
 {
     use SoftDeletes;
-    protected $fillable = ['inventory_id', 'project_id', 'qty', 'processed_qty', 'requested_by', 'status', 'remark'];
+    protected $fillable = ['inventory_id', 'project_id', 'qty', 'processed_qty', 'requested_by', 'status', 'remark', 'approved_at'];
 
     protected $casts = [
         'created_at' => 'datetime', // Pastikan created_at di-cast sebagai datetime

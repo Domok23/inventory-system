@@ -15,7 +15,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('purge:softdeletes')->daily();
+        $schedule->command('material-request:auto-goods-out')->daily();
     }
 
     /**

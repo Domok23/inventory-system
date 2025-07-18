@@ -325,9 +325,13 @@ class MaterialRequestController extends Controller
             $projectName = $materialRequest->project ? $materialRequest->project->name : '-';
             $materialName = $materialRequest->inventory ? $materialRequest->inventory->name : '-';
 
-            $materialRequest->update([
-                'status' => $request->status,
-            ]);
+            // Perbarui status
+            $updateData = ['status' => $request->status];
+            if ($request->status === 'approved' && $materialRequest->status !== 'approved') {
+                $updateData['approved_at'] = now();
+            }
+
+            $materialRequest->update($updateData);
 
             event(new MaterialRequestUpdated($materialRequest, 'status'));
 
@@ -383,13 +387,20 @@ class MaterialRequestController extends Controller
                     ->withErrors(['qty' => 'Requested quantity cannot exceed available inventory quantity.']);
             }
 
-            $materialRequest->update([
+            // Siapkan data update
+            $updateData = [
                 'inventory_id' => $request->inventory_id,
                 'project_id' => $request->project_id,
                 'qty' => $request->qty,
                 'status' => $request->status,
                 'remark' => $request->remark,
-            ]);
+            ];
+            // Set approved_at jika status berubah ke approved
+            if ($request->status === 'approved' && $materialRequest->status !== 'approved') {
+                $updateData['approved_at'] = now();
+            }
+
+            $materialRequest->update($updateData);
 
             DB::commit();
 

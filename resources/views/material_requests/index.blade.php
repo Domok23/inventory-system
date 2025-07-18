@@ -336,6 +336,14 @@
                 },
             });
 
+            $('#datatable').on('draw.dt', function() {
+                var tooltipTriggerList = [].slice.call(document.querySelectorAll(
+                    '[data-bs-toggle="tooltip"]'));
+                tooltipTriggerList.forEach(function(tooltipTriggerEl) {
+                    new bootstrap.Tooltip(tooltipTriggerEl);
+                });
+            });
+
             // Initialize Select2
             $('.select2').select2({
                 theme: 'bootstrap-5',
