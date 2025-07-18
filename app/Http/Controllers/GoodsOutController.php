@@ -265,35 +265,46 @@ class GoodsOutController extends Controller
     public function bulkGoodsOut(Request $request)
     {
         $request->validate([
+            'goods_out_qty' => 'required|array',
+            'goods_out_qty.*' => 'numeric|min:0.001',
             'selected_ids' => 'required|array',
             'selected_ids.*' => 'exists:material_requests,id',
         ]);
 
+        $selectedIds = array_keys($request->goods_out_qty);
+
         DB::beginTransaction();
         try {
-            $materialRequests = MaterialRequest::whereIn('id', $request->selected_ids)
-                ->where('status', 'approved')
-                ->lockForUpdate() // Lock semua material request yang dipilih
-                ->get();
+            $materialRequests = MaterialRequest::whereIn('id', $selectedIds)->where('status', 'approved')->lockForUpdate()->get();
+
+            if ($materialRequests->isEmpty()) {
+                DB::rollBack();
+                return response()->json(['success' => false, 'message' => 'No approved material requests found for bulk goods out.'], 422);
+            }
 
             $updatedRequests = [];
             foreach ($materialRequests as $materialRequest) {
-                // Lock inventory row
                 $inventory = Inventory::where('id', $materialRequest->inventory_id)->lockForUpdate()->first();
 
-                // Validasi remaining qty
                 $remainingQty = $materialRequest->qty - $materialRequest->processed_qty;
-                if ($remainingQty <= 0) {
+                $qtyToGoodsOut = $request->goods_out_qty[$materialRequest->id];
+
+                // Validasi qty
+                if ($qtyToGoodsOut > $remainingQty) {
                     DB::rollBack();
-                    return back()->with('error', "Material Request {$materialRequest->id} has no remaining quantity.");
+                    return response()->json(['success' => false, 'message' => "Qty to Goods Out for Material Request {$materialRequest->id} exceeds remaining qty."], 422);
                 }
-                if ($remainingQty > $inventory->quantity) {
+                if ($qtyToGoodsOut > $inventory->quantity) {
                     DB::rollBack();
-                    return back()->with('error', "Insufficient stock for {$inventory->name}.");
+                    return response()->json(['success' => false, 'message' => "Insufficient stock for {$inventory->name}."], 422);
+                }
+                if ($qtyToGoodsOut <= 0) {
+                    DB::rollBack();
+                    return response()->json(['success' => false, 'message' => 'Qty to Goods Out must be greater than 0.'], 422);
                 }
 
                 // Kurangi stok inventory
-                $inventory->quantity -= $remainingQty;
+                $inventory->quantity -= $qtyToGoodsOut;
                 $inventory->save();
 
                 // Buat Goods Out
@@ -302,15 +313,17 @@ class GoodsOutController extends Controller
                     'inventory_id' => $inventory->id,
                     'project_id' => $materialRequest->project_id,
                     'requested_by' => $materialRequest->requested_by,
-                    'quantity' => $remainingQty,
+                    'quantity' => $qtyToGoodsOut,
                     'remark' => 'Bulk Goods Out',
                 ]);
 
-                // Update status material request
-                $materialRequest->update([
-                    'status' => 'delivered',
-                    'processed_qty' => $materialRequest->qty,
-                ]);
+                // Update processed_qty dan status material request
+                $materialRequest->processed_qty += $qtyToGoodsOut;
+                if ($materialRequest->processed_qty >= $materialRequest->qty) {
+                    $materialRequest->status = 'delivered';
+                }
+                $materialRequest->save();
+
                 $updatedRequests[] = $materialRequest->fresh(['inventory', 'project']);
 
                 MaterialUsageHelper::sync($inventory->id, $materialRequest->project_id);
@@ -323,10 +336,10 @@ class GoodsOutController extends Controller
                 event(new \App\Events\MaterialRequestUpdated($updatedRequests, 'status'));
             }
 
-            return redirect()->route('material_requests.index')->with('success', 'Bulk Goods Out processed successfully.');
+            return response()->json(['success' => true, 'message' => 'Bulk Goods Out processed successfully.']);
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Bulk Goods Out failed: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Bulk Goods Out failed: ' . $e->getMessage()], 500);
         }
     }
 

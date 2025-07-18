@@ -82,6 +82,7 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/material_requests/{id}', [MaterialRequestController::class, 'update'])->name('material_requests.update');
     Route::delete('/material_requests/{id}', [MaterialRequestController::class, 'destroy'])->name('material_requests.destroy');
     Route::post('/material_requests/{id}/reminder', [MaterialRequestController::class, 'sendReminder'])->name('material_requests.reminder');
+    Route::get('material_requests/bulk_details', [MaterialRequestController::class, 'bulkDetails'])->name('material_requests.bulk_details');
 
     // Categories
     Route::post('/categories/quick-add', [CategoryController::class, 'storeQuick'])->name('categories.store');

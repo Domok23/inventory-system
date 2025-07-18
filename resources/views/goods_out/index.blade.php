@@ -150,8 +150,11 @@
                                     @endif
                                 </td>
                                 <td>
-                                    {{ ucfirst($goodsOut->requested_by) }}
-                                    ({{ $goodsOut->user && $goodsOut->user->department ? ucfirst($goodsOut->user->department->name) : '-' }})
+                                    <span data-bs-toggle="tooltip" data-bs-placement="right"
+                                        title="{{ $goodsOut->user && $goodsOut->user->department ? ucfirst($goodsOut->user->department->name) : '-' }}"
+                                        class="requested-by-tooltip">
+                                        {{ ucfirst($goodsOut->requested_by) }}
+                                    </span>
                                 </td>
                                 <td>{{ \Carbon\Carbon::parse($goodsOut->created_at)->translatedFormat('d F Y, H:i') }}</td>
                                 <td>
@@ -261,6 +264,10 @@
             max-width: 170px;
             overflow: hidden;
             text-overflow: ellipsis;
+        }
+
+        .requested-by-tooltip {
+            cursor: pointer;
         }
     </style>
 @endpush

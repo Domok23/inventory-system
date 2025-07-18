@@ -43,7 +43,7 @@ class MaterialRequest extends Model
 
     public function getRemainingQtyAttribute()
     {
-        return $this->qty - $this->processed_qty;
+        return round($this->qty - $this->processed_qty, 2);
     }
 
     public function user()

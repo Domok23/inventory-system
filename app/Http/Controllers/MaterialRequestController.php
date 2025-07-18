@@ -452,4 +452,28 @@ class MaterialRequestController extends Controller
 
         return response()->json(['success' => true]);
     }
+
+    public function bulkDetails(Request $request)
+    {
+        $request->validate([
+            'selected_ids' => 'required|array',
+            'selected_ids.*' => 'exists:material_requests,id',
+        ]);
+
+        $requests = MaterialRequest::with('inventory', 'project')->whereIn('id', $request->selected_ids)->get();
+
+        $data = $requests->map(function ($req) {
+            return [
+                'id' => $req->id,
+                'material_name' => $req->inventory->name ?? '-',
+                'unit' => $req->inventory->unit ?? '',
+                'project_name' => $req->project->name ?? '-',
+                'requested_by' => $req->requested_by,
+                'requested_qty' => rtrim(rtrim(number_format($req->qty, 2, '.', ''), '0'), '.'),
+                'remaining_qty' => rtrim(rtrim(number_format($req->remaining_qty, 2, '.', ''), '0'), '.'),
+            ];
+        });
+
+        return response()->json($data);
+    }
 }

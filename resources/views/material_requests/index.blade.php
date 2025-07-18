@@ -154,8 +154,11 @@
                                 <td>{{ rtrim(rtrim(number_format($req->processed_qty, 2, '.', ''), '0'), '.') }}
                                     {{ $req->inventory->unit ?? '(No Unit)' }}</td>
                                 <td>
-                                    {{ ucfirst($req->requested_by) }}
-                                    ({{ $req->user && $req->user->department ? ucfirst($req->user->department->name) : '-' }})
+                                    <span data-bs-toggle="tooltip" data-bs-placement="right"
+                                        title="{{ $req->user && $req->user->department ? ucfirst($req->user->department->name) : '-' }}"
+                                        class="requested-by-tooltip">
+                                        {{ ucfirst($req->requested_by) }}
+                                    </span>
                                 </td>
                                 <td>{{ $req->created_at?->format('Y-m-d, H:i') }}</td>
                                 <td>
@@ -237,6 +240,42 @@
             </div>
         </div>
     </div>
+    <!-- Modal Bulk Goods Out -->
+    <div class="modal fade" id="bulkGoodsOutModal" tabindex="-1" aria-labelledby="bulkGoodsOutModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="bulkGoodsOutModalLabel">Bulk Goods Out Confirmation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="bulk-goods-out-form">
+                        @csrf
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-sm align-middle" style="font-size: 0.92rem;">
+                                <thead>
+                                    <tr>
+                                        <th>Material (Unit)</th>
+                                        <th>Project</th>
+                                        <th>Req/Rem Qty</th>
+                                        <th>Qty to Goods Out</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bulk-goods-out-table-body">
+                                    <!-- Rows will be dynamically added here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" id="submit-bulk-goods-out" class="btn btn-success">Submit All</button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 @push('styles')
     <style>
@@ -262,6 +301,17 @@
             color: #999;
             cursor: not-allowed;
             background-color: #f8f9fa;
+        }
+
+        .requested-by-tooltip {
+            cursor: pointer;
+        }
+
+        #bulkGoodsOutModal .table-sm th,
+        #bulkGoodsOutModal .table-sm td {
+            font-size: 0.92rem;
+            vertical-align: middle;
+            white-space: nowrap;
         }
     </style>
 @endpush
@@ -342,37 +392,94 @@
                     return;
                 }
 
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: "You are about to process bulk goods out.",
-                    icon: "question",
-                    showCancelButton: true,
-                    confirmButtonText: 'Yes, proceed!',
-                    cancelButtonText: 'Cancel',
-                    reverseButtons: true,
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            url: "{{ route('goods_out.bulk') }}",
-                            method: 'POST',
-                            data: {
-                                _token: "{{ csrf_token() }}",
-                                selected_ids: selectedIds,
-                            },
-                            success: function(response) {
-                                Swal.fire('Success',
-                                        'Bulk Goods Out processed successfully.',
-                                        'success')
-                                    .then(() => location.reload());
-                            },
-                            error: function(xhr) {
-                                Swal.fire('Error',
-                                    'An error occurred while processing.', 'error');
-                            }
+                // Fetch detail data for selected material requests
+                $.ajax({
+                    url: "{{ route('material_requests.bulk_details') }}", // Buat endpoint baru di controller
+                    method: 'GET',
+                    data: {
+                        selected_ids: selectedIds
+                    },
+                    success: function(response) {
+                        $('#bulk-goods-out-table-body').empty();
+                        response.forEach(function(item) {
+                            $('#bulk-goods-out-table-body').append(`
+                                <tr>
+                                    <td>${item.material_name} <span class="text-muted">(${item.unit})</span></td>
+                                    <td>
+                                        ${item.project_name}
+                                        <span data-bs-toggle="tooltip" data-bs-placement="top" title="Requested By: ${item.requested_by}">
+                                            <i class="bi bi-person-circle"></i>
+                                        </span>
+                                    </td>
+                                    <td>${item.requested_qty} / ${item.remaining_qty}</td>
+                                    <td>
+                                        <input type="number" name="goods_out_qty[${item.id}]" class="form-control form-control-sm"
+                                            value="${item.remaining_qty}" min="0.001" max="${item.remaining_qty}" step="any" required>
+                                    </td>
+                                </tr>
+                            `);
                         });
+                        $('#bulkGoodsOutModal').modal('show');
+                        // Re-init tooltip
+                        var tooltipTriggerList = [].slice.call(document.querySelectorAll(
+                            '[data-bs-toggle="tooltip"]'));
+                        tooltipTriggerList.forEach(function(tooltipTriggerEl) {
+                            new bootstrap.Tooltip(tooltipTriggerEl);
+                        });
+                    },
+                    error: function(xhr) {
+                        Swal.fire('Error', 'Failed to fetch material request details.',
+                            'error');
                     }
                 });
+            });
 
+            $('#submit-bulk-goods-out').on('click', function() {
+                let isValid = true;
+                $('#bulk-goods-out-table-body input[type="number"]').each(function() {
+                    const max = parseFloat($(this).attr('max'));
+                    const val = parseFloat($(this).val());
+                    if (isNaN(val) || val < 0.001 || val > max) {
+                        isValid = false;
+                        $(this).addClass('is-invalid');
+                    } else {
+                        $(this).removeClass('is-invalid');
+                    }
+                });
+                if (!isValid) {
+                    Swal.fire('Error', 'Qty to Goods Out must be between 0.001 or Remaining Qty.', 'error');
+                    return;
+                }
+
+                // Tambahkan input hidden selected_ids[] ke form
+                $('#bulk-goods-out-form input[name="selected_ids[]"]')
+                    .remove(); // hapus dulu biar tidak dobel
+                $('#bulk-goods-out-table-body tr').each(function() {
+                    const id = $(this).find('input[type="number"]').attr('name').match(/\d+/)[0];
+                    $('#bulk-goods-out-form').append(
+                        `<input type="hidden" name="selected_ids[]" value="${id}">`);
+                });
+
+                // Serialize form and send AJAX
+                const formData = $('#bulk-goods-out-form').serialize();
+                $.ajax({
+                    url: "{{ route('goods_out.bulk') }}",
+                    method: 'POST',
+                    data: formData,
+                    success: function(response) {
+                        if (response.success) {
+                            Swal.fire('Success', response.message, 'success')
+                                .then(() => location.reload());
+                        } else {
+                            Swal.fire('Error', response.message || 'Bulk Goods Out failed.',
+                                'error');
+                        }
+                    },
+                    error: function(xhr) {
+                        let msg = xhr.responseJSON?.message || 'Bulk Goods Out failed.';
+                        Swal.fire('Error', msg, 'error');
+                    }
+                });
             });
 
             flatpickr("#filter-requested-at", {
