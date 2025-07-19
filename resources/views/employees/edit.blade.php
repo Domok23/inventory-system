@@ -151,7 +151,9 @@
                         <a href="{{ route('employees.index') }}" class="btn btn-secondary">
                             <i class="bi bi-arrow-left"></i> Cancel
                         </a>
-                        <button type="submit" class="btn btn-primary">
+                        <button type="submit" class="btn btn-primary" id="employee-update-btn">
+                            <span class="spinner-border spinner-border-sm me-1 d-none" role="status"
+                                aria-hidden="true"></span>
                             <i class="bi bi-save"></i> Update Employee
                         </button>
                     </div>
@@ -187,6 +189,17 @@
                     bsAlert.close();
                 }, 5000);
             });
+            // Prevent multiple submit on edit employee form
+            const form = document.querySelector('form[action="{{ route('employees.update', $employee->id) }}"]');
+            const submitBtn = document.getElementById('employee-update-btn');
+            const spinner = submitBtn ? submitBtn.querySelector('.spinner-border') : null;
+
+            if (form && submitBtn && spinner) {
+                form.addEventListener('submit', function() {
+                    submitBtn.disabled = true;
+                    spinner.classList.remove('d-none');
+                });
+            }
         });
     </script>
 @endpush

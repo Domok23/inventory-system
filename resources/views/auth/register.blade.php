@@ -123,7 +123,9 @@
 
                             <div class="row mb-0">
                                 <div class="col-lg-8 offset-lg-4">
-                                    <button type="submit" class="btn btn-gradient text-white border-0">
+                                    <button type="submit" class="btn btn-gradient text-white border-0" id="register-btn">
+                                        <span class="spinner-border spinner-border-sm d-none" role="status"
+                                            aria-hidden="true"></span>
                                         <i class="bi bi-person-plus"></i> {{ __('Register') }}
                                     </button>
 
@@ -294,6 +296,15 @@
                         passwordConfirmInput.setCustomValidity('');
                         passwordConfirmInput.classList.remove('is-invalid');
                     }
+                });
+            }
+
+            const registerForm = document.querySelector('form[action="{{ route('register') }}"]');
+            const registerBtn = document.getElementById('register-btn');
+            if (registerForm && registerBtn) {
+                registerForm.addEventListener('submit', function() {
+                    registerBtn.disabled = true;
+                    registerBtn.querySelector('.spinner-border').classList.remove('d-none');
                 });
             }
         });

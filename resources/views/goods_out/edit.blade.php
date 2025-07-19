@@ -6,6 +6,16 @@
             <div class="card-body">
                 <h2 class="mb-0 flex-shrink-0" style="font-size:1.3rem;">Edit Goods Out</h2>
                 <hr>
+                @if ($errors->any())
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <ul class="mb-0">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
                 @if (session('error'))
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         {{ session('error') }}
@@ -36,10 +46,14 @@
                         <div class="mb-3">
                             <label>Quantity <span class="text-danger">*</span></label>
                             <div class="input-group">
-                                <input type="number" name="quantity" class="form-control" value="{{ $goodsOut->quantity }}"
-                                    step="any" required>
+                                <input type="number" name="quantity"
+                                    class="form-control @error('quantity') is-invalid @enderror"
+                                    value="{{ old('quantity', $goodsOut->quantity) }}" step="any" required>
                                 <span class="input-group-text unit-label">{{ $goodsOut->inventory->unit }}</span>
                             </div>
+                            @error('quantity')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
                         </div>
                         <div class="mb-3">
                             <label>Project <span class="text-danger">*</span></label>
@@ -95,7 +109,10 @@
                     </div>
 
                     <a href="{{ route('goods_out.index') }}" class="btn btn-secondary">Cancel</a>
-                    <button type="submit" class="btn btn-success">Update</button>
+                    <button type="submit" class="btn btn-success" id="goodsout-update-btn">
+                        <span class="spinner-border spinner-border-sm me-1 d-none" role="status" aria-hidden="true"></span>
+                        Update
+                    </button>
                 </form>
             </div>
         </div>
@@ -128,6 +145,25 @@
             @if ($fromMaterialRequest)
                 $('select[name="project_id"]').prop('disabled', true);
             @endif
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form[action="{{ route('goods_out.update', $goodsOut->id) }}"]');
+            const submitBtn = document.getElementById('goodsout-update-btn');
+            const spinner = submitBtn ? submitBtn.querySelector('.spinner-border') : null;
+
+            if (form && submitBtn && spinner) {
+                form.addEventListener('submit', function() {
+                    submitBtn.disabled = true;
+                    spinner.classList.remove('d-none');
+                    submitBtn.childNodes[2].textContent = ' Updating...';
+                });
+            }
+
+            // Jika pakai AJAX, aktifkan kembali tombol di error handler:
+            // submitBtn.disabled = false;
+            // spinner.classList.add('d-none');
+            // submitBtn.childNodes[2].textContent = ' Update';
         });
     </script>
 @endpush

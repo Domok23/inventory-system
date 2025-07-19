@@ -100,7 +100,11 @@
                             </select>
                         </div>
                         <div class="col-lg-2 d-flex align-items-end gap-2">
-                            <button type="submit" class="btn btn-primary">Filter</button>
+                            <button type="submit" class="btn btn-primary" id="filter-btn">
+                                <span class="spinner-border spinner-border-sm me-1 d-none" role="status"
+                                    aria-hidden="true"></span>
+                                Filter
+                            </button>
                             <a href="{{ route('inventory.index') }}" class="btn btn-secondary">Reset</a>
                         </div>
                     </form>
@@ -159,8 +163,8 @@
                                                 class="btn btn-warning btn-sm" data-bs-toggle="tooltip"
                                                 data-bs-placement="bottom" title="Edit"><i
                                                     class="bi bi-pencil-square"></i></a>
-                                            <form action="{{ route('inventory.destroy', $inventory->id) }}" method="POST"
-                                                class="delete-form">
+                                            <form action="{{ route('inventory.destroy', $inventory->id) }}"
+                                                method="POST" class="delete-form">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="button" class="btn btn-sm btn-danger btn-delete"
@@ -230,7 +234,11 @@
                                     </a>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="submit" class="btn btn-primary">Import</button>
+                                    <button type="submit" class="btn btn-primary" id="import-btn">
+                                        <span class="spinner-border spinner-border-sm me-1 d-none" role="status"
+                                            aria-hidden="true"></span>
+                                        Import
+                                    </button>
                                 </div>
                             </div>
                         </form>
@@ -243,6 +251,7 @@
 @push('scripts')
     <script>
         $(document).ready(function() {
+            // Initialize DataTable
             $('#datatable').DataTable({
                 responsive: true,
                 fixedHeader: true,
@@ -266,6 +275,42 @@
                             'font-weight': 'bold'
                         });
                     }
+                }
+            });
+
+            // --- Spinner Filter Button ---
+            const filterBtn = document.getElementById('filter-btn');
+            const filterSpinner = filterBtn ? filterBtn.querySelector('.spinner-border') : null;
+            const filterForm = filterBtn ? filterBtn.closest('form') : null;
+            const filterBtnHtml = filterBtn ? filterBtn.innerHTML : '';
+
+            if (filterForm && filterBtn && filterSpinner) {
+                filterForm.addEventListener('submit', function() {
+                    filterBtn.disabled = true;
+                    filterSpinner.classList.remove('d-none');
+                    filterBtn.childNodes[2].textContent = ' Filtering...';
+                });
+            }
+
+            // --- Spinner Import Button in Modal ---
+            const importBtn = document.getElementById('import-btn');
+            const importSpinner = importBtn ? importBtn.querySelector('.spinner-border') : null;
+            const importForm = importBtn ? importBtn.closest('form') : null;
+            const importBtnHtml = importBtn ? importBtn.innerHTML : '';
+
+            if (importForm && importBtn && importSpinner) {
+                importForm.addEventListener('submit', function() {
+                    importBtn.disabled = true;
+                    importSpinner.classList.remove('d-none');
+                    importBtn.childNodes[2].textContent = ' Importing...';
+                });
+            }
+
+            // Reset tombol Spinner Import saat modal dibuka ulang
+            $('#importModal').on('shown.bs.modal', function() {
+                if (importBtn) {
+                    importBtn.disabled = false;
+                    importBtn.innerHTML = importBtnHtml;
                 }
             });
 
@@ -338,9 +383,7 @@
                     $('#download-qr-code').attr('href', qrcode).show();
                 }
             });
-        });
 
-        $(document).ready(function() {
             // Initialize Bootstrap Tooltip
             $('[data-bs-toggle="tooltip"]').tooltip();
         });

@@ -167,8 +167,9 @@
                     </div>
             </div>
             <div class="card-footer bg-white border-0 d-flex justify-content-end">
-                <button type="submit" class="btn btn-success btn-sm">
-                    <i class="bi bi-check-circle"></i> Submit All
+                <button type="submit" class="btn btn-success btn-sm" id="timing-submit-btn">
+                    <span class="spinner-border spinner-border-sm me-1 d-none" role="status" aria-hidden="true"></span>
+                    Submit All
                 </button>
             </div>
             </form>
@@ -416,6 +417,24 @@
                     $partSelect.val('No Part');
                 }
             });
+
+            // Handle submit: disable button & show spinner
+            const form = $('form[action="{{ route('timings.storeMultiple') }}"]');
+            const submitBtn = $('#timing-submit-btn');
+            const spinner = submitBtn.find('.spinner-border');
+            const submitBtnHtml = submitBtn.html();
+
+            if (form.length && submitBtn.length && spinner.length) {
+                form.on('submit', function() {
+                    submitBtn.prop('disabled', true);
+                    spinner.removeClass('d-none');
+                });
+            }
+
+            // Jika pakai AJAX, aktifkan kembali tombol di error handler:
+            // submitBtn.prop('disabled', false);
+            // spinner.addClass('d-none');
+            // submitBtn.html(submitBtnHtml);
         });
     </script>
 @endpush

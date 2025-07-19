@@ -189,7 +189,11 @@
                     <!-- Submit -->
                     <div class="col-lg-12">
                         <a href="{{ route('inventory.index') }}" class="btn btn-secondary">Cancel</a>
-                        <button type="submit" class="btn btn-primary">Update</button>
+                        <button type="submit" class="btn btn-primary" id="inventory-update-btn">
+                            <span class="spinner-border spinner-border-sm me-1 d-none" role="status"
+                                aria-hidden="true"></span>
+                            Update
+                        </button>
                     </div>
                 </form>
 
@@ -310,6 +314,20 @@
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Spinner dan tombol submit
+            const form = document.querySelector('form[action="{{ route('inventory.update', $inventory->id) }}"]');
+            const submitBtn = document.getElementById('inventory-update-btn');
+            const spinner = submitBtn ? submitBtn.querySelector('.spinner-border') : null;
+
+            if (form && submitBtn && spinner) {
+                form.addEventListener('submit', function() {
+                    submitBtn.disabled = true;
+                    spinner.classList.remove('d-none');
+                    submitBtn.childNodes[2].textContent = ' Updating...';
+                });
+            }
+
+            // Units dropdown handling
             const unitSelect = document.getElementById('unit-select');
             const unitInput = document.getElementById('unit-input');
 
@@ -323,10 +341,8 @@
                     unitInput.value = ''; // Reset nilai input teks
                 }
             });
-        });
 
-        // Inisialisasi Select2 untuk dropdown Unit
-        document.addEventListener('DOMContentLoaded', function() {
+            // Inisialisasi Select2 untuk dropdown Unit
             $('#unit-select').select2({
                 placeholder: 'Select Unit',
                 allowClear: true,
@@ -367,10 +383,26 @@
                     }
                 });
             });
+
+            // Inisialisasi Fancybox untuk gambar
+            Fancybox.bind("[data-fancybox='gallery']", {
+                Toolbar: {
+                    display: [
+                        "zoom", // Tombol zoom
+                        "download", // Tombol download
+                        "close" // Tombol close
+                    ],
+                },
+                Thumbs: false, // Nonaktifkan thumbnail jika tidak diperlukan
+                Image: {
+                    zoom: true, // Aktifkan fitur zoom
+                },
+                Hash: false,
+            });
         });
 
-        // Inisialisasi Select2 untuk dropdown Category
         $(document).ready(function() {
+            // Inisialisasi Select2 untuk dropdown Category
             $('#category_id').select2({
                 theme: 'bootstrap-5',
                 placeholder: 'Select Category',
@@ -411,10 +443,8 @@
                     }
                 });
             });
-        });
 
-        // Inisialisasi Select2 untuk dropdown Currency
-        $(document).ready(function() {
+            // Inisialisasi Select2 untuk dropdown Currency
             $('#currency_id').select2({
                 theme: 'bootstrap-5',
                 placeholder: 'Select Currency',
@@ -494,22 +524,5 @@
                 if (previewLink) previewLink.style.display = 'none';
             }
         }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            Fancybox.bind("[data-fancybox='gallery']", {
-                Toolbar: {
-                    display: [
-                        "zoom", // Tombol zoom
-                        "download", // Tombol download
-                        "close" // Tombol close
-                    ],
-                },
-                Thumbs: false, // Nonaktifkan thumbnail jika tidak diperlukan
-                Image: {
-                    zoom: true, // Aktifkan fitur zoom
-                },
-                Hash: false,
-            });
-        });
     </script>
 @endpush

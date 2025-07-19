@@ -62,7 +62,10 @@
                         </div>
                     </div>
                     <a href="{{ route('goods_in.index') }}" class="btn btn-secondary">Cancel</a>
-                    <button type="submit" class="btn btn-primary">Update</button>
+                    <button type="submit" class="btn btn-primary" id="goodsin-update-btn">
+                        <span class="spinner-border spinner-border-sm me-1 d-none" role="status" aria-hidden="true"></span>
+                        Update
+                    </button>
                 </form>
             </div>
         </div>
@@ -87,6 +90,25 @@
                 $('.unit-label').text(selectedUnit || 'unit');
             });
             $('select[name="inventory_id"]').trigger('change');
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form[action="{{ route('goods_in.update', $goods_in->id) }}"]');
+            const submitBtn = document.getElementById('goodsin-update-btn');
+            const spinner = submitBtn ? submitBtn.querySelector('.spinner-border') : null;
+
+            if (form && submitBtn && spinner) {
+                form.addEventListener('submit', function() {
+                    submitBtn.disabled = true;
+                    spinner.classList.remove('d-none');
+                    submitBtn.childNodes[2].textContent = ' Updating...';
+                });
+            }
+
+            // Jika pakai AJAX, aktifkan kembali tombol di error handler:
+            submitBtn.disabled = false;
+            spinner.classList.add('d-none');
+            submitBtn.childNodes[2].textContent = ' Update';
         });
     </script>
 @endpush

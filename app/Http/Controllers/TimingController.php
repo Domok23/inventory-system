@@ -12,7 +12,9 @@ class TimingController extends Controller
 {
     public function index(Request $request)
     {
-        $timings = Timing::with(['project.department', 'employee'])->get();
+        $timings = Timing::with(['project.department', 'employee'])
+            ->orderByDesc('created_at')
+            ->get();
 
         $projects = Project::with('department')->orderBy('name')->get();
         $departments = Department::orderBy('name')->pluck('name', 'id');

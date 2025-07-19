@@ -69,7 +69,9 @@
 
                             <div class="row mb-0">
                                 <div class="col-lg-8 offset-lg-4">
-                                    <button type="submit" class="btn btn-gradient text-white border-0">
+                                    <button type="submit" class="btn btn-gradient text-white border-0" id="login-btn">
+                                        <span class="spinner-border spinner-border-sm me-1 d-none" role="status"
+                                            aria-hidden="true"></span>
                                         {{ __('Login') }}
                                     </button>
 
@@ -170,7 +172,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const togglePasswordButtons = document.querySelectorAll('.toggle-password');
-
+            // Password toggle
             togglePasswordButtons.forEach(button => {
                 button.addEventListener('click', function() {
                     const passwordInput = this.previousElementSibling;
@@ -186,6 +188,16 @@
                         icon.classList.add('fa-eye');
                     }
                 });
+            });
+
+            // Prevent multiple submit
+            const form = document.querySelector('form');
+            const loginBtn = document.getElementById('login-btn');
+            const spinner = loginBtn.querySelector('.spinner-border');
+            form.addEventListener('submit', function() {
+                loginBtn.disabled = true;
+                spinner.classList.remove('d-none');
+                loginBtn.childNodes[2].textContent = ' {{ __('Logging in...') }}';
             });
         });
     </script>

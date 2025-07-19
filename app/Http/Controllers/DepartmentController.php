@@ -8,12 +8,24 @@ class DepartmentController extends Controller
 {
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:departments,name',
-        ]);
-        $department = Department::create($validated);
+        $name = $request->input('department_name');
+        $exists = Department::where('name', $name)->exists();
 
-        // Jika request AJAX, return JSON
+        if ($exists) {
+            $msg = "Department '$name' already exists.";
+            if ($request->ajax()) {
+                return response()->json(['message' => $msg], 422);
+            }
+            return back()
+                ->withErrors(['department_name' => $msg])
+                ->withInput();
+        }
+
+        $validated = $request->validate([
+            'department_name' => 'required|string|max:255|unique:departments,name',
+        ]);
+        $department = Department::create(['name' => $validated['department_name']]);
+
         if ($request->ajax()) {
             return response()->json($department);
         }

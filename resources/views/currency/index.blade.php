@@ -6,7 +6,8 @@
             <div class="card-body">
                 <!-- Header -->
                 <div class="d-flex align-items-center mb-3 gap-2">
-                    <h2 class="mb-0 flex-shrink-0" style="font-size:1.3rem;"> <i class="bi bi-currency-exchange"></i> Currency List</h2>
+                    <h2 class="mb-0 flex-shrink-0" style="font-size:1.3rem;"> <i class="bi bi-currency-exchange"></i> Currency
+                        List</h2>
                     <button type="button" class="btn btn-outline-primary btn-sm flex-shrink-0 ms-2" data-bs-toggle="modal"
                         data-bs-target="#currencyModal">
                         <i class="bi bi-plus-circle"></i> Create Currency
@@ -104,7 +105,11 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Save</button>
+                        <button type="submit" class="btn btn-primary" id="currency-submit-btn">
+                            <span class="spinner-border spinner-border-sm me-1 d-none" role="status"
+                                aria-hidden="true"></span>
+                            Save
+                        </button>
                     </div>
                 </div>
             </form>
@@ -121,6 +126,9 @@
             const currencyIdInput = document.getElementById('currency_id');
             const currencyNameInput = document.getElementById('currency_name');
             const currencyExchangeRateInput = document.getElementById('currency_exchange_rate');
+            const submitBtn = document.getElementById('currency-submit-btn');
+            const spinner = submitBtn.querySelector('.spinner-border');
+            const currencyModal = document.getElementById('currencyModal');
 
             editButtons.forEach(button => {
                 button.addEventListener('click', function() {
@@ -132,11 +140,15 @@
                     if (id) {
                         currencyForm.action = `/currencies/${id}`;
                         currencyForm.method = 'POST';
-                        currencyForm.insertAdjacentHTML('beforeend',
-                            '<input type="hidden" name="_method" value="PUT">');
+                        if (!currencyForm.querySelector('input[name="_method"]')) {
+                            currencyForm.insertAdjacentHTML('beforeend',
+                                '<input type="hidden" name="_method" value="PUT">');
+                        }
                     } else {
                         currencyForm.action = '{{ route('currencies.store') }}';
                         currencyForm.method = 'POST';
+                        const methodInput = currencyForm.querySelector('input[name="_method"]');
+                        if (methodInput) methodInput.remove();
                     }
 
                     // Set modal title
@@ -150,15 +162,27 @@
             });
 
             // Reset modal when closed
-            const currencyModal = document.getElementById('currencyModal');
             currencyModal.addEventListener('hidden.bs.modal', function() {
                 currencyForm.reset();
                 currencyForm.action = '{{ route('currencies.store') }}';
                 currencyModalLabel.textContent = 'Add/Edit Currency';
                 const methodInput = currencyForm.querySelector('input[name="_method"]');
                 if (methodInput) methodInput.remove();
+                submitBtn.disabled = false;
+                spinner.classList.add('d-none');
+                submitBtn.childNodes[2].textContent = ' Save';
             });
+
+            // Prevent multiple submit on currency modal form
+            if (currencyForm && submitBtn && spinner) {
+                currencyForm.addEventListener('submit', function() {
+                    submitBtn.disabled = true;
+                    spinner.classList.remove('d-none');
+                    submitBtn.childNodes[2].textContent = ' Saving...';
+                });
+            }
         });
+
         $(document).ready(function() {
             $('#datatable').DataTable({
                 responsive: true,

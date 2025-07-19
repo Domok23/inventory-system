@@ -123,105 +123,105 @@
                     </div>
 
                     <a href="{{ route('material_requests.index') }}" class="btn btn-secondary">Cancel</a>
-                    <button type="submit" class="btn btn-primary">Update Request</button>
+                    <button type="submit" class="btn btn-primary" id="update-request-btn">
+                        <span class="spinner-border spinner-border-sm me-1 d-none" role="status" aria-hidden="true"></span>
+                        Update Request
+                    </button>
                 </form>
+            </div>
+        </div>
+    </div>
 
-                <!-- Confirmation Modal Before Quick Add Material -->
-                <div class="modal fade" id="confirmAddMaterialModal" tabindex="-1"
-                    aria-labelledby="confirmAddMaterialModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="confirmAddMaterialModalLabel">Confirm Add Material!</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <b>Please make sure this material does not already exist in the inventory table.</b><br>
-                                <span class="text-danger">Use this feature only if the material is truly not available and
-                                    is urgently needed.<br>
-                                    Adding duplicate materials will cause data inconsistency!</span>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                <button type="button" class="btn btn-danger" id="btnConfirmAddMaterial">Yes, I
-                                    Understand</button>
-                            </div>
-                        </div>
-                    </div>
+    <!-- Confirmation Modal Before Quick Add Material -->
+    <div class="modal fade" id="confirmAddMaterialModal" tabindex="-1" aria-labelledby="confirmAddMaterialModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmAddMaterialModalLabel">Confirm Add Material!</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <!-- Add Material Modal -->
-                <div class="modal fade" id="addMaterialModal" tabindex="-1" aria-labelledby="addMaterialModalLabel"
-                    aria-hidden="true">
-                    <div class="modal-dialog">
-                        <form id="quickAddMaterialForm" method="POST" action="{{ route('inventories.store.quick') }}">
-                            @csrf
-                            <div class="modal-content">
-                                <div class="modal-header flex-column align-items-start pb-1 pt-3">
-                                    <h5 class="modal-title w-100 mb-2">Quick Add Material</h5>
-                                    <div class="w-100 mb-2">
-                                        <small class="text-muted d-block" style="font-size: 0.92em;">
-                                            <i class="bi bi-search"></i>
-                                            Search Material Before Adding <span class="fst-italic">(optional)</span>
-                                        </small>
-                                        <input type="text" id="search-material-autocomplete"
-                                            class="form-control form-control-sm mt-1"
-                                            placeholder="Type material name to search...">
-                                        <div id="search-material-result" class="form-text mt-1 mb-0"></div>
-                                    </div>
-                                    <button type="button" class="btn-close position-absolute end-0 top-0 m-3"
-                                        data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body pt-2">
-                                    <label>Material Name <span class="text-danger">*</span></label>
-                                    <input type="text" name="name" class="form-control" required>
-                                    <label class="mt-2">Quantity <span class="text-danger">*</span></label>
-                                    <input type="number" step="any" name="quantity" class="form-control" required>
-                                    <label class="mt-2">Unit <span class="text-danger">*</span></label>
-                                    <input type="text" name="unit" class="form-control" required>
-                                    <label class="mt-2">Remark (optional)</label>
-                                    <textarea name="remark" class="form-control" rows="2"></textarea>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="submit" class="btn btn-primary w-100">Add Material</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
+                <div class="modal-body">
+                    <b>Please make sure this material does not already exist in the inventory table.</b><br>
+                    <span class="text-danger">Use this feature only if the material is truly not available and
+                        is urgently needed.<br>
+                        Adding duplicate materials will cause data inconsistency!</span>
                 </div>
-                <!-- Add Project Modal -->
-                <div class="modal fade" id="addProjectModal" tabindex="-1" aria-labelledby="addProjectModalLabel"
-                    aria-hidden="true">
-                    <div class="modal-dialog">
-                        <form id="quickAddProjectForm" method="POST" action="{{ route('projects.store.quick') }}">
-                            @csrf
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Quick Add Project</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <label>Project Name</label>
-                                    <input type="text" name="name" class="form-control" required>
-                                    <label class="mt-2">Qty <span class="text-danger">*</span></label>
-                                    <input type="number" step="any" name="qty" class="form-control" required>
-                                    <label class="mt-2">Department</label>
-                                    <select name="department_id" class="form-select" required>
-                                        <option value="">Select Department</option>
-                                        @foreach ($departments as $dept)
-                                            <option value="{{ $dept->id }}">{{ $dept->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="submit" class="btn btn-success">Add Project</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="btnConfirmAddMaterial">Yes, I
+                        Understand</button>
                 </div>
             </div>
+        </div>
+    </div>
+    <!-- Add Material Modal -->
+    <div class="modal fade" id="addMaterialModal" tabindex="-1" aria-labelledby="addMaterialModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <form id="quickAddMaterialForm" method="POST" action="{{ route('inventories.store.quick') }}">
+                @csrf
+                <div class="modal-content">
+                    <div class="modal-header flex-column align-items-start pb-1 pt-3">
+                        <h5 class="modal-title w-100 mb-2">Quick Add Material</h5>
+                        <div class="w-100 mb-2">
+                            <small class="text-muted d-block" style="font-size: 0.92em;">
+                                <i class="bi bi-search"></i>
+                                Search Material Before Adding <span class="fst-italic">(optional)</span>
+                            </small>
+                            <input type="text" id="search-material-autocomplete"
+                                class="form-control form-control-sm mt-1" placeholder="Type material name to search...">
+                            <div id="search-material-result" class="form-text mt-1 mb-0"></div>
+                        </div>
+                        <button type="button" class="btn-close position-absolute end-0 top-0 m-3"
+                            data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body pt-2">
+                        <label>Material Name <span class="text-danger">*</span></label>
+                        <input type="text" name="name" class="form-control" required>
+                        <label class="mt-2">Quantity <span class="text-danger">*</span></label>
+                        <input type="number" step="any" name="quantity" class="form-control" required>
+                        <label class="mt-2">Unit <span class="text-danger">*</span></label>
+                        <input type="text" name="unit" class="form-control" required>
+                        <label class="mt-2">Remark (optional)</label>
+                        <textarea name="remark" class="form-control" rows="2"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary w-100">Add Material</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Add Project Modal -->
+    <div class="modal fade" id="addProjectModal" tabindex="-1" aria-labelledby="addProjectModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <form id="quickAddProjectForm" method="POST" action="{{ route('projects.store.quick') }}">
+                @csrf
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Quick Add Project</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <label>Project Name</label>
+                        <input type="text" name="name" class="form-control" required>
+                        <label class="mt-2">Qty <span class="text-danger">*</span></label>
+                        <input type="number" step="any" name="qty" class="form-control" required>
+                        <label class="mt-2">Department</label>
+                        <select name="department_id" class="form-select" required>
+                            <option value="">Select Department</option>
+                            @foreach ($departments as $dept)
+                                <option value="{{ $dept->id }}">{{ $dept->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">Add Project</button>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 @endsection
@@ -293,9 +293,7 @@
             });
             // Trigger saat halaman load jika sudah ada value terpilih
             $('select[name="inventory_id"]').trigger('change');
-        });
 
-        $(document).ready(function() {
             // Untuk halaman create, edit, bulk create
             $('#btnQuickAddMaterial').off('click').on('click', function(e) {
                 e.preventDefault();
@@ -308,10 +306,8 @@
                     $('#addMaterialModal, #quickAddMaterialModal').modal('show');
                 }, 360);
             });
-        });
 
-        // Form submit handler
-        $(document).ready(function() {
+            // Form submit handler
             // Quick Add Project
             $('#quickAddProjectForm').on('submit', function(e) {
                 e.preventDefault();
@@ -375,10 +371,8 @@
                     }
                 });
             });
-        });
 
-        // Search material autocomplete
-        $(document).ready(function() {
+            // Search material autocomplete
             // Untuk modal Quick Add Material di halaman bulk create & edit
             $('#quickAddMaterialForm').closest('.modal').on('shown.bs.modal', function() {
                 const $input = $(this).find('#search-material-autocomplete');
@@ -464,5 +458,25 @@
         });
         // Trigger saat halaman load jika sudah ada value terpilih
         $('select[name="project_id"]').trigger('change');
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector(
+                'form[action="{{ route('material_requests.update', $request->id) }}"]');
+            const submitBtn = document.getElementById('update-request-btn');
+            const spinner = submitBtn ? submitBtn.querySelector('.spinner-border') : null;
+
+            if (form && submitBtn && spinner) {
+                form.addEventListener('submit', function() {
+                    submitBtn.disabled = true;
+                    spinner.classList.remove('d-none');
+                    submitBtn.childNodes[2].textContent = ' Updating...';
+                });
+            }
+
+            // Jika pakai AJAX, aktifkan kembali tombol di error handler:
+            // submitBtn.disabled = false;
+            // spinner.classList.add('d-none');
+            // submitBtn.childNodes[2].textContent = ' Update Request';
+        });
     </script>
 @endpush

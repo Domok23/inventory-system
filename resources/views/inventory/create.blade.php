@@ -155,88 +155,87 @@
 
                     <div class="col-lg-6">
                         <a href="{{ route('inventory.index') }}" class="btn btn-secondary">Cancel</a>
-                        <button type="submit" class="btn btn-primary">Save</button>
+                        <button type="submit" class="btn btn-primary" id="inventory-submit-btn">
+                            <span class="spinner-border spinner-border-sm me-1 d-none" role="status"
+                                aria-hidden="true"></span>
+                            Save
+                        </button>
                     </div>
                 </form>
-
-                <!-- Add Currency Modal -->
-                <div class="modal fade" id="currencyModal" tabindex="-1" aria-labelledby="currencyModalLabel"
-                    aria-hidden="true">
-                    <div class="modal-dialog">
-                        <form id="currencyForm" method="POST" action="{{ route('currencies.store') }}">
-                            @csrf
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="currencyModalLabel">Add New Currency</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="mb-3">
-                                        <label for="currency_name" class="form-label">Currency Name <span
-                                                class="text-danger">*</span></label>
-                                        <input type="text" id="currency_name" name="name" class="form-control"
-                                            required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="currency_exchange_rate" class="form-label">Exchange Rate <span
-                                                class="text-danger">*</span></label>
-                                        <input type="number" id="currency_exchange_rate" name="exchange_rate"
-                                            class="form-control" required>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="submit" class="btn btn-primary">Save</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-                <!-- Add Category Modal -->
-                <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel"
-                    aria-hidden="true">
-                    <div class="modal-dialog">
-                        <form id="categoryForm" method="POST" action="{{ route('categories.store') }}">
-                            @csrf
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="addCategoryModalLabel">Add New Category</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <label>Category Name <span class="text-danger">*</span></label>
-                                    <input type="text" name="name" class="form-control" required>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="submit" class="btn btn-success">Add Category</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-                <!-- Add Unit Modal -->
-                <div class="modal fade" id="addUnitModal" tabindex="-1" aria-labelledby="addUnitModalLabel"
-                    aria-hidden="true">
-                    <div class="modal-dialog">
-                        <form id="unitForm" method="POST" action="{{ route('units.store') }}">
-                            @csrf
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="addUnitModalLabel">Add New Unit</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <label>Unit Name <span class="text-danger">*</span></label>
-                                    <input type="text" name="name" class="form-control" required>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="submit" class="btn btn-primary">Add Unit</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
             </div>
+        </div>
+    </div>
+    <!-- Add Category Modal -->
+    <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <form id="categoryForm" method="POST" action="{{ route('categories.store') }}">
+                @csrf
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addCategoryModalLabel">Add New Category</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <label>Category Name <span class="text-danger">*</span></label>
+                        <input type="text" name="name" class="form-control" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">Add Category</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Add Unit Modal -->
+    <div class="modal fade" id="addUnitModal" tabindex="-1" aria-labelledby="addUnitModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form id="unitForm" method="POST" action="{{ route('units.store') }}">
+                @csrf
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addUnitModalLabel">Add New Unit</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <label>Unit Name <span class="text-danger">*</span></label>
+                        <input type="text" name="name" class="form-control" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Add Unit</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Add Currency Modal -->
+    <div class="modal fade" id="currencyModal" tabindex="-1" aria-labelledby="currencyModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form id="currencyForm" method="POST" action="{{ route('currencies.store') }}">
+                @csrf
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="currencyModalLabel">Add New Currency</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="currency_name" class="form-label">Currency Name <span
+                                    class="text-danger">*</span></label>
+                            <input type="text" id="currency_name" name="name" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="currency_exchange_rate" class="form-label">Exchange Rate <span
+                                    class="text-danger">*</span></label>
+                            <input type="number" id="currency_exchange_rate" name="exchange_rate" class="form-control"
+                                required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 @endsection
@@ -283,10 +282,8 @@
                     unitInput.removeAttribute('required');
                 }
             });
-        });
 
-        // Inisialisasi Select2 untuk dropdown Unit
-        document.addEventListener('DOMContentLoaded', function() {
+            // Inisialisasi Select2 untuk dropdown Unit
             $('#unit-select').select2({
                 theme: 'bootstrap-5',
                 placeholder: 'Select Unit',
@@ -326,10 +323,23 @@
                     }
                 });
             });
+
+            // Spinner untuk form utama Inventory
+            const form = document.querySelector('form[action="{{ route('inventory.store') }}"]');
+            const submitBtn = document.getElementById('inventory-submit-btn');
+            const spinner = submitBtn ? submitBtn.querySelector('.spinner-border') : null;
+
+            if (form && submitBtn && spinner) {
+                form.addEventListener('submit', function() {
+                    submitBtn.disabled = true;
+                    spinner.classList.remove('d-none');
+                    submitBtn.childNodes[2].textContent = ' Saving...';
+                });
+            }
         });
 
-        // Inisialisasi Select2 untuk dropdown Kategori
         $(document).ready(function() {
+            // Inisialisasi Select2 untuk dropdown Kategori
             $('#category_id').select2({
                 theme: 'bootstrap-5',
                 placeholder: 'Select Category',
@@ -370,10 +380,8 @@
                     }
                 });
             });
-        });
 
-        // Inisialisasi Select2 untuk dropdown Currency
-        $(document).ready(function() {
+            // Inisialisasi Select2 untuk dropdown Currency
             $('#currency_id').select2({
                 theme: 'bootstrap-5',
                 placeholder: 'Select Currency',

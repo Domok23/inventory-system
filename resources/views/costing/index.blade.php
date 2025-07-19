@@ -20,7 +20,11 @@
                             </select>
                         </div>
                         <div class="col-lg-2 align-self-end">
-                            <button type="submit" class="btn btn-primary">Filter</button>
+                            <button type="submit" class="btn btn-primary" id="filter-btn">
+                                <span class="spinner-border spinner-border-sm me-1 d-none" role="status"
+                                    aria-hidden="true"></span>
+                                Filter
+                            </button>
                             <a href="{{ route('costing.report') }}" class="btn btn-secondary">Reset</a>
                         </div>
                     </form>
@@ -160,5 +164,18 @@
                     alert('Failed to load costing data. Please try again.');
                 });
         }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterForm = document.getElementById('filter-form');
+            const filterBtn = document.getElementById('filter-btn');
+            const spinner = filterBtn.querySelector('.spinner-border');
+            if (filterForm && filterBtn && spinner) {
+                filterForm.addEventListener('submit', function() {
+                    filterBtn.disabled = true;
+                    spinner.classList.remove('d-none');
+                    filterBtn.childNodes[2].textContent = ' Filtering...';
+                });
+            }
+        });
     </script>
 @endpush

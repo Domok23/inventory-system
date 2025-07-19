@@ -202,7 +202,7 @@ class GoodsOutController extends Controller
     public function createIndependent()
     {
         $inventories = Inventory::orderBy('name')->get();
-        $projects = Project::orderBy('name')->get();
+        $projects = Project::with('department')->orderBy('name')->get();
         $users = User::with('department')->orderBy('username')->get();
         return view('goods_out.create_independent', compact('inventories', 'projects', 'users'));
     }
@@ -229,7 +229,9 @@ class GoodsOutController extends Controller
             // Validasi quantity setelah lock
             if ($request->quantity > $inventory->quantity) {
                 DB::rollBack();
-                return back()->withInput()->with('error', 'Quantity cannot exceed the available inventory.');
+                return back()
+                    ->withInput()
+                    ->withErrors(['quantity' => 'Quantity cannot exceed the available inventory.']);
             }
 
             // Kurangi stok di inventory
@@ -412,14 +414,18 @@ class GoodsOutController extends Controller
                 $remainingQty = $materialRequest->qty - ($materialRequest->processed_qty - $oldQuantity);
                 if ($request->quantity > $remainingQty) {
                     DB::rollBack();
-                    return back()->withInput()->with('error', 'Quantity cannot exceed the remaining requested quantity.');
+                    return back()
+                        ->withInput()
+                        ->withErrors(['quantity' => 'Quantity cannot exceed the remaining requested quantity.']);
                 }
             }
 
             // Validasi stok inventory
             if ($request->quantity > $inventory->quantity) {
                 DB::rollBack();
-                return back()->withInput()->with('error', 'Quantity cannot exceed the available inventory.');
+                return back()
+                    ->withInput()
+                    ->withErrors(['quantity' => 'Quantity cannot exceed the available inventory.']);
             }
 
             // Kurangi stok dengan quantity baru

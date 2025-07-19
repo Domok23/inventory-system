@@ -18,7 +18,7 @@
                         </ul>
                     </div>
                 @endif
-                <form method="POST"
+                <form method="POST" id="project-form"
                     action="{{ isset($project) ? route('projects.update', $project) : route('projects.store') }}"
                     enctype="multipart/form-data">
                     @csrf
@@ -141,7 +141,11 @@
                         </div>
                     </div>
                     <a href="{{ route('projects.index') }}" class="btn btn-secondary">Cancel</a>
-                    <button type="submit" class="btn btn-success">{{ isset($project) ? 'Update' : 'Create' }}</button>
+                    <button type="submit" class="btn btn-success" id="project-submit-btn">
+                        <span class="spinner-border spinner-border-sm me-1 d-none" role="status"
+                            aria-hidden="true"></span>
+                        {{ isset($project) ? 'Update' : 'Save' }}
+                    </button>
                 </form>
             </div>
         </div>
@@ -159,7 +163,8 @@
                     </div>
                     <div class="modal-body">
                         <label>Department Name <span class="text-danger">*</span></label>
-                        <input type="text" name="name" class="form-control" required>
+                        <input type="text" name="department_name" class="form-control" required>
+                        <div id="department-error" class="text-danger mt-1" style="display:none"></div>
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-success">Add Department</button>
@@ -213,7 +218,7 @@
             // Validasi tanggal di frontend
             const startDateInput = document.getElementById('start_date');
             const deadlineInput = document.getElementById('deadline');
-            const form = startDateInput.closest('form');
+            const dateForm = startDateInput.closest('form'); 
 
             function validateDates(e) {
                 const startDate = startDateInput.value;
@@ -233,8 +238,8 @@
                 return true;
             }
 
-            if (form) {
-                form.addEventListener('submit', validateDates);
+            if (dateForm) {
+                dateForm.addEventListener('submit', validateDates);
             }
 
             // Inisialisasi Fancybox untuk gambar
@@ -252,6 +257,20 @@
                 },
                 Hash: false,
             });
+
+            // Disable submit button and show spinner on form submit
+            const form = document.getElementById('project-form');
+            const submitBtn = document.getElementById('project-submit-btn');
+            const spinner = submitBtn ? submitBtn.querySelector('.spinner-border') : null;
+
+            if (form && submitBtn && spinner) {
+                form.addEventListener('submit', function() {
+                    submitBtn.disabled = true;
+                    spinner.classList.remove('d-none');
+                    submitBtn.childNodes[2].textContent = submitBtn.textContent.trim() === 'Save' ?
+                        ' Saving...' : ' Updating...';
+                });
+            }
         });
 
         document.getElementById('add-part').onclick = function() {
@@ -272,10 +291,15 @@
             $('#departmentForm').on('submit', function(e) {
                 e.preventDefault();
                 let form = $(this);
+                let errorDiv = $('#department-error');
+                errorDiv.hide().text('');
                 $.ajax({
                     url: form.attr('action'),
                     method: 'POST',
-                    data: form.serialize(),
+                    data: {
+                        department_name: form.find('[name="department_name"]').val(),
+                        _token: '{{ csrf_token() }}'
+                    },
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
@@ -286,17 +310,19 @@
                             'change');
                         $('#addDepartmentModal').modal('hide');
                         form[0].reset();
+                        errorDiv.hide().text('');
                     },
                     error: function(xhr) {
                         let msg = xhr.responseJSON?.message ||
                             'Failed to add department. Please try again.';
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: msg
-                        });
+                        errorDiv.html(msg).show();
                     }
                 });
+            });
+
+            // Reset error saat modal dibuka ulang
+            $('#addDepartmentModal').on('shown.bs.modal', function() {
+                $('#department-error').hide().text('');
             });
         });
     </script>

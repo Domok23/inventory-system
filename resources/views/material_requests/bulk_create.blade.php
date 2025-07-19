@@ -106,7 +106,11 @@
 
                     <div class="d-flex justify-content-between mt-3">
                         <button type="button" class="btn btn-outline-primary" id="add-row">+ Add Row</button>
-                        <button type="submit" class="btn btn-success">Submit All</button>
+                        <button type="submit" class="btn btn-success" id="bulk-submit-btn">
+                            <span class="spinner-border spinner-border-sm me-1 d-none" role="status"
+                                aria-hidden="true"></span>
+                            Submit All
+                        </button>
                     </div>
                 </form>
             </div>
@@ -384,9 +388,7 @@
                     $(this).closest('tr').remove();
                 }
             });
-        });
 
-        $(document).ready(function() {
             // Update unit label dynamically when material is selected
             $(document).on('change', '.material-select', function() {
                 const unit = $(this).find(':selected').data('unit') || 'unit';
@@ -395,9 +397,7 @@
 
             // Trigger change event on page load to restore old values
             $('.material-select').trigger('change');
-        });
 
-        $(document).ready(function() {
             // Untuk halaman create, edit, bulk create
             $('#btnQuickAddMaterial').off('click').on('click', function(e) {
                 e.preventDefault();
@@ -410,9 +410,7 @@
                     $('#addMaterialModal, #quickAddMaterialModal').modal('show');
                 }, 360);
             });
-        });
 
-        $(document).ready(function() {
             // Quick Add Project (Bulk)
             $('#quickAddProjectForm').on('submit', function(e) {
                 e.preventDefault();
@@ -528,10 +526,8 @@
                 }
             });
             $('.material-select').trigger('change');
-        });
 
-        $(document).ready(function() {
-            // Untuk modal Quick Add Material di halaman bulk create & edit
+            // Untuk modal Quick Add Material 
             $('#quickAddMaterialForm').closest('.modal').on('shown.bs.modal', function() {
                 const $input = $(this).find('#search-material-autocomplete');
                 const $result = $(this).find('#search-material-result');
@@ -572,6 +568,18 @@
                     });
                 });
             });
+
+            // Handle form submission for bulk create
+            const form = $('form[action="{{ route('material_requests.bulk_store') }}"]');
+            const submitBtn = $('#bulk-submit-btn');
+            const spinner = submitBtn.find('.spinner-border');
+
+            if (form.length && submitBtn.length && spinner.length) {
+                form.on('submit', function() {
+                    submitBtn.prop('disabled', true);
+                    spinner.removeClass('d-none');
+                });
+            }
         });
     </script>
 @endpush

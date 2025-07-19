@@ -99,7 +99,10 @@
                     </div>
 
                     <a href="{{ route('users.index') }}" class="btn btn-secondary">Cancel</a>
-                    <button type="submit" class="btn btn-primary">Update</button>
+                    <button type="submit" class="btn btn-primary" id="user-update-btn">
+                        <span class="spinner-border spinner-border-sm me-1 d-none" role="status" aria-hidden="true"></span>
+                        Update
+                    </button>
                 </form>
             </div>
         </div>
@@ -108,13 +111,12 @@
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Toggle password (existing code)
             const togglePasswordButtons = document.querySelectorAll('.toggle-password');
-
             togglePasswordButtons.forEach(button => {
                 button.addEventListener('click', function() {
                     const passwordInput = this.previousElementSibling;
                     const icon = this.querySelector('i');
-
                     if (passwordInput.type === 'password') {
                         passwordInput.type = 'text';
                         icon.classList.remove('fa-eye');
@@ -126,6 +128,24 @@
                     }
                 });
             });
+
+            // Prevent multiple submit & show spinner
+            const form = document.querySelector('form[action="{{ route('users.update', $user->id) }}"]');
+            const submitBtn = document.getElementById('user-update-btn');
+            const spinner = submitBtn ? submitBtn.querySelector('.spinner-border') : null;
+
+            if (form && submitBtn && spinner) {
+                form.addEventListener('submit', function() {
+                    submitBtn.disabled = true;
+                    spinner.classList.remove('d-none');
+                    submitBtn.childNodes[2].textContent = ' Updating...';
+                });
+            }
+
+            // Jika pakai AJAX, aktifkan kembali tombol di error handler:
+            // submitBtn.disabled = false;
+            // spinner.classList.add('d-none');
+            // submitBtn.childNodes[2].textContent = ' Update';
         });
     </script>
 @endpush

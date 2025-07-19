@@ -135,7 +135,11 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="submit" class="btn btn-primary" id="goodsin-submit-btn">
+                            <span class="spinner-border spinner-border-sm me-1 d-none" role="status"
+                                aria-hidden="true"></span>
+                            Submit
+                        </button>
                     </div>
                 </div>
             </form>
@@ -183,7 +187,11 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="submit" class="btn btn-primary" id="goodsout-submit-btn">
+                            <span class="spinner-border spinner-border-sm me-1 d-none" role="status"
+                                aria-hidden="true"></span>
+                            Submit
+                        </button>
                     </div>
                 </div>
             </form>
@@ -243,13 +251,13 @@
                     if (Array.isArray(response)) {
                         response.forEach(function(usage) {
                             $('#materialUsageTable').append(`
-                <tr>
-                    <td>${usage.project_name}</td>
-                    <td>${usage.goods_out_quantity}</td>
-                    <td>${usage.goods_in_quantity}</td>
-                    <td>${usage.used_quantity}</td>
-                </tr>
-            `);
+                                <tr>
+                                    <td>${usage.project_name}</td>
+                                    <td>${usage.goods_out_quantity}</td>
+                                    <td>${usage.goods_in_quantity}</td>
+                                    <td>${usage.used_quantity}</td>
+                                </tr>
+                            `);
                         });
 
                         // Inisialisasi DataTables setelah data dimuat
@@ -272,7 +280,36 @@
                 }
             });
         });
+
         $(document).ready(function() {
+            // Simpan isi awal tombol
+            const goodsInBtn = $('#goodsin-submit-btn');
+            const goodsInBtnHtml = goodsInBtn.html();
+            const goodsOutBtn = $('#goodsout-submit-btn');
+            const goodsOutBtnHtml = goodsOutBtn.html();
+
+            // Handle submit Goods In
+            $('#goodsInModal form').on('submit', function() {
+                goodsInBtn.prop('disabled', true);
+                goodsInBtn.find('.spinner-border').removeClass('d-none');
+            });
+
+            // Handle submit Goods Out
+            $('#goodsOutModal form').on('submit', function() {
+                goodsOutBtn.prop('disabled', true);
+                goodsOutBtn.find('.spinner-border').removeClass('d-none');
+            });
+
+            // Reset tombol saat modal dibuka ulang
+            $('#goodsInModal').on('shown.bs.modal', function() {
+                goodsInBtn.prop('disabled', false);
+                goodsInBtn.html(goodsInBtnHtml);
+            });
+            $('#goodsOutModal').on('shown.bs.modal', function() {
+                goodsOutBtn.prop('disabled', false);
+                goodsOutBtn.html(goodsOutBtnHtml);
+            });
+
             // Inisialisasi Select2 di modal Goods Out
             $('#goodsOutModal').on('shown.bs.modal', function() {
                 $('#goodsOutModal select').select2({
@@ -293,6 +330,7 @@
                 });
             });
         });
+
         document.addEventListener('DOMContentLoaded', function() {
             Fancybox.bind("[data-fancybox='gallery']", {
                 Toolbar: {

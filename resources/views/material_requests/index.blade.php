@@ -103,7 +103,11 @@
                                 value="{{ request('requested_at') }}" placeholder="Requested At Date" autocomplete="off">
                         </div>
                         <div class="col-lg-2 align-self-end">
-                            <button type="submit" class="btn btn-primary">Filter</button>
+                            <button type="submit" class="btn btn-primary" id="filter-btn">
+                                <span class="spinner-border spinner-border-sm me-1 d-none" role="status"
+                                    aria-hidden="true"></span>
+                                Filter
+                            </button>
                             <a href="{{ route('material_requests.index') }}" class="btn btn-secondary">Reset</a>
                         </div>
                     </form>
@@ -240,6 +244,7 @@
             </div>
         </div>
     </div>
+
     <!-- Modal Bulk Goods Out -->
     <div class="modal fade" id="bulkGoodsOutModal" tabindex="-1" aria-labelledby="bulkGoodsOutModalLabel"
         aria-hidden="true">
@@ -318,6 +323,7 @@
 @push('scripts')
     <script>
         $(document).ready(function() {
+            // Initialize DataTable
             $('#datatable').DataTable({
                 responsive: true,
                 destroy: true,
@@ -494,7 +500,21 @@
                 dateFormat: "Y-m-d",
                 allowInput: true,
             });
+
+            // Spinner filter button handling
+            const filterBtn = $('#filter-btn');
+            const filterSpinner = filterBtn.find('.spinner-border');
+            const filterForm = $('#filter-form');
+            const filterBtnHtml = filterBtn.html();
+
+            if (filterForm.length && filterBtn.length && filterSpinner.length) {
+                filterForm.on('submit', function() {
+                    filterBtn.prop('disabled', true);
+                    filterSpinner.removeClass('d-none');
+                });
+            }
         });
+
         document.addEventListener("DOMContentLoaded", function() {
             var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
             tooltipTriggerList.forEach(function(tooltipTriggerEl) {

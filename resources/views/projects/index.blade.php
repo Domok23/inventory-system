@@ -94,7 +94,7 @@
                                 <td>{{ $project->name }}</td>
                                 <td>{{ $project->qty }}</td>
                                 <td>
-                                    {{ ucwords(str_replace('&', ' & ', $project->department->name)) }}
+                                    {{ ucfirst($project->department->name) ?? '-' }}
                                 </td>
                                 <td>{{ $project->start_date ? \Carbon\Carbon::parse($project->start_date)->translatedFormat('d F Y') : '-' }}
                                 </td>

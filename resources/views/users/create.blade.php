@@ -77,7 +77,10 @@
                         </div>
                     </div>
                     <a href="{{ route('users.index') }}" class="btn btn-secondary">Cancel</a>
-                    <button type="submit" class="btn btn-primary">Create</button>
+                    <button type="submit" class="btn btn-primary" id="user-submit-btn">
+                        <span class="spinner-border spinner-border-sm me-1 d-none" role="status" aria-hidden="true"></span>
+                        Create
+                    </button>
                 </form>
             </div>
         </div>
@@ -104,6 +107,23 @@
                     }
                 });
             });
+
+            const form = document.querySelector('form[action="{{ route('users.store') }}"]');
+            const submitBtn = document.getElementById('user-submit-btn');
+            const spinner = submitBtn ? submitBtn.querySelector('.spinner-border') : null;
+
+            if (form && submitBtn && spinner) {
+                form.addEventListener('submit', function() {
+                    submitBtn.disabled = true;
+                    spinner.classList.remove('d-none');
+                    submitBtn.childNodes[2].textContent = ' Creating...';
+                });
+            }
+
+            // Jika pakai AJAX, aktifkan kembali tombol di error handler:
+            // submitBtn.disabled = false;
+            // spinner.classList.add('d-none');
+            // submitBtn.childNodes[2].textContent = ' Create';
         });
     </script>
 @endpush

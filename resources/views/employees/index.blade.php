@@ -55,6 +55,8 @@
                                             style="display:inline;">
                                             @csrf @method('DELETE')
                                             <button type="submit" class="btn btn-danger btn-sm">
+                                                <span class="spinner-border spinner-border-sm me-1 d-none" role="status"
+                                                    aria-hidden="true"></span>
                                                 <i class="bi bi-trash"></i> Delete
                                             </button>
                                         </form>
@@ -248,6 +250,12 @@
                     reverseButtons: true
                 }).then((result) => {
                     if (result.isConfirmed) {
+                        // Disable tombol dan tampilkan spinner
+                        const btn = form.find('button[type="submit"]');
+                        const spinner = btn.find('.spinner-border');
+                        btn.prop('disabled', true);
+                        spinner.removeClass('d-none');
+
                         form.submit();
                     }
                 });

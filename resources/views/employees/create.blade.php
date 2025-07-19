@@ -57,7 +57,7 @@
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="department" class="form-label">Department</label>
+                            <label for="department" class="form-label">Department <span class="text-danger">*</span></label>
                             <select name="department_id" id="department_id" class="form-select" required>
                                 <option value="">Select Department</option>
                                 @foreach ($departments as $dept)
@@ -148,7 +148,9 @@
                         <a href="{{ route('employees.index') }}" class="btn btn-secondary">
                             <i class="bi bi-arrow-left"></i> Cancel
                         </a>
-                        <button type="submit" class="btn btn-primary">
+                        <button type="submit" class="btn btn-primary" id="employee-submit-btn">
+                            <span class="spinner-border spinner-border-sm me-1 d-none" role="status"
+                                aria-hidden="true"></span>
                             <i class="bi bi-save"></i> Save Employee
                         </button>
                     </div>
@@ -184,6 +186,18 @@
                     bsAlert.close();
                 }, 5000);
             });
+
+            // Prevent multiple submit on create employee form
+            const form = document.querySelector('form[action="{{ route('employees.store') }}"]');
+            const submitBtn = document.getElementById('employee-submit-btn');
+            const spinner = submitBtn ? submitBtn.querySelector('.spinner-border') : null;
+
+            if (form && submitBtn && spinner) {
+                form.addEventListener('submit', function() {
+                    submitBtn.disabled = true;
+                    spinner.classList.remove('d-none');
+                });
+            }
         });
     </script>
 @endpush

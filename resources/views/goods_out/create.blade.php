@@ -48,7 +48,8 @@
                         <div class="col-lg-6 mb-3">
                             <label>Quantity to Goods Out <span class="text-danger">*</span></label>
                             <div class="input-group">
-                                <input type="number" name="quantity" class="form-control"
+                                <input type="number" name="quantity"
+                                    class="form-control @error('quantity') is-invalid @enderror"
                                     value="{{ old('quantity', $materialRequest->remaining_qty) }}"
                                     max="{{ $materialRequest->remaining_qty }}" step="any" required>
                                 <span class="input-group-text unit-label">
@@ -84,7 +85,10 @@
                         </div>
                     </div>
                     <a href="{{ route('material_requests.index') }}" class="btn btn-secondary">Cancel</a>
-                    <button type="submit" class="btn btn-success">Submit</button>
+                    <button type="submit" class="btn btn-success" id="goodsout-submit-btn">
+                        <span class="spinner-border spinner-border-sm me-1 d-none" role="status" aria-hidden="true"></span>
+                        Submit
+                    </button>
                 </form>
             </div>
         </div>
@@ -111,6 +115,25 @@
             });
             // Trigger saat halaman load jika sudah ada value terpilih
             $('select[name="inventory_id"]').trigger('change');
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form[action="{{ route('goods_out.store') }}"]');
+            const submitBtn = document.getElementById('goodsout-submit-btn');
+            const spinner = submitBtn ? submitBtn.querySelector('.spinner-border') : null;
+
+            if (form && submitBtn && spinner) {
+                form.addEventListener('submit', function() {
+                    submitBtn.disabled = true;
+                    spinner.classList.remove('d-none');
+                    submitBtn.childNodes[2].textContent = ' Submitting...';
+                });
+            }
+
+            // Jika pakai AJAX, aktifkan kembali tombol di error handler:
+            // submitBtn.disabled = false;
+            // spinner.classList.add('d-none');
+            // submitBtn.childNodes[2].textContent = ' Submit';
         });
     </script>
 @endpush

@@ -98,7 +98,11 @@
                                 value="{{ request('requested_at') }}" placeholder="Proceed At Date" autocomplete="off">
                         </div>
                         <div class="col-lg-2 align-self-end">
-                            <button type="submit" class="btn btn-primary">Filter</button>
+                            <button type="submit" class="btn btn-primary" id="filter-btn">
+                                <span class="spinner-border spinner-border-sm me-1 d-none" role="status"
+                                    aria-hidden="true"></span>
+                                Filter
+                            </button>
                             <a href="{{ route('goods_out.index') }}" class="btn btn-secondary">Reset</a>
                         </div>
                     </form>
@@ -413,7 +417,20 @@
                 dateFormat: "Y-m-d",
                 allowInput: true,
             });
+
+            const filterForm = document.getElementById('filter-form');
+            const filterBtn = document.getElementById('filter-btn');
+            const spinner = filterBtn ? filterBtn.querySelector('.spinner-border') : null;
+
+            if (filterForm && filterBtn && spinner) {
+                filterForm.addEventListener('submit', function() {
+                    filterBtn.disabled = true;
+                    spinner.classList.remove('d-none');
+                    filterBtn.childNodes[2].textContent = ' Filtering...';
+                });
+            }
         });
+
         document.addEventListener("DOMContentLoaded", function() {
             var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
             tooltipTriggerList.forEach(function(tooltipTriggerEl) {

@@ -90,7 +90,11 @@
                                 value="{{ request('returned_at') }}" placeholder="Returned At Date" autocomplete="off">
                         </div>
                         <div class="col-lg-2 align-self-end">
-                            <button type="submit" class="btn btn-primary">Filter</button>
+                            <button type="submit" class="btn btn-primary" id="filter-btn">
+                                <span class="spinner-border spinner-border-sm me-1 d-none" role="status"
+                                    aria-hidden="true"></span>
+                                Filter
+                            </button>
                             <a href="{{ route('goods_in.index') }}" class="btn btn-secondary">Reset</a>
                         </div>
                     </form>
@@ -169,8 +173,11 @@
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="button" class="btn btn-sm btn-danger btn-delete"
-                                                    data-bs-toggle="tooltip" data-bs-placement="bottom" title="Delete"><i
-                                                        class="bi bi-trash3"></i></button>
+                                                    data-bs-toggle="tooltip" data-bs-placement="bottom" title="Delete">
+                                                    <span class="spinner-border spinner-border-sm me-1 d-none"
+                                                        role="status" aria-hidden="true"></span>
+                                                    <i class="bi bi-trash3"></i>
+                                                </button>
                                             </form>
                                         @endif
                                     </div>
@@ -212,10 +219,23 @@
                 stateSave: true,
             });
 
+            const filterForm = document.getElementById('filter-form');
+            const filterBtn = document.getElementById('filter-btn');
+            const spinner = filterBtn ? filterBtn.querySelector('.spinner-border') : null;
+
+            if (filterForm && filterBtn && spinner) {
+                filterForm.addEventListener('submit', function() {
+                    filterBtn.disabled = true;
+                    spinner.classList.remove('d-none');
+                    filterBtn.childNodes[2].textContent = ' Filtering...';
+                });
+            }
+
             // SweetAlert for delete confirmation
             $(document).on('click', '.btn-delete', function(e) {
                 e.preventDefault();
-                let form = $(this).closest('form');
+                let btn = $(this);
+                let form = btn.closest('form');
                 Swal.fire({
                     title: 'Are you sure?',
                     text: "This action cannot be undone!",
@@ -227,6 +247,9 @@
                     reverseButtons: true
                 }).then((result) => {
                     if (result.isConfirmed) {
+                        // Disable tombol dan tampilkan spinner
+                        btn.prop('disabled', true);
+                        btn.find('.spinner-border').removeClass('d-none');
                         form.submit();
                     }
                 });
@@ -246,6 +269,7 @@
                 allowInput: true,
             });
         });
+
         document.addEventListener("DOMContentLoaded", function() {
             var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
             tooltipTriggerList.forEach(function(tooltipTriggerEl) {

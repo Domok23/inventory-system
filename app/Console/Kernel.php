@@ -15,7 +15,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('material-request:auto-goods-out')->daily();
+        $schedule->command('material-request:auto-goods-out')->twiceDaily(0, 12);
     }
 
     /**
@@ -25,7 +25,7 @@ class Kernel extends ConsoleKernel
      */
     protected function commands()
     {
-        $this->load(__DIR__.'/Commands');
+        $this->load(__DIR__ . '/Commands');
 
         require base_path('routes/console.php');
     }
