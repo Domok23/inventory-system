@@ -12,18 +12,6 @@
                     </div>
 
                     <div class="card-body">
-                        @if ($errors->any())
-                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                <strong>Whoops!</strong> There were some problems with your input.
-                                <ul class="mb-0">
-                                    @foreach ($errors->all() as $error)
-                                        <li>{{ $error }}</li>
-                                    @endforeach
-                                </ul>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"
-                                    aria-label="Close"></button>
-                            </div>
-                        @endif
 
                         <form method="POST" action="{{ route('register') }}">
                             @csrf
@@ -116,6 +104,28 @@
                                                 <i class="fas fa-user-tag text-danger"></i>
                                                 {{ $message }}
                                             </strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label for="department_id" class="col-lg-4 col-form-label text-lg-end">
+                                    Department <span class="text-danger">*</span>
+                                </label>
+                                <div class="col-lg-6">
+                                    <select id="department_id" name="department_id" class="form-select" required>
+                                        <option value="">Select Department</option>
+                                        @foreach ($departments as $dept)
+                                            <option value="{{ $dept->id }}"
+                                                {{ old('department_id') == $dept->id ? 'selected' : '' }}>
+                                                {{ $dept->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('department_id')
+                                        <span class="invalid-feedback d-block" role="alert">
+                                            <strong>{{ $message }}</strong>
                                         </span>
                                     @enderror
                                 </div>

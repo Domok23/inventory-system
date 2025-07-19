@@ -22,6 +22,7 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\TimingController;
 use App\Http\Controllers\FinalProjectSummaryController;
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\Auth\RegisterController;
 
 /*
 |--------------------------------------------------------------------------
@@ -40,8 +41,8 @@ Route::get('/', function () {
     return redirect('/login');
 });
 
-Route::get('/register', [App\Http\Controllers\Auth\RegisterController::class, 'showRegistrationForm'])->name('register');
-Route::post('/register', [App\Http\Controllers\Auth\RegisterController::class, 'register']);
+Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
+Route::post('/register', [RegisterController::class, 'register']);
 
 Route::middleware(['auth'])->group(function () {
     // Dashboard

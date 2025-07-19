@@ -453,8 +453,8 @@ class MaterialRequestController extends Controller
     {
         $request = MaterialRequest::findOrFail($id);
 
-        // Pastikan status approved dan belum delivered
-        if ($request->status !== 'approved' || $request->processed_qty >= $request->qty) {
+        // Pastikan status pending atau approved dan belum delivered
+        if (!in_array($request->status, ['pending', 'approved']) || $request->processed_qty >= $request->qty) {
             return response()->json(['success' => false, 'message' => 'Reminder not allowed for this request.']);
         }
 
