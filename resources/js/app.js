@@ -311,7 +311,11 @@ function updateDataTable(materialRequest) {
         checkboxColumn, // Checkbox
         materialRequest.id, // Kolom ID tersembunyi
         materialRequest.project?.name || "N/A", // Project
-        materialRequest.inventory?.name || "N/A", // Material
+        `<span class="material-detail-link" data-id="${
+            materialRequest.inventory?.id || ""
+        }" style="cursor:pointer;">
+        ${materialRequest.inventory?.name || "(No Material)"}
+        </span>`, // Material Name
         `${formatNumberDynamic(materialRequest.qty)} ${
             materialRequest.inventory?.unit || ""
         }`, // Requested Qty
@@ -321,7 +325,11 @@ function updateDataTable(materialRequest) {
         `${formatNumberDynamic(materialRequest.processed_qty ?? 0)} ${
             materialRequest.inventory?.unit || ""
         }`, // Processed Qty
-        `${ucfirst(materialRequest.requested_by)} (${ucfirst(departmentName)})`, // Requested By
+        `<span data-bs-toggle="tooltip" data-bs-placement="right" title="${ucfirst(
+            departmentName
+        )}" class="requested-by-tooltip">${ucfirst(
+            materialRequest.requested_by
+        )}</span>`, // Requested By
         formattedDate, // Requested At (format lokal)
         statusColumn, // Status
         materialRequest.remark || "-", // Remark
@@ -344,6 +352,14 @@ function updateDataTable(materialRequest) {
     } else {
         console.error("Select element not found in row:", row.node()); // Debug log
     }
+
+    // Inisialisasi ulang tooltip Bootstrap pada elemen baru
+    const tooltipTriggerList = [].slice.call(
+        row.node().querySelectorAll('[data-bs-toggle="tooltip"]')
+    );
+    tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+        new bootstrap.Tooltip(tooltipTriggerEl);
+    });
 }
 
 // Fungsi untuk deteksi apakah sedang di halaman form create, bulk create, atau edit material request

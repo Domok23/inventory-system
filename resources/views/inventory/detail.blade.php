@@ -32,10 +32,6 @@
                         <h5>{{ $inventory->name }}</h5>
                         <table class="table table-bordered table-striped table-hover">
                             <tr>
-                                <th>Name</th>
-                                <td>{{ $inventory->name }}</td>
-                            </tr>
-                            <tr>
                                 <th>Quantity</th>
                                 <td>{{ $inventory->quantity }} {{ $inventory->unit }}</td>
                             </tr>

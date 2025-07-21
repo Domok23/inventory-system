@@ -150,7 +150,11 @@
                                 </td>
                                 <td style="display:none">{{ $req->id }}</td>
                                 <td>{{ $req->project->name ?? '(No Project)' }}</td>
-                                <td>{{ $req->inventory->name ?? '(No Material)' }}</td>
+                                <td>
+                                    <span class="material-detail-link" data-id="{{ $req->inventory->id ?? '' }}">
+                                        {{ $req->inventory->name ?? '(No Material)' }}
+                                    </span>
+                                </td>
                                 <td>{{ rtrim(rtrim(number_format($req->qty, 2, '.', ''), '0'), '.') }}
                                     {{ $req->inventory->unit ?? '(No Unit)' }}</td>
                                 <td>{{ rtrim(rtrim(number_format($req->remaining_qty, 2, '.', ''), '0'), '.') }}
@@ -180,10 +184,10 @@
                                             <input type="hidden" name="filter_requested_at"
                                                 value="{{ request('requested_at') }}">
                                             <select name="status" class="form-select form-select-sm status-select"
-                                                onchange="this.form.submit()">
+                                                onchange="this.form.submit()"
+                                                title="{{ $req->status === 'pending' ? 'Waiting for approval' : ($req->status === 'approved' ? 'Ready for goods out' : ($req->status === 'delivered' ? 'Already delivered' : 'Request canceled')) }}">
                                                 <option value="pending"
-                                                    {{ $req->status === 'pending' ? 'selected' : '' }}>
-                                                    Pending</option>
+                                                    {{ $req->status === 'pending' ? 'selected' : '' }}>Pending</option>
                                                 <option value="approved"
                                                     {{ $req->status === 'approved' ? 'selected' : '' }}>Approved</option>
                                                 <option value="canceled"
@@ -261,9 +265,9 @@
                             <table class="table table-bordered table-sm align-middle" style="font-size: 0.92rem;">
                                 <thead>
                                     <tr>
-                                        <th>Material (Unit)</th>
+                                        <th>Material</th>
                                         <th>Project</th>
-                                        <th>Req/Rem Qty</th>
+                                        <th>Req / Rem Qty</th>
                                         <th>Qty to Goods Out</th>
                                     </tr>
                                 </thead>
@@ -277,6 +281,25 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="button" id="submit-bulk-goods-out" class="btn btn-success">Submit All</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Material Detail Modal -->
+    <div class="modal fade" id="materialDetailModal" tabindex="-1" aria-labelledby="materialDetailModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="materialDetailModalLabel">Material Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="material-detail-modal-body">
+                    <!-- Detail akan dimuat via AJAX -->
+                    <div class="text-center py-4">
+                        <div class="spinner-border" role="status"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -300,6 +323,16 @@
             max-width: 170px;
             overflow: hidden;
             text-overflow: ellipsis;
+        }
+
+        .material-detail-link {
+            color: inherit !important;
+            text-decoration: none !important;
+            cursor: pointer;
+        }
+
+        .material-detail-link:hover {
+            text-decoration: underline dotted;
         }
 
         select.form-select option:disabled {
@@ -418,14 +451,14 @@
                         response.forEach(function(item) {
                             $('#bulk-goods-out-table-body').append(`
                                 <tr>
-                                    <td>${item.material_name} <span class="text-muted">(${item.unit})</span></td>
+                                    <td>${item.material_name}</td>
                                     <td>
                                         ${item.project_name}
                                         <span data-bs-toggle="tooltip" data-bs-placement="top" title="Requested By: ${item.requested_by}">
                                             <i class="bi bi-person-circle"></i>
                                         </span>
                                     </td>
-                                    <td>${item.requested_qty} / ${item.remaining_qty}</td>
+                                    <td>${item.requested_qty} / ${item.remaining_qty} <span class="text-muted">${item.unit}</span></td>
                                     <td>
                                         <input type="number" name="goods_out_qty[${item.id}]" class="form-control form-control-sm"
                                             value="${item.remaining_qty}" min="0.001" max="${item.remaining_qty}" step="any" required>
@@ -496,6 +529,7 @@
                 });
             });
 
+            // Initialize flatpickr for date input
             flatpickr("#filter-requested-at", {
                 dateFormat: "Y-m-d",
                 allowInput: true,
@@ -513,8 +547,63 @@
                     filterSpinner.removeClass('d-none');
                 });
             }
+
+            // Fungsi untuk update title pada select status
+            function updateStatusTitle($select) {
+                const val = $select.val();
+                let tip = '';
+                if (val === 'pending') tip = 'Waiting for approval';
+                else if (val === 'approved') tip = 'Ready for goods out';
+                else if (val === 'delivered') tip = 'Already delivered';
+                else if (val === 'canceled') tip = 'Request canceled';
+                $select.attr('title', tip);
+            }
+
+            // Inisialisasi title pada semua status select saat halaman load
+            $('.status-select').each(function() {
+                updateStatusTitle($(this));
+            });
+
+            // Update title saat select berubah
+            $(document).on('change', '.status-select', function() {
+                updateStatusTitle($(this));
+            });
+
+            // Jika pakai DataTable, update title setelah redraw
+            $('#datatable').on('draw.dt', function() {
+                $('.status-select').each(function() {
+                    updateStatusTitle($(this));
+                });
+            });
         });
 
+        // Material detail link click handler
+        $(document).on('click', '.material-detail-link', function(e) {
+            e.preventDefault();
+            const inventoryId = $(this).data('id');
+            if (!inventoryId) return;
+
+            $('#material-detail-modal-body').html(
+                '<div class="text-center py-4"><div class="spinner-border" role="status"></div></div>');
+            $('#materialDetailModal').modal('show');
+
+            $.get('/inventory/detail/' + inventoryId, function(res) {
+                // Ambil hanya isi <div class="card-body">...</div> dari halaman detail
+                const html = $('<div>').html(res);
+                const cardBody = html.find('.card-body').html();
+                if (cardBody) {
+                    $('#material-detail-modal-body').html(cardBody);
+                } else {
+                    $('#material-detail-modal-body').html(
+                        '<div class="alert alert-danger">Failed to load material details.</div>');
+                }
+            }).fail(function() {
+                $('#material-detail-modal-body').html(
+                    '<div class="alert alert-danger">Failed to load material details.</div>');
+            });
+        });
+
+        // Tooltip initialization
         document.addEventListener("DOMContentLoaded", function() {
             var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
             tooltipTriggerList.forEach(function(tooltipTriggerEl) {
@@ -522,12 +611,14 @@
             });
         });
 
+        // Global variable for authenticated user
         window.authUser = {
             username: "{{ auth()->user()->username }}",
             is_logistic_admin: {{ auth()->user()->isLogisticAdmin() ? 'true' : 'false' }},
             is_super_admin: {{ auth()->user()->isSuperAdmin() ? 'true' : 'false' }}
         };
 
+        // Reminder button click handler
         $(document).on('click', '.btn-reminder', function() {
             const id = $(this).data('id');
             $.post(`/material_requests/${id}/reminder`, {}, function(res) {

@@ -58,7 +58,7 @@ class GoodsInController extends Controller
         $materials = Inventory::orderBy('name')->get();
         $projects = Project::orderBy('name')->get();
         $quantities = GoodsIn::select('quantity')->distinct()->pluck('quantity');
-        $users = User::orderBy('username')->get();
+        $users = User::with('department')->get()->keyBy('username');
 
         return view('goods_in.index', compact('goodsIns', 'materials', 'projects', 'quantities', 'users'));
     }
@@ -176,7 +176,9 @@ class GoodsInController extends Controller
 
         $projectName = $goodsOut->project ? $goodsOut->project->name : 'No Project';
 
-        return redirect()->route('goods_in.index')->with('success', "Goods In <b>{$inventory->name}</b> for <b>{$projectName}</b> added successfully!");
+        return redirect()
+            ->route('goods_in.index')
+            ->with('success', "Goods In <b>{$inventory->name}</b> for <b>{$projectName}</b> added successfully!");
     }
 
     public function createIndependent()
@@ -222,7 +224,9 @@ class GoodsInController extends Controller
             MaterialUsageHelper::sync($request->inventory_id, $request->project_id);
         }
 
-        return redirect()->route('goods_in.index')->with('success', "Goods In independent <b>{$inventory->name}</b> created successfully.");
+        return redirect()
+            ->route('goods_in.index')
+            ->with('success', "Goods In independent <b>{$inventory->name}</b> created successfully.");
     }
 
     public function bulkGoodsIn(Request $request)
@@ -294,14 +298,16 @@ class GoodsInController extends Controller
         $inventory = Inventory::findOrFail($request->inventory_id);
         $projectName = $request->project_id ? Project::findOrFail($request->project_id)->name : 'No Project';
 
-        return redirect()->route('goods_in.index')->with('success', "Goods In <b>{$inventory->name}</b> from <b>{$projectName}</b> updated successfully!");
+        return redirect()
+            ->route('goods_in.index')
+            ->with('success', "Goods In <b>{$inventory->name}</b> from <b>{$projectName}</b> updated successfully!");
     }
 
     public function destroy(GoodsIn $goods_in)
     {
         // Cek apakah Goods In terkait dengan Goods Out
         if ($goods_in->goods_out_id) {
-            return redirect()->route('goods_in.index')->with('error', "Cannot delete Goods In that is linked to a Goods Out.");
+            return redirect()->route('goods_in.index')->with('error', 'Cannot delete Goods In that is linked to a Goods Out.');
         }
 
         // Hapus Goods In
@@ -313,6 +319,8 @@ class GoodsInController extends Controller
         $inventoryName = $goods_in->inventory ? $goods_in->inventory->name : 'Unknown Material';
         $projectName = $goods_in->project ? $goods_in->project->name : 'No Project';
 
-        return redirect()->route('goods_in.index')->with('success', "Goods In <b>{$inventoryName}</b> for <b>{$projectName}</b> deleted successfully!");
+        return redirect()
+            ->route('goods_in.index')
+            ->with('success', "Goods In <b>{$inventoryName}</b> for <b>{$projectName}</b> deleted successfully!");
     }
 }

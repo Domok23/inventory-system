@@ -142,32 +142,6 @@
             $('select[name="inventory_id"]').trigger('change');
             $('select[name="user_id"]').trigger('change');
 
-            // Update available qty when material is selected
-            $('select[name="inventory_id"]').on('change', function() {
-                const selected = $(this).find(':selected');
-                const selectedUnit = selected.data('unit');
-                const selectedStock = selected.data('stock');
-                $('.unit-label').text(selectedUnit || 'unit');
-
-                const $availableQty = $('#available-qty');
-                $availableQty.removeClass('d-none text-danger text-warning');
-
-                if (selected.val() && selectedStock !== undefined) {
-                    let colorClass = '';
-                    if (selectedStock == 0) {
-                        colorClass = 'text-danger';
-                    } else if (selectedStock < 3) {
-                        colorClass = 'text-warning';
-                    }
-                    $availableQty
-                        .text(`Available Qty: ${selectedStock} ${selectedUnit || ''}`)
-                        .addClass(colorClass);
-                } else {
-                    $availableQty.addClass('d-none').text('');
-                }
-            });
-            $('select[name="inventory_id"]').trigger('change');
-
             // Update department text when project is selected
             $('select[name="project_id"]').on('change', function() {
                 const selected = $(this).find(':selected');
@@ -185,6 +159,7 @@
             $('select[name="project_id"]').trigger('change');
         });
 
+        // Handle form submission with spinner
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.querySelector('form[action="{{ route('goods_out.store_independent') }}"]');
             const submitBtn = document.getElementById('goodsout-submit-btn');
@@ -203,5 +178,31 @@
             // spinner.classList.add('d-none');
             // submitBtn.childNodes[2].textContent = ' Submit';
         });
+
+        // Update available qty when material is selected
+        $('select[name="inventory_id"]').on('change', function() {
+            const selected = $(this).find(':selected');
+            const selectedUnit = selected.data('unit');
+            const selectedStock = selected.data('stock');
+            $('.unit-label').text(selectedUnit || 'unit');
+
+            const $availableQty = $('#available-qty');
+            $availableQty.removeClass('d-none text-danger text-warning');
+
+            if (selected.val() && selectedStock !== undefined) {
+                let colorClass = '';
+                if (selectedStock == 0) {
+                    colorClass = 'text-danger';
+                } else if (selectedStock < 3) {
+                    colorClass = 'text-warning';
+                }
+                $availableQty
+                    .text(`Available Qty: ${selectedStock} ${selectedUnit || ''}`)
+                    .addClass(colorClass);
+            } else {
+                $availableQty.addClass('d-none').text('');
+            }
+        });
+        $('select[name="inventory_id"]').trigger('change');
     </script>
 @endpush

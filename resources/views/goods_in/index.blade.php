@@ -147,7 +147,14 @@
                                         <span class="text-secondary">No Project (Restock/Supplier)</span>
                                     @endif
                                 </td>
-                                <td>{{ ucfirst($goodsIn->returned_by) }}</td>
+                                @php
+                                    $deptName = $users[$goodsIn->returned_by]->department->name ?? '-';
+                                @endphp
+                                <td>
+                                    <span data-bs-toggle="tooltip" data-bs-placement="right" style="cursor: pointer;" title="{{ $deptName }}">
+                                        {{ ucfirst($goodsIn->returned_by) }}
+                                    </span>
+                                </td>
                                 <td>
                                     {{ \Carbon\Carbon::parse($goodsIn->returned_at)->translatedFormat('d F Y, H:i') }}
                                 </td>

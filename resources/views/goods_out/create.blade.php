@@ -22,11 +22,13 @@
                             <select name="inventory_id" class="form-select select2" required>
                                 @foreach ($inventories as $inventory)
                                     <option value="{{ $inventory->id }}" data-unit="{{ $inventory->unit }}"
+                                        data-stock="{{ $inventory->quantity }}"
                                         {{ old('inventory_id', $materialRequest->inventory_id) == $inventory->id ? 'selected' : '' }}>
                                         {{ $inventory->name }}
                                     </option>
                                 @endforeach
                             </select>
+                            <div id="available-qty" class="form-text d-none"></div>
                         </div>
                         <div class="col-lg-6 mb-3">
                             <label>Project</label>
@@ -117,6 +119,7 @@
             $('select[name="inventory_id"]').trigger('change');
         });
 
+        // Handle form submission with spinner
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.querySelector('form[action="{{ route('goods_out.store') }}"]');
             const submitBtn = document.getElementById('goodsout-submit-btn');
@@ -135,5 +138,31 @@
             // spinner.classList.add('d-none');
             // submitBtn.childNodes[2].textContent = ' Submit';
         });
+
+        // Update available quantity and unit label when inventory changes
+        $('select[name="inventory_id"]').on('change', function() {
+            const selected = $(this).find(':selected');
+            const selectedUnit = selected.data('unit');
+            const selectedStock = selected.data('stock');
+            $('.unit-label').text(selectedUnit || 'unit');
+
+            const $availableQty = $('#available-qty');
+            $availableQty.removeClass('d-none text-danger text-warning');
+
+            if (selected.val() && selectedStock !== undefined) {
+                let colorClass = '';
+                if (selectedStock == 0) {
+                    colorClass = 'text-danger';
+                } else if (selectedStock < 3) {
+                    colorClass = 'text-warning';
+                }
+                $availableQty
+                    .text(`Available Qty: ${selectedStock} ${selectedUnit || ''}`)
+                    .addClass(colorClass);
+            } else {
+                $availableQty.addClass('d-none').text('');
+            }
+        });
+        $('select[name="inventory_id"]').trigger('change');
     </script>
 @endpush

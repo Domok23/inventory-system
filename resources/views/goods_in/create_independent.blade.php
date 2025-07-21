@@ -47,6 +47,11 @@
                         <div class="col-lg-6 mb-3">
                             <label>Returned/In By</label>
                             <input type="text" class="form-control" value="{{ auth()->user()->username }}" disabled>
+                            @if (auth()->user()->department)
+                                <div class="form-text">
+                                    Department: {{ auth()->user()->department->name }}
+                                </div>
+                            @endif
                         </div>
                         <div class="col-lg-12 mb-3">
                             <label>Remark</label>

@@ -6,6 +6,13 @@
             <div class="card-body">
                 <h2 class="mb-0 flex-shrink-0" style="font-size:1.3rem;">Edit Goods Out</h2>
                 <hr>
+                @if ($fromMaterialRequest)
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        <strong>Note:</strong> Some fields (Material, Project, Requested By) cannot be changed because this
+                        Goods Out comes from a Material Request.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
                 @if ($errors->any())
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         <ul class="mb-0">
@@ -31,16 +38,16 @@
                             <select name="inventory_id" class="form-select select2"
                                 {{ $fromMaterialRequest ? 'disabled' : '' }} required>
                                 @foreach ($inventories as $inventory)
-                                    <option value="{{ $inventory->id }}"
+                                    <option value="{{ $inventory->id }}" data-unit="{{ $inventory->unit }}"
+                                        data-stock="{{ $inventory->quantity }}"
                                         {{ $inventory->id == $goodsOut->inventory_id ? 'selected' : '' }}>
                                         {{ $inventory->name }}
                                     </option>
                                 @endforeach
                             </select>
+                            <div id="available-qty" class="form-text d-none"></div>
                             @if ($fromMaterialRequest)
                                 <input type="hidden" name="inventory_id" value="{{ $goodsOut->inventory_id }}">
-                                <div class="form-text text-warning">Material cannot be changed because Goods Out comes from
-                                    Material Request.</div>
                             @endif
                         </div>
                         <div class="mb-3">
@@ -68,8 +75,6 @@
                             </select>
                             @if ($fromMaterialRequest)
                                 <input type="hidden" name="project_id" value="{{ $goodsOut->project_id }}">
-                                <div class="form-text text-warning">Project cannot be changed because Goods Out comes from
-                                    Material Request.</div>
                             @endif
                         </div>
                     </div>
@@ -90,8 +95,6 @@
                             @if ($fromMaterialRequest)
                                 <input type="hidden" name="user_id"
                                     value="{{ $users->firstWhere('username', $goodsOut->requested_by)?->id }}">
-                                <div class="form-text text-warning">Requested By cannot be changed because Goods Out comes
-                                    from Material Request.</div>
                             @endif
                         </div>
                         <div class="col-lg-6 mb-3">
@@ -165,5 +168,31 @@
             // spinner.classList.add('d-none');
             // submitBtn.childNodes[2].textContent = ' Update';
         });
+
+        // Update available quantity and unit label when inventory changes
+        $('select[name="inventory_id"]').on('change', function() {
+            const selected = $(this).find(':selected');
+            const selectedUnit = selected.data('unit');
+            const selectedStock = selected.data('stock');
+            $('.unit-label').text(selectedUnit || 'unit');
+
+            const $availableQty = $('#available-qty');
+            $availableQty.removeClass('d-none text-danger text-warning');
+
+            if (selected.val() && selectedStock !== undefined) {
+                let colorClass = '';
+                if (selectedStock == 0) {
+                    colorClass = 'text-danger';
+                } else if (selectedStock < 3) {
+                    colorClass = 'text-warning';
+                }
+                $availableQty
+                    .text(`Available Qty: ${selectedStock} ${selectedUnit || ''}`)
+                    .addClass(colorClass);
+            } else {
+                $availableQty.addClass('d-none').text('');
+            }
+        });
+        $('select[name="inventory_id"]').trigger('change');
     </script>
 @endpush

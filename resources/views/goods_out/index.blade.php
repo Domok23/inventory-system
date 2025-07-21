@@ -228,9 +228,9 @@
                 <div class="modal-body">
                     <form id="bulk-goods-in-form">
                         @csrf
-                        <table class="table table-bordered">
+                        <table class="table table-bordered align-middle" style="font-size: 0.92rem;">
                             <thead>
-                                <tr>
+                                <tr class="align-middle">
                                     <th>Material</th>
                                     <th>Goods Out Quantity</th>
                                     <th>Goods In Quantity</th>

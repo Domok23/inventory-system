@@ -53,8 +53,18 @@
                             </small>
                         </div>
                         <div class="col-lg-6 mb-3">
-                            <label>Returned By</label>
+                            <label>Returned/In By</label>
                             <input type="text" class="form-control" value="{{ $goods_in->returned_by }}" disabled>
+                            @php
+                                $userDept = \App\Models\User::where('username', $goods_in->returned_by)
+                                    ->with('department')
+                                    ->first();
+                            @endphp
+                            @if ($userDept && $userDept->department)
+                                <div class="form-text">
+                                    Department: {{ $userDept->department->name }}
+                                </div>
+                            @endif
                         </div>
                         <div class="col-lg-12 mb-3">
                             <label for="remark" class="form-label">Remark</label>
