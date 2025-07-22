@@ -138,7 +138,7 @@
                         const price = inventory.price ?? 0;
                         const currencyName = (inventory.currency && inventory.currency.name) ? inventory
                             .currency.name : 'N/A';
-                        const quantity = material.quantity ?? 0;
+                        const quantity = material.used_quantity ?? 0;
                         const totalPrice = price * quantity;
                         const totalCost = material.total_cost ?? 0;
 

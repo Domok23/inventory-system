@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Project;
+use App\Models\MaterialUsage;
+use App\Models\GoodsIn;
 use App\Models\GoodsOut;
 use App\Models\Department;
 use Maatwebsite\Excel\Facades\Excel;
@@ -49,52 +51,34 @@ class ProjectCostingController extends Controller
     {
         $project = Project::findOrFail($project_id);
 
-        // Ambil semua material yang digunakan dalam proyek
-        $materials = GoodsOut::where('project_id', $project_id)
-            ->with([
-                'inventory' => function ($q) {
-                    $q->withTrashed()->with('currency');
-                },
-            ])
+        // Ambil semua material usage untuk project
+        $usages = MaterialUsage::where('project_id', $project_id)
+            ->with(['inventory.currency'])
             ->get();
 
         // Hitung total biaya per material dan konversi ke IDR
-        $materials = $materials->map(function ($item) {
-            $inventory = $item->inventory;
-
-            // Jika inventory null, coba ambil dari trash
-            if (!$inventory) {
-                $deletedInventory = Inventory::withTrashed()->find($item->inventory_id);
-                $inventory = (object) [
-                    'name' => $deletedInventory ? $deletedInventory->name . ' (deleted)' : 'N/A',
-                    'price' => 0,
-                    'unit' => 'N/A',
-                    'currency' => (object) ['name' => 'N/A', 'exchange_rate' => 1],
-                ];
-            } else {
-                // Jika inventory ada, cek field kosong
-                $inventory->name = $inventory->name ?? 'N/A';
-                if (method_exists($inventory, 'trashed') && $inventory->trashed()) {
-                    $inventory->name .= ' (deleted)';
-                }
-                $inventory->price = $inventory->price ?? 0;
-                $inventory->unit = $inventory->unit ?? 'N/A';
-                $inventory->currency = $inventory->currency ?? (object) ['name' => 'N/A', 'exchange_rate' => 1];
-                $inventory->currency->name = $inventory->currency->name ?? 'N/A';
-                $inventory->currency->exchange_rate = $inventory->currency->exchange_rate ?? 1;
-            }
-
+        $materials = $usages->map(function ($usage) {
+            $inventory = $usage->inventory;
             $price = $inventory->price ?? 0;
-            $quantity = $item->quantity ?? 0;
-            $exchangeRate = $inventory->currency->exchange_rate ?? 1;
+            $usedQty = $usage->used_quantity ?? 0;
+            $unit = $inventory->unit ?? 'N/A';
+            $currency = $inventory->currency ?? (object) ['name' => 'N/A', 'exchange_rate' => 1];
+            $exchangeRate = $currency->exchange_rate ?? 1;
 
-            $totalCost = $price * $quantity;
+            $totalCost = $price * $usedQty;
             $totalCostInIDR = $totalCost * $exchangeRate;
 
-            $item->inventory = $inventory;
-            $item->total_price = $totalCost;
-            $item->total_cost = $totalCostInIDR;
-            return $item;
+            return (object) [
+                'inventory' => (object) [
+                    'name' => $inventory->name ?? 'N/A',
+                    'unit' => $unit,
+                    'price' => $price,
+                    'currency' => $currency,
+                ],
+                'used_quantity' => $usedQty,
+                'total_price' => $totalCost,
+                'total_cost' => $totalCostInIDR,
+            ];
         });
 
         // Hitung grand total dalam IDR
@@ -111,28 +95,26 @@ class ProjectCostingController extends Controller
     {
         $project = Project::findOrFail($project_id);
 
-        // Ambil semua material yang digunakan dalam proyek, termasuk inventory yang sudah di-soft delete
-        $materials = GoodsOut::where('project_id', $project_id)
-            ->with([
-                'inventory' => function ($q) {
-                    $q->withTrashed();
-                },
-            ])
+        $usages = MaterialUsage::where('project_id', $project_id)
+            ->with(['inventory.currency'])
             ->get();
 
-        // Hitung total biaya per material
-        $materials = $materials->map(function ($item) {
-            $inventory = $item->inventory;
+        $materials = $usages->map(function ($usage) {
+            $inventory = $usage->inventory;
+            $price = $inventory->price ?? 0;
+            $usedQty = $usage->used_quantity ?? 0;
+            $currency = $inventory->currency ?? (object) ['name' => 'N/A', 'exchange_rate' => 1];
+            $exchangeRate = $currency->exchange_rate ?? 1;
 
-            // Jika inventory null (sudah dihapus permanen), handle agar tidak error
-            $price = $inventory ? $inventory->price : 0;
-            $name = $inventory ? $inventory->name : 'N/A';
-            if ($inventory && method_exists($inventory, 'trashed') && $inventory->trashed()) {
-                $name .= ' (deleted)';
-            }
-            $item->inventory_name = $name;
-            $item->total_cost = $item->quantity * $price; // Harga langsung dianggap IDR
-            return $item;
+            return [
+                'material_name' => $inventory->name ?? 'N/A',
+                'used_quantity' => $usedQty,
+                'unit' => $inventory->unit ?? 'N/A',
+                'unit_price' => $price,
+                'currency' => $currency->name ?? 'N/A',
+                'total_price' => $price * $usedQty,
+                'total_cost' => $price * $usedQty * $exchangeRate,
+            ];
         });
 
         // Ekspor ke Excel
