@@ -185,7 +185,8 @@
                                                 value="{{ request('requested_at') }}">
                                             <select name="status" class="form-select form-select-sm status-select"
                                                 onchange="this.form.submit()"
-                                                title="{{ $req->status === 'pending' ? 'Waiting for approval' : ($req->status === 'approved' ? 'Ready for goods out' : ($req->status === 'delivered' ? 'Already delivered' : 'Request canceled')) }}">
+                                                title="{{ $req->status === 'pending' ? 'Waiting for approval' : ($req->status === 'approved' ? 'Ready for goods out' : ($req->status === 'delivered' ? 'Already delivered' : 'Request canceled')) }}"
+                                                {{ $req->status === 'delivered' ? 'disabled' : '' }}>
                                                 <option value="pending"
                                                     {{ $req->status === 'pending' ? 'selected' : '' }}>Pending</option>
                                                 <option value="approved"
@@ -205,7 +206,11 @@
                                 <td>{{ $req->remark }}</td>
                                 <td>
                                     <div class="d-flex flex-nowrap gap-1">
-                                        @if ($req->status === 'approved' && $req->status !== 'canceled' && auth()->user()->isLogisticAdmin())
+                                        @if (
+                                            $req->status === 'approved' &&
+                                                $req->status !== 'canceled' &&
+                                                $req->remaining_qty > 0 &&
+                                                auth()->user()->isLogisticAdmin())
                                             <a href="{{ route('goods_out.create_with_id', $req->id) }}"
                                                 class="btn btn-sm btn-success" data-bs-toggle="tooltip"
                                                 data-bs-placement="bottom" title="Goods Out"><i
@@ -221,6 +226,7 @@
                                         @endif
                                         @if (
                                             $req->status !== 'canceled' &&
+                                                $req->status !== 'delivered' &&
                                                 (auth()->user()->isRequestOwner($req->requested_by) || auth()->user()->isSuperAdmin()))
                                             <form action="{{ route('material_requests.destroy', $req->id) }}"
                                                 method="POST" class="delete-form">

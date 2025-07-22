@@ -21,10 +21,7 @@ class AutoGoodsOutMaterialRequest extends Command
         $deadline = $now->copy()->subHours(48);
 
         // Ambil semua material request yang sudah approve, belum delivered, dan sudah lebih dari 2x24 jam
-        $requests = MaterialRequest::where('status', 'approved')
-            ->whereColumn('qty', '>', 'processed_qty')
-            ->where('approved_at', '<=', $deadline)
-            ->get();
+        $requests = MaterialRequest::where('status', 'approved')->whereColumn('qty', '>', 'processed_qty')->where('approved_at', '<=', $deadline)->get();
 
         $count = 0;
         foreach ($requests as $req) {
@@ -57,6 +54,8 @@ class AutoGoodsOutMaterialRequest extends Command
                     MaterialUsageHelper::sync($inventory->id, $req->project_id);
 
                     $count++;
+                } else {
+                    $this->info("SKIPPED: MR #{$req->id} - {$inventory?->name} (Project: {$req->project_id}) - Requested: {$remainingQty} {$inventory?->unit}, Available: {$inventory?->quantity} {$inventory?->unit}");
                 }
                 DB::commit();
             } catch (\Exception $e) {

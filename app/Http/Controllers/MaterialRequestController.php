@@ -282,7 +282,7 @@ class MaterialRequestController extends Controller
 
         // Validasi: Pastikan hanya Material Request dengan status tertentu yang bisa diedit
         if ($materialRequest->status !== 'pending') {
-            return redirect()->route('material_requests.index', $filters)->with('error', 'Only pending requests can be edited.');
+            return redirect()->route('material_requests.index')->with('error', 'Only pending requests can be edited.');
         }
 
         if ($materialRequest->status === 'canceled') {
@@ -313,6 +313,11 @@ class MaterialRequestController extends Controller
     public function update(Request $request, $id)
     {
         $materialRequest = MaterialRequest::findOrFail($id);
+
+        // Jika status sudah delivered, tolak update status
+        if ($materialRequest->status === 'delivered' && $request->has('status')) {
+            return redirect()->route('material_requests.index')->with('error', 'Delivered requests cannot be updated.');
+        }
 
         // Jika hanya status yang diperbarui (inline dari tabel)
         if ($request->has('status') && !$request->has('inventory_id')) {
@@ -370,8 +375,9 @@ class MaterialRequestController extends Controller
         ];
         $filters = array_filter($filters, fn($v) => !is_null($v) && $v !== '');
 
-        if ($materialRequest->status === 'canceled') {
-            return redirect()->route('material_requests.index', $filters)->with('error', 'Canceled requests cannot be updated.');
+        // Tidak boleh update jika status delivered/canceled
+        if (in_array($materialRequest->status, ['delivered', 'canceled'])) {
+            return redirect()->route('material_requests.index')->with('error', 'Delivered or canceled requests cannot be updated.');
         }
 
         DB::beginTransaction();
@@ -432,8 +438,9 @@ class MaterialRequestController extends Controller
         ];
         $filters = array_filter($filters, fn($v) => !is_null($v) && $v !== '');
 
-        if ($materialRequest->status === 'canceled') {
-            return redirect()->route('material_requests.index', $filters)->with('error', 'Canceled requests cannot be deleted.');
+        // Tidak boleh delete jika status delivered/canceled
+        if (in_array($materialRequest->status, ['delivered', 'canceled'])) {
+            return redirect()->route('material_requests.index')->with('error', 'Delivered or canceled requests cannot be deleted.');
         }
 
         // Trigger event

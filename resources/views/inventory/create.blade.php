@@ -54,7 +54,7 @@
                         <div class="col-lg-6 mb-3">
                             <label for="quantity" class="form-label">Quantity <span class="text-danger">*</span></label>
                             <input type="number" step="any" class="form-control" id="quantity" name="quantity"
-                                value="{{ old('quantity') }}" required>
+                                value="{{ old('quantity') }}" min="0" required>
                             @error('quantity')
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror

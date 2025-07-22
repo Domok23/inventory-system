@@ -258,12 +258,12 @@ class InventoryController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255|unique:inventories,name,NULL,id,deleted_at,NULL',
-            'quantity' => 'required|numeric|min:0.1',
+            'quantity' => 'required|numeric|min:0',
             'unit' => 'required|string',
             'new_unit' => 'required_if:unit,__new__|nullable|string|max:255',
             'price' => 'nullable|numeric',
             'supplier' => 'nullable|string|max:255',
-            'location' => 'nullable|string',
+            'location' => 'nullable|string|max:255',
             'img' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'category_id' => 'required|exists:categories,id',
         ]);
@@ -312,7 +312,7 @@ class InventoryController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255|unique:inventories,name,NULL,id,deleted_at,NULL',
-            'quantity' => 'required|numeric|min:0.1',
+            'quantity' => 'required|numeric|min:0',
             'unit' => 'required|string|max:255',
             'price' => 'nullable|numeric|min:0',
             'remark' => 'nullable|string|max:255',
@@ -369,7 +369,7 @@ class InventoryController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:inventories,name,' . $inventory->id . ',id,deleted_at,NULL',
-            'quantity' => 'required|numeric|min:0.1',
+            'quantity' => 'required|numeric|min:0',
             'unit' => 'required|string',
             'new_unit' => 'required_if:unit,__new__|nullable|string|max:255',
             'price' => 'nullable|numeric',
