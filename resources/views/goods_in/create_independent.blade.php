@@ -9,6 +9,16 @@
                 @if (session('error'))
                     <div class="alert alert-danger">{{ session('error') }}</div>
                 @endif
+                @if ($errors->any())
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <ul class="mb-0">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
                 <form method="POST" action="{{ route('goods_in.store_independent') }}">
                     @csrf
                     <div class="row">
@@ -26,9 +36,13 @@
                         <div class="col-lg-12 mb-3">
                             <label>Quantity <span class="text-danger">*</span></label>
                             <div class="input-group">
-                                <input type="number" name="quantity" class="form-control" step="any" required>
+                                <input type="number" name="quantity"
+                                    class="form-control @error('quantity') is-invalid @enderror" step="any" required>
                                 <span class="input-group-text unit-label">unit</span>
                             </div>
+                            @error('quantity')
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="col-lg-12 mb-3">
                             <label>Project</label>

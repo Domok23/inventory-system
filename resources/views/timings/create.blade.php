@@ -67,7 +67,7 @@
                                                         old("timings.$i.project_id"),
                                                     );
                                                 @endphp
-                                                {{ $selectedProject ? 'Department: ' . ucfirst($selectedProject->department) : 'Department' }}
+                                                {{ $selectedProject && $selectedProject->department ? 'Department: ' . $selectedProject->department->name : 'Department' }}
                                             </div>
                                         </td>
                                         <td data-label="Step">
@@ -119,13 +119,19 @@
                                         </td>
                                         <td data-label="End Time">
                                             <input type="time" name="timings[{{ $i }}][end_time]"
-                                                class="form-control form-control-sm" required
-                                                value="{{ old("timings.$i.end_time") }}">
+                                                class="form-control form-control-sm @error("timings.$i.end_time") is-invalid @enderror"
+                                                required value="{{ old("timings.$i.end_time") }}">
+                                            @error("timings.$i.end_time")
+                                                <div class="invalid-feedback"></div>
+                                            @enderror
                                         </td>
                                         <td data-label="Output Qty">
                                             <input type="number" name="timings[{{ $i }}][output_qty]"
-                                                class="form-control form-control-sm" placeholder="Qty" required
-                                                value="{{ old("timings.$i.output_qty") }}">
+                                                class="form-control form-control-sm @error("timings.$i.output_qty") is-invalid @enderror"
+                                                placeholder="Qty" required value="{{ old("timings.$i.output_qty") }}">
+                                            @error("timings.$i.output_qty")
+                                                <div class="invalid-feedback"></div>
+                                            @enderror
                                         </td>
                                         <td data-label="Status">
                                             <select name="timings[{{ $i }}][status]"

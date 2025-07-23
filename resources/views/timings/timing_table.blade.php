@@ -6,8 +6,8 @@
         <td>{{ $timing->step }}</td>
         <td>{{ $timing->parts }}</td>
         <td>{{ $timing->employee->name ?? '-' }}</td>
-        <td>{{ $timing->start_time }}</td>
-        <td>{{ $timing->end_time }}</td>
+        <td>{{ \Carbon\Carbon::parse($timing->start_time)->format('H:i') }}</td>
+        <td>{{ \Carbon\Carbon::parse($timing->end_time)->format('H:i') }}</td>
         <td>{{ $timing->output_qty }}</td>
         <td>
             @php

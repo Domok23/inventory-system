@@ -5,44 +5,85 @@
             <div class="card-body">
                 <h2 class="mb-0 flex-shrink-0" style="font-size:1.3rem;">Edit Goods In</h2>
                 <hr>
+                @if (session('error'))
+                    <div class="alert alert-danger">{{ session('error') }}</div>
+                @endif
+                @if ($errors->any())
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <ul class="mb-0">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
                 <form action="{{ route('goods_in.update', $goods_in->id) }}" method="POST">
                     @csrf
                     @method('PUT')
                     <div class="row">
-                        <div class="col-lg-12 mb-3">
-                            <label>Material <span class="text-danger">*</span></label>
-                            <select name="inventory_id" class="form-control select2" placeholder="Select Material" required>
-                                @foreach ($inventories as $inventory)
-                                    <option value="{{ $inventory->id }}" data-unit="{{ $inventory->unit }}"
-                                        {{ $goods_in->inventory_id == $inventory->id ? 'selected' : '' }}>
-                                        {{ $inventory->name }}
+                        @if ($goods_in->goods_out_id && $goods_in->goodsOut)
+                            <div class="col-lg-12 mb-3">
+                                <label>Project</label>
+                                <input type="text" class="form-control"
+                                    value="{{ $goods_in->goodsOut->project->name ?? '-' }}" disabled>
+                                <input type="hidden" name="project_id" value="{{ $goods_in->goodsOut->project_id }}">
+                                @if ($goods_in->goodsOut->project && $goods_in->goodsOut->project->department)
+                                    <div class="form-text">
+                                        Department: {{ $goods_in->goodsOut->project->department->name }}
+                                    </div>
+                                @endif
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <label>Material</label>
+                                <input type="text" class="form-control"
+                                    value="{{ $goods_in->goodsOut->inventory->name }}" disabled>
+                                <input type="hidden" name="inventory_id" value="{{ $goods_in->goodsOut->inventory_id }}">
+                            </div>
+                        @else
+                            <div class="col-lg-12 mb-3">
+                                <label>Project</label>
+                                <select name="project_id" class="form-control select2" id="project-select">
+                                    <option value="" {{ empty($goods_in->project_id) ? 'selected' : '' }}>No Project
                                     </option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-lg-12 mb-3">
+                                    @foreach ($projects as $project)
+                                        <option value="{{ $project->id }}"
+                                            data-department="{{ $project->department ? $project->department->name : '' }}"
+                                            {{ $goods_in->project_id == $project->id ? 'selected' : '' }}>
+                                            {{ $project->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <div class="form-text" id="department-info">
+                                    Department:
+                                    {{ optional($projects->where('id', $goods_in->project_id)->first()->department)->name ?? '-' }}
+                                </div>
+                            </div>
+                            <div class="col-lg-6 mb-3">
+                                <label>Material <span class="text-danger">*</span></label>
+                                <select name="inventory_id" class="form-control select2" required>
+                                    @foreach ($inventories as $inventory)
+                                        <option value="{{ $inventory->id }}"
+                                            {{ $goods_in->inventory_id == $inventory->id ? 'selected' : '' }}>
+                                            {{ $inventory->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        @endif
+                        <div class="col-lg-6 mb-3">
                             <label>Quantity <span class="text-danger">*</span></label>
                             <div class="input-group">
-                                <input type="number" name="quantity" class="form-control" value="{{ $goods_in->quantity }}"
-                                    required>
+                                <input type="number" name="quantity"
+                                    class="form-control @error('quantity') is-invalid @enderror"
+                                    value="{{ $goods_in->quantity }}" required>
                                 <span class="input-group-text unit-label">
                                     {{ $goods_in->inventory ? $goods_in->inventory->unit : 'unit' }}
                                 </span>
                             </div>
-                        </div>
-                        <div class="col-lg-12 mb-3">
-                            <label>Project</label>
-                            <select name="project_id" class="form-control select2">
-                                <option value="" {{ empty($goods_in->project_id) ? 'selected' : '' }}
-                                    class="text-muted">No Project
-                                </option>
-                                @foreach ($projects as $project)
-                                    <option value="{{ $project->id }}"
-                                        {{ $goods_in->project_id == $project->id ? 'selected' : '' }}>
-                                        {{ $project->name }}
-                                    </option>
-                                @endforeach
-                            </select>
+                            @error('quantity')
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="col-lg-6 mb-3">
                             <label>Returned At <span class="text-danger">*</span></label>
@@ -55,11 +96,6 @@
                         <div class="col-lg-6 mb-3">
                             <label>Returned/In By</label>
                             <input type="text" class="form-control" value="{{ $goods_in->returned_by }}" disabled>
-                            @php
-                                $userDept = \App\Models\User::where('username', $goods_in->returned_by)
-                                    ->with('department')
-                                    ->first();
-                            @endphp
                             @if ($userDept && $userDept->department)
                                 <div class="form-text">
                                     Department: {{ $userDept->department->name }}
@@ -93,6 +129,15 @@
                         .focus();
                 }, 100);
             });
+
+            function updateDepartmentInfo() {
+                var selected = $('#project-select option:selected');
+                var dept = selected.data('department') || '-';
+                $('#department-info').text('Department: ' + dept);
+            }
+
+            $('#project-select').on('change', updateDepartmentInfo);
+            updateDepartmentInfo(); // initial load
 
             // Update unit label dynamically when material is selected
             $('select[name="inventory_id"]').on('change', function() {

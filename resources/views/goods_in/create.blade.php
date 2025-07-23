@@ -9,6 +9,16 @@
                 @if (session('error'))
                     <div class="alert alert-danger">{{ session('error') }}</div>
                 @endif
+                @if ($errors->any())
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <ul class="mb-0">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
                 <form method="POST" action="{{ route('goods_in.store') }}">
                     @csrf
                     <input type="hidden" name="goods_out_id" value="{{ $goodsOut->id }}">
@@ -31,16 +41,21 @@
                         <div class="col-lg-6 mb-3">
                             <label>Quantity Returned <span class="text-danger">*</span></label>
                             <div class="input-group">
-                                <input type="number" name="quantity" class="form-control" step="any"
+                                <input type="number" name="quantity"
+                                    class="form-control @error('quantity') is-invalid @enderror" step="any"
                                     max="{{ $goodsOut->remaining_quantity }}" value="{{ old('quantity') }}" required
                                     oninvalid="this.setCustomValidity('Quantity Returned must not exceed Remaining Quantity to Goods In.')"
                                     oninput="this.setCustomValidity('')">
                                 <span class="input-group-text unit-label">{{ $goodsOut->inventory->unit }}</span>
                             </div>
+                            @error('quantity')
+                                <div class="text-danger">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="col-lg-12 mb-3">
                             <label>From Project</label>
-                            <input type="text" class="form-control" value="{{ $goodsOut->project->name }}" disabled>
+                            <input type="text" class="form-control"
+                                value="{{ $goodsOut->project->name ?? 'No Project' }}" disabled>
                         </div>
                         <div class="col-lg-6 mb-3">
                             <label>Returned At <span class="text-danger">*</span></label>

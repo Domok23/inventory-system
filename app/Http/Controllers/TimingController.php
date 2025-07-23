@@ -7,6 +7,7 @@ use App\Models\Project;
 use App\Models\Employee;
 use App\Models\Department;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class TimingController extends Controller
 {
@@ -79,48 +80,71 @@ class TimingController extends Controller
 
     public function storeMultiple(Request $request)
     {
-        $data = $request->validate([
-            'timings' => 'required|array',
-            'timings.*.tanggal' => 'required|date',
-            'timings.*.project_id' => 'required|exists:projects,id',
-            'timings.*.step' => 'required',
-            'timings.*.parts' => 'nullable|string',
-            'timings.*.employee_id' => 'required|exists:employees,id',
-            'timings.*.start_time' => 'required',
-            'timings.*.end_time' => 'required',
-            'timings.*.output_qty' => 'required|numeric',
-            'timings.*.status' => 'required|in:complete,on progress,pending',
-            'timings.*.remarks' => 'nullable',
-        ]);
-
-        // Validasi tambahan: pastikan employee yang dipilih statusnya active
-        foreach ($data['timings'] as $idx => $timing) {
-            $employee = Employee::find($timing['employee_id']);
-            if (!$employee || $employee->status !== 'active') {
-                return back()
-                    ->withErrors([
-                        "timings.$idx.employee_id" => 'Selected employee is not active or does not exist.',
-                    ])
-                    ->withInput();
-            }
+        $attributes = [];
+        $timings = $request->input('timings', []);
+        foreach ($timings as $i => $timing) {
+            $row = $i + 1;
+            $attributes["timings.$i.tanggal"] = "Date (row $row)";
+            $attributes["timings.$i.project_id"] = "Project (row $row)";
+            $attributes["timings.$i.step"] = "Step (row $row)";
+            $attributes["timings.$i.parts"] = "Part (row $row)";
+            $attributes["timings.$i.employee_id"] = "Employee (row $row)";
+            $attributes["timings.$i.start_time"] = "Start Time (row $row)";
+            $attributes["timings.$i.end_time"] = "End Time (row $row)";
+            $attributes["timings.$i.output_qty"] = "Output Qty (row $row)";
+            $attributes["timings.$i.status"] = "Status (row $row)";
+            $attributes["timings.$i.remarks"] = "Remarks (row $row)";
         }
 
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'timings' => 'required|array',
+                'timings.*.tanggal' => 'required|date',
+                'timings.*.project_id' => 'required|exists:projects,id',
+                'timings.*.step' => 'required',
+                'timings.*.parts' => 'nullable|string',
+                'timings.*.employee_id' => 'required|exists:employees,id',
+                'timings.*.start_time' => 'required',
+                'timings.*.end_time' => 'required',
+                'timings.*.output_qty' => 'required|numeric|min:0',
+                'timings.*.status' => 'required|in:complete,on progress,pending',
+                'timings.*.remarks' => 'nullable',
+            ],
+            [],
+            $attributes,
+        );
+
+        // Validasi custom
+        $data = $validator->getData();
         $projectsWithParts = Project::has('parts')->pluck('id')->toArray();
-        $errors = [];
+
         foreach ($data['timings'] as $idx => $timing) {
+            // Employee harus aktif
+            $employee = Employee::find($timing['employee_id']);
+            if (!$employee || $employee->status !== 'active') {
+                $validator->errors()->add("timings.$idx.employee_id", 'Selected employee is not active or does not exist.');
+            }
+            // End time >= start time
+            if (isset($timing['start_time'], $timing['end_time'])) {
+                if ($timing['end_time'] < $timing['start_time']) {
+                    $validator->errors()->add("timings.$idx.end_time", 'End Time (row ' . ($idx + 1) . ') cannot be earlier than start time.');
+                }
+            }
+            // Parts wajib jika project punya parts
             if (in_array($timing['project_id'], $projectsWithParts)) {
                 if (empty($timing['parts'])) {
                     $projectName = Project::find($timing['project_id'])->name ?? 'Unknown';
-                    $errors["timings.$idx.parts"] = "Part is required for project: <b>$projectName</b>";
+                    $validator->errors()->add("timings.$idx.parts", "Part is required for project: <b>$projectName</b>");
                 }
             }
         }
 
-        if (!empty($errors)) {
-            return back()->withErrors($errors)->withInput();
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
         }
 
-        // Jika semua valid, baru insert ke database
+        // Insert ke database
         foreach ($data['timings'] as &$timing) {
             if (!in_array($timing['project_id'], $projectsWithParts)) {
                 $timing['parts'] = 'No Part';

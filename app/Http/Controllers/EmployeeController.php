@@ -13,9 +13,7 @@ class EmployeeController extends Controller
      */
     public function index()
     {
-        $employees = Employee::with(['department'])
-            ->withTrashed()
-            ->get();
+        $employees = Employee::with(['department'])->get();
         return view('employees.index', compact('employees'));
     }
 

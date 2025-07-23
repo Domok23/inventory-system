@@ -269,8 +269,12 @@ class GoodsInController extends Controller
     public function edit(GoodsIn $goods_in)
     {
         $inventories = Inventory::orderBy('name')->get();
-        $projects = Project::orderBy('name')->get();
-        return view('goods_in.edit', compact('goods_in', 'inventories', 'projects'));
+        $projects = Project::with('department')->orderBy('name')->get();
+        $userDept = null;
+        if ($goods_in->returned_by) {
+            $userDept = User::with('department')->where('username', $goods_in->returned_by)->first();
+        }
+        return view('goods_in.edit', compact('goods_in', 'inventories', 'projects', 'userDept'));
     }
 
     public function update(Request $request, GoodsIn $goods_in)
@@ -282,6 +286,24 @@ class GoodsInController extends Controller
             'returned_at' => 'required',
             'remark' => 'nullable|string',
         ]);
+
+        // Jika terkait Goods Out, validasi sisa qty
+        if ($goods_in->goods_out_id) {
+            $goodsOut = $goods_in->goodsOut;
+            $totalOtherGoodsIn = $goodsOut->goodsIns()->where('id', '!=', $goods_in->id)->sum('quantity');
+            $maxQty = $goodsOut->quantity - $totalOtherGoodsIn;
+
+            if ($request->quantity > $maxQty) {
+                return back()
+                    ->withInput()
+                    ->withErrors(['quantity' => "Returned quantity cannot exceed remaining quantity to Goods In ({$maxQty})."]);
+            }
+            // Paksa inventory_id dan project_id tetap sama
+            $request->merge([
+                'inventory_id' => $goodsOut->inventory_id,
+                'project_id' => $goodsOut->project_id,
+            ]);
+        }
 
         $goods_in->update([
             'inventory_id' => $request->inventory_id,
