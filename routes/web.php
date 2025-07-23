@@ -35,7 +35,11 @@ use App\Http\Controllers\Auth\RegisterController;
 |
 */
 
-Auth::routes();
+Auth::routes([
+    'reset' => false,
+    'confirm' => false,
+    'verify' => false,
+]);
 
 Route::get('/', function () {
     return redirect('/login');
