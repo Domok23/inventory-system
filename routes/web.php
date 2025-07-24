@@ -148,7 +148,11 @@ Route::middleware(['auth'])->group(function () {
     // Employees
     Route::resource('employees', EmployeeController::class);
     Route::get('employees/{employee}/timing', [EmployeeController::class, 'timing'])->name('employees.timing');
-
+    Route::delete('employee-documents/{document}', [EmployeeController::class, 'deleteDocument'])->name('employee-documents.destroy');
+    Route::post('/employees/check-employee-no', [EmployeeController::class, 'checkEmployeeNo'])->name('employees.check-employee-no');
+    Route::get('/employee-documents/{document}/download', [EmployeeController::class, 'downloadDocument'])->name('employee-documents.download');
+    Route::get('/employees/{employee}/documents', [EmployeeController::class, 'getDocuments'])->name('employees.documents');
+    
     //Timming
     Route::resource('timings', TimingController::class)->only(['index', 'create', 'store', 'show']);
     Route::post('timings/store-multiple', [TimingController::class, 'storeMultiple'])->name('timings.storeMultiple');
