@@ -7,7 +7,7 @@
                 <!-- Header -->
                 <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-2 mb-2">
                     <!-- Header -->
-                    <h2 class="mb-2 mb-lg-0 flex-shrink-0" style="font-size:1.3rem;"><i class="fas fa-chart-pie"></i> Final
+                    <h2 class="mb-2 mb-lg-0 flex-shrink-0" style="font-size:1.3rem;"><i class="fas fa-chart-pie gradient-icon"></i> Final
                         Project Summary
                     </h2>
                 </div>

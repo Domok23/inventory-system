@@ -5,7 +5,7 @@
         <div class="card shadow rounded">
             <div class="card-header">
                 <h2 class="mb-0" style="font-size:1.3rem;">
-                    <i class="bi bi-person-plus-fill me-2"></i>Add New Employee
+                    <i class="bi bi-person-plus-fill me-2 gradient-icon"></i>Add New Employee
                 </h2>
             </div>
             <div class="card-body">

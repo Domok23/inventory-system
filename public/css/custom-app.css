@@ -18,6 +18,24 @@ main {
     flex: 1;
 }
 
+body.modal-open {
+    overflow-y: scroll !important;
+    padding-right: 0 !important;
+}
+
+body.swal2-shown {
+    overflow-y: scroll !important;
+    padding-right: 0 !important;
+}
+
+.gradient-icon {
+    background: linear-gradient(45deg, #8F12FE, #4A25AA);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+}
+
 .nav-link.active {
     font-weight: bold;
     position: relative;

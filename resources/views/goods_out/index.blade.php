@@ -7,7 +7,7 @@
                 <!-- Header -->
                 <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-2 mb-3">
                     <!-- Header -->
-                    <h2 class="mb-lg-0 flex-shrink-0" style="font-size:1.3rem;"><i class="bi bi-box-arrow-in-right"></i>
+                    <h2 class="mb-lg-0 flex-shrink-0" style="font-size:1.3rem;"><i class="fas fa-shipping-fast gradient-icon"></i>
                         Goods
                         Out Records</h2>
 

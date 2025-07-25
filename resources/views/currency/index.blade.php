@@ -6,7 +6,7 @@
             <div class="card-body">
                 <!-- Header -->
                 <div class="d-flex align-items-center mb-3 gap-2">
-                    <h2 class="mb-0 flex-shrink-0" style="font-size:1.3rem;"> <i class="bi bi-currency-exchange"></i> Currency
+                    <h2 class="mb-0 flex-shrink-0" style="font-size:1.3rem;"> <i class="fas fa-coins gradient-icon"></i> Currency
                         List</h2>
                     <button type="button" class="btn btn-outline-primary btn-sm flex-shrink-0 ms-2" data-bs-toggle="modal"
                         data-bs-target="#currencyModal">

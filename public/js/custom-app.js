@@ -34,18 +34,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
-document.addEventListener("DOMContentLoaded", function () {
-    // Tambahkan padding pada body saat SweetAlert aktif
-    Swal.mixin({
-        didOpen: () => {
-            document.body.style.paddingRight = "15px"; // Sesuaikan dengan scrollbar
-        },
-        didClose: () => {
-            document.body.style.paddingRight = ""; // Hapus padding setelah modal ditutup
-        },
-    });
-});
-
 // Agar klik tetap bisa toggle di mobile
 document.querySelectorAll(".navbar .dropdown").forEach(function (dropdown) {
     dropdown.addEventListener("shown.bs.dropdown", function () {

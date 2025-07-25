@@ -5,7 +5,7 @@
         <div class="card shadow rounded">
             <div class="card-header">
                 <h2 class="mb-0" style="font-size:1.3rem;">
-                    <i class="bi bi-person-lines-fill me-2"></i>Edit Employee: {{ $employee->name }}
+                    <i class="bi bi-person-lines-fill me-2 gradient-icon"></i>Edit Employee: {{ $employee->name }}
                 </h2>
             </div>
             <div class="card-body">

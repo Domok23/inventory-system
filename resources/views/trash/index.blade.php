@@ -5,7 +5,7 @@
         <div class="card shadow rounded">
             <div class="card-body">
                 <!-- Header -->
-                <h3 class="mb-3 flex-shrink-0" style="font-size:1.3rem;"><i class="bi-recycle" style="color:#dc3545;"></i>
+                <h3 class="mb-3 flex-shrink-0" style="font-size:1.3rem;"><i class="fas fa-trash gradient-icon"></i>
                     Trash Bin</h3>
                 <form class="mb-3" id="bulk-action-form" method="POST" action="{{ route('trash.bulkAction') }}">
                     @csrf

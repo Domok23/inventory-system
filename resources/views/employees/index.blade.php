@@ -7,7 +7,7 @@
                 <!-- Header - Improved responsive layout -->
                 <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-3 mb-3">
                     <h2 class="mb-0 flex-shrink-0" style="font-size:1.3rem;">
-                        <i class="fas fa-users text-primary"></i> Employees Management
+                        <i class="fas fa-users gradient-icon"></i> Employees Management
                     </h2>
 
                     <!-- Stats Cards - Better mobile layout -->
@@ -713,7 +713,7 @@
                 const button = $(this);
 
                 Swal.fire({
-                    title: 'Delete Employee?',
+                    title: 'Delete Employee',
                     html: `Are you sure you want to delete employee <strong>"${employeeName}"</strong>?<br><br>
                    <div class="alert alert-warning">
                        <i class="bi bi-exclamation-triangle"></i> This will also delete:
@@ -728,13 +728,13 @@
                     showCancelButton: true,
                     confirmButtonColor: '#dc3545',
                     cancelButtonColor: '#6c757d',
-                    confirmButtonText: '<i class="bi bi-trash"></i> Yes, Delete Employee!',
+                    confirmButtonText: '<i class="bi bi-trash"></i> Yes, Delete!',
                     cancelButtonText: '<i class="bi bi-x-circle"></i> Cancel',
                     reverseButtons: true,
                     focusCancel: true,
                     customClass: {
-                        confirmButton: 'btn btn-danger',
-                        cancelButton: 'btn btn-secondary'
+                        confirmButton: 'btn btn-danger ms-2',
+                        cancelButton: 'btn btn-secondary me-2',
                     },
                     buttonsStyling: false
                 }).then((result) => {
