@@ -26,8 +26,8 @@
                     <td>{{ number_format($inventory->price ?? 0, 2, ',', '.') }}</td>
                     <td>{{ $inventory->currency ? $inventory->currency->name : '' }}</td>
                 @endif
-                <td>{{ $inventory->supplier ?? '-' }}</td>
-                <td>{{ $inventory->location ?? '-' }}</td>
+                <td>{{ $inventory->supplier ? $inventory->supplier->name : '-' }}</td>
+                <td>{{ $inventory->location ? $inventory->location->name : '-' }}</td>
                 <td>{{ $inventory->remark ?? '-' }}</td>
             </tr>
         @endforeach

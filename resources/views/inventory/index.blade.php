@@ -9,8 +9,7 @@
                 <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-2 mb-3">
                     <!-- Header -->
                     <h2 class="mb-2 mb-lg-0 flex-shrink-0" style="font-size:1.3rem;"><i class="bi bi-box-seam"></i>
-                        Inventory
-                        List</h2>
+                        Inventory List</h2>
 
                     <!-- Spacer untuk mendorong tombol ke kanan -->
                     <div class="ms-lg-auto d-flex flex-wrap gap-2">
@@ -81,9 +80,9 @@
                             <select name="supplier" id="supplier" class="form-select select2">
                                 <option value="">All Suppliers</option>
                                 @foreach ($suppliers as $supplier)
-                                    <option value="{{ $supplier }}"
-                                        {{ request('supplier') == $supplier ? 'selected' : '' }}>
-                                        {{ $supplier }}
+                                    <option value="{{ $supplier->id }}"
+                                        {{ request('supplier') == $supplier->id ? 'selected' : '' }}>
+                                        {{ $supplier->name }}
                                     </option>
                                 @endforeach
                             </select>
@@ -92,9 +91,9 @@
                             <select name="location" id="location" class="form-select select2">
                                 <option value="">All Locations</option>
                                 @foreach ($locations as $location)
-                                    <option value="{{ $location }}"
-                                        {{ request('location') == $location ? 'selected' : '' }}>
-                                        {{ $location }}
+                                    <option value="{{ $location->id }}"
+                                        {{ request('location') == $location->id ? 'selected' : '' }}>
+                                        {{ $location->name }}
                                     </option>
                                 @endforeach
                             </select>
@@ -143,8 +142,8 @@
                                         {{ $inventory->currency ? $inventory->currency->name : '' }}
                                     </td>
                                 @endif
-                                <td>{{ $inventory->supplier ?? '-' }}</td>
-                                <td>{{ $inventory->location ?? '-' }}</td>
+                                <td>{{ $inventory->supplier ? $inventory->supplier->name : '-' }}</td>
+                                <td>{{ $inventory->location ? $inventory->location->name : '-' }}</td>
                                 <td>{!! $inventory->remark ?? '-' !!}</td>
                                 <td>
                                     <div class="d-flex flex-nowrap gap-1">

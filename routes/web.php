@@ -22,6 +22,8 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\TimingController;
 use App\Http\Controllers\FinalProjectSummaryController;
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\LocationController;
 use App\Http\Controllers\Auth\RegisterController;
 
 /*
@@ -90,12 +92,18 @@ Route::middleware(['auth'])->group(function () {
     Route::get('material_requests/bulk_details', [MaterialRequestController::class, 'bulkDetails'])->name('material_requests.bulk_details');
 
     // Categories
-    Route::post('/categories/quick-add', [CategoryController::class, 'storeQuick'])->name('categories.store');
+    Route::post('/categories/quick-add', [CategoryController::class, 'store'])->name('categories.store');
     Route::get('/categories/json', [CategoryController::class, 'json'])->name('categories.json');
 
     // Units
     Route::post('/units', [UnitController::class, 'store'])->name('units.store');
     Route::get('/units/json', [UnitController::class, 'json'])->name('units.json');
+
+    // Suppliers
+    Route::post('/suppliers', [SupplierController::class, 'store'])->name('suppliers.store');
+
+    // Locations
+    Route::post('/locations', [LocationController::class, 'store'])->name('locations.store');
 
     // Departments
     Route::post('/departments/store', [DepartmentController::class, 'store'])->name('departments.store');
@@ -152,7 +160,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/employees/check-employee-no', [EmployeeController::class, 'checkEmployeeNo'])->name('employees.check-employee-no');
     Route::get('/employee-documents/{document}/download', [EmployeeController::class, 'downloadDocument'])->name('employee-documents.download');
     Route::get('/employees/{employee}/documents', [EmployeeController::class, 'getDocuments'])->name('employees.documents');
-    
+
     //Timming
     Route::resource('timings', TimingController::class)->only(['index', 'create', 'store', 'show']);
     Route::post('timings/store-multiple', [TimingController::class, 'storeMultiple'])->name('timings.storeMultiple');

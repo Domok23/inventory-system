@@ -17,9 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->decimal('quantity', 8, 2);
-            $table->string('unit');
             $table->decimal('price', 10, 2);
-            $table->string('location')->nullable();
             $table->string('img')->nullable();
             $table->timestamps();
         });

@@ -50,11 +50,11 @@
                             @endif
                             <tr>
                                 <th>Supplier</th>
-                                <td>{{ $inventory->supplier ?? '-' }}</td>
+                                <td>{{ $inventory->supplier ? $inventory->supplier->name : '-' }}</td>
                             </tr>
                             <tr>
                                 <th>Location</th>
-                                <td>{{ $inventory->location ?? '-' }}</td>
+                                <td>{{ $inventory->location ? $inventory->location->name : '-' }}</td>
                             </tr>
                             <tr>
                                 <th>Remark</th>

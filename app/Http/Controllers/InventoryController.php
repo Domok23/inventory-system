@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
+use App\Models\Inventory;
 use App\Models\Unit;
 use App\Models\User;
 use App\Models\Project;
 use App\Models\Category;
 use App\Models\Currency;
-use App\Models\Inventory;
+use App\Models\Supplier;
+use App\Models\Location;
 use Illuminate\Http\Request;
 use App\Exports\InventoryExport;
 use Illuminate\Support\Facades\Log;
@@ -35,10 +37,7 @@ class InventoryController extends Controller
         // Batasi akses untuk fitur tertentu hanya untuk super_admin dan admin_logistic
         $this->middleware(function ($request, $next) {
             $restrictedRoles = ['super_admin', 'admin_logistic'];
-            if (
-                in_array($request->route()->getName(), ['inventory.create', 'inventory.import', 'inventory.edit', 'inventory.destroy']) &&
-                !in_array(Auth::user()->role, $restrictedRoles)
-            ) {
+            if (in_array($request->route()->getName(), ['inventory.create', 'inventory.import', 'inventory.edit', 'inventory.destroy']) && !in_array(Auth::user()->role, $restrictedRoles)) {
                 abort(403, 'Unauthorized');
             }
             return $next($request);
@@ -48,7 +47,7 @@ class InventoryController extends Controller
     public function index(Request $request)
     {
         // Tambahkan eager loading untuk relasi category dan currency
-        $query = Inventory::with(['category', 'currency']);
+        $query = Inventory::query()->with(['category', 'supplier', 'location', 'currency']);
 
         // Filter berdasarkan Category
         if ($request->has('category') && $request->category) {
@@ -60,27 +59,31 @@ class InventoryController extends Controller
             $query->where('currency_id', $request->currency);
         }
 
-        if ($request->has('supplier') && $request->supplier) {
-            $query->where('supplier', 'like', '%' . $request->supplier . '%');
+        // Filter berdasarkan Supplier
+        if ($request->filled('supplier')) {
+            $query->where('supplier_id', $request->supplier);
         }
 
         // Filter berdasarkan Location
-        if ($request->has('location') && $request->location) {
-            $query->where('location', $request->location);
+        if ($request->filled('location')) {
+            $query->where('location_id', $request->location);
         }
 
         $inventories = $query->orderBy('created_at', 'desc')->get();
+
         $categories = Category::orderBy('name')->get();
         $currencies = Currency::orderBy('name')->get();
-        $suppliers = Inventory::select('supplier')->distinct()->whereNotNull('supplier')->orderBy('supplier')->pluck('supplier');
-        $locations = Inventory::select('location')->distinct()->whereNotNull('location')->orderBy('location')->pluck('location');
+        $suppliers = Supplier::orderBy('name')->get();
+        $locations = Location::orderBy('name')->get();
 
         // Generate QR codes dynamically
         foreach ($inventories as $inventory) {
             $qrCodePath = 'storage/qrcodes/' . $inventory->id . '.svg';
             $qrCodeFullPath = public_path($qrCodePath);
             if (!file_exists($qrCodeFullPath)) {
-                QrCode::format('svg')->size(200)->generate(url('/inventory/detail/' . $inventory->id), $qrCodeFullPath);
+                QrCode::format('svg')
+                    ->size(200)
+                    ->generate(url('/inventory/detail/' . $inventory->id), $qrCodeFullPath);
             }
             $inventory->qr_code = asset($qrCodePath); // Simpan URL gambar QR Code
         }
@@ -97,22 +100,19 @@ class InventoryController extends Controller
         $location = $request->location;
 
         // Filter data berdasarkan request
-        $query = Inventory::query();
+        $query = Inventory::query()->with(['category', 'supplier', 'location', 'currency']);
 
         if ($category) {
             $query->where('category_id', $category);
         }
-
         if ($currency) {
             $query->where('currency_id', $currency);
         }
-
         if ($supplier) {
-            $query->where('supplier', 'like', '%' . $supplier . '%');
+            $query->where('supplier_id', $supplier);
         }
-
         if ($location) {
-            $query->where('location', $location);
+            $query->where('location_id', $location);
         }
 
         $inventories = $query->get();
@@ -144,7 +144,9 @@ class InventoryController extends Controller
         $currencies = Currency::orderBy('name')->get();
         $units = Unit::orderBy('name')->get();
         $categories = Category::orderBy('name')->get();
-        return view('inventory.create', compact('currencies', 'units', 'categories'));
+        $suppliers = Supplier::orderBy('name')->get();
+        $locations = Location::orderBy('name')->get();
+        return view('inventory.create', compact('currencies', 'units', 'categories', 'suppliers', 'locations'));
     }
 
     public function import(Request $request)
@@ -160,7 +162,9 @@ class InventoryController extends Controller
         $successCount = 0; // Counter untuk data yang berhasil diimpor
 
         foreach ($data as $index => $row) {
-            if ($index === 0) continue; // Skip header row
+            if ($index === 0) {
+                continue;
+            } // Skip header row
 
             // Validasi nama inventory
             $inventoryName = $row[0] ?? null;
@@ -196,6 +200,12 @@ class InventoryController extends Controller
                 continue; // Skip jika currency tidak valid
             }
 
+            $supplierName = $row[6] ?? null;
+            $supplier = $supplierName ? Supplier::firstOrCreate(['name' => $supplierName]) : null;
+
+            $locationName = $row[7] ?? null;
+            $location = $locationName ? Location::firstOrCreate(['name' => $locationName]) : null;
+
             $inventory = new Inventory();
             $inventory->name = $inventoryName;
             $inventory->category_id = $category ? $category->id : null; // Set category ID jika valid
@@ -203,8 +213,8 @@ class InventoryController extends Controller
             $inventory->unit = $unit->name; // Gunakan nama unit yang sudah divalidasi
             $inventory->price = $price;
             $inventory->currency_id = $currency ? $currency->id : null; // Set currency ID jika valid
-            $inventory->supplier = $row[6] ?? null;
-            $inventory->location = $row[7] ?? null;
+            $inventory->supplier_id = $supplier ? $supplier->id : null; // Set supplier ID jika valid
+            $inventory->location_id = $location ? $location->id : null; // Set location ID jika valid
             $inventory->remark = $row[8] ?? null;
 
             // Cek jika inventory sudah ada
@@ -251,33 +261,35 @@ class InventoryController extends Controller
 
     public function downloadTemplate()
     {
-        return Excel::download(new ImportInventoryTemplate, 'inventory_template.xlsx');
+        return Excel::download(new ImportInventoryTemplate(), 'inventory_template.xlsx');
     }
 
     public function store(Request $request)
     {
         $request->validate([
             'name' => 'required|string|max:255|unique:inventories,name,NULL,id,deleted_at,NULL',
+            'category_id' => 'required|exists:categories,id',
             'quantity' => 'required|numeric|min:0',
             'unit' => 'required|string',
             'new_unit' => 'required_if:unit,__new__|nullable|string|max:255',
             'price' => 'nullable|numeric',
-            'supplier' => 'nullable|string|max:255',
-            'location' => 'nullable|string|max:255',
+            'supplier_id' => 'nullable|exists:suppliers,id',
+            'currency_id' => 'nullable|exists:currencies,id',
+            'location_id' => 'nullable|exists:locations,id',
+            'remark' => 'nullable|string|max:255',
             'img' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'category_id' => 'required|exists:categories,id',
         ]);
 
-        $inventory = new Inventory;
+        $inventory = new Inventory();
         $inventory->name = $request->name;
+        $inventory->category_id = $request->category_id;
         $inventory->quantity = $request->quantity;
         $inventory->unit = $request->unit;
         $inventory->price = $request->price;
-        $inventory->supplier = $request->supplier;
+        $inventory->supplier_id = $request->supplier_id;
         $inventory->currency_id = $request->currency_id;
-        $inventory->location = $request->location;
+        $inventory->location_id = $request->location_id;
         $inventory->remark = $request->remark;
-        $inventory->category_id = $request->category_id;
 
         // Simpan unit baru jika ada
         if ($request->unit === '__new__' && $request->new_unit) {
@@ -302,10 +314,12 @@ class InventoryController extends Controller
             $warningMessage = "Price or Currency is empty for <b>{$inventory->name}</b>. Please update it as soon as possible, as it will affect the cost calculation!";
         }
 
-        return redirect()->route('inventory.index')->with([
-            'success' => "Inventory <b>{$inventory->name}</b> added successfully!",
-            'warning' => $warningMessage,
-        ]);
+        return redirect()
+            ->route('inventory.index')
+            ->with([
+                'success' => "Inventory <b>{$inventory->name}</b> added successfully!",
+                'warning' => $warningMessage,
+            ]);
     }
 
     public function storeQuick(Request $request)
@@ -319,10 +333,13 @@ class InventoryController extends Controller
         ]);
         if ($validator->fails()) {
             if ($request->ajax()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => $validator->errors()->first()
-                ], 422);
+                return response()->json(
+                    [
+                        'success' => false,
+                        'message' => $validator->errors()->first(),
+                    ],
+                    422,
+                );
             }
             return back()->withErrors($validator)->withInput();
         }
@@ -330,12 +347,12 @@ class InventoryController extends Controller
         $unit = Unit::firstOrCreate(['name' => $request->unit]);
 
         $material = Inventory::create([
-            'name'     => $request->name,
+            'name' => $request->name,
             'quantity' => $request->quantity,
-            'unit'     => $unit->name,
-            'price'    => $request->price ?? 0,
-            'remark'   => $request->remark ? $request->remark . ' <span style="color: orange;">(From Quick Add)</span>' : '<span style="color: orange;">(From Quick Add)</span>',
-            'status'   => 'pending',
+            'unit' => $unit->name,
+            'price' => $request->price ?? 0,
+            'remark' => $request->remark ? $request->remark . ' <span style="color: orange;">(From Quick Add)</span>' : '<span style="color: orange;">(From Quick Add)</span>',
+            'status' => 'pending',
         ]);
 
         return response()->json(['success' => true, 'material' => $material]);
@@ -362,44 +379,48 @@ class InventoryController extends Controller
         $currencies = Currency::orderBy('name')->get();
         $units = Unit::orderBy('name')->get();
         $categories = Category::orderBy('name')->get();
-        return view('inventory.edit', compact('inventory', 'currencies', 'units', 'categories'));
+        $suppliers = Supplier::orderBy('name')->get();
+        $locations = Location::orderBy('name')->get();
+        return view('inventory.edit', compact('inventory', 'currencies', 'units', 'categories', 'suppliers', 'locations'));
     }
 
     public function update(Request $request, Inventory $inventory)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:inventories,name,' . $inventory->id . ',id,deleted_at,NULL',
+            'category_id' => 'required|exists:categories,id',
             'quantity' => 'required|numeric|min:0',
             'unit' => 'required|string',
             'new_unit' => 'required_if:unit,__new__|nullable|string|max:255',
-            'price' => 'nullable|numeric',
-            'supplier' => 'nullable|string|max:255',
             'currency_id' => 'nullable|exists:currencies,id',
-            'location' => 'nullable|string',
+            'price' => 'nullable|numeric',
+            'supplier_id' => 'nullable|exists:suppliers,id',
+            'location_id' => 'nullable|exists:locations,id',
             'remark' => 'nullable|string|max:255',
             'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'category_id' => 'required|exists:categories,id',
         ]);
 
-        $inventory->update(array_merge($validated, [
-            'remark' => $validated['remark'], // Simpan remark asli tanpa tag tambahan
-        ]));
+        $inventory->update(
+            array_merge($validated, [
+                'remark' => $validated['remark'], // Simpan remark asli tanpa tag tambahan
+            ]),
+        );
 
         // Update data inventory
         $inventory->name = $request->name;
+        $inventory->category_id = $request->category_id;
         $inventory->quantity = $request->quantity;
         $inventory->unit = $request->unit;
-        $inventory->price = $request->price;
-        $inventory->supplier = $request->supplier;
         $inventory->currency_id = $request->currency_id;
-        $inventory->location = $request->location;
+        $inventory->price = $request->price;
+        $inventory->supplier_id = $request->supplier_id;
+        $inventory->location_id = $request->location_id;
         $inventory->remark = $request->remark;
-        $inventory->category_id = $request->category_id;
 
         // Simpan unit baru jika ada
         if ($request->unit === '__new__' && $request->new_unit) {
             $unit = Unit::firstOrCreate(['name' => $request->new_unit]);
-            $inventory->unit = $unit->name; // Ganti nilai unit di inventory
+            $inventory->unit = $unit->name;
         } else {
             $inventory->unit = $request->unit;
         }
@@ -410,7 +431,6 @@ class InventoryController extends Controller
             if ($inventory->img && Storage::disk('public')->exists($inventory->img)) {
                 Storage::disk('public')->delete($inventory->img);
             }
-
             // Simpan gambar baru
             $imgPath = $request->file('img')->store('inventory_images', 'public');
             $inventory->img = $imgPath;
@@ -424,10 +444,12 @@ class InventoryController extends Controller
             $warningMessage = "Price or Currency is empty for <b>{$inventory->name}</b>. Please update it as soon as possible, as it will affect the cost calculation!";
         }
 
-        return redirect()->route('inventory.index')->with([
-            'success' => "Inventory <b>{$inventory->name}</b> edited successfully!",
-            'warning' => $warningMessage,
-        ]);
+        return redirect()
+            ->route('inventory.index')
+            ->with([
+                'success' => "Inventory <b>{$inventory->name}</b> edited successfully!",
+                'warning' => $warningMessage,
+            ]);
     }
 
     public function detail($id)
@@ -444,6 +466,8 @@ class InventoryController extends Controller
         $inventory = Inventory::findOrFail($id);
         $inventory->delete();
 
-        return redirect()->route('inventory.index')->with('success', "Inventory <b>{$inventory->name}</b> deleted successfully.");
+        return redirect()
+            ->route('inventory.index')
+            ->with('success', "Inventory <b>{$inventory->name}</b> deleted successfully.");
     }
 }

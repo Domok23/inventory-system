@@ -112,21 +112,33 @@
 
                     <div class="row">
                         <div class="col-lg-6 mb-3">
-                            <label for="supplier" class="form-label">Supplier (Optional)</label>
-                            <input type="text" class="form-control" id="supplier" name="supplier"
-                                value="{{ old('supplier') }}">
-                            @error('supplier')
-                                <small class="text-danger">{{ $message }}</small>
-                            @enderror
+                            <label for="supplier_id" class="form-label">Supplier (Optional)</label>
+                            <button type="button" class="btn btn-outline-primary"
+                                style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .55rem;"
+                                data-bs-toggle="modal" data-bs-target="#addSupplierModal">+ Add Supplier</button>
+                            <select name="supplier_id" id="supplier_id" class="form-select select2">
+                                <option value="">Select Supplier</option>
+                                @foreach ($suppliers as $supplier)
+                                    <option value="{{ $supplier->id }}"
+                                        {{ old('supplier_id', $inventory->supplier_id ?? '') == $supplier->id ? 'selected' : '' }}>
+                                        {{ $supplier->name }}</option>
+                                @endforeach
+                            </select>
                         </div>
 
-                        <div class="col-lg-6">
-                            <label for="location" class="form-label">Location (Optional)</label>
-                            <input type="text" class="form-control" id="location" name="location"
-                                value="{{ old('location') }}">
-                            @error('location')
-                                <small class="text-danger">{{ $message }}</small>
-                            @enderror
+                        <div class="col-lg-6 mb-3">
+                            <label for="location_id" class="form-label">Location (Optional)</label>
+                            <button type="button" class="btn btn-outline-primary"
+                                style="--bs-btn-padding-y: .25rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .55rem;"
+                                data-bs-toggle="modal" data-bs-target="#addLocationModal">+ Add Location</button>
+                            <select name="location_id" id="location_id" class="form-select select2">
+                                <option value="">Select Location</option>
+                                @foreach ($locations as $location)
+                                    <option value="{{ $location->id }}"
+                                        {{ old('location_id', $inventory->location_id ?? '') == $location->id ? 'selected' : '' }}>
+                                        {{ $location->name }}</option>
+                                @endforeach
+                            </select>
                         </div>
                     </div>
 
@@ -238,6 +250,52 @@
             </form>
         </div>
     </div>
+    <!-- Modal Add Supplier -->
+    <div class="modal fade" id="addSupplierModal" tabindex="-1">
+        <div class="modal-dialog">
+            <form id="supplierForm" method="POST" action="{{ route('suppliers.store') }}">
+                @csrf
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="supplierModalLabel">Add Supplier</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div>
+                            <label for="supplier_name" class="form-label">Supplier Name <span
+                                    class="text-danger">*</span></label>
+                            <input type="text" id="supplier_name" name="name" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer"><button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Modal Add Location -->
+    <div class="modal fade" id="addLocationModal" tabindex="-1">
+        <div class="modal-dialog">
+            <form id="locationForm" method="POST" action="{{ route('locations.store') }}">
+                @csrf
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="locationModalLabel">Add Location</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div>
+                            <label for="location_name" class="form-label">Location Name <span
+                                    class="text-danger">*</span></label>
+                            <input type="text" id="location_name" name="name" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer"><button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
 @endsection
 @push('styles')
     <style>
@@ -270,61 +328,23 @@
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const unitSelect = document.getElementById('unit-select');
-            const unitInput = document.getElementById('unit-input');
-
-            unitSelect.addEventListener('change', function() {
-                if (this.value === '__new__') {
-                    unitInput.classList.remove('d-none');
-                    unitInput.setAttribute('required', 'required');
-                } else {
-                    unitInput.classList.add('d-none');
-                    unitInput.removeAttribute('required');
-                }
+            // Inisialisasi Fancybox untuk gambar preview
+            Fancybox.bind("[data-fancybox='gallery']", {
+                Toolbar: {
+                    display: [
+                        "zoom", // Tombol zoom
+                        "download", // Tombol download
+                        "close" // Tombol close
+                    ],
+                },
+                Thumbs: false, // Nonaktifkan thumbnail jika tidak diperlukan
+                Image: {
+                    zoom: true, // Aktifkan fitur zoom
+                },
+                Hash: false,
             });
 
-            // Inisialisasi Select2 untuk dropdown Unit
-            $('#unit-select').select2({
-                theme: 'bootstrap-5',
-                placeholder: 'Select Unit',
-                allowClear: true
-            }).on('select2:open', function() {
-                setTimeout(function() {
-                    document.querySelector('.select2-container--open .select2-search__field')
-                        .focus();
-                }, 100);
-            });
-
-            $('#unitForm').on('submit', function(e) {
-                e.preventDefault();
-                let form = $(this);
-                $.ajax({
-                    url: form.attr('action'),
-                    method: 'POST',
-                    data: form.serialize(),
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    success: function(unit) {
-                        // Tambahkan ke select2 dan pilih otomatis
-                        let newOption = new Option(unit.name, unit.name, true, true);
-                        $('#unit-select').append(newOption).val(unit.name).trigger('change');
-                        $('#addUnitModal').modal('hide');
-                        form[0].reset();
-                    },
-                    error: function(xhr) {
-                        let msg = xhr.responseJSON?.message ||
-                            'Failed to add unit. Please try again.';
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: msg
-                        });
-                    }
-                });
-            });
-
-            // Spinner untuk form utama Inventory
+            // Spinner dan disable tombol untuk form utama Inventory
             const form = document.querySelector('form[action="{{ route('inventory.store') }}"]');
             const submitBtn = document.getElementById('inventory-submit-btn');
             const spinner = submitBtn ? submitBtn.querySelector('.spinner-border') : null;
@@ -381,6 +401,48 @@
                 });
             });
 
+            // Inisialisasi Select2 untuk dropdown Unit
+            $('#unit-select').select2({
+                theme: 'bootstrap-5',
+                placeholder: 'Select Unit',
+                allowClear: true
+            }).on('select2:open', function() {
+                setTimeout(function() {
+                    document.querySelector('.select2-container--open .select2-search__field')
+                        .focus();
+                }, 100);
+            });
+
+            // Submit form unit via AJAX
+            $('#unitForm').on('submit', function(e) {
+                e.preventDefault();
+                let form = $(this);
+                $.ajax({
+                    url: form.attr('action'),
+                    method: 'POST',
+                    data: form.serialize(),
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    success: function(unit) {
+                        // Tambahkan ke select2 dan pilih otomatis
+                        let newOption = new Option(unit.name, unit.name, true, true);
+                        $('#unit-select').append(newOption).val(unit.name).trigger('change');
+                        $('#addUnitModal').modal('hide');
+                        form[0].reset();
+                    },
+                    error: function(xhr) {
+                        let msg = xhr.responseJSON?.message ||
+                            'Failed to add unit. Please try again.';
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: msg
+                        });
+                    }
+                });
+            });
+
             // Inisialisasi Select2 untuk dropdown Currency
             $('#currency_id').select2({
                 theme: 'bootstrap-5',
@@ -414,6 +476,86 @@
                     error: function(xhr) {
                         let msg = xhr.responseJSON?.message ||
                             'Failed to add currency. Please try again.';
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: msg
+                        });
+                    }
+                });
+            });
+
+            // Inisialisasi Select2 untuk dropdown Supplier
+            $('#supplier_id').select2({
+                theme: 'bootstrap-5',
+                placeholder: 'Select Supplier',
+                allowClear: true
+            }).on('select2:open', function() {
+                setTimeout(function() {
+                    document.querySelector('.select2-container--open .select2-search__field')
+                        .focus();
+                }, 100);
+            });
+
+            // Submit form supplier via AJAX
+            $('#supplierForm').on('submit', function(e) {
+                e.preventDefault();
+                let form = $(this);
+                $.ajax({
+                    url: form.attr('action'),
+                    method: 'POST',
+                    data: form.serialize(),
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    success: function(supplier) {
+                        let newOption = new Option(supplier.name, supplier.id, true, true);
+                        $('#supplier_id').append(newOption).val(supplier.id).trigger('change');
+                        $('#addSupplierModal').modal('hide');
+                        form[0].reset();
+                    },
+                    error: function(xhr) {
+                        let msg = xhr.responseJSON?.message || 'Failed to add supplier.';
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: msg
+                        });
+                    }
+                });
+            });
+
+            // Inisialisasi Select2 untuk dropdown Location
+            $('#location_id').select2({
+                theme: 'bootstrap-5',
+                placeholder: 'Select Location',
+                allowClear: true
+            }).on('select2:open', function() {
+                setTimeout(function() {
+                    document.querySelector('.select2-container--open .select2-search__field')
+                        .focus();
+                }, 100);
+            });
+
+            // Submit form location via AJAX
+            $('#locationForm').on('submit', function(e) {
+                e.preventDefault();
+                let form = $(this);
+                $.ajax({
+                    url: form.attr('action'),
+                    method: 'POST',
+                    data: form.serialize(),
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    success: function(location) {
+                        let newOption = new Option(location.name, location.id, true, true);
+                        $('#location_id').append(newOption).val(location.id).trigger('change');
+                        $('#addLocationModal').modal('hide');
+                        form[0].reset();
+                    },
+                    error: function(xhr) {
+                        let msg = xhr.responseJSON?.message || 'Failed to add location.';
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
@@ -461,22 +603,5 @@
                 if (previewLink) previewLink.style.display = 'none';
             }
         }
-        // Inisialisasi Fancybox untuk gambar preview
-        document.addEventListener('DOMContentLoaded', function() {
-            Fancybox.bind("[data-fancybox='gallery']", {
-                Toolbar: {
-                    display: [
-                        "zoom", // Tombol zoom
-                        "download", // Tombol download
-                        "close" // Tombol close
-                    ],
-                },
-                Thumbs: false, // Nonaktifkan thumbnail jika tidak diperlukan
-                Image: {
-                    zoom: true, // Aktifkan fitur zoom
-                },
-                Hash: false,
-            });
-        });
     </script>
 @endpush

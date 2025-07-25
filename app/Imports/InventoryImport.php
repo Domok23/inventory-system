@@ -3,21 +3,37 @@
 namespace App\Imports;
 
 use App\Models\Inventory;
+use App\Models\Category;
+use App\Models\Unit;
+use App\Models\Currency;
+use App\Models\Supplier;
+use App\Models\Location;
 use Maatwebsite\Excel\Concerns\ToModel;
 
 class InventoryImport implements ToModel
 {
     public function model(array $row)
     {
+        // Cari atau buat supplier berdasarkan nama
+        $supplier = !empty($row[6]) ? Supplier::firstOrCreate(['name' => $row[6]]) : null;
+        // Cari atau buat location berdasarkan nama
+        $location = !empty($row[7]) ? Location::firstOrCreate(['name' => $row[7]]) : null;
+        // Cari atau buat category berdasarkan nama
+        $category = !empty($row[1]) ? Category::firstOrCreate(['name' => $row[1]]) : null;
+        // Cari atau buat currency berdasarkan nama
+        $currency = !empty($row[5]) ? Currency::firstOrCreate(['name' => $row[5]]) : null;
+        // Cari atau buat unit berdasarkan nama
+        $unit = !empty($row[3]) ? Unit::firstOrCreate(['name' => $row[3]]) : null;
+
         return new Inventory([
             'name' => $row[0],
-            'category_id' => $row[1],
+            'category_id' => $category ? $category->id : null,
             'quantity' => $row[2],
-            'unit' => $row[3],
+            'unit' => $unit ? $unit->name : $row[3],
             'price' => $row[4],
-            'currency_id' => $row[5],
-            'supplier' => $row[6],
-            'location' => $row[7],
+            'currency_id' => $currency ? $currency->id : null,
+            'supplier_id' => $supplier ? $supplier->id : null,
+            'location_id' => $location ? $location->id : null,
             'remark' => $row[8],
         ]);
     }

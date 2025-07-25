@@ -11,18 +11,7 @@ class Inventory extends Model
     use SoftDeletes;
     use HasFactory;
 
-    protected $fillable = [
-        'name',
-        'category_id',
-        'quantity',
-        'unit',
-        'price',
-        'currency_id',
-        'supplier',
-        'location',
-        'remark',
-        'img',
-    ];
+    protected $fillable = ['name', 'category_id', 'quantity', 'unit', 'price', 'currency_id', 'supplier_id', 'location_id', 'remark', 'img'];
 
     public function currency()
     {
@@ -37,5 +26,14 @@ class Inventory extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function supplier()
+    {
+        return $this->belongsTo(Supplier::class);
+    }
+    public function location()
+    {
+        return $this->belongsTo(Location::class);
     }
 }

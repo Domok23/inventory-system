@@ -274,9 +274,11 @@ namespace App\Models{
  * @property string $quantity
  * @property string $unit
  * @property string|null $price
- * @property string|null $supplier
+ * @property \App\Models\Supplier|null $supplier
  * @property int|null $currency_id
- * @property string|null $location
+ * @property int|null $supplier_id
+ * @property int|null $location_id
+ * @property \App\Models\Location|null $location
  * @property string|null $remark
  * @property string|null $img
  * @property string|null $qrcode_path
@@ -301,6 +303,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Inventory whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Inventory whereImg($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Inventory whereLocation($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Inventory whereLocationId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Inventory whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Inventory wherePrice($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Inventory whereQrcode($value)
@@ -308,12 +311,32 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Inventory whereQuantity($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Inventory whereRemark($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Inventory whereSupplier($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Inventory whereSupplierId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Inventory whereUnit($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Inventory whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Inventory withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Inventory withoutTrashed()
  */
 	class Inventory extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * 
+ *
+ * @property int $id
+ * @property string $name
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Location newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Location newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Location query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Location whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Location whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Location whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Location whereUpdatedAt($value)
+ */
+	class Location extends \Eloquent {}
 }
 
 namespace App\Models{
@@ -454,6 +477,25 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ProjectPart whereUpdatedAt($value)
  */
 	class ProjectPart extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * 
+ *
+ * @property int $id
+ * @property string $name
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Supplier newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Supplier newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Supplier query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Supplier whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Supplier whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Supplier whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Supplier whereUpdatedAt($value)
+ */
+	class Supplier extends \Eloquent {}
 }
 
 namespace App\Models{
