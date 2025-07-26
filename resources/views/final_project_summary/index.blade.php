@@ -5,11 +5,11 @@
         <div class="card shadow-sm border-0 mb-4">
             <div class="card-body">
                 <!-- Header -->
-                <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-2 mb-2">
-                    <!-- Header -->
-                    <h2 class="mb-2 mb-lg-0 flex-shrink-0" style="font-size:1.3rem;"><i class="fas fa-chart-pie gradient-icon"></i> Final
-                        Project Summary
-                    </h2>
+                <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between mb-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fas fa-chart-pie gradient-icon me-2" style="font-size: 1.4rem;"></i>
+                        <h2 class="mb-0" style="font-size:1.3rem;">Final Project Summary</h2>
+                    </div>
                 </div>
                 <form method="GET" class="row g-2 align-items-end mb-3">
                     <div class="col-md-4">
@@ -33,7 +33,8 @@
                         <a href="{{ route('final_project_summary.index') }}" class="btn btn-secondary">Reset</a>
                     </div>
                 </form>
-                <table class="table table-hover align-middle rounded shadow-sm" id="projects-table">
+                <table class="table table-striped table-hover table-bordered align-middle rounded shadow-sm"
+                    id="projects-table">
                     <thead class="table-light">
                         <tr>
                             <th style="width:45%;">Project Name</th>

@@ -5,17 +5,20 @@
             <div class="card-body">
                 <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-2 mb-3">
                     <!-- Header -->
-                    <h2 class="mb-2 mb-lg-0 flex-shrink-0" style="font-size:1.3rem;"><i class="fas fa-chart-line gradient-icon"></i> Material Usage
-                    </h2>
+                    <div class="d-flex align-items-center mb-2 mb-lg-0">
+                        <i class="fas fa-chart-line gradient-icon me-2" style="font-size: 1.5rem;"></i>
+                        <h2 class="mb-0 flex-shrink-0" style="font-size:1.3rem;">Material Usage</h2>
+                    </div>
 
                     <!-- Spacer untuk mendorong tombol ke kanan -->
                     <div class="ms-lg-auto d-flex flex-wrap gap-2">
                         <a href="{{ route('material_usage.export', request()->query()) }}"
                             class="btn btn-outline-success btn-sm flex-shrink-0">
-                            <i class="bi bi-file-earmark-excel"></i> Export
+                            <i class="bi bi-file-earmark-excel me-1"></i> Export
                         </a>
                     </div>
                 </div>
+
                 <!-- Alerts -->
                 @if (session('success'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">

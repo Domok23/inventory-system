@@ -205,7 +205,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="table-responsive">
-                        <table class="table table-bordered" id="materialUsageDataTable">
+                        <table class="table table-hover table-bordered" id="materialUsageDataTable">
                             <thead>
                                 <tr>
                                     <th>Project</th>

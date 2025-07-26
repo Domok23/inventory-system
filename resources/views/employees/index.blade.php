@@ -6,15 +6,16 @@
             <div class="card-body">
                 <!-- Header - Improved responsive layout -->
                 <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-3 mb-3">
-                    <h2 class="mb-0 flex-shrink-0" style="font-size:1.3rem;">
-                        <i class="fas fa-users gradient-icon"></i> Employees Management
-                    </h2>
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-users gradient-icon me-2" style="font-size: 1.3rem;"></i>
+                        <h2 class="mb-0 flex-shrink-0" style="font-size:1.3rem;">Employees Management</h2>
+                    </div>
 
                     <!-- Stats Cards - Better mobile layout -->
                     <div class="ms-lg-auto">
                         <div class="d-flex flex-wrap gap-3 align-items-center justify-content-lg-end">
                             <a href="{{ route('employees.create') }}" class="btn btn-primary btn-sm">
-                                <i class="bi bi-plus-circle"></i>
+                                <i class="bi bi-plus-circle me-1"></i>
                                 <span class="d-none d-sm-inline">Add Employee</span>
                                 <span class="d-sm-none">Add</span>
                             </a>

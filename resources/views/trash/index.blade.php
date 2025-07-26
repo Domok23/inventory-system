@@ -4,16 +4,28 @@
     <div class="container mt-4">
         <div class="card shadow rounded">
             <div class="card-body">
-                <!-- Header -->
-                <h3 class="mb-3 flex-shrink-0" style="font-size:1.3rem;"><i class="fas fa-trash gradient-icon"></i>
-                    Trash Bin</h3>
-                <form class="mb-3" id="bulk-action-form" method="POST" action="{{ route('trash.bulkAction') }}">
-                    @csrf
-                    <input type="hidden" name="action" id="bulk-action-type">
-                    <button type="button" class="btn btn-success btn-sm" id="bulk-restore-btn">Bulk Restore</button>
-                    <button type="button" class="btn btn-danger btn-sm" id="bulk-delete-btn">Bulk Delete
-                        Permanently</button>
-                </form>
+                <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-2 mb-3">
+                    <!-- Header -->
+                    <div class="d-flex align-items-center mb-2 mb-lg-0">
+                        <i class="fas fa-trash gradient-icon me-2" style="font-size: 1.5rem;"></i>
+                        <h3 class="mb-0 flex-shrink-0" style="font-size:1.3rem;">Trash Bin</h3>
+                    </div>
+
+                    <!-- Bulk Action Buttons -->
+                    <div class="ms-lg-auto d-flex flex-wrap gap-2">
+                        <form class="d-flex flex-wrap gap-2" id="bulk-action-form" method="POST"
+                            action="{{ route('trash.bulkAction') }}">
+                            @csrf
+                            <input type="hidden" name="action" id="bulk-action-type">
+                            <button type="button" class="btn btn-success btn-sm flex-shrink-0" id="bulk-restore-btn">
+                                <i class="bi bi-bootstrap-reboot me-1"></i> Bulk Restore
+                            </button>
+                            <button type="button" class="btn btn-danger btn-sm flex-shrink-0" id="bulk-delete-btn">
+                                <i class="bi bi-trash3 me-1"></i> Bulk Delete Permanently
+                            </button>
+                        </form>
+                    </div>
+                </div>
 
                 <!-- Alerts -->
                 @if (session('success'))

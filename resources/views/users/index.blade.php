@@ -4,11 +4,19 @@
     <div class="container mt-4">
         <div class="card shadow rounded">
             <div class="card-body">
-                <!-- Header -->
-                <div class="d-flex align-items-center mb-3 gap-2">
-                    <h2 class="mb-0 flex-shrink-0" style="font-size:1.3rem;"><i class="fas fa-user gradient-icon" style="font-size:1.5rem;"></i> Users</h2>
-                    <a href="{{ route('users.create') }}" class="btn btn-outline-primary btn-sm flex-shrink-0 ms-2">+ New
-                        User</a>
+                <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-2 mb-3">
+                    <!-- Header -->
+                    <div class="d-flex align-items-center mb-2 mb-lg-0">
+                        <i class="fas fa-users gradient-icon me-2" style="font-size: 1.5rem;"></i>
+                        <h2 class="mb-0 flex-shrink-0" style="font-size:1.3rem;">Users</h2>
+                    </div>
+
+                    <!-- Spacer untuk mendorong tombol ke kanan -->
+                    <div class="ms-lg-auto d-flex flex-wrap gap-2">
+                        <a href="{{ route('users.create') }}" class="btn btn-primary btn-sm flex-shrink-0">
+                            <i class="bi bi-plus-circle me-1"></i> New User
+                        </a>
+                    </div>
                 </div>
                 <!-- Alerts -->
                 @if (session('success'))
@@ -49,12 +57,13 @@
                                 <td>{{ ucwords(str_replace('_', ' ', $user->role)) }}</td>
                                 <td>
                                     <div class="d-flex flex-wrap gap-1">
-                                        <a href="{{ route('users.edit', $user->id) }}"
-                                            class="btn btn-sm btn-warning" title="Edit"><i class="bi bi-pencil-square"></i></a>
+                                        <a href="{{ route('users.edit', $user->id) }}" class="btn btn-sm btn-warning"
+                                            title="Edit"><i class="bi bi-pencil-square"></i></a>
                                         <form action="{{ route('users.destroy', $user->id) }}" method="POST"
                                             class="delete-form">
                                             @csrf @method('DELETE')
-                                            <button type="button" class="btn btn-sm btn-danger btn-delete" title="Delete"><i class="bi bi-x-circle"></i></button>
+                                            <button type="button" class="btn btn-sm btn-danger btn-delete"
+                                                title="Delete"><i class="bi bi-x-circle"></i></button>
                                         </form>
                                     </div>
                                 </td>

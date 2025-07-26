@@ -4,28 +4,31 @@
     <div class="container-fluid mt-4">
         <div class="card shadow rounded">
             <div class="card-body">
-                <!-- Header -->
                 <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-2 mb-3">
                     <!-- Header -->
-                    <h2 class="mb-2 mb-lg-0 flex-shrink-0" style="font-size:1.3rem;"><i
-                            class="fas fa-clipboard-list gradient-icon"></i> Material Requests</h2>
+                    <div class="d-flex align-items-center mb-2 mb-lg-0">
+                        <i class="fas fa-clipboard-list gradient-icon me-2" style="font-size: 1.5rem;"></i>
+                        <h2 class="mb-0 flex-shrink-0" style="font-size:1.3rem;">Material Requests</h2>
+                    </div>
 
                     <!-- Spacer untuk mendorong tombol ke kanan -->
                     <div class="ms-lg-auto d-flex flex-wrap gap-2">
                         <a href="{{ route('material_requests.create') }}" class="btn btn-primary btn-sm flex-shrink-0">
-                            <i class="bi bi-plus-circle"></i> Create Request
+                            <i class="bi bi-plus-circle me-1"></i> Create Request
                         </a>
                         <a href="{{ route('material_requests.bulk_create') }}" class="btn btn-info btn-sm flex-shrink-0">
-                            <i class="bi bi-plus-circle"></i> Bulk Material Request
+                            <i class="bi bi-plus-circle me-1"></i> Bulk Request
                         </a>
                         @if (auth()->user()->isLogisticAdmin())
-                            <button id="bulk-goods-out-btn" class="btn btn-success btn-sm flex-shrink-0">
-                                <i class="bi bi-box-arrow-in-right"></i> Bulk Goods Out
+                            <button id="bulk-goods-out-btn" class="btn btn-success btn-sm flex-shrink-0" disabled>
+                                <i class="bi bi-box-arrow-in-right me-1"></i>
+                                <span id="bulk-goods-out-text">Bulk Goods Out</span>
+                                <span id="bulk-goods-out-count" class="badge bg-light text-dark ms-1 d-none">0</span>
                             </button>
                         @endif
                         <a href="{{ route('material_requests.export', request()->query()) }}"
                             class="btn btn-outline-success btn-sm flex-shrink-0">
-                            <i class="bi bi-file-earmark-excel"></i> Export
+                            <i class="bi bi-file-earmark-excel me-1"></i> Export
                         </a>
                     </div>
                 </div>
@@ -114,7 +117,8 @@
                 </div>
 
                 <!-- Table -->
-                <table class="table table-bordered table-hover table-sm" id="datatable" data-material-request-table="1">
+                <table class="table table-striped table-hover table-bordered table-sm" id="datatable"
+                    data-material-request-table="1">
                     <thead class="align-middle text-nowrap">
                         <tr>
                             <th></th>
@@ -151,20 +155,29 @@
                                 <td style="display:none">{{ $req->id }}</td>
                                 <td>{{ $req->project->name ?? '(No Project)' }}</td>
                                 <td>
-                                    <span class="material-detail-link" data-id="{{ $req->inventory->id ?? '' }}">
+                                    <span class="material-detail-link gradient-link"
+                                        data-id="{{ $req->inventory->id ?? '' }}">
                                         {{ $req->inventory->name ?? '(No Material)' }}
                                     </span>
                                 </td>
                                 <td>{{ rtrim(rtrim(number_format($req->qty, 2, '.', ''), '0'), '.') }}
                                     {{ $req->inventory->unit ?? '(No Unit)' }}</td>
-                                <td>{{ rtrim(rtrim(number_format($req->remaining_qty, 2, '.', ''), '0'), '.') }}
-                                    {{ $req->inventory->unit ?? '(No Unit)' }}</td>
-                                <td>{{ rtrim(rtrim(number_format($req->processed_qty, 2, '.', ''), '0'), '.') }}
-                                    {{ $req->inventory->unit ?? '(No Unit)' }}</td>
+                                <td>
+                                    <span data-bs-toggle="tooltip" data-bs-placement="right"
+                                        title="{{ $req->inventory->unit ?? '(No Unit)' }}" class="tooltip-td">
+                                        {{ rtrim(rtrim(number_format($req->remaining_qty, 2, '.', ''), '0'), '.') }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span data-bs-toggle="tooltip" data-bs-placement="right"
+                                        title="{{ $req->inventory->unit ?? '(No Unit)' }}" class="tooltip-td">
+                                        {{ rtrim(rtrim(number_format($req->processed_qty, 2, '.', ''), '0'), '.') }}
+                                    </span>
+                                </td>
                                 <td>
                                     <span data-bs-toggle="tooltip" data-bs-placement="right"
                                         title="{{ $req->user && $req->user->department ? ucfirst($req->user->department->name) : '-' }}"
-                                        class="requested-by-tooltip">
+                                        class="tooltip-td">
                                         {{ ucfirst($req->requested_by) }}
                                     </span>
                                 </td>
@@ -183,7 +196,8 @@
                                                 value="{{ request('requested_by') }}">
                                             <input type="hidden" name="filter_requested_at"
                                                 value="{{ request('requested_at') }}">
-                                            <select name="status" class="form-select form-select-sm status-select"
+                                            <select name="status"
+                                                class="form-select form-select-sm status-select status-select-rounded"
                                                 onchange="this.form.submit()"
                                                 title="{{ $req->status === 'pending' ? 'Waiting for approval' : ($req->status === 'approved' ? 'Ready for goods out' : ($req->status === 'delivered' ? 'Already delivered' : 'Request canceled')) }}"
                                                 {{ $req->status === 'delivered' ? 'disabled' : '' }}>
@@ -286,7 +300,11 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" id="submit-bulk-goods-out" class="btn btn-success">Submit All</button>
+                    <button type="button" id="submit-bulk-goods-out" class="btn btn-success">
+                        <span class="spinner-border spinner-border-sm me-1 d-none" role="status"
+                            aria-hidden="true"></span>
+                        Submit All
+                    </button>
                 </div>
             </div>
         </div>
@@ -317,10 +335,14 @@
             font-size: 0.90rem;
             white-space: nowrap;
             vertical-align: middle;
+            text-align: left !important;
+            /* Force left alignment for all table headers */
         }
 
         #datatable td {
             vertical-align: middle;
+            text-align: left !important;
+            /* Force left alignment for all table cells */
         }
 
         /* Batasi lebar kolom tertentu jika perlu */
@@ -341,13 +363,71 @@
             text-decoration: underline dotted;
         }
 
+        /* Gradient link styling */
+        .gradient-link {
+            background: linear-gradient(45deg, #8F12FE, #4A25AA);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            cursor: pointer;
+            font-weight: 500;
+            text-decoration: none !important;
+        }
+
+        .gradient-link:hover {
+            text-decoration: underline dotted;
+            filter: brightness(1.2);
+        }
+
+        /* Rounded status select - Bootstrap standard colors */
+        .status-select-rounded {
+            border-radius: 20px !important;
+            padding: 0.25rem 0.75rem !important;
+            font-size: 0.85rem !important;
+            border: 1px solid !important;
+            font-weight: 400 !important;
+            min-width: 100px !important;
+            outline: none !important;
+            box-shadow: none !important;
+        }
+
+        .status-select-rounded:focus {
+            outline: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Status colors using Bootstrap standard colors */
+        .status-select-rounded.status-pending {
+            background-color: #fff3cd;
+            border-color: #ffeaa7;
+            color: #856404;
+        }
+
+        .status-select-rounded.status-approved {
+            background-color: #d1ecf1;
+            border-color: #bee5eb;
+            color: #0c5460;
+        }
+
+        .status-select-rounded.status-delivered {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+
+        .status-select-rounded.status-canceled {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+
         select.form-select option:disabled {
             color: #999;
             cursor: not-allowed;
             background-color: #f8f9fa;
         }
 
-        .requested-by-tooltip {
+        .tooltip-td {
             cursor: pointer;
         }
 
@@ -356,6 +436,48 @@
             font-size: 0.92rem;
             vertical-align: middle;
             white-space: nowrap;
+        }
+
+        /* Bulk goods out button styling */
+        #bulk-goods-out-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        #bulk-goods-out-count {
+            border-radius: 50px;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.4rem;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        /* Ensure specific alignment for quantity columns - Headers and Cells */
+        #datatable thead th:nth-child(5),
+        /* Requested Qty Header */
+        #datatable thead th:nth-child(6),
+        /* Remaining Qty Header */
+        #datatable thead th:nth-child(7),
+        /* Processed Qty Header */
+        #datatable tbody td:nth-child(5),
+        /* Requested Qty */
+        #datatable tbody td:nth-child(6),
+        /* Remaining Qty */
+        #datatable tbody td:nth-child(7) {
+            /* Processed Qty */
+            text-align: left !important;
+        }
+
+        /* Center align only for checkbox column */
+        #datatable thead th:nth-child(1),
+        #datatable tbody td:nth-child(1) {
+            text-align: center !important;
+        }
+
+        /* Ensure Action column is centered */
+        #datatable thead th:nth-child(12),
+        #datatable tbody td:nth-child(12) {
+            text-align: center !important;
         }
     </style>
 @endpush
@@ -387,6 +509,9 @@
                 tooltipTriggerList.forEach(function(tooltipTriggerEl) {
                     new bootstrap.Tooltip(tooltipTriggerEl);
                 });
+
+                // Update bulk goods out button setelah redraw
+                updateBulkGoodsOutButton();
             });
 
             // Initialize Select2
@@ -410,6 +535,32 @@
                 if (!dateInput.value) dateInput.type = 'text';
             }
 
+            // Function to update bulk goods out button
+            function updateBulkGoodsOutButton() {
+                const selectedCount = $('.select-row:checked').length;
+                const bulkBtn = $('#bulk-goods-out-btn');
+                const countBadge = $('#bulk-goods-out-count');
+
+                if (selectedCount > 0) {
+                    bulkBtn.prop('disabled', false);
+                    countBadge.removeClass('d-none').text(selectedCount);
+                } else {
+                    bulkBtn.prop('disabled', true);
+                    countBadge.addClass('d-none').text('0');
+                }
+            }
+
+            // Handle checkbox changes
+            $(document).on('change', '.select-row', function() {
+                updateBulkGoodsOutButton();
+            });
+
+            // Handle select all checkbox (if exists)
+            $('#select-all').on('change', function() {
+                $('.select-row').prop('checked', $(this).prop('checked'));
+                updateBulkGoodsOutButton();
+            });
+
             // SweetAlert for delete confirmation
             $(document).on('click', '.btn-delete', function(e) {
                 e.preventDefault();
@@ -430,11 +581,6 @@
                 });
             });
 
-            // Handle bulk goods out button
-            $('#select-all').on('change', function() {
-                $('.select-row').prop('checked', $(this).prop('checked'));
-            });
-
             $('#bulk-goods-out-btn').on('click', function() {
                 const selectedIds = $('.select-row:checked').map(function() {
                     return $(this).val();
@@ -447,7 +593,7 @@
 
                 // Fetch detail data for selected material requests
                 $.ajax({
-                    url: "{{ route('material_requests.bulk_details') }}", // Buat endpoint baru di controller
+                    url: "{{ route('material_requests.bulk_details') }}",
                     method: 'GET',
                     data: {
                         selected_ids: selectedIds
@@ -460,7 +606,7 @@
                                     <td>${item.material_name}</td>
                                     <td>
                                         ${item.project_name}
-                                        <span data-bs-toggle="tooltip" data-bs-placement="top" title="Requested By: ${item.requested_by}">
+                                        <span data-bs-toggle="tooltip" data-bs-placement="buttom" title="Requested By: ${item.requested_by}">
                                             <i class="bi bi-person-circle"></i>
                                         </span>
                                     </td>
@@ -488,6 +634,12 @@
             });
 
             $('#submit-bulk-goods-out').on('click', function() {
+                const submitBtn = $(this);
+                const spinner = submitBtn.find('.spinner-border');
+                const btnText = submitBtn.contents().filter(function() {
+                    return this.nodeType === 3; // Text nodes only
+                }).last();
+
                 let isValid = true;
                 $('#bulk-goods-out-table-body input[type="number"]').each(function() {
                     const max = parseFloat($(this).attr('max'));
@@ -499,10 +651,23 @@
                         $(this).removeClass('is-invalid');
                     }
                 });
+
                 if (!isValid) {
                     Swal.fire('Error', 'Qty to Goods Out must be between 0.001 or Remaining Qty.', 'error');
                     return;
                 }
+
+                // Function to reset button state
+                function resetButtonState() {
+                    submitBtn.prop('disabled', false);
+                    spinner.addClass('d-none');
+                    btnText[0].textContent = ' Submit All';
+                }
+
+                // Disable button and show spinner
+                submitBtn.prop('disabled', true);
+                spinner.removeClass('d-none');
+                btnText[0].textContent = ' Processing...';
 
                 // Tambahkan input hidden selected_ids[] ke form
                 $('#bulk-goods-out-form input[name="selected_ids[]"]')
@@ -520,6 +685,9 @@
                     method: 'POST',
                     data: formData,
                     success: function(response) {
+                        // Reset button state immediately after response
+                        resetButtonState();
+
                         if (response.success) {
                             Swal.fire('Success', response.message, 'success')
                                 .then(() => location.reload());
@@ -529,10 +697,26 @@
                         }
                     },
                     error: function(xhr) {
+                        // Reset button state immediately after error
+                        resetButtonState();
+
                         let msg = xhr.responseJSON?.message || 'Bulk Goods Out failed.';
                         Swal.fire('Error', msg, 'error');
                     }
                 });
+            });
+
+            // Reset button state when modal is closed
+            $('#bulkGoodsOutModal').on('hidden.bs.modal', function() {
+                const submitBtn = $('#submit-bulk-goods-out');
+                const spinner = submitBtn.find('.spinner-border');
+                const btnText = submitBtn.contents().filter(function() {
+                    return this.nodeType === 3;
+                }).last();
+
+                submitBtn.prop('disabled', false);
+                spinner.addClass('d-none');
+                btnText[0].textContent = ' Submit All';
             });
 
             // Initialize flatpickr for date input
@@ -581,6 +765,9 @@
                     updateStatusTitle($(this));
                 });
             });
+
+            // Initial update of bulk goods out button
+            updateBulkGoodsOutButton();
         });
 
         // Material detail link click handler

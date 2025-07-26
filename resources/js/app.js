@@ -148,6 +148,15 @@ function showToast(materialRequest, action, playSound = true) {
 
 // --- DataTable & Select Color ---
 function updateSelectColor(selectElement) {
+    // Hapus semua kelas status dari elemen <select>
+    selectElement.classList.remove(
+        "status-pending",
+        "status-approved",
+        "status-delivered",
+        "status-canceled"
+    );
+
+    // Tambahkan kelas berdasarkan nilai yang dipilih
     const selectedValue = selectElement.value;
     if (selectedValue === "pending") {
         selectElement.classList.add("status-pending");
@@ -159,6 +168,7 @@ function updateSelectColor(selectElement) {
         selectElement.classList.add("status-canceled");
     }
 }
+
 function updateDataTable(materialRequest) {
     const table = $("#datatable").DataTable();
     const rowSelector = `#row-${materialRequest.id}`;
@@ -173,7 +183,7 @@ function updateDataTable(materialRequest) {
                 'meta[name="csrf-token"]'
             ).attr("content")}">
             <input type="hidden" name="_method" value="PUT">
-            <select name="status" class="form-select form-select-sm status-select"
+            <select name="status" class="form-select form-select-sm status-select status-select-rounded"
                 onchange="this.form.submit()" ${
                     materialRequest.status === "delivered" ? "disabled" : ""
                 }>
@@ -215,7 +225,6 @@ function updateDataTable(materialRequest) {
     }
 
     // Logika untuk tombol Goods Out, Edit, Delete
-    // Ambil data user yang sedang login (pastikan variabel ini sudah di-set di window, misal: window.authUser)
     const authUser = window.authUser || {};
     const isLogisticAdmin = !!authUser.is_logistic_admin;
     const isSuperAdmin = !!authUser.is_super_admin;
@@ -312,20 +321,26 @@ function updateDataTable(materialRequest) {
         checkboxColumn, // Checkbox
         materialRequest.id, // Kolom ID tersembunyi
         materialRequest.project?.name || "N/A", // Project
-        `<span class="material-detail-link" data-id="${
+        `<span class="material-detail-link gradient-link" data-id="${
             materialRequest.inventory?.id || ""
         }" style="cursor:pointer;">
         ${materialRequest.inventory?.name || "(No Material)"}
-        </span>`, // Material Name
+        </span>`, // Material Name with gradient link
         `${formatNumberDynamic(materialRequest.qty)} ${
             materialRequest.inventory?.unit || ""
         }`, // Requested Qty
-        `${formatNumberDynamic(
-            materialRequest.qty - (materialRequest.processed_qty ?? 0)
-        )} ${materialRequest.inventory?.unit || ""}`, // Remaining Qty
-        `${formatNumberDynamic(materialRequest.processed_qty ?? 0)} ${
-            materialRequest.inventory?.unit || ""
-        }`, // Processed Qty
+        `<span data-bs-toggle="tooltip" data-bs-placement="right" title="${
+            materialRequest.inventory?.unit || "(No Unit)"
+        }">
+            ${formatNumberDynamic(
+                materialRequest.qty - (materialRequest.processed_qty ?? 0)
+            )}
+        </span>`, // Remaining Qty with tooltip
+        `<span data-bs-toggle="tooltip" data-bs-placement="right" title="${
+            materialRequest.inventory?.unit || "(No Unit)"
+        }">
+            ${formatNumberDynamic(materialRequest.processed_qty ?? 0)}
+        </span>`, // Processed Qty with tooltip
         `<span data-bs-toggle="tooltip" data-bs-placement="right" title="${ucfirst(
             departmentName
         )}" class="requested-by-tooltip">${ucfirst(
@@ -350,8 +365,6 @@ function updateDataTable(materialRequest) {
     const selectElement = row.node().querySelector(".status-select");
     if (selectElement) {
         updateSelectColor(selectElement);
-    } else {
-        console.error("Select element not found in row:", row.node()); // Debug log
     }
 
     // Inisialisasi ulang tooltip Bootstrap pada elemen baru
@@ -361,6 +374,13 @@ function updateDataTable(materialRequest) {
     tooltipTriggerList.forEach(function (tooltipTriggerEl) {
         new bootstrap.Tooltip(tooltipTriggerEl);
     });
+
+    // Update bulk goods out button count after DataTable update
+    setTimeout(() => {
+        if (window.updateBulkGoodsOutButton) {
+            window.updateBulkGoodsOutButton();
+        }
+    }, 100);
 }
 
 // Fungsi untuk deteksi apakah sedang di halaman form create, bulk create, atau edit material request

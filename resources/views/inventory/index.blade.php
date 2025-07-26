@@ -5,26 +5,27 @@
         <!-- Card Wrapper -->
         <div class="card shadow rounded">
             <div class="card-body">
-                <!-- Header -->
-                <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-2 mb-3">
+                <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-2 mb-3">
                     <!-- Header -->
-                    <h2 class="mb-2 mb-lg-0 flex-shrink-0" style="font-size:1.3rem;"><i class="fas fa-warehouse gradient-icon"></i>
-                        Inventory List</h2>
+                    <div class="d-flex align-items-center mb-2 mb-sm-0">
+                        <i class="fas fa-warehouse gradient-icon me-2" style="font-size: 1.5rem;"></i>
+                        <h2 class="mb-0 flex-shrink-0" style="font-size:1.3rem;">Inventory List</h2>
+                    </div>
 
                     <!-- Spacer untuk mendorong tombol ke kanan -->
-                    <div class="ms-lg-auto d-flex flex-wrap gap-2">
+                    <div class="ms-sm-auto d-flex flex-wrap gap-2">
                         @if (in_array(auth()->user()->role, ['super_admin', 'admin_logistic']))
                             <a href="{{ route('inventory.create') }}" class="btn btn-primary btn-sm flex-shrink-0">
-                                <i class="bi bi-plus-circle"></i> Create Inventory
+                                <i class="bi bi-plus-circle me-1"></i> Create Inventory
                             </a>
                             <button type="button" class="btn btn-success btn-sm flex-shrink-0" data-bs-toggle="modal"
                                 data-bs-target="#importModal">
-                                <i class="bi bi-filetype-xls"></i> Import
+                                <i class="bi bi-filetype-xls me-1"></i> Import
                             </button>
                         @endif
                         <a href="{{ route('inventory.export', request()->query()) }}"
                             class="btn btn-outline-success btn-sm flex-shrink-0">
-                            <i class="bi bi-file-earmark-excel"></i> Export
+                            <i class="bi bi-file-earmark-excel me-1"></i> Export
                         </a>
                     </div>
                 </div>

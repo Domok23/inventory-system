@@ -4,16 +4,17 @@
     <div class="container-fluid py-4">
         <div class="card shadow-sm border-0 mb-4">
             <div class="card-body">
-                <!-- Header -->
                 <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-2 mb-2">
                     <!-- Header -->
-                    <h2 class="mb-2 mb-lg-0 flex-shrink-0" style="font-size:1.3rem;"><i class="fas fa-clock gradient-icon"></i> Timing Data
-                    </h2>
+                    <div class="d-flex align-items-center mb-2 mb-lg-0">
+                        <i class="fas fa-clock gradient-icon me-2" style="font-size: 1.5rem;"></i>
+                        <h2 class="mb-0 flex-shrink-0" style="font-size:1.3rem;">Timing Data</h2>
+                    </div>
 
                     <!-- Spacer untuk mendorong tombol ke kanan -->
                     <div class="ms-lg-auto d-flex flex-wrap gap-2">
-                        <a href="{{ route('timings.create') }}" class="btn btn-primary btn-sm">
-                            <i class="bi bi-plus-circle"></i> Input Timing
+                        <a href="{{ route('timings.create') }}" class="btn btn-primary btn-sm flex-shrink-0">
+                            <i class="bi bi-plus-circle me-1"></i> Input Timing
                         </a>
                     </div>
                 </div>
@@ -69,7 +70,7 @@
                     </div>
                 </form>
                 <div id="timing-error-alert" class="alert alert-danger d-none" role="alert"></div>
-                <table class="table table-bordered table-hover align-middle rounded shadow-sm" id="timing-table">
+                <table class="table table-striped table-hover table-bordered align-middle rounded shadow-sm" id="timing-table">
                     <thead class="table-light">
                         <tr>
                             <th>Date</th>

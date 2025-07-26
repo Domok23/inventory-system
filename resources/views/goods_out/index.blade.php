@@ -4,27 +4,29 @@
     <div class="container-fluid mt-4">
         <div class="card shadow rounded">
             <div class="card-body">
-                <!-- Header -->
-                <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-2 mb-3">
+                <div class="d-flex flex-column flex-md-row align-items-md-center gap-2 mb-3">
                     <!-- Header -->
-                    <h2 class="mb-lg-0 flex-shrink-0" style="font-size:1.3rem;"><i class="fas fa-shipping-fast gradient-icon"></i>
-                        Goods
-                        Out Records</h2>
+                    <div class="d-flex align-items-center mb-2 mb-md-0">
+                        <i class="fas fa-shipping-fast gradient-icon me-2" style="font-size: 1.5rem;"></i>
+                        <h2 class="mb-0 flex-shrink-0" style="font-size:1.3rem;">Goods Out Records</h2>
+                    </div>
 
                     <!-- Spacer untuk mendorong tombol ke kanan -->
-                    <div class="ms-lg-auto d-flex flex-wrap gap-2">
+                    <div class="ms-md-auto d-flex flex-wrap gap-2">
                         @if (auth()->user()->isLogisticAdmin())
                             <a href="{{ route('goods_out.create_independent') }}"
                                 class="btn btn-primary btn-sm flex-shrink-0">
-                                <i class="bi bi-plus-circle"></i> Create Goods Out
+                                <i class="bi bi-plus-circle me-1"></i> Create Goods Out
                             </a>
                         @endif
-                        <button id="bulk-goods-in-btn" class="btn btn-info btn-sm flex-shrink-0">
-                            <i class="bi bi-box-arrow-in-left"></i> Bulk Goods In
+                        <button id="bulk-goods-in-btn" class="btn btn-info btn-sm flex-shrink-0" disabled>
+                            <i class="bi bi-box-arrow-in-left me-1"></i>
+                            <span id="bulk-goods-in-text">Bulk Goods In</span>
+                            <span id="bulk-goods-in-count" class="badge bg-light text-dark ms-1 d-none">0</span>
                         </button>
                         <a href="{{ route('goods_out.export', request()->query()) }}"
                             class="btn btn-outline-success btn-sm flex-shrink-0">
-                            <i class="bi bi-file-earmark-excel"></i> Export
+                            <i class="bi bi-file-earmark-excel me-1"></i> Export
                         </a>
                     </div>
                 </div>
@@ -109,7 +111,7 @@
                 </div>
 
                 <!-- Tabel Data -->
-                <table class="table table-bordered table-hover" id="datatable">
+                <table class="table table-striped table-hover table-bordered" id="datatable">
                     <thead class="align-middle text-nowrap">
                         <tr>
                             <th></th>
@@ -244,7 +246,11 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" id="submit-bulk-goods-in" class="btn btn-primary">Submit</button>
+                    <button type="button" id="submit-bulk-goods-in" class="btn btn-primary">
+                        <span class="spinner-border spinner-border-sm me-1 d-none" role="status"
+                            aria-hidden="true"></span>
+                        Submit
+                    </button>
                 </div>
             </div>
         </div>
@@ -273,6 +279,20 @@
         .requested-by-tooltip {
             cursor: pointer;
         }
+
+        /* Bulk goods in button styling */
+        #bulk-goods-in-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        #bulk-goods-in-count {
+            border-radius: 50px;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.4rem;
+            min-width: 20px;
+            text-align: center;
+        }
     </style>
 @endpush
 @push('scripts')
@@ -286,6 +306,17 @@
                         targets: 0
                     }, // Kolom checkbox tidak dapat diurutkan
                 ],
+            });
+
+            $('#datatable').on('draw.dt', function() {
+                var tooltipTriggerList = [].slice.call(document.querySelectorAll(
+                    '[data-bs-toggle="tooltip"]'));
+                tooltipTriggerList.forEach(function(tooltipTriggerEl) {
+                    new bootstrap.Tooltip(tooltipTriggerEl);
+                });
+
+                // Update bulk goods in button setelah redraw
+                updateBulkGoodsInButton();
             });
 
             // Initialize Select2
@@ -308,6 +339,32 @@
                 };
                 if (!dateInput.value) dateInput.type = 'text';
             }
+
+            // Function to update bulk goods in button
+            function updateBulkGoodsInButton() {
+                const selectedCount = $('.select-row:checked').length;
+                const bulkBtn = $('#bulk-goods-in-btn');
+                const countBadge = $('#bulk-goods-in-count');
+
+                if (selectedCount > 0) {
+                    bulkBtn.prop('disabled', false);
+                    countBadge.removeClass('d-none').text(selectedCount);
+                } else {
+                    bulkBtn.prop('disabled', true);
+                    countBadge.addClass('d-none').text('0');
+                }
+            }
+
+            // Handle checkbox changes
+            $(document).on('change', '.select-row', function() {
+                updateBulkGoodsInButton();
+            });
+
+            // Handle select all checkbox (if exists)
+            $('#select-all').on('change', function() {
+                $('.select-row').prop('checked', $(this).prop('checked'));
+                updateBulkGoodsInButton();
+            });
 
             // SweetAlert for delete confirmation
             $(document).on('click', '.btn-delete', function(e) {
@@ -353,19 +410,26 @@
                         if (Array.isArray(response)) {
                             response.forEach(item => {
                                 $('#bulk-goods-in-table-body').append(`
-                        <tr>
-                            <td>${item.material_name}</td>
-                            <td>${item.goods_out_quantity}</td>
-                            <td>
-                                <input type="number" name="goods_in_quantities[${item.id}]" class="form-control"
-                                    max="${item.goods_out_quantity}" min="0" required>
-                            </td>
-                        </tr>
-                    `);
+                                    <tr>
+                                        <td>${item.material_name}</td>
+                                        <td>${item.goods_out_quantity} <span class="text-muted">${item.unit || ''}</span></td>
+                                        <td>
+                                            <input type="number" name="goods_in_quantities[${item.id}]" class="form-control form-control-sm"
+                                                max="${item.goods_out_quantity}" min="0.001" step="any" required>
+                                        </td>
+                                    </tr>
+                                `);
                             });
 
                             // Show the modal
                             $('#bulkGoodsInModal').modal('show');
+
+                            // Re-init tooltip
+                            var tooltipTriggerList = [].slice.call(document.querySelectorAll(
+                                '[data-bs-toggle="tooltip"]'));
+                            tooltipTriggerList.forEach(function(tooltipTriggerEl) {
+                                new bootstrap.Tooltip(tooltipTriggerEl);
+                            });
                         } else {
                             Swal.fire('Error', 'Unexpected response format.', 'error');
                         }
@@ -378,23 +442,43 @@
 
             // Submit Bulk Goods In
             $('#submit-bulk-goods-in').on('click', function() {
+                const submitBtn = $(this);
+                const spinner = submitBtn.find('.spinner-border');
+                const btnText = submitBtn.contents().filter(function() {
+                    return this.nodeType === 3; // Text nodes only
+                }).last();
+
                 let isValid = true;
+
+                // Function to reset button state
+                function resetButtonState() {
+                    submitBtn.prop('disabled', false);
+                    spinner.addClass('d-none');
+                    btnText[0].textContent = ' Submit';
+                }
 
                 // Validasi setiap input quantity
                 $('#bulk-goods-in-table-body input[type="number"]').each(function() {
+                    const max = parseFloat($(this).attr('max'));
                     const value = parseFloat($(this).val());
-                    if (isNaN(value) || value <= 0) {
+                    if (isNaN(value) || value < 0.001 || value > max) {
                         isValid = false;
-                        $(this).addClass('is-invalid'); // Tambahkan kelas untuk menandai error
+                        $(this).addClass('is-invalid');
                     } else {
-                        $(this).removeClass('is-invalid'); // Hapus kelas jika valid
+                        $(this).removeClass('is-invalid');
                     }
                 });
 
                 if (!isValid) {
-                    Swal.fire('Error', 'Quantity must be greater than 0.', 'error');
+                    Swal.fire('Error', 'Quantity must be between 0.001 and maximum goods out quantity.',
+                        'error');
                     return;
                 }
+
+                // Disable button and show spinner
+                submitBtn.prop('disabled', true);
+                spinner.removeClass('d-none');
+                btnText[0].textContent = ' Processing...';
 
                 // Jika valid, kirim data ke server
                 const formData = $('#bulk-goods-in-form').serialize();
@@ -404,13 +488,40 @@
                     method: 'POST',
                     data: formData,
                     success: function(response) {
-                        Swal.fire('Success', 'Bulk Goods In processed successfully.', 'success')
-                            .then(() => location.reload());
+                        // Reset button state immediately after response
+                        resetButtonState();
+
+                        if (response.success) {
+                            Swal.fire('Success', response.message ||
+                                    'Bulk Goods In processed successfully.', 'success')
+                                .then(() => location.reload());
+                        } else {
+                            Swal.fire('Error', response.message || 'Bulk Goods In failed.',
+                                'error');
+                        }
                     },
                     error: function(xhr) {
-                        Swal.fire('Error', 'An error occurred while processing.', 'error');
+                        // Reset button state immediately after error
+                        resetButtonState();
+
+                        let msg = xhr.responseJSON?.message ||
+                            'An error occurred while processing.';
+                        Swal.fire('Error', msg, 'error');
                     }
                 });
+            });
+
+            // Reset button state when modal is closed
+            $('#bulkGoodsInModal').on('hidden.bs.modal', function() {
+                const submitBtn = $('#submit-bulk-goods-in');
+                const spinner = submitBtn.find('.spinner-border');
+                const btnText = submitBtn.contents().filter(function() {
+                    return this.nodeType === 3;
+                }).last();
+
+                submitBtn.prop('disabled', false);
+                spinner.addClass('d-none');
+                btnText[0].textContent = ' Submit';
             });
 
             flatpickr("#filter-requested-at", {
@@ -429,6 +540,9 @@
                     filterBtn.childNodes[2].textContent = ' Filtering...';
                 });
             }
+
+            // Initial update of bulk goods in button
+            updateBulkGoodsInButton();
         });
 
         document.addEventListener("DOMContentLoaded", function() {

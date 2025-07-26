@@ -4,18 +4,20 @@
     <div class="container-fluid mt-4">
         <div class="card shadow rounded">
             <div class="card-body">
-                <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-2 mb-3">
+                <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-2 mb-3">
                     <!-- Header -->
-                    <h2 class="mb-2 mb-lg-0 flex-shrink-0" style="font-size:1.3rem;"><i class="fas fa-dolly gradient-icon"></i>
-                        Goods In Records</h2>
+                    <div class="d-flex align-items-center mb-2 mb-sm-0">
+                        <i class="fas fa-dolly gradient-icon me-2" style="font-size: 1.5rem;"></i>
+                        <h2 class="mb-0 flex-shrink-0" style="font-size:1.3rem;">Goods In Records</h2>
+                    </div>
                     <!-- Spacer untuk mendorong tombol ke kanan -->
-                    <div class="ms-lg-auto d-flex flex-wrap gap-2">
+                    <div class="ms-sm-auto d-flex flex-wrap gap-2">
                         <a href="{{ route('goods_in.create_independent') }}" class="btn btn-primary btn-sm flex-shrink-0">
-                            <i class="bi bi-plus-circle"></i> Create Goods In
+                            <i class="bi bi-plus-circle me-1"></i> Create Goods In
                         </a>
                         <a href="{{ route('goods_in.export', request()->query()) }}"
                             class="btn btn-outline-success btn-sm flex-shrink-0">
-                            <i class="bi bi-file-earmark-excel"></i> Export
+                            <i class="bi bi-file-earmark-excel me-1"></i> Export
                         </a>
                     </div>
                 </div>
@@ -101,7 +103,7 @@
                 </div>
 
                 <!-- Table -->
-                <table class="table table-hover table-bordered" id="datatable">
+                <table class="table table-striped table-hover table-bordered" id="datatable">
                     <thead class="align-middle text-nowrap">
                         <tr>
                             <th></th>
@@ -151,7 +153,8 @@
                                     $deptName = $users[$goodsIn->returned_by]->department->name ?? '-';
                                 @endphp
                                 <td>
-                                    <span data-bs-toggle="tooltip" data-bs-placement="right" style="cursor: pointer;" title="{{ $deptName }}">
+                                    <span data-bs-toggle="tooltip" data-bs-placement="right" style="cursor: pointer;"
+                                        title="{{ $deptName }}">
                                         {{ ucfirst($goodsIn->returned_by) }}
                                     </span>
                                 </td>

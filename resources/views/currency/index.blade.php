@@ -5,13 +5,17 @@
         <div class="card shadow rounded">
             <div class="card-body">
                 <!-- Header -->
-                <div class="d-flex align-items-center mb-3 gap-2">
-                    <h2 class="mb-0 flex-shrink-0" style="font-size:1.3rem;"> <i class="fas fa-coins gradient-icon"></i> Currency
-                        List</h2>
-                    <button type="button" class="btn btn-outline-primary btn-sm flex-shrink-0 ms-2" data-bs-toggle="modal"
-                        data-bs-target="#currencyModal">
-                        <i class="bi bi-plus-circle"></i> Create Currency
-                    </button>
+                <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-3">
+                    <div class="d-flex align-items-center mb-2 mb-md-0">
+                        <i class="fas fa-coins gradient-icon me-2" style="font-size: 1.5rem;"></i>
+                        <h2 class="mb-0 flex-shrink-0" style="font-size:1.3rem;">Currency List</h2>
+                    </div>
+                    <div class="align-self-start align-self-md-center">
+                        <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal"
+                            data-bs-target="#currencyModal">
+                            <i class="bi bi-plus-circle me-1"></i> Create Currency
+                        </button>
+                    </div>
                 </div>
                 <p class="text-muted mb-3">All currencies listed here are converted to Indonesian Rupiah (IDR) for
                     consistency.</p>
