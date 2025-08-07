@@ -118,6 +118,8 @@ class TimingController extends Controller
         // Validasi custom
         $data = $validator->getData();
         $projectsWithParts = Project::has('parts')->pluck('id')->toArray();
+        $projectIds = array_column($request->timings, 'project_id');
+        $projects = Project::whereIn('id', $projectIds)->pluck('name', 'id');
 
         foreach ($data['timings'] as $idx => $timing) {
             // Employee harus aktif
@@ -134,7 +136,7 @@ class TimingController extends Controller
             // Parts wajib jika project punya parts
             if (in_array($timing['project_id'], $projectsWithParts)) {
                 if (empty($timing['parts'])) {
-                    $projectName = Project::find($timing['project_id'])->name ?? 'Unknown';
+                    $projectName = $projects[$timing['project_id']] ?? 'Unknown';
                     $validator->errors()->add("timings.$idx.parts", "Part is required for project: <b>$projectName</b>");
                 }
             }

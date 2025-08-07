@@ -177,7 +177,7 @@ class InventoryController extends Controller
             $categoryName = $row[1] ?? null; // Ambil category dari kolom kedua
             $category = null;
             if ($categoryName) {
-                $category = Category::whereRaw('LOWER(name) = ?', [strtolower($categoryName)])->first();
+                $category = Category::whereRaw('LOWER(name) = LOWER(?)', [$categoryName])->first();
                 if (!$category) {
                     // Tambahkan kategori baru jika tidak ditemukan
                     $category = Category::create(['name' => $categoryName]);

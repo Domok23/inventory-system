@@ -23,7 +23,7 @@ class MaterialRequestController extends Controller
 
     public function index(Request $request)
     {
-        $query = MaterialRequest::with('inventory', 'project', 'user.department');
+        $query = MaterialRequest::with(['inventory:id,name,quantity,unit', 'project:id,name,department_id', 'user:id,username,department_id', 'user.department:id,name']);
 
         // Apply filters
         if ($request->has('project') && $request->project !== null) {
