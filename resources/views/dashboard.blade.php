@@ -9,13 +9,13 @@
         <!-- Welcome Header with Clock -->
         <div class="row mb-4">
             <div class="col-12">
-                <div class="card border-0 shadow-lg bg-gradient-primary text-white position-relative overflow-hidden">
-                    <div class="card-body py-3">
+                <div class="card border-0 shadow-lg bg-gradient-brand text-white position-relative overflow-hidden">
+                    <div class="card-body py-4">
                         <div class="row align-items-center">
                             <div class="col-md-8">
-                                <div class="d-flex align-items-center mb-2">
+                                <div class="d-flex align-items-center">
                                     <div class="ms-2">
-                                        <h2 class="mb-1 fw-bold">Welcome, {{ ucwords($user->username) }}!</h2>
+                                        <h3 class="mb-1 fw-bold">Welcome, {{ ucwords($user->username) }}!</h3>
                                         <p class="mb-0 opacity-75">
                                             <i class="fas fa-shield-alt me-2"></i>
                                             {{ ucwords(str_replace('_', ' ', $user->role)) }}
@@ -25,9 +25,9 @@
                             </div>
                             <div class="col-md-4 text-md-end">
                                 <div class="dashboard-clock-container">
-                                    <div class="clock-display bg-white bg-opacity-15 rounded-3 p-2 d-inline-block">
-                                        <div id="realtime-clock" class="fs-4 fw-bold mb-1 text-dark">00:00</div>
-                                        <div id="realtime-date" class="small opacity-75 text-dark">Loading date...</div>
+                                    <div class="rounded-3 p-2 d-inline-block">
+                                        <div id="realtime-clock" class="fs-5 fw-bold text-light">00:00</div>
+                                        <div id="realtime-date" class="small opacity-75 text-light">Loading date...</div>
                                     </div>
                                 </div>
                             </div>
@@ -108,28 +108,68 @@
                 </div>
             </div>
 
-            <!-- Inventory Value -->
-            <div class="col-xl-3 col-md-6">
-                <div class="card border-0 shadow-sm h-100 card-hover">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center">
-                            <div class="flex-shrink-0">
-                                <div class="metric-icon bg-info bg-opacity-10 text-info rounded-3 p-3">
-                                    <i class="fas fa-dollar-sign fs-4"></i>
+            <!-- Inventory Value - Only for Super Admin, Admin Finance, and Admin Logistic -->
+            @if (in_array($user->role, ['super_admin', 'admin_finance', 'admin_logistic']))
+                <div class="col-xl-3 col-md-6">
+                    <div class="card border-0 shadow-sm h-100 card-hover">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <div class="metric-icon bg-info bg-opacity-10 text-info rounded-3 p-3">
+                                        <i class="fas fa-dollar-sign fs-4"></i>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="flex-grow-1 ms-3">
-                                <div class="metric-value fw-bold fs-3 text-dark">IDR
-                                    {{ number_format($totalInventoryValue, 0, ',', '.') }}</div>
-                                <div class="metric-label text-muted">Total Inventory Value</div>
-                                <div class="metric-trend small">
-                                    <span class="text-muted"><i class="fas fa-calculator"></i> Real-time Calculation</span>
+                                <div class="flex-grow-1 ms-3">
+                                    <div class="metric-value fw-bold fs-3 text-dark">IDR
+                                        {{ number_format($totalInventoryValue, 0, ',', '.') }}</div>
+                                    <div class="metric-label text-muted">Total Inventory Value</div>
+                                    <div class="metric-trend small">
+                                        <span class="text-muted"><i class="fas fa-calculator"></i> Real-time
+                                            Calculation</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            @else
+                <!-- Alternative Metrics for Other Roles -->
+                <div class="col-xl-3 col-md-6">
+                    <div class="card border-0 shadow-sm h-100 card-hover">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    @if ($user->role === 'admin_mascot')
+                                        <div class="metric-icon bg-purple text-purple rounded-3 p-3">
+                                            <i class="fas fa-theater-masks fs-4"></i>
+                                        </div>
+                                    @elseif($user->role === 'admin_costume')
+                                        <div class="metric-icon bg-pink text-pink rounded-3 p-3">
+                                            <i class="fas fa-tshirt fs-4"></i>
+                                        </div>
+                                    @elseif($user->role === 'admin_animatronic')
+                                        <div class="metric-icon bg-cyan text-cyan rounded-3 p-3">
+                                            <i class="fas fa-robot fs-4"></i>
+                                        </div>
+                                    @else
+                                        <div class="metric-icon bg-brand text-brand-icon rounded-3 p-3">
+                                            <i class="fas fa-calendar-check fs-4"></i>
+                                        </div>
+                                    @endif
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <div class="metric-value fw-bold fs-3 text-dark">{{ number_format($completedProjects) }}
+                                    </div>
+                                    <div class="metric-label text-muted">Completed Projects</div>
+                                    <div class="metric-trend small">
+                                        <span class="text-success"><i class="fas fa-check-circle"></i> Total Finished</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
         </div>
 
         <!-- Charts and Analytics Row -->
@@ -141,7 +181,7 @@
                         <div class="d-flex align-items-center justify-content-between">
                             <h5 class="card-title mb-0 fw-bold">Monthly Trends</h5>
                             <div class="dropdown">
-                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button"
+                                <button class="btn btn-sm btn-outline-brand dropdown-toggle" type="button"
                                     data-bs-toggle="dropdown">
                                     <i class="fas fa-filter me-1"></i> Filter
                                 </button>
@@ -190,8 +230,8 @@
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-header bg-transparent border-0 py-3">
                         <div class="d-flex align-items-center justify-content-between">
-                            <h5 class="card-title mb-0 fw-bold">Recent Activities</h5>
-                            <a href="#" class="btn btn-sm btn-outline-primary">View All</a>
+                            <h5 class="card-title mb-0 fw-bold">Recent Material Requests</h5>
+                            <a href="#" class="btn btn-sm btn-outline-brand">View All</a>
                         </div>
                     </div>
                     <div class="card-body p-0">
@@ -200,7 +240,7 @@
                                 <div class="list-group-item border-0 py-3">
                                     <div class="d-flex align-items-center">
                                         <div class="flex-shrink-0">
-                                            <div class="activity-icon bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center"
+                                            <div class="activity-icon bg-brand bg-opacity-10 text-brand rounded-circle d-flex align-items-center justify-content-center"
                                                 style="width: 40px; height: 40px;">
                                                 <i class="fas fa-shopping-cart"></i>
                                             </div>
@@ -230,7 +270,7 @@
                     <div class="card-header bg-transparent border-0 py-3">
                         <div class="d-flex align-items-center justify-content-between">
                             <h5 class="card-title mb-0 fw-bold">Upcoming Deadlines</h5>
-                            <a href="{{ route('projects.index') }}" class="btn btn-sm btn-outline-primary">View
+                            <a href="{{ route('projects.index') }}" class="btn btn-sm btn-outline-brand">View
                                 Projects</a>
                         </div>
                     </div>
@@ -289,7 +329,7 @@
                                 <div class="col-md-6 col-lg-4">
                                     <div class="dept-card bg-light rounded-3 p-3 text-center">
                                         <div class="dept-icon mb-2">
-                                            <i class="fas fa-building text-primary fs-3"></i>
+                                            <i class="fas fa-building text-brand-icon fs-3"></i>
                                         </div>
                                         <h6 class="fw-bold mb-1">{{ ucfirst($dept->name) }}</h6>
                                         <div class="small text-muted">
@@ -312,7 +352,7 @@
                     <div class="card-body">
                         <div class="d-grid gap-2">
                             @if (in_array($user->role, ['super_admin', 'admin_logistic']))
-                                <a href="{{ route('inventory.index') }}" class="btn btn-outline-primary">
+                                <a href="{{ route('inventory.index') }}" class="btn btn-outline-brand">
                                     <i class="fas fa-boxes me-2"></i> Manage Inventory
                                 </a>
                                 <a href="{{ route('goods_out.index') }}" class="btn btn-outline-success">
@@ -363,8 +403,7 @@
                         <div class="card-body">
                             <div class="row g-2">
                                 <div class="col-md-2 col-sm-4 col-6">
-                                    <button class="btn btn-outline-primary w-100 artisan-action"
-                                        data-action="storage-link">
+                                    <button class="btn btn-outline-brand w-100 artisan-action" data-action="storage-link">
                                         <i class="bi bi-link d-block mb-1"></i>
                                         <small>Storage Link</small>
                                     </button>
@@ -414,8 +453,80 @@
 @push('styles')
     <style>
         /* Professional ERP Dashboard Styles */
+        .bg-gradient-brand {
+            background: linear-gradient(45deg, #8F12FE, #4A25AA) !important;
+        }
+
         .bg-gradient-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        /* Brand Color Classes */
+        .text-brand-icon {
+            color: #8F12FE !important;
+        }
+
+        .text-brand {
+            color: #8F12FE !important;
+        }
+
+        .bg-brand {
+            background-color: rgba(144, 18, 254, 0.1) !important;
+        }
+
+        .border-brand {
+            border-color: #8F12FE !important;
+        }
+
+        /* Role-specific Colors */
+        .text-purple {
+            color: #8F12FE !important;
+        }
+
+        .bg-purple {
+            background-color: rgba(144, 18, 254, 0.1) !important;
+        }
+
+        .text-pink {
+            color: #c2185b !important;
+        }
+
+        .bg-pink {
+            background-color: rgba(233, 30, 98, 0.1) !important;
+        }
+
+        .text-cyan {
+            color: #138496 !important;
+        }
+
+        .bg-cyan {
+            background-color: rgba(23, 163, 184, 0.1) !important;
+        }
+
+        .btn-outline-brand {
+            color: #8F12FE;
+            border-color: #8F12FE;
+            background: transparent;
+        }
+
+        .btn-outline-brand:hover {
+            color: #fff;
+            background: linear-gradient(45deg, #8F12FE, #4A25AA);
+            border-color: #8F12FE;
+            box-shadow: 0 4px 15px rgba(143, 18, 254, 0.2);
+        }
+
+        .btn-brand {
+            color: #fff;
+            background: linear-gradient(45deg, #8F12FE, #4A25AA);
+            border-color: #8F12FE;
+        }
+
+        .btn-brand:hover {
+            color: #fff;
+            background: linear-gradient(45deg, #7A0FE8, #3D1F8F);
+            border-color: #7A0FE8;
+            box-shadow: 0 4px 15px rgba(143, 18, 254, 0.3);
         }
 
         .card-hover {
@@ -450,13 +561,8 @@
         }
 
         .dept-card:hover {
-            background-color: #e3f2fd !important;
+            background-color: #eae3fd !important;
             transform: translateY(-2px);
-        }
-
-        .clock-display {
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .list-group-item {
@@ -552,8 +658,8 @@
                     datasets: [{
                         label: 'Projects',
                         data: monthlyData.map(item => item.projects),
-                        borderColor: '#667eea',
-                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        borderColor: '#8F12FE',
+                        backgroundColor: 'rgba(143, 18, 254, 0.1)',
                         tension: 0.4,
                         fill: true
                     }, {
@@ -621,10 +727,11 @@
                     labels: ['Pending', 'Approved', 'Delivered'],
                     datasets: [{
                         data: [{{ $pendingRequests }}, {{ $approvedRequests }},
-                            {{ $deliveredRequests }}],
+                            {{ $deliveredRequests }}
+                        ],
                         backgroundColor: [
                             '#ffc107',
-                            '#007bff',
+                            '#0d6efd',
                             '#28a745'
                         ],
                         borderWidth: 2,
