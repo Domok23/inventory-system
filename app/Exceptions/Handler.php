@@ -75,52 +75,52 @@ class Handler extends ExceptionHandler
     }
 
     /**
-     * Get user-friendly error messages in Indonesian.
+     * Get user-friendly error messages in English.
      */
     private function getErrorMessage($statusCode)
     {
         $messages = [
             // 3xx Redirect Errors
-            300 => 'Terdapat beberapa pilihan untuk resource yang Anda minta. Silakan pilih salah satu.',
-            301 => 'Halaman telah dipindahkan secara permanen ke lokasi baru.',
-            302 => 'Halaman sementara dipindahkan ke lokasi lain.',
-            303 => 'Respons untuk permintaan Anda dapat ditemukan di lokasi lain.',
-            304 => 'Konten belum dimodifikasi sejak permintaan terakhir Anda.',
-            305 => 'Akses ke resource ini harus melalui proxy yang ditentukan.',
-            306 => 'Status code ini sudah tidak digunakan lagi.',
-            307 => 'Halaman sementara dipindahkan dengan mempertahankan metode request.',
-            308 => 'Halaman telah dipindahkan secara permanen dengan mempertahankan metode request.',
-            310 => 'Resource memiliki beberapa representasi yang tersedia. Silakan pilih format yang diinginkan.',
+            300 => 'There are multiple options for the resource you requested. Please choose one.',
+            301 => 'This page has been permanently moved to a new location.',
+            302 => 'This page has been temporarily moved to another location.',
+            303 => 'The response to your request can be found at another location.',
+            304 => 'Content has not been modified since your last request.',
+            305 => 'Access to this resource must be through the specified proxy.',
+            306 => 'This status code is no longer used.',
+            307 => 'This page has been temporarily moved, keeping the request method.',
+            308 => 'This page has been permanently moved, keeping the request method.',
+            310 => 'The resource has several available representations. Please choose your preferred format.',
 
             // 4xx Client Errors
-            400 => 'Permintaan yang Anda kirim tidak valid. Silakan periksa data yang Anda masukkan.',
-            401 => 'Anda perlu masuk terlebih dahulu untuk mengakses halaman ini.',
-            403 => 'Maaf, Anda tidak memiliki izin untuk mengakses halaman ini.',
-            404 => 'Halaman yang Anda cari tidak ditemukan. Silakan periksa kembali URL atau kembali ke beranda.',
-            405 => 'Metode HTTP yang digunakan tidak diizinkan untuk halaman ini.',
-            406 => 'Server tidak dapat menghasilkan respons yang dapat diterima oleh browser Anda.',
-            408 => 'Permintaan Anda membutuhkan waktu terlalu lama. Silakan coba lagi.',
-            409 => 'Terjadi konflik dengan kondisi saat ini. Silakan refresh halaman dan coba lagi.',
-            410 => 'Halaman yang Anda cari sudah tidak tersedia lagi.',
-            411 => 'Permintaan perlu menyertakan panjang konten yang valid.',
-            413 => 'Data yang Anda kirim terlalu besar. Silakan kurangi ukuran file atau data.',
-            414 => 'URL yang Anda masukkan terlalu panjang.',
-            415 => 'Format file atau media yang Anda kirim tidak didukung.',
-            422 => 'Data yang Anda kirim tidak dapat diproses. Silakan periksa kembali.',
-            429 => 'Terlalu banyak permintaan. Silakan tunggu sebentar sebelum mencoba lagi.',
+            400 => 'Your request is invalid. Please check your input data.',
+            401 => 'You need to log in to access this page.',
+            403 => 'Sorry, you do not have permission to access this page.',
+            404 => 'The page you are looking for was not found. Please check the URL or return to the homepage.',
+            405 => 'The HTTP method used is not allowed for this page.',
+            406 => 'The server cannot generate a response acceptable to your browser.',
+            408 => 'Your request took too long. Please try again.',
+            409 => 'There is a conflict with the current state. Please refresh and try again.',
+            410 => 'The page you are looking for is no longer available.',
+            411 => 'Your request must include a valid content length.',
+            413 => 'The data you sent is too large. Please reduce the file or data size.',
+            414 => 'The URL you entered is too long.',
+            415 => 'The file or media format you sent is not supported.',
+            422 => 'The data you sent could not be processed. Please check again.',
+            429 => 'Too many requests. Please wait a moment before trying again.',
 
             // 5xx Server Errors
-            500 => 'Terjadi kesalahan pada server. Tim teknis kami sedang menangani masalah ini.',
-            501 => 'Fitur yang Anda minta belum tersedia. Silakan hubungi administrator.',
-            502 => 'Server mengalami masalah komunikasi. Silakan coba lagi dalam beberapa saat.',
-            503 => 'Layanan sedang dalam pemeliharaan. Silakan coba lagi nanti.',
-            504 => 'Server membutuhkan waktu terlalu lama untuk merespons. Silakan coba lagi.',
-            505 => 'Versi HTTP yang digunakan tidak didukung oleh server.',
-            507 => 'Server kehabisan ruang penyimpanan. Silakan hubungi administrator.',
-            508 => 'Server mendeteksi loop tak terbatas dalam memproses permintaan.',
-            511 => 'Diperlukan autentikasi jaringan untuk mengakses layanan ini.',
+            500 => 'A server error occurred. Our technical team is working to resolve this issue.',
+            501 => 'The feature you requested is not available yet. Please contact the administrator.',
+            502 => 'The server encountered a communication problem. Please try again later.',
+            503 => 'The service is under maintenance. Please try again later.',
+            504 => 'The server took too long to respond. Please try again.',
+            505 => 'The HTTP version used is not supported by the server.',
+            507 => 'The server is out of storage space. Please contact the administrator.',
+            508 => 'The server detected an infinite loop while processing your request.',
+            511 => 'Network authentication is required to access this service.',
         ];
 
-        return $messages[$statusCode] ?? 'Terjadi kesalahan yang tidak diketahui.';
+        return $messages[$statusCode] ?? 'An unknown error has occurred.';
     }
 }
