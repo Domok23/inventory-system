@@ -1,5 +1,170 @@
 @extends('layouts.app')
 
+@push('styles')
+    <style>
+        .gradient-icon {
+            background: linear-gradient(135deg, #8F12FE 0%, #4A25AA 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+
+        .table-responsive {
+            overflow: hidden;
+        }
+
+        .pagination {
+            --bs-pagination-padding-x: 0.75rem;
+            --bs-pagination-padding-y: 0.375rem;
+            --bs-pagination-color: #6c757d;
+            --bs-pagination-bg: #fff;
+            --bs-pagination-border-width: 1px;
+            --bs-pagination-border-color: #dee2e6;
+            --bs-pagination-border-radius: 0.375rem;
+            --bs-pagination-hover-color: #495057;
+            --bs-pagination-hover-bg: #e9ecef;
+            --bs-pagination-hover-border-color: #dee2e6;
+            --bs-pagination-focus-color: #495057;
+            --bs-pagination-focus-bg: #e9ecef;
+            --bs-pagination-focus-box-shadow: 0 0 0 0.25rem rgba(143, 18, 254, 0.25);
+            --bs-pagination-active-color: #fff;
+            --bs-pagination-active-bg: #8F12FE;
+            --bs-pagination-active-border-color: #4A25AA;
+            --bs-pagination-disabled-color: #6c757d;
+            --bs-pagination-disabled-bg: #fff;
+            --bs-pagination-disabled-border-color: #dee2e6;
+        }
+
+        .page-link {
+            transition: all 0.15s ease-in-out;
+        }
+
+        .page-link:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .page-item.active .page-link {
+            background: linear-gradient(135deg, #8F12FE 0%, #4A25AA 100%);
+            border-color: #8F12FE;
+            box-shadow: 0 2px 4px rgba(143, 18, 254, 0.3);
+        }
+
+        /* Custom Badge Colors */
+        .bg-purple {
+            background-color: #6f42c1 !important;
+            color: white !important;
+        }
+
+        .bg-indigo {
+            background-color: #6610f2 !important;
+            color: white !important;
+        }
+
+        .bg-pink {
+            background-color: #d63384 !important;
+            color: white !important;
+        }
+
+        .bg-orange {
+            background-color: #fd7e14 !important;
+            color: white !important;
+        }
+
+        .bg-teal {
+            background-color: #20c997 !important;
+            color: white !important;
+        }
+
+        .bg-cyan {
+            background-color: #0dcaf0 !important;
+            color: white !important;
+        }
+
+        .bg-lime {
+            background-color: #84cc16 !important;
+            color: white !important;
+        }
+
+        .bg-amber {
+            background-color: #f59e0b !important;
+            color: white !important;
+        }
+
+        .bg-rose {
+            background-color: #f43f5e !important;
+            color: white !important;
+        }
+
+        .bg-emerald {
+            background-color: #10b981 !important;
+            color: white !important;
+        }
+
+        .bg-violet {
+            background-color: #8b5cf6 !important;
+            color: white !important;
+        }
+
+        .bg-sky {
+            background-color: #0ea5e9 !important;
+            color: white !important;
+        }
+
+        /* Badge hover effects */
+        .badge {
+            transition: all 0.2s ease-in-out;
+        }
+
+        .badge:hover {
+            transform: scale(1.05);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .vr-divider {
+            width: 1px;
+            height: 24px;
+            background: #dee2e6;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .datatables-footer-row {
+            border-top: 1px solid #eee;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+
+        .dataTables_paginate {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        @media (max-width: 767.98px) {
+            .datatables-footer-row {
+                flex-direction: column !important;
+                gap: 0.5rem;
+            }
+
+            .datatables-left {
+                flex-direction: column !important;
+                gap: 0.5rem;
+            }
+
+            .vr-divider {
+                display: none;
+            }
+
+            .dataTables_paginate {
+                justify-content: center !important;
+            }
+
+        }
+    </style>
+@endpush
+
 @section('content')
     <div class="container-fluid mt-4">
         <!-- Card Wrapper -->
@@ -52,136 +217,76 @@
 
 
                 <div class="mb-3">
-                    <form method="GET" action="{{ route('inventory.index') }}" class="row g-2">
+                    <form id="filter-form" class="row g-2">
                         <div class="col-lg-2">
-                            <select name="category" id="category" class="form-select select2">
+                            <select name="category_filter" id="category_filter" class="form-select select2">
                                 <option value="">All Categories</option>
                                 @foreach ($categories as $category)
-                                    <option value="{{ $category->id }}"
-                                        {{ request('category') == $category->id ? 'selected' : '' }}>
-                                        {{ $category->name }}
-                                    </option>
+                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
                                 @endforeach
                             </select>
                         </div>
                         @if (in_array(auth()->user()->role, ['super_admin', 'admin_logistic', 'admin_finance']))
                             <div class="col-lg-2">
-                                <select name="currency" id="currency" class="form-select select2">
+                                <select name="currency_filter" id="currency_filter" class="form-select select2">
                                     <option value="">All Currencies</option>
                                     @foreach ($currencies as $currency)
-                                        <option value="{{ $currency->id }}"
-                                            {{ request('currency') == $currency->id ? 'selected' : '' }}>
-                                            {{ $currency->name }}
-                                        </option>
+                                        <option value="{{ $currency->id }}">{{ $currency->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
                         @endif
                         <div class="col-lg-2">
-                            <select name="supplier" id="supplier" class="form-select select2">
+                            <select name="supplier_filter" id="supplier_filter" class="form-select select2">
                                 <option value="">All Suppliers</option>
                                 @foreach ($suppliers as $supplier)
-                                    <option value="{{ $supplier->id }}"
-                                        {{ request('supplier') == $supplier->id ? 'selected' : '' }}>
-                                        {{ $supplier->name }}
-                                    </option>
+                                    <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
                                 @endforeach
                             </select>
                         </div>
                         <div class="col-lg-2">
-                            <select name="location" id="location" class="form-select select2">
+                            <select name="location_filter" id="location_filter" class="form-select select2">
                                 <option value="">All Locations</option>
                                 @foreach ($locations as $location)
-                                    <option value="{{ $location->id }}"
-                                        {{ request('location') == $location->id ? 'selected' : '' }}>
-                                        {{ $location->name }}
-                                    </option>
+                                    <option value="{{ $location->id }}">{{ $location->name }}</option>
                                 @endforeach
                             </select>
                         </div>
+                        <div class="col-lg-2">
+                            <input type="text" id="custom-search" class="form-control" placeholder="Search inventory...">
+                        </div>
                         <div class="col-lg-2 d-flex align-items-end gap-2">
-                            <button type="submit" class="btn btn-primary" id="filter-btn">
-                                <span class="spinner-border spinner-border-sm me-1 d-none" role="status"
-                                    aria-hidden="true"></span>
-                                Filter
-                            </button>
-                            <a href="{{ route('inventory.index') }}" class="btn btn-secondary">Reset</a>
+                            <button type="button" id="reset-filter" class="btn btn-secondary">Reset</button>
                         </div>
                     </form>
                 </div>
 
                 <!-- Table -->
-                <table class="table table-striped table-hover table-bordered" id="datatable">
-                    <thead class="align-middle">
-                        <tr>
-                            <th></th>
-                            <th>Name</th>
-                            <th>Category</th>
-                            <th>Quantity</th>
-                            @if (in_array(auth()->user()->role, ['super_admin', 'admin_logistic', 'admin_finance']))
-                                <th>Unit Price</th>
-                            @endif
-                            <th>Supplier</th>
-                            <th>Location</th>
-                            <th>Remark</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody class="align-middle">
-                        @foreach ($inventories as $inventory)
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover table-bordered" id="datatable">
+                        <thead class="table-dark align-middle text-nowrap">
                             <tr>
-                                <td class="text-center">{{ $loop->iteration }}</td>
-                                <td>{{ $inventory->name }}</td>
-                                <td>
-                                    {{ $inventory->category ? $inventory->category->name : '-' }}
-                                </td>
-                                <td>{{ rtrim(rtrim(number_format($inventory->quantity, 2, '.', ''), '0'), '.') }}
-                                    {{ $inventory->unit }}</td>
+                                <th width="50">#</th>
+                                <th>Name</th>
+                                <th>Category</th>
+                                <th>Quantity</th>
                                 @if (in_array(auth()->user()->role, ['super_admin', 'admin_logistic', 'admin_finance']))
-                                    <td>
-                                        {{ number_format($inventory->price ?? 0, 2, ',', '.') }}
-                                        {{ $inventory->currency ? $inventory->currency->name : '' }}
-                                    </td>
+                                    <th>Unit Price</th>
                                 @endif
-                                <td>{{ $inventory->supplier ? $inventory->supplier->name : '-' }}</td>
-                                <td>{{ $inventory->location ? $inventory->location->name : '-' }}</td>
-                                <td>{!! $inventory->remark ?? '-' !!}</td>
-                                <td>
-                                    <div class="d-flex flex-nowrap gap-1">
-                                        <a href="{{ route('inventory.detail', ['id' => $inventory->id]) }}"
-                                            class="btn btn-sm btn-success" data-bs-toggle="tooltip"
-                                            data-bs-placement="bottom" title="More Detail"><i
-                                                class="bi bi-info-circle"></i></a>
-                                        <button type="button" class="btn btn-sm btn-secondary btn-show-image"
-                                            title="View Image & QR Code" data-bs-toggle="modal" data-bs-target="#imageModal"
-                                            data-img="{{ $inventory->img ? asset('storage/' . $inventory->img) : '' }}"
-                                            data-qrcode="{{ $inventory->qr_code }}" data-name="{{ $inventory->name }}">
-                                            <i class="bi bi-file-earmark-image"></i>
-                                        </button>
-                                        @if (in_array(auth()->user()->role, ['super_admin', 'admin_logistic']))
-                                            <a href="{{ route('inventory.edit', $inventory->id) }}"
-                                                class="btn btn-warning btn-sm" data-bs-toggle="tooltip"
-                                                data-bs-placement="bottom" title="Edit"><i
-                                                    class="bi bi-pencil-square"></i></a>
-                                            <form action="{{ route('inventory.destroy', $inventory->id) }}"
-                                                method="POST" class="delete-form">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="button" class="btn btn-sm btn-danger btn-delete"
-                                                    data-bs-toggle="tooltip" data-bs-placement="bottom" title="Delete"><i
-                                                        class="bi bi-trash3"></i></button>
-                                            </form>
-                                        @endif
-                                    </div>
-                                </td>
+                                <th>Supplier</th>
+                                <th>Location</th>
+                                <th>Remark</th>
+                                <th width="150">Actions</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody class="align-middle">
+                            {{-- Data akan diisi oleh DataTables AJAX --}}
+                        </tbody>
+                    </table>
+                </div>
 
                 <!-- Modal Show Image -->
-                <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel"
-                    aria-hidden="true">
+                <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
                             <div class="modal-header">
@@ -251,46 +356,163 @@
 @push('scripts')
     <script>
         $(document).ready(function() {
-            // Initialize DataTable
-            $('#datatable').DataTable({
-                responsive: true,
-                fixedHeader: true,
-                select: true,
-                stateSave: true,
-                createdRow: function(row, data, dataIndex) {
-                    // Ambil nilai quantity dari kolom ke-4 (index 3)
-                    const quantity = parseFloat(data[3]); // Pastikan kolom quantity berada di index 3
-                    if (quantity === 0) {
-                        // Tambahkan gaya untuk quantity = 0
-                        $('td', row).eq(3).css({
-                            'color': '#ef4444', // Warna merah (Bootstrap text-danger)
-                            // 'background-color': '#f8d7da',
-                            'font-weight': 'bold'
-                        });
-                    } else if (quantity < 3) {
-                        // Tambahkan gaya untuk quantity < 3
-                        $('td', row).eq(3).css({
-                            'color': '#f97316',
-                            // 'background-color': '#fff3cd',
-                            'font-weight': 'bold'
-                        });
+            // Initialize DataTable dengan server-side processing
+            const table = $('#datatable').DataTable({
+                processing: true,
+                serverSide: true,
+                searching: false,
+                ajax: {
+                    url: "{{ route('inventory.index') }}",
+                    data: function(d) {
+                        // Add filter parameters
+                        d.category_filter = $('#category_filter').val();
+                        d.currency_filter = $('#currency_filter').val();
+                        d.supplier_filter = $('#supplier_filter').val();
+                        d.location_filter = $('#location_filter').val();
+                        d.custom_search = $('#custom-search').val();
                     }
+                },
+                columns: [{
+                        data: 'number',
+                        name: 'number',
+                        orderable: false,
+                        searchable: false,
+                        width: '2%',
+                        className: 'text-center'
+                    },
+                    {
+                        data: 'name',
+                        name: 'name',
+                        width: '26%'
+                    },
+                    {
+                        data: 'category',
+                        name: 'category.name',
+                        width: '8%'
+                    },
+                    {
+                        data: 'quantity',
+                        name: 'quantity',
+                        width: '10%',
+                    },
+                    @if (in_array(auth()->user()->role, ['super_admin', 'admin_logistic', 'admin_finance']))
+                        {
+                            data: 'price',
+                            name: 'price',
+                            width: '10%',
+                            orderable: true
+                        },
+                    @endif {
+                        data: 'supplier',
+                        name: 'supplier.name',
+                        width: '15%'
+                    },
+                    {
+                        data: 'location',
+                        name: 'location.name',
+                        width: '12%'
+                    },
+                    {
+                        data: 'remark',
+                        name: 'remark',
+                        width: '15%',
+                        orderable: false
+                    },
+                    {
+                        data: 'actions',
+                        name: 'actions',
+                        orderable: false,
+                        searchable: false,
+                        width: '12%',
+                        className: 'text-center'
+                    }
+                ],
+                order: [
+                    [1, 'asc']
+                ], // Default sort by name
+                pageLength: 15,
+                lengthMenu: [
+                    [10, 15, 25, 50, 100],
+                    [10, 15, 25, 50, 100]
+                ],
+                language: {
+                    processing: '<div class="d-flex justify-content-center align-items-center">',
+                    emptyTable: '<div class="text-muted py-2"></i>No inventory data available</div>',
+                    zeroRecords: '<div class="text-muted py-2">No matching records found</div>',
+                    infoEmpty: "Showing 0 to 0 of 0 entries",
+                    infoFiltered: "(filtered from _MAX_ total entries)",
+                    lengthMenu: "Show _MENU_ entries per page",
+                    info: "Showing _START_ to _END_ of _TOTAL_ entries",
+                },
+                dom: 't<' +
+                    '"row datatables-footer-row align-items-center"' +
+                    '<"col-md-7 d-flex align-items-center gap-2 datatables-left"l<"vr-divider mx-2">i>' +
+                    '<"col-md-5 dataTables_paginate justify-content-end"p>' +
+                    '>',
+                responsive: true,
+                stateSave: false, // Disable state saving karena kita pakai filter sendiri
+                drawCallback: function() {
+                    // Reinitialize tooltips after table redraw
+                    $('[data-bs-toggle="tooltip"]').tooltip();
                 }
             });
 
-            // --- Spinner Filter Button ---
-            const filterBtn = document.getElementById('filter-btn');
-            const filterSpinner = filterBtn ? filterBtn.querySelector('.spinner-border') : null;
-            const filterForm = filterBtn ? filterBtn.closest('form') : null;
-            const filterBtnHtml = filterBtn ? filterBtn.innerHTML : '';
+            // Filter functionality
+            $('#category_filter, #currency_filter, #supplier_filter, #location_filter').on('change', function() {
+                table.ajax.reload();
+            });
 
-            if (filterForm && filterBtn && filterSpinner) {
-                filterForm.addEventListener('submit', function() {
-                    filterBtn.disabled = true;
-                    filterSpinner.classList.remove('d-none');
-                    filterBtn.childNodes[2].textContent = ' Filtering...';
+            $('#custom-search').on('input', function() {
+                $('#datatable').DataTable().ajax.reload();
+            });
+
+            // Reset filter
+            $('#reset-filter').on('click', function() {
+                $('#category_filter, #currency_filter, #supplier_filter, #location_filter').val('').trigger(
+                    'change');
+                $('#custom-search').val('');
+                table.ajax.reload();
+            });
+
+            // Delete functionality dengan AJAX
+            $(document).on('click', '.btn-delete', function() {
+                const id = $(this).data('id');
+                const name = $(this).data('name');
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: `You want to delete "${name}"?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, delete it!',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: `/inventory/${id}`,
+                            type: 'DELETE',
+                            data: {
+                                _token: $('meta[name="csrf-token"]').attr('content')
+                            },
+                            success: function(response) {
+                                Swal.fire('Deleted!', `${name} has been deleted.`,
+                                    'success');
+                                table.ajax.reload(null,
+                                    false); // Reload tanpa reset pagination
+                            },
+                            error: function(xhr) {
+                                let errorMsg = 'Something went wrong.';
+                                if (xhr.responseJSON && xhr.responseJSON.message) {
+                                    errorMsg = xhr.responseJSON.message;
+                                }
+                                Swal.fire('Error!', errorMsg, 'error');
+                            }
+                        });
+                    }
                 });
-            }
+            });
 
             // --- Spinner Import Button in Modal ---
             const importBtn = document.getElementById('import-btn');
@@ -323,41 +545,16 @@
                 allowClear: true
             });
 
-            // SweetAlert for delete confirmation
-            $(document).on('click', '.btn-delete', function(e) {
-                e.preventDefault();
-                let form = $(this).closest('form');
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: "This action cannot be undone!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes, delete it!',
-                    reverseButtons: true
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        form.submit();
-                    }
-                });
-            });
-
-            // Gunakan event delegation agar tetap berfungsi di semua pagination
+            // Show Image Modal Handler
             $(document).on('click', '.btn-show-image', function() {
                 // Reset modal content
                 $('#img-container').html('');
                 $('#qr-code-container').html('');
-                $('#download-qr-code').hide(); // Sembunyikan tombol download
+                $('#download-qr-code').hide();
 
                 let img = $(this).data('img');
-                let qrcode = $(this).data('qrcode'); // Ambil QR Code dari atribut data
+                let qrcode = $(this).data('qrcode');
                 let name = $(this).data('name');
-
-                // Debugging untuk memeriksa nilai atribut
-                console.log('Image URL:', img);
-                console.log('QR Code:', qrcode);
-                console.log('Name:', name);
 
                 $('#imageModalLabel').html(
                     `<i class="bi bi-image" style="margin-right: 5px; color: cornflowerblue;"></i> ${name}`
@@ -389,26 +586,30 @@
         });
 
         document.addEventListener('DOMContentLoaded', function() {
-            Fancybox.bind("[data-fancybox='gallery']", {
-                Toolbar: {
-                    display: [{
-                            id: "counter",
-                            position: "center"
-                        }, // Menampilkan penghitung gambar
-                        "zoom", // Tombol zoom
-                        "download", // Tombol download
-                        "close" // Tombol close
-                    ],
-                },
-                Thumbs: false, // Nonaktifkan thumbnail jika tidak diperlukan
-                Image: {
-                    zoom: true, // Aktifkan fitur zoom
-                },
-                Hash: false, // Nonaktifkan fitur History API
-            });
+            // Initialize Fancybox if available
+            if (typeof Fancybox !== 'undefined') {
+                Fancybox.bind("[data-fancybox='gallery']", {
+                    Toolbar: {
+                        display: [{
+                                id: "counter",
+                                position: "center"
+                            },
+                            "zoom",
+                            "download",
+                            "close"
+                        ],
+                    },
+                    Thumbs: false,
+                    Image: {
+                        zoom: true,
+                    },
+                    Hash: false,
+                });
+            }
         });
 
         document.addEventListener("DOMContentLoaded", function() {
+            // Initialize Bootstrap Tooltips
             var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
             tooltipTriggerList.forEach(function(tooltipTriggerEl) {
                 new bootstrap.Tooltip(tooltipTriggerEl);

@@ -50,6 +50,10 @@ body.swal2-shown {
     color: transparent !important;
     font-weight: bold;
     transition: background 0.3s, color 0.3s;
+    -webkit-transition: background 0.3s, color 0.3s;
+    -moz-transition: background 0.3s, color 0.3s;
+    -ms-transition: background 0.3s, color 0.3s;
+    -o-transition: background 0.3s, color 0.3s;
 }
 
 /* (Opsional) Saat hover, tetap gunakan gradasi yang sama atau tambahkan efek lain */
@@ -65,6 +69,10 @@ body.swal2-shown {
     -webkit-text-fill-color: transparent;
     background-clip: text;
     transition: background 0.3s, color 0.3s;
+    -webkit-transition: background 0.3s, color 0.3s;
+    -moz-transition: background 0.3s, color 0.3s;
+    -ms-transition: background 0.3s, color 0.3s;
+    -o-transition: background 0.3s, color 0.3s;
 }
 
 /* Dropdown Styles */
@@ -213,7 +221,6 @@ body.swal2-shown {
 }
 
 td .btn {
-    margin-bottom: 0.25rem;
     text-align: center;
 }
 
@@ -289,8 +296,8 @@ td .btn {
 .status-pending {
     background-color: #ffc107 !important;
     /* Warna kuning */
-    color: #000 !important;
-    /* Warna teks hitam */
+    color: #fff !important;
+    /* Warna teks putih */
 }
 
 .status-approved {

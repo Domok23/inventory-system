@@ -28,7 +28,7 @@
                 @endif
                 <td>{{ $inventory->supplier ? $inventory->supplier->name : '-' }}</td>
                 <td>{{ $inventory->location ? $inventory->location->name : '-' }}</td>
-                <td>{{ $inventory->remark ?? '-' }}</td>
+                <td>{{ strip_tags($inventory->remark ?? '-') }}</td>
             </tr>
         @endforeach
     </tbody>

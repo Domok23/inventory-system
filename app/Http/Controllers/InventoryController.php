@@ -23,6 +23,37 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class InventoryController extends Controller
 {
+    /**
+     * Generate a friendly color for category badge based on category name
+     */
+    private function getCategoryBadgeColor($categoryName)
+    {
+        if (!$categoryName) {
+            return 'bg-secondary';
+        }
+
+        // Predefined friendly colors yang bagus untuk badge
+        $colors = [
+            'bg-primary', // Blue
+            'bg-success', // Green
+            'bg-info', // Light Blue
+            'bg-warning', // Yellow
+            'bg-danger', // Red
+            'bg-dark', // Dark
+            'bg-secondary', // Gray
+        ];
+
+        // Tambahan custom colors dengan CSS classes
+        $customColors = ['bg-purple', 'bg-indigo', 'bg-pink', 'bg-orange', 'bg-teal', 'bg-cyan', 'bg-lime', 'bg-amber', 'bg-rose', 'bg-emerald', 'bg-violet', 'bg-sky'];
+
+        $allColors = array_merge($colors, $customColors);
+
+        // Generate hash dari nama category untuk konsistensi
+        $hash = crc32(strtolower(trim($categoryName)));
+        $colorIndex = abs($hash) % count($allColors);
+
+        return $allColors[$colorIndex];
+    }
     public function __construct()
     {
         $this->middleware('auth');
@@ -46,37 +77,103 @@ class InventoryController extends Controller
 
     public function index(Request $request)
     {
-        // Tambahkan eager loading untuk relasi category dan currency
-        $query = Inventory::query()->with(['category', 'supplier', 'location', 'currency']);
-
-        // Filter berdasarkan Category
-        if ($request->has('category') && $request->category) {
-            $query->where('category_id', $request->category);
+        // Jika request AJAX, return data untuk DataTables
+        if ($request->ajax()) {
+            return $this->getDataTablesData($request);
         }
 
-        // Filter berdasarkan Currency
-        if ($request->has('currency') && $request->currency) {
-            $query->where('currency_id', $request->currency);
-        }
-
-        // Filter berdasarkan Supplier
-        if ($request->filled('supplier')) {
-            $query->where('supplier_id', $request->supplier);
-        }
-
-        // Filter berdasarkan Location
-        if ($request->filled('location')) {
-            $query->where('location_id', $request->location);
-        }
-
-        $inventories = $query->orderBy('created_at', 'desc')->get();
-
+        // Untuk non-AJAX request, return view dengan data master
         $categories = Category::orderBy('name')->get();
         $currencies = Currency::orderBy('name')->get();
         $suppliers = Supplier::orderBy('name')->get();
         $locations = Location::orderBy('name')->get();
 
-        // Generate QR codes dynamically
+        return view('inventory.index', compact('categories', 'currencies', 'suppliers', 'locations'));
+    }
+
+    public function getDataTablesData(Request $request)
+    {
+        $query = Inventory::query()->with(['category', 'supplier', 'location', 'currency']);
+
+        // Apply filters dari form filter
+        if ($request->filled('category_filter')) {
+            $query->where('category_id', $request->category_filter);
+        }
+        if ($request->filled('currency_filter')) {
+            $query->where('currency_id', $request->currency_filter);
+        }
+        if ($request->filled('supplier_filter')) {
+            $query->where('supplier_id', $request->supplier_filter);
+        }
+        if ($request->filled('location_filter')) {
+            $query->where('location_id', $request->location_filter);
+        }
+
+        if ($request->filled('custom_search')) {
+            $searchValue = $request->input('custom_search');
+            $query->where(function ($q) use ($searchValue) {
+                $q->where('name', 'like', "%{$searchValue}%")
+                    ->orWhere('remark', 'like', "%{$searchValue}%")
+                    ->orWhere('unit', 'like', "%{$searchValue}%")
+                    ->orWhere('quantity', 'like', "%{$searchValue}%");
+            });
+        }
+
+        // Search functionality dari DataTables
+        if ($request->filled('search.value')) {
+            $searchValue = $request->input('search.value');
+            $query->where(function ($q) use ($searchValue) {
+                $q->where('name', 'like', "%{$searchValue}%")
+                    ->orWhere('remark', 'like', "%{$searchValue}%")
+                    ->orWhere('unit', 'like', "%{$searchValue}%")
+                    ->orWhereHas('category', function ($q) use ($searchValue) {
+                        $q->where('name', 'like', "%{$searchValue}%");
+                    })
+                    ->orWhereHas('supplier', function ($q) use ($searchValue) {
+                        $q->where('name', 'like', "%{$searchValue}%");
+                    })
+                    ->orWhereHas('location', function ($q) use ($searchValue) {
+                        $q->where('name', 'like', "%{$searchValue}%");
+                    });
+            });
+        }
+
+        // Sorting dari DataTables
+        $columns = ['id', 'name', 'category_name', 'quantity', 'price', 'supplier_name', 'location_name', 'created_at'];
+        if ($request->filled('order')) {
+            $orderColumnIndex = $request->input('order.0.column');
+            $orderDirection = $request->input('order.0.dir', 'asc');
+
+            if ($orderColumnIndex == 2) {
+                // Category column
+                $query->leftJoin('categories', 'inventories.category_id', '=', 'categories.id')->orderBy('categories.name', $orderDirection)->select('inventories.*');
+            } elseif ($orderColumnIndex == 5) {
+                // Supplier column
+                $query->leftJoin('suppliers', 'inventories.supplier_id', '=', 'suppliers.id')->orderBy('suppliers.name', $orderDirection)->select('inventories.*');
+            } elseif ($orderColumnIndex == 6) {
+                // Location column
+                $query->leftJoin('locations', 'inventories.location_id', '=', 'locations.id')->orderBy('locations.name', $orderDirection)->select('inventories.*');
+            } else {
+                // Default sorting by available columns
+                $sortableColumns = ['id', 'name', 'quantity', 'price', 'created_at'];
+                if (isset($sortableColumns[$orderColumnIndex])) {
+                    $query->orderBy($sortableColumns[$orderColumnIndex], $orderDirection);
+                }
+            }
+        } else {
+            $query->orderBy('created_at', 'desc');
+        }
+
+        // Get total records
+        $totalRecords = Inventory::count();
+        $filteredRecords = $query->count();
+
+        // Pagination
+        $start = $request->input('start', 0);
+        $length = $request->input('length', 15);
+        $inventories = $query->skip($start)->take($length)->get();
+
+        // Generate QR codes untuk current page data saja
         foreach ($inventories as $inventory) {
             $qrCodePath = 'storage/qrcodes/' . $inventory->id . '.svg';
             $qrCodeFullPath = public_path($qrCodePath);
@@ -85,10 +182,108 @@ class InventoryController extends Controller
                     ->size(200)
                     ->generate(url('/inventory/detail/' . $inventory->id), $qrCodeFullPath);
             }
-            $inventory->qr_code = asset($qrCodePath); // Simpan URL gambar QR Code
+            $inventory->qr_code = asset($qrCodePath);
         }
 
-        return view('inventory.index', compact('inventories', 'categories', 'currencies', 'suppliers', 'locations'));
+        // Format data untuk DataTables
+        $data = [];
+        foreach ($inventories as $index => $inventory) {
+            $rowNumber = $start + $index + 1;
+
+            // Quantity: angka bold, unit biasa
+            $quantityValue = rtrim(rtrim(number_format($inventory->quantity, 2, '.', ''), '0'), '.');
+            $quantityUnit = $inventory->unit ?? '';
+            $quantityClass = '';
+            if ($inventory->quantity == 0) {
+                $quantityClass = 'text-danger fw-semibold';
+            } elseif ($inventory->quantity < 3) {
+                $quantityClass = 'text-warning fw-semibold';
+            }
+
+            // Unit Price: angka bold, currency biasa
+            $priceValue = number_format($inventory->price ?? 0, 2, ',', '.');
+            $currencyName = $inventory->currency ? $inventory->currency->name : '';
+            // Generate category badge with color
+            $categoryBadge = $inventory->category ? '<span class="badge ' . $this->getCategoryBadgeColor($inventory->category->name) . '">' . $inventory->category->name . '</span>' : '<span class="text-muted">-</span>';
+
+            $data[] = [
+                'DT_RowId' => 'row_' . $inventory->id,
+                'number' => $rowNumber,
+                'name' => '<div class="fw-semibold">' . $inventory->name . '</div>',
+                'category' => $categoryBadge,
+                'quantity' => '<span class="' . $quantityClass . '"><span class="fw-semibold">' . $quantityValue . '</span> ' . $quantityUnit . '</span>',
+                'price' => in_array(auth()->user()->role, ['super_admin', 'admin_logistic', 'admin_finance']) ? '<span class="fw-semibold">' . $priceValue . '</span> ' . $currencyName . '' : '',
+                'supplier' => $inventory->supplier ? $inventory->supplier->name : '-',
+                'location' => $inventory->location ? $inventory->location->name : '-',
+                'remark' => '<div class="text-truncate" style="max-width: 250px;" title="' . strip_tags($inventory->remark ?? '-') . '">' . ($inventory->remark ?? '-') . '</div>',
+                'actions' => $this->getActionButtons($inventory),
+                'img' => $inventory->img,
+                'qr_code' => $inventory->qr_code,
+            ];
+        }
+        return response()->json([
+            'draw' => intval($request->input('draw')),
+            'recordsTotal' => $totalRecords,
+            'recordsFiltered' => $filteredRecords,
+            'data' => $data,
+        ]);
+    }
+
+    private function getActionButtons($inventory)
+    {
+        $buttons = '<div class="d-flex flex-nowrap gap-1">';
+
+        // Detail button
+        $buttons .=
+            '<a href="' .
+            route('inventory.detail', ['id' => $inventory->id]) .
+            '"
+                        class="btn btn-sm btn-success" data-bs-toggle="tooltip"
+                        data-bs-placement="bottom" title="More Detail">
+                        <i class="bi bi-info-circle"></i>
+                     </a>';
+
+        // Image & QR button
+        $buttons .=
+            '<button type="button" class="btn btn-sm btn-secondary btn-show-image"
+                        title="View Image & QR Code" data-bs-toggle="modal" data-bs-target="#imageModal"
+                        data-img="' .
+            ($inventory->img ? asset('storage/' . $inventory->img) : '') .
+            '"
+                        data-qrcode="' .
+            $inventory->qr_code .
+            '"
+                        data-name="' .
+            $inventory->name .
+            '">
+                        <i class="bi bi-file-earmark-image"></i>
+                     </button>';
+
+        // Edit & Delete buttons (hanya untuk admin)
+        if (in_array(auth()->user()->role, ['super_admin', 'admin_logistic'])) {
+            $buttons .=
+                '<a href="' .
+                route('inventory.edit', $inventory->id) .
+                '"
+                            class="btn btn-warning btn-sm" data-bs-toggle="tooltip"
+                            data-bs-placement="bottom" title="Edit">
+                            <i class="bi bi-pencil-square"></i>
+                         </a>';
+
+            $buttons .=
+                '<button type="button" class="btn btn-sm btn-danger btn-delete"
+                            data-id="' .
+                $inventory->id .
+                '" data-name="' .
+                $inventory->name .
+                '"
+                            data-bs-toggle="tooltip" data-bs-placement="bottom" title="Delete">
+                            <i class="bi bi-trash3"></i>
+                         </button>';
+        }
+
+        $buttons .= '</div>';
+        return $buttons;
     }
 
     public function export(Request $request)
