@@ -88,19 +88,16 @@ class MaterialUsageController extends Controller
         $inventory_id = $request->query('inventory_id');
 
         $usages = MaterialUsage::where('inventory_id', $inventory_id)
-            ->with('project', 'inventory') // Pastikan relasi inventory tersedia
+            ->with('project', 'inventory')
             ->get()
             ->map(function ($usage) {
-                $unit = $usage->inventory->unit ?? ''; // Ambil unit dari relasi inventory
+                $unit = $usage->inventory->unit ?? '';
                 return [
                     'project_name' => $usage->project->name ?? 'N/A',
-                    'goods_out_quantity' => GoodsOut::where('inventory_id', $usage->inventory_id)
-                        ->where('project_id', $usage->project_id)
-                        ->sum('quantity') . ' ' . $unit,
-                    'goods_in_quantity' => GoodsIn::where('inventory_id', $usage->inventory_id)
-                        ->where('project_id', $usage->project_id)
-                        ->sum('quantity') . ' ' . $unit,
-                    'used_quantity' => $usage->used_quantity . ' ' . $unit,
+                    'goods_out_quantity' => GoodsOut::where('inventory_id', $usage->inventory_id)->where('project_id', $usage->project_id)->sum('quantity'),
+                    'goods_in_quantity' => GoodsIn::where('inventory_id', $usage->inventory_id)->where('project_id', $usage->project_id)->sum('quantity'),
+                    'used_quantity' => $usage->used_quantity,
+                    'unit' => $unit,
                 ];
             });
 
@@ -110,10 +107,10 @@ class MaterialUsageController extends Controller
     public function destroy(MaterialUsage $material_usage)
     {
         if (Auth::user()->role !== 'super_admin') {
-            return redirect()->route('material_usage.index')->with('error', "You are not authorized to delete this data.");
+            return redirect()->route('material_usage.index')->with('error', 'You are not authorized to delete this data.');
         }
 
         $material_usage->delete();
-        return redirect()->route('material_usage.index')->with('success', "Material usage deleted successfully.");
+        return redirect()->route('material_usage.index')->with('success', 'Material usage deleted successfully.');
     }
 }

@@ -651,7 +651,7 @@ class InventoryController extends Controller
     {
         $inventory = Inventory::findOrFail($id);
         $projects = Project::orderBy('name')->get();
-        $users = User::orderBy('username')->get();
+        $users = User::with('department')->orderBy('username')->get();
 
         return view('inventory.detail', compact('inventory', 'projects', 'users'));
     }

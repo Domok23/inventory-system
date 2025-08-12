@@ -138,6 +138,186 @@
             /* Ungu lebih gelap untuk item aktif */
         }
 
+        /* Enhanced Modal Styles */
+        .modal-content {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #8F12FE, #4A25AA);
+            color: white;
+            border-bottom: none;
+            padding: 1.5rem;
+        }
+
+        .modal-header .modal-title {
+            font-weight: 600;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .modal-body {
+            padding: 2rem;
+            background: #fafbfc;
+        }
+
+        .modal-footer {
+            background: #ffffff;
+            border-top: 1px solid #e9ecef;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .form-control,
+        .form-select {
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: .375rem 2.25rem .375rem .75rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #8F12FE;
+            box-shadow: 0 0 0 0.2rem rgba(143, 18, 254, 0.15);
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-group-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+            z-index: 10;
+            font-size: 0.9rem;
+        }
+
+        .btn-modal {
+            border-radius: 8px;
+            padding: 0.75rem 2rem;
+            font-weight: 500;
+            border: none;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            min-width: 120px;
+        }
+
+        .btn-modal-primary {
+            background: linear-gradient(135deg, #8F12FE, #6610f2);
+            color: white;
+        }
+
+        .btn-modal-primary:hover {
+            background: linear-gradient(135deg, #7a0fdb, #5a0ed9);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(143, 18, 254, 0.3);
+        }
+
+        .btn-modal-secondary {
+            background: linear-gradient(135deg, #6c757d, #495057);
+            color: white;
+        }
+
+        .btn-modal-secondary:hover {
+            background: linear-gradient(135deg, #5a6268, #3d4448);
+            transform: translateY(-2px);
+        }
+
+        .btn-modal-success {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+        }
+
+        .btn-modal-success:hover {
+            background: linear-gradient(135deg, #218838, #1aa086);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+        }
+
+        /* Material Usage Table Styling */
+        .usage-table {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .usage-table th {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            color: #495057;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 1rem 0.75rem;
+            border: none;
+        }
+
+        .usage-table td {
+            padding: 0.875rem 0.75rem;
+            border: none;
+            border-bottom: 1px solid #f1f3f4;
+            font-size: 0.9rem;
+        }
+
+        .usage-table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .usage-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Loading State */
+        .loading-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            color: #6c757d;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #8F12FE;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 1rem;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Responsive Modal Enhancements */
         @media (max-width: 768px) {
             .action-btn {
                 width: 100%;
@@ -147,6 +327,131 @@
             .card-body {
                 padding: 1rem;
             }
+
+            .modal-body {
+                padding: 1.5rem;
+            }
+
+            .modal-footer {
+                padding: 1rem;
+                flex-direction: column;
+            }
+
+            .btn-modal {
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+
+            .usage-table th,
+            .usage-table td {
+                padding: 0.5rem;
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .modal-dialog {
+                margin: 1rem;
+            }
+
+            .modal-header {
+                padding: 1rem;
+            }
+
+            .modal-body {
+                padding: 1rem;
+            }
+        }
+
+        .dt-container {
+            padding: .5rem;
+        }
+
+        #materialUsageModal .dataTables_filter {
+            margin-bottom: .5rem !important;
+        }
+
+        .datatables-footer-row {
+            border-top: 1px solid #eee;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+
+        .datatables-left {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .vr-divider {
+            width: 1px;
+            height: 24px;
+            background: #dee2e6;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .dataTables_paginate {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        @media (max-width: 767.98px) {
+            .datatables-footer-row {
+                flex-direction: column !important;
+                gap: 0.5rem;
+            }
+
+            .datatables-left {
+                flex-direction: column !important;
+                gap: 0.5rem;
+            }
+
+            .vr-divider {
+                display: none;
+            }
+
+            .dataTables_paginate {
+                justify-content: center !important;
+            }
+        }
+
+        .pagination {
+            --bs-pagination-padding-x: 0.75rem;
+            --bs-pagination-padding-y: 0.375rem;
+            --bs-pagination-color: #6c757d;
+            --bs-pagination-bg: #fff;
+            --bs-pagination-border-width: 1px;
+            --bs-pagination-border-color: #dee2e6;
+            --bs-pagination-border-radius: 0.375rem;
+            --bs-pagination-hover-color: #495057;
+            --bs-pagination-hover-bg: #e9ecef;
+            --bs-pagination-hover-border-color: #dee2e6;
+            --bs-pagination-focus-color: #495057;
+            --bs-pagination-focus-bg: #e9ecef;
+            --bs-pagination-focus-box-shadow: 0 0 0 0.25rem rgba(143, 18, 254, 0.25);
+            --bs-pagination-active-color: #fff;
+            --bs-pagination-active-bg: #8F12FE;
+            --bs-pagination-active-border-color: #4A25AA;
+            --bs-pagination-disabled-color: #6c757d;
+            --bs-pagination-disabled-bg: #fff;
+            --bs-pagination-disabled-border-color: #dee2e6;
+        }
+
+        .page-link {
+            transition: all 0.15s ease-in-out;
+        }
+
+        .page-link:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .page-item.active .page-link {
+            background: linear-gradient(135deg, #8F12FE 0%, #4A25AA 100%);
+            border-color: #8F12FE;
+            box-shadow: 0 2px 4px rgba(143, 18, 254, 0.3);
         }
     </style>
 @endpush
@@ -314,69 +619,103 @@
                             </div>
                         </div>
                     </div>
-                    <div class="card-footer text-center">
-                        <a href="{{ route('material_requests.create', ['material_id' => $inventory->id]) }}"
-                            class="btn btn-info my-1">
-                            Request this Material
-                        </a>
-                        <button type="button" class="btn btn-primary my-1" data-bs-toggle="modal"
-                            data-bs-target="#goodsInModal">Goods In</button>
-                        @if (auth()->user()->isLogisticAdmin())
-                            <button type="button" class="btn btn-success my-1" data-bs-toggle="modal"
-                                data-bs-target="#goodsOutModal">Goods Out</button>
-                        @endif
-                        <a href="#" class="btn btn-warning my-1" id="viewMaterialUsage">View Material Usage</a>
-                        <br>
-                        <a href="{{ route('inventory.index') }}" class="btn btn-secondary my-2"><i
-                                class="bi bi-arrow-left-short"></i> Back to Inventory</a>
+                    <div class="card-footer text-center py-4"
+                        style="background: linear-gradient(135deg, #f8f9fc, #e9ecef); border-top: none;">
+                        <div class="d-flex flex-wrap justify-content-center gap-2">
+                            <a href="{{ route('material_requests.create', ['material_id' => $inventory->id]) }}"
+                                class="btn btn-info action-btn">
+                                <i class="fas fa-plus-circle me-2"></i>Request Material
+                            </a>
+                            <button type="button" class="btn btn-primary action-btn" data-bs-toggle="modal"
+                                data-bs-target="#goodsInModal">
+                                <i class="fas fa-arrow-down me-2"></i>Goods In
+                            </button>
+                            @if (auth()->user()->isLogisticAdmin())
+                                <button type="button" class="btn btn-success action-btn" data-bs-toggle="modal"
+                                    data-bs-target="#goodsOutModal">
+                                    <i class="fas fa-arrow-up me-2"></i>Goods Out
+                                </button>
+                            @endif
+                            <button type="button" class="btn btn-warning action-btn" id="viewMaterialUsage">
+                                <i class="fas fa-chart-line me-2"></i>View Usage
+                            </button>
+                        </div>
+                        <div class="mt-3">
+                            <a href="{{ route('inventory.index') }}" class="btn btn-secondary action-btn">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Inventory
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
             <!-- Modal for Goods In -->
             <div class="modal fade" id="goodsInModal" tabindex="-1" aria-labelledby="goodsInModalLabel"
                 aria-hidden="true">
-                <div class="modal-dialog">
+                <div class="modal-dialog modal-dialog-centered">
                     <form method="POST" action="{{ route('goods_in.store_independent') }}">
                         @csrf
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="goodsInModalLabel">Goods In</h5>
+                                <h5 class="modal-title" id="goodsInModalLabel">
+                                    <i class="fas fa-arrow-down me-2"></i>Goods In - {{ $inventory->name }}
+                                </h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
                                 <input type="hidden" name="inventory_id" value="{{ $inventory->id }}">
+
                                 <div class="mb-3">
-                                    <label for="project_id" class="form-label">Project</label>
-                                    <select name="project_id" id="project_id" class="form-select">
-                                        <option value="" class="text-muted">No Project</option>
-                                        @foreach ($projects as $project)
-                                            <option value="{{ $project->id }}">{{ $project->name }}</option>
-                                        @endforeach
-                                    </select>
+                                    <label for="goodsin_project_id" class="form-label">
+                                        <i class="fas fa-project-diagram me-1"></i>Project
+                                    </label>
+                                    <div class="input-group">
+                                        <select name="project_id" id="goodsin_project_id" class="form-select">
+                                            <option value="">Select Project (Optional)</option>
+                                            @foreach ($projects as $project)
+                                                <option value="{{ $project->id }}">{{ $project->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                 </div>
+
                                 <div class="mb-3">
-                                    <label for="quantity" class="form-label">Quantity <span
-                                            class="text-danger">*</span></label>
-                                    <input type="number" name="quantity" id="quantity" class="form-control" required
-                                        min="0.01" step="any">
+                                    <label for="goodsin_quantity" class="form-label">
+                                        <i class="fas fa-calculator me-1"></i>Quantity <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group">
+                                        <input type="number" name="quantity" id="goodsin_quantity" class="form-control"
+                                            required min="0.01" step="any" placeholder="Enter quantity">
+                                        <span class="input-group-text">{{ $inventory->unit ?? 'Units' }}</span>
+                                    </div>
                                 </div>
+
                                 <div class="mb-3">
-                                    <label for="returned_at" class="form-label">Returned/In At <span
-                                            class="text-danger">*</span></label>
-                                    <input type="date" name="returned_at" id="returned_at" class="form-control"
-                                        required>
+                                    <label for="goodsin_returned_at" class="form-label">
+                                        <i class="fas fa-calendar me-1"></i>Returned Date <span
+                                            class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group">
+                                        <input type="date" name="returned_at" id="goodsin_returned_at"
+                                            class="form-control" required value="{{ date('Y-m-d') }}">
+                                    </div>
                                 </div>
+
                                 <div class="mb-3">
-                                    <label for="remark" class="form-label">Remark</label>
-                                    <textarea name="remark" id="remark" class="form-control" rows="3"></textarea>
+                                    <label for="goodsin_remark" class="form-label">
+                                        <i class="fas fa-comment me-1"></i>Remark
+                                    </label>
+                                    <textarea name="remark" id="goodsin_remark" class="form-control" rows="3"
+                                        placeholder="Add any additional notes..."></textarea>
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button type="submit" class="btn btn-primary" id="goodsin-submit-btn">
-                                    <span class="spinner-border spinner-border-sm me-1 d-none" role="status"
-                                        aria-hidden="true"></span>
-                                    Submit
+                                <button type="button" class="btn btn-modal btn-modal-secondary" data-bs-dismiss="modal">
+                                    <i class="fas fa-times me-1"></i>Cancel
+                                </button>
+                                <button type="submit" class="btn btn-modal btn-modal-primary" id="goodsin-submit-btn">
+                                    <span class="spinner-border spinner-border-sm me-1 d-none" role="status"></span>
+                                    <i class="fas fa-check me-1"></i>Submit Goods In
                                 </button>
                             </div>
                         </div>
@@ -387,52 +726,89 @@
             <!-- Modal for Goods Out -->
             <div class="modal fade" id="goodsOutModal" tabindex="-1" aria-labelledby="goodsOutModalLabel"
                 aria-hidden="true">
-                <div class="modal-dialog">
+                <div class="modal-dialog modal-dialog-centered">
                     <form method="POST" action="{{ route('goods_out.store_independent') }}">
                         @csrf
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="goodsOutModalLabel">Goods Out</h5>
+                                <h5 class="modal-title" id="goodsOutModalLabel">
+                                    <i class="fas fa-arrow-up me-2"></i>Goods Out - {{ $inventory->name }}
+                                </h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
                                 <input type="hidden" name="inventory_id" value="{{ $inventory->id }}">
-                                <div class="mb-3">
-                                    <label for="project_id" class="form-label">Project</label>
-                                    <select name="project_id" id="project_id" class="form-select">
-                                        <option value="" class="text-muted">No Project</option>
-                                        @foreach ($projects as $project)
-                                            <option value="{{ $project->id }}">{{ $project->name }}</option>
-                                        @endforeach
-                                    </select>
+
+                                <!-- Stock Info Card -->
+                                <div class="alert alert-info d-flex align-items-center mb-3"
+                                    style="background: linear-gradient(135deg, #e3f2fd, #bbdefb); border: none; border-radius: 8px;">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <div>
+                                        <strong>Available Stock:</strong> {{ number_format($inventory->quantity, 2) }}
+                                        {{ $inventory->unit ?? 'Units' }}
+                                    </div>
                                 </div>
+
                                 <div class="mb-3">
-                                    <label for="user_id" class="form-label">User <span
-                                            class="text-danger">*</span></label>
-                                    <select name="user_id" id="user_id" class="form-select" required>
-                                        <option value="" disabled selected>Select an option</option>
-                                        @foreach ($users as $user)
-                                            <option value="{{ $user->id }}">{{ $user->username }}</option>
-                                        @endforeach
-                                    </select>
+                                    <label for="goodsout_project_id" class="form-label">
+                                        <i class="fas fa-project-diagram me-1"></i>Project
+                                    </label>
+                                    <div class="input-group">
+                                        <select name="project_id" id="goodsout_project_id" class="form-select">
+                                            <option value="">Select Project (Optional)</option>
+                                            @foreach ($projects as $project)
+                                                <option value="{{ $project->id }}">{{ $project->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                 </div>
+
                                 <div class="mb-3">
-                                    <label for="quantity" class="form-label">Quantity <span
-                                            class="text-danger">*</span></label>
-                                    <input type="number" name="quantity" id="quantity" class="form-control" required
-                                        min="0.01" step="any">
+                                    <label for="goodsout_user_id" class="form-label">
+                                        <i class="fas fa-user me-1"></i>Assigned User <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group">
+                                        <select name="user_id" id="goodsout_user_id" class="form-select" required>
+                                            <option value="" disabled selected>Select User</option>
+                                            @foreach ($users as $user)
+                                                <option value="{{ $user->id }}">{{ $user->username }}
+                                                    @if ($user->department)
+                                                        - {{ $user->department->name }}
+                                                    @endif
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                 </div>
+
                                 <div class="mb-3">
-                                    <label for="remark" class="form-label">Remark</label>
-                                    <textarea name="remark" id="remark" class="form-control" rows="3"></textarea>
+                                    <label for="goodsout_quantity" class="form-label">
+                                        <i class="fas fa-calculator me-1"></i>Quantity <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group">
+                                        <input type="number" name="quantity" id="goodsout_quantity"
+                                            class="form-control" required min="0.01" step="any"
+                                            max="{{ $inventory->quantity }}" placeholder="Enter quantity">
+                                        <span class="input-group-text">{{ $inventory->unit ?? 'Units' }}</span>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="goodsout_remark" class="form-label">
+                                        <i class="fas fa-comment me-1"></i>Remark
+                                    </label>
+                                    <textarea name="remark" id="goodsout_remark" class="form-control" rows="3"
+                                        placeholder="Add purpose or additional notes..."></textarea>
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button type="submit" class="btn btn-primary" id="goodsout-submit-btn">
-                                    <span class="spinner-border spinner-border-sm me-1 d-none" role="status"
-                                        aria-hidden="true"></span>
-                                    Submit
+                                <button type="button" class="btn btn-modal btn-modal-secondary" data-bs-dismiss="modal">
+                                    <i class="fas fa-times me-1"></i>Cancel
+                                </button>
+                                <button type="submit" class="btn btn-modal btn-modal-success" id="goodsout-submit-btn">
+                                    <span class="spinner-border spinner-border-sm me-1 d-none" role="status"></span>
+                                    <i class="fas fa-check me-1"></i>Submit Goods Out
                                 </button>
                             </div>
                         </div>
@@ -443,28 +819,40 @@
             <!-- Modal for Material Usage -->
             <div class="modal fade" id="materialUsageModal" tabindex="-1" aria-labelledby="materialUsageModalLabel"
                 aria-hidden="true">
-                <div class="modal-dialog modal-lg">
+                <div class="modal-dialog modal-xl modal-dialog-centered">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="materialUsageModalLabel">Material Usage</h5>
+                            <h5 class="modal-title" id="materialUsageModalLabel">
+                                <i class="fas fa-chart-line me-2"></i>Material Usage Report - {{ $inventory->name }}
+                            </h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                 aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <div class="table-responsive">
-                                <table class="table table-hover table-bordered" id="materialUsageDataTable">
-                                    <thead>
-                                        <tr>
-                                            <th>Project</th>
-                                            <th>Goods Out Quantity</th>
-                                            <th>Goods In Quantity</th>
-                                            <th>Used Quantity</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="materialUsageTable">
-                                        <!-- Data akan dimuat melalui AJAX -->
-                                    </tbody>
-                                </table>
+                            <!-- Loading State -->
+                            <div id="usage-loading" class="loading-container">
+                                <div class="loading-spinner"></div>
+                                <span>Loading material usage data...</span>
+                            </div>
+
+                            <!-- Content -->
+                            <div id="usage-content" style="display: none;">
+                                <div class="table-responsive">
+                                    <table class="table usage-table" id="materialUsageDataTable">
+                                        <thead>
+                                            <tr>
+                                                <th><i class="fas fa-project-diagram me-1"></i>Project</th>
+                                                <th><i class="fas fa-arrow-up me-1"></i>Goods Out Qty</th>
+                                                <th><i class="fas fa-arrow-down me-1"></i>Goods In Qty</th>
+                                                <th><i class="fas fa-calculator me-1"></i>Used Qty</th>
+                                                <th><i class="fas fa-percentage me-1"></i>Usage Rate</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="materialUsageTable">
+                                            <!-- Data akan dimuat melalui AJAX -->
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -479,10 +867,15 @@
                     e.preventDefault();
                     const inventoryId = {{ $inventory->id }};
 
-                    // Kosongkan tabel sebelum memuat data baru
+                    // Show modal and loading state
+                    $('#materialUsageModal').modal('show');
+                    $('#usage-loading').show();
+                    $('#usage-content').hide();
+
+                    // Clear previous data
                     $('#materialUsageTable').empty();
 
-                    // Fetch data melalui AJAX
+                    // Fetch data via AJAX
                     $.ajax({
                         url: "{{ route('material_usage.get_by_inventory') }}",
                         method: "GET",
@@ -490,110 +883,194 @@
                             inventory_id: inventoryId
                         },
                         success: function(response) {
-                            // Kosongkan tabel sebelum memuat data baru
+                            $('#usage-loading').hide();
+                            $('#usage-content').show();
+
                             $('#materialUsageTable').empty();
 
-                            if (Array.isArray(response)) {
+                            if (Array.isArray(response) && response.length > 0) {
                                 response.forEach(function(usage) {
+                                    const usageRate = usage.goods_out_quantity > 0 ?
+                                        ((usage.used_quantity / usage.goods_out_quantity) * 100)
+                                        .toFixed(1) : '0.0';
+
+                                    const badgeClass = usageRate >= 80 ? 'bg-danger' :
+                                        usageRate >= 50 ? 'bg-warning' : 'bg-success';
+
                                     $('#materialUsageTable').append(`
-                                <tr>
-                                    <td>${usage.project_name}</td>
-                                    <td>${usage.goods_out_quantity}</td>
-                                    <td>${usage.goods_in_quantity}</td>
-                                    <td>${usage.used_quantity}</td>
-                                </tr>
-                            `);
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <strong>${usage.project_name || 'No Project'}</strong>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-info">${usage.goods_out_quantity} {{ $inventory->unit ?? 'Units' }}</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-success">${usage.goods_in_quantity} {{ $inventory->unit ?? 'Units' }}</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-primary">${usage.used_quantity} {{ $inventory->unit ?? 'Units' }}</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge ${badgeClass}">${usageRate}%</span>
+                                            </td>
+                                        </tr>
+                                    `);
                                 });
 
-                                // Inisialisasi DataTables setelah data dimuat
+                                // Initialize DataTables with enhanced styling
                                 $('#materialUsageDataTable').DataTable({
-                                    destroy: true, // Hapus inisialisasi sebelumnya jika ada
+                                    destroy: true,
                                     paging: true,
                                     searching: true,
                                     ordering: true,
+                                    pageLength: 10,
+                                    language: {
+                                        search: "_INPUT_",
+                                        searchPlaceholder: "Search usage data...",
+                                        lengthMenu: "Show _MENU_ entries",
+                                        info: "Showing _START_ to _END_ of _TOTAL_ entries",
+                                        infoEmpty: "No data available",
+                                        emptyTable: "No material usage data found",
+                                        zeroRecords: "No matching records found"
+                                    },
+                                    dom: '<"dataTables_filter"f>' +
+                                        't<' +
+                                        '"row datatables-footer-row align-items-center"' +
+                                        '<"col-md-7 d-flex align-items-center gap-2 datatables-left"l<"vr-divider mx-2">i>' +
+                                        '<"col-md-5 dataTables_paginate justify-content-end"p>' +
+                                        '>',
+                                    responsive: true
                                 });
                             } else {
-                                console.error('Unexpected response format:', response);
-                                alert('Failed to load material usage data. Please try again.');
+                                $('#materialUsageTable').append(`
+                                    <tr>
+                                        <td colspan="5" class="text-center py-4">
+                                            <i class="fas fa-inbox fa-2x text-muted mb-3"></i>
+                                            <p class="text-muted mb-0">No material usage data found</p>
+                                        </td>
+                                    </tr>
+                                `);
                             }
-
-                            // Tampilkan modal
-                            $('#materialUsageModal').modal('show');
                         },
                         error: function(xhr) {
-                            alert('Failed to load material usage data.');
+                            $('#usage-loading').hide();
+                            $('#usage-content').show();
+                            $('#materialUsageTable').append(`
+                                <tr>
+                                    <td colspan="5" class="text-center py-4">
+                                        <i class="fas fa-exclamation-triangle fa-2x text-danger mb-3"></i>
+                                        <p class="text-danger mb-0">Failed to load material usage data</p>
+                                        <small class="text-muted">Please try again later</small>
+                                    </td>
+                                </tr>
+                            `);
                         }
                     });
                 });
 
                 $(document).ready(function() {
-                    // Simpan isi awal tombol
+                    // Store original button content
                     const goodsInBtn = $('#goodsin-submit-btn');
                     const goodsInBtnHtml = goodsInBtn.html();
                     const goodsOutBtn = $('#goodsout-submit-btn');
                     const goodsOutBtnHtml = goodsOutBtn.html();
 
-                    // Handle submit Goods In
+                    // Form submission handlers with enhanced UX
                     $('#goodsInModal form').on('submit', function() {
                         goodsInBtn.prop('disabled', true);
                         goodsInBtn.find('.spinner-border').removeClass('d-none');
+                        goodsInBtn.find('i:not(.spinner-border)').addClass('d-none');
                     });
 
-                    // Handle submit Goods Out
                     $('#goodsOutModal form').on('submit', function() {
                         goodsOutBtn.prop('disabled', true);
                         goodsOutBtn.find('.spinner-border').removeClass('d-none');
+                        goodsOutBtn.find('i:not(.spinner-border)').addClass('d-none');
                     });
 
-                    // Reset tombol saat modal dibuka ulang
+                    // Reset buttons when modals are opened
                     $('#goodsInModal').on('shown.bs.modal', function() {
                         goodsInBtn.prop('disabled', false);
                         goodsInBtn.html(goodsInBtnHtml);
+
+                        // Initialize Select2
+                        $('#goodsin_project_id').select2({
+                            dropdownParent: $('#goodsInModal'),
+                            width: '100%',
+                            theme: 'bootstrap-5',
+                            allowClear: true,
+                            placeholder: 'Select Project (Optional)'
+                        });
                     });
+
                     $('#goodsOutModal').on('shown.bs.modal', function() {
                         goodsOutBtn.prop('disabled', false);
                         goodsOutBtn.html(goodsOutBtnHtml);
-                    });
 
-                    // Inisialisasi Select2 di modal Goods Out
-                    $('#goodsOutModal').on('shown.bs.modal', function() {
-                        $('#goodsOutModal select').select2({
-                            dropdownParent: $('#goodsOutModal'), // Agar dropdown muncul di dalam modal
-                            width: '100%', // Sesuaikan lebar dropdown
-                            theme: 'bootstrap-5', // Gunakan tema Bootstrap 5
+                        // Focus on first input
+                        $('#goodsout_user_id').focus();
+
+                        // Initialize Select2
+                        $('#goodsout_project_id, #goodsout_user_id').select2({
+                            dropdownParent: $('#goodsOutModal'),
+                            width: '100%',
+                            theme: 'bootstrap-5',
                             allowClear: true
                         });
                     });
 
-                    // Inisialisasi Select2 di modal Goods In
-                    $('#goodsInModal').on('shown.bs.modal', function() {
-                        $('#goodsInModal select').select2({
-                            dropdownParent: $('#goodsInModal'), // Agar dropdown muncul di dalam modal
-                            width: '100%', // Sesuaikan lebar dropdown
-                            theme: 'bootstrap-5', // Gunakan tema Bootstrap 5
-                            allowClear: true
-                        });
+                    // Real-time validation for goods out quantity
+                    $('#goodsout_quantity').on('input', function() {
+                        const maxStock = {{ $inventory->quantity }};
+                        const enteredQty = parseFloat($(this).val()) || 0;
+
+                        if (enteredQty > maxStock) {
+                            $(this).addClass('is-invalid');
+                            if (!$(this).next('.invalid-feedback').length) {
+                                $(this).after(
+                                    `<div class="invalid-feedback">Quantity cannot exceed available stock (${maxStock})</div>`
+                                );
+                            }
+                        } else {
+                            $(this).removeClass('is-invalid');
+                            $(this).next('.invalid-feedback').remove();
+                        }
+                    });
+
+                    // Enhanced modal cleanup
+                    $('.modal').on('hidden.bs.modal', function() {
+                        // Jangan hapus option pada select!
+                        $(this).find('.select2-container').remove();
+                        // Hanya reset value, jangan reset html option
+                        $(this).find('select').val('').trigger('change');
+                        $(this).find('form')[0]?.reset();
+                        $(this).find('.is-invalid').removeClass('is-invalid');
+                        $(this).find('.invalid-feedback').remove();
                     });
                 });
 
+                // Initialize Fancybox for image gallery
                 document.addEventListener('DOMContentLoaded', function() {
-                    Fancybox.bind("[data-fancybox='gallery']", {
-                        Toolbar: {
-                            display: [{
-                                    id: "counter",
-                                    position: "center"
-                                }, // Menampilkan penghitung gambar
-                                "zoom", // Tombol zoom
-                                "download", // Tombol download
-                                "close" // Tombol close
-                            ],
-                        },
-                        Thumbs: false, // Nonaktifkan thumbnail jika tidak diperlukan
-                        Image: {
-                            zoom: true, // Aktifkan fitur zoom
-                        },
-                        Hash: false, // Nonaktifkan fitur History API
-                    });
+                    if (typeof Fancybox !== 'undefined') {
+                        Fancybox.bind("[data-fancybox='gallery']", {
+                            Toolbar: {
+                                display: [{
+                                        id: "counter",
+                                        position: "center"
+                                    },
+                                    "zoom", "download", "close"
+                                ],
+                            },
+                            Thumbs: false,
+                            Image: {
+                                zoom: true
+                            },
+                            Hash: false,
+                        });
+                    }
                 });
             </script>
         @endpush
