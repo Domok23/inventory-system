@@ -117,11 +117,9 @@
                             <th></th>
                             <th>Material</th>
                             <th>Goods Out Qty</th>
-                            <th>
-                                Remaining Qty to Goods In
-                                <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="top"
+                            <th><i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="top"
                                     title="Remaining Qty column serves as an indicator to monitor the quantity of goods that have not been returned (Goods In) to inventory after the Goods Out process."
-                                    style="font-size: 0.8rem;"></i>
+                                    style="font-size: 0.8rem;"></i> Remaining Qty to Goods In
                             </th>
                             <th>For Project</th>
                             <th>Requested By</th>

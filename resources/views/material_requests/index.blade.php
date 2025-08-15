@@ -126,15 +126,13 @@
                             <th>Project</th>
                             <th>Material</th>
                             <th>Requested Qty</th>
-                            <th>Remaining Qty
-                                <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="top"
+                            <th><i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="top"
                                     title="The quantity of material requests that have not yet been processed for goods out."
-                                    style="font-size: 0.8rem; cursor: pointer;"></i>
+                                    style="font-size: 0.8rem; cursor: pointer;"></i> Remaining Qty
                             </th>
-                            <th>Processed Qty
-                                <i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="top"
+                            <th><i class="bi bi-question-circle" data-bs-toggle="tooltip" data-bs-placement="top"
                                     title="The quantity of material requests that have already been processed and issued as goods out."
-                                    style="font-size: 0.8rem; cursor: pointer;"></i>
+                                    style="font-size: 0.8rem; cursor: pointer;"></i> Processed Qty
                             </th>
                             <th>Requested By</th>
                             <th>Requested At</th>
@@ -289,6 +287,7 @@
                                         <th>Project</th>
                                         <th>Req / Rem Qty</th>
                                         <th>Qty to Goods Out</th>
+                                        <th> </th>
                                     </tr>
                                 </thead>
                                 <tbody id="bulk-goods-out-table-body">
@@ -606,7 +605,7 @@
                                     <td>${item.material_name}</td>
                                     <td>
                                         ${item.project_name}
-                                        <span data-bs-toggle="tooltip" data-bs-placement="buttom" title="Requested By: ${item.requested_by}">
+                                        <span data-bs-toggle="tooltip" data-bs-placement="bottom" title="Requested By: ${item.requested_by}">
                                             <i class="bi bi-person-circle"></i>
                                         </span>
                                     </td>
@@ -615,22 +614,33 @@
                                         <input type="number" name="goods_out_qty[${item.id}]" class="form-control form-control-sm"
                                             value="${item.remaining_qty}" min="0.001" max="${item.remaining_qty}" step="any" required>
                                     </td>
+                                    <td class="text-center align-middle">
+                                        <button type="button" class="btn btn-sm btn-danger btn-remove-row" title="Remove Row">
+                                            <i class="bi bi-x-circle"></i>
+                                        </button>
+                                    </td>
                                 </tr>
                             `);
                         });
                         $('#bulkGoodsOutModal').modal('show');
-                        // Re-init tooltip
-                        var tooltipTriggerList = [].slice.call(document.querySelectorAll(
-                            '[data-bs-toggle="tooltip"]'));
-                        tooltipTriggerList.forEach(function(tooltipTriggerEl) {
-                            new bootstrap.Tooltip(tooltipTriggerEl);
-                        });
+                        // Inisialisasi tooltip setelah modal tampil
+                        setTimeout(function() {
+                            var tooltipTriggerList = [].slice.call(document
+                                .querySelectorAll('[data-bs-toggle="tooltip"]'));
+                            tooltipTriggerList.forEach(function(tooltipTriggerEl) {
+                                new bootstrap.Tooltip(tooltipTriggerEl);
+                            });
+                        }, 300); // delay agar modal sudah render
                     },
                     error: function(xhr) {
                         Swal.fire('Error', 'Failed to fetch material request details.',
                             'error');
                     }
                 });
+            });
+
+            $(document).on('click', '.btn-remove-row', function() {
+                $(this).closest('tr').remove();
             });
 
             $('#submit-bulk-goods-out').on('click', function() {
