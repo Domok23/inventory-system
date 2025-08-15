@@ -276,6 +276,7 @@
                                 <th>Supplier</th>
                                 <th>Location</th>
                                 <th>Remark</th>
+                                <th>Updated At</th>
                                 <th width="150">Actions</th>
                             </tr>
                         </thead>
@@ -417,6 +418,11 @@
                         name: 'remark',
                         width: '15%',
                         orderable: false
+                    },
+                    {
+                        data: 'updated_at',
+                        name: 'updated_at',
+                        width: '12%'
                     },
                     {
                         data: 'actions',

@@ -216,6 +216,7 @@ class InventoryController extends Controller
                 'supplier' => $inventory->supplier ? $inventory->supplier->name : '-',
                 'location' => $inventory->location ? $inventory->location->name : '-',
                 'remark' => '<div class="text-truncate" style="max-width: 250px;" title="' . strip_tags($inventory->remark ?? '-') . '">' . ($inventory->remark ?? '-') . '</div>',
+                'updated_at' => $inventory->updated_at ? '<span data-bs-toggle="tooltip" data-bs-placement="bottom" title=" Time: ' . $inventory->updated_at->format('H:i') . '">' . $inventory->updated_at->format('d M Y') . '</span>' : '-',
                 'actions' => $this->getActionButtons($inventory),
                 'img' => $inventory->img,
                 'qr_code' => $inventory->qr_code,
